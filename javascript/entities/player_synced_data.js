@@ -8,12 +8,22 @@ class PlayerSyncedData {
     constructor(playerId) {
         this.playerId_ = playerId;
 
+        this.collectables_ = 0;
         this.isolated_ = false;
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
     }
 
-    //
+    // Gets or sets the number of collectables that have been collected by the player. This value
+    // can only be updated from JavaScript, but is accessible by Pawn.
+    get collectables() { return this.collectables_; }
+    set collectables(value) {
+        if (typeof value !== 'number')
+            throw new Error('The collectables property must be a number.');
+
+        this.collectables_ = value;
+        this.sync(PlayerSyncedData.COLLECTABLES, value);
+    }
 
     // Gets or sets whether this player is isolated. This means that they've been banished to a
     // Virtual World of their own, with (silently) no means of communicating with other players.
@@ -61,6 +71,7 @@ class PlayerSyncedData {
         await milliseconds(1);  // avoid call re-entrancy
         switch (property) {
             // Integral properties.
+            case PlayerSyncedData.COLLECTABLES:
             case PlayerSyncedData.ISOLATED:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            value ? 1 : 0, 0.0 /* invalid float */, '' /* empty string */);
@@ -82,6 +93,9 @@ class PlayerSyncedData {
     // issued as that would create a loop. |event| is {property, intValue, floatValue, stringValue}.
     apply(property, intValue, floatValue, stringValue) {
         switch (property) {
+            case PlayerSyncedData.COLLECTABLES:
+                throw new Error('This value is not meant to be changed by Pawn.');
+
             case PlayerSyncedData.ISOLATED:
                 this.isolated_ = !!intValue;
                 break;
@@ -96,7 +110,8 @@ class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-// Next ID: 3
+// Next ID: 4
+PlayerSyncedData.COLLECTABLES = 3;
 PlayerSyncedData.ISOLATED = 1;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;

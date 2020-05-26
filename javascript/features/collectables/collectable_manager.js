@@ -52,6 +52,10 @@ export class CollectableManager {
                 return;  // the |player| has disconnected from the server since
 
             this.statistics_.set(player, collectables);
+
+            // Ensure that Pawn has the latest metric on the number of collectables available for
+            // the given |player|, as a number of benefits are still implemented there.
+            player.syncedData.collectables = this.getCollectableCountForPlayer(player);
         });
     }
 

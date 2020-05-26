@@ -31,5 +31,8 @@ describe('CollectableManager', (it, beforeEach) => {
             manager.getCollectableCountForPlayer(gunther, CollectableDatabase.kRedBarrel), 6);
         
         assert.throws(() => manager.getCollectableCountForPlayer(gunther, 'bananas'));
+
+        assert.equal(
+            gunther.syncedData.collectables, manager.getCollectableCountForPlayer(gunther));
     });
 });

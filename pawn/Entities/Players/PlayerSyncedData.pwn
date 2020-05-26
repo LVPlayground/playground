@@ -5,8 +5,9 @@
 // Provided by PlaygroundJS for updating JavaScript data.
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
-// Next ID: 3
+// Next ID: 4
 enum PlayerSyncedDataProperty {
+    COLLECTABLES = 3,
     ISOLATED = 1,
     MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
@@ -19,14 +20,22 @@ enum PlayerSyncedDataProperty {
 // Bridges between Pawn and JavaScript for a number of player-related settings. Changes to any of
 // these values will be reflected in the JavaScript code, and vice versa.
 class PlayerSyncedData <playerId (MAX_PLAYERS)> {
+    new m_collectables;
     new bool: m_isolated;
     new m_minigameName[32];
     new m_preferredRadioChannel[64];
 
     public reset() {
+        m_collectables = 0;
         m_isolated = false;
         m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    public inline collectables() {
+        return m_collectables;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -84,6 +93,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
     public apply(PlayerSyncedDataProperty: property, intValue, Float: floatValue, stringValue[]) {
         switch (property) {
+            case COLLECTABLES:
+                m_collectables = intValue;
+
             case ISOLATED:
                 m_isolated = !!intValue;
 

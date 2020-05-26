@@ -10,11 +10,15 @@ class ObjectManager {
     objectConstructor_ = null;
     objects_ = null;
 
+    observers_ = null;
+
     editingPlayers_ = null;
 
     constructor(objectConstructor = GameObject) {
         this.objectConstructor_ = objectConstructor;
         this.objects_ = new Map();
+
+        this.observers_ = new Set();
 
         this.editingPlayers_ = new WeakMap();
     }
@@ -52,6 +56,28 @@ class ObjectManager {
     // Returns the object with the given |objectId|, or NULL when it does not exist.
     getById(objectId) {
         return this.objects_.get(objectId) ?? null;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Observes events for the objects owned by this manager. |observer| can be added multiple
+    // times, but will receive events only once.
+    addObserver(observer) {
+        this.observers_.add(observer);
+    }
+
+    // Removes |observer| from the set of objects that will be informed about object events.
+    removeObserver(observer) {
+        this.observers_.delete(observer);
+    }
+
+    // Notifies observers about the |eventName|, passing |...args| as the argument to the method
+    // when it exists. The call will be bound to the observer's instance.
+    notifyObservers(eventName, ...args) {
+        for (let observer of this.observers_) {
+            if (observer.__proto__.hasOwnProperty(eventName))
+                observer.__proto__[eventName].call(observer, ...args);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -98,6 +124,18 @@ class ObjectManager {
                 object.rotation = new Vector(event.rx, event.ry, event.rz);
                 break;
         }
+    }
+
+    // Called when the object described in |event| has been shot by a player. Some objects respond
+    // to this, for example barrels which can explode.
+    onPlayerShootObject(event) {
+        const player = server.playerManager.getById(event.playerid);
+        const object = this.objects_.get(event.objectid);
+
+        if (!player || !object)
+            return;  // either the event is invalid, or |object| is not managed by JavaScript
+
+        this.notifyObservers('onPlayerShootObject', player, object);
     }
 
     // Called when the |player| has disconnected from the server. If they are still editing an

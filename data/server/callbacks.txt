@@ -23,6 +23,7 @@ forward OnResetPlayerWeapons(playerId);
 [Deferred] forward OnPlayerLeaveDynamicArea(playerid, areaid);
 [Deferred] forward OnPlayerPickUpDynamicPickup(playerid, pickupid);
 [Deferred] forward OnPlayerSelectDynamicObject(playerid, objectid, modelid, Float:x, Float:y, Float:z);
+[Deferred] forward OnPlayerShootDynamicObject(playerid, weaponid, objectid, Float:x, Float:y, Float:z);
 
 # SA-MP callbacks
 forward OnGameModeInit();

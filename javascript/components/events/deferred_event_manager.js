@@ -43,6 +43,10 @@ export class DeferredEventManager {
                     case 'OnPlayerSelectDynamicObject':
                         server.playerManager.onPlayerSelectObject(event);
                         break;
+                    
+                    case 'OnPlayerShootDynamicObject':
+                        server.objectManager.onPlayerShootObject(event);
+                        break;
 
                     case 'OnVehicleStreamIn':
                         server.vehicleManager.onVehicleStreamIn(event);

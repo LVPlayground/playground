@@ -30,6 +30,8 @@ export class RedBarrels extends CollectableDelegate {
         this.barrels_ = new Map();
         this.entities_ = new ScopedEntities();
         this.icons_ = new Set();
+
+        server.objectManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -86,10 +88,18 @@ export class RedBarrels extends CollectableDelegate {
             }));
         }
     }
+    
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has shot the given |object|. If this is one of their barrels, we'll
+    // consider them as having scored a point.
+    onPlayerShootObject(player, object) {}
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.objectManager.removeObserver(this);
+
         this.entities_.dispose();
         this.entities_ = null;
     }

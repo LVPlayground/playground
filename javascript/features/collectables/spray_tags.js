@@ -11,15 +11,19 @@ const kSprayTagsDataFile = 'data/collectables/spray_tags.json';
 // Implements the SprayTag functionality, where players have to find the spray tags (usually on the
 // walls) and spray them in order to collect them. Detection of the spray action is done in Pawn.
 export class SprayTags extends CollectableDelegate {
-    entities_ = null;
     manager_ = null;
+
+    entities_ = null;
+    icons_ = null;
     tags_ = null;
 
     constructor(manager) {
         super();
 
-        this.entities_ = new ScopedEntities();
         this.manager_ = manager;
+
+        this.entities_ = new ScopedEntities();
+        this.icons_ = new Set();        
         this.tags_ = new Map();
     }
 
@@ -50,7 +54,27 @@ export class SprayTags extends CollectableDelegate {
 
     // Called when the map icons for the collectable should either be shown (when |visible| is set)
     // or hidden. This is a configuration setting available to Management members.
-    refreshCollectableMapIcons(visible) {}
+    refreshCollectableMapIcons(visible, streamDistance) {
+        if ((visible && this.icons_.size) || (!visible && !this.icons_.size))
+            return;  // no change in visibility state
+
+        // Remove all created icons if |visible| has been set to false.
+        if (!visible) {
+            for (const mapIcon of this.icons_)
+                mapIcon.dispose();
+            
+            this.icons_.clear();
+            return;
+        }
+
+        // Otherwise create an icon for each of the defined spray tags.
+        for (const { position } of this.tags_.values()) {
+            this.icons_.add(this.entities_.createMapIcon({
+                type: 63,  // Pay 'n' Spray
+                position, streamDistance,
+            }));
+        }
+    }
 
     // ---------------------------------------------------------------------------------------------
 

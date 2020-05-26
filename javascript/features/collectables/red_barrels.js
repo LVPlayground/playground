@@ -16,16 +16,20 @@ export class RedBarrels extends CollectableDelegate {
     // Identifiers for the different categories of barrels.
     static kAreaLasVenturas = 'Las Venturas';
 
+    manager_ = null;
+
     barrels_ = null;
     entities_ = null;
-    manager_ = null;
+    icons_ = null;
 
     constructor(manager) {
         super();
 
+        this.manager_ = manager;
+
         this.barrels_ = new Map();
         this.entities_ = new ScopedEntities();
-        this.manager_ = manager;
+        this.icons_ = new Set();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -61,7 +65,27 @@ export class RedBarrels extends CollectableDelegate {
 
     // Called when the map icons for the collectable should either be shown (when |visible| is set)
     // or hidden. This is a configuration setting available to Management members.
-    refreshCollectableMapIcons(visible) {}
+    refreshCollectableMapIcons(visible, streamDistance) {
+        if ((visible && this.icons_.size) || (!visible && !this.icons_.size))
+            return;  // no change in visibility state
+
+        // Remove all created icons if |visible| has been set to false.
+        if (!visible) {
+            for (const mapIcon of this.icons_)
+                mapIcon.dispose();
+            
+            this.icons_.clear();
+            return;
+        }
+
+        // Otherwise create an icon for each of the defined spray tags.
+        for (const { position } of this.barrels_.values()) {
+            this.icons_.add(this.entities_.createMapIcon({
+                type: 20,  // Fire
+                position, streamDistance,
+            }));
+        }
+    }
 
     // ---------------------------------------------------------------------------------------------
 

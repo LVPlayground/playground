@@ -191,12 +191,6 @@ sprayTagCreate(Float:fPosX, Float:fPosY, Float:fPosZ, Float:fRotX, Float:fRotY, 
 //  sprayTag[iTagID][fSprayObjectID] = CreateDynamicObject(SPRAY_TAG_OBJECT, fPosX, fPosY, fPosZ, fRotX, fRotY, fRotZ, 0, 0, -1, SPRAY_TAG_STREAM_RANGE);
 
     n_SprayTagCount++;
-
-
-    // If this is a BETA test show the location of the spray tag.
-    #if BuildGamemodeInReleaseMode == 0
-        CreateDynamicMapIcon(fPosX, fPosY, fPosZ, 63, 0, 0, 0, -1, 400);
-    #endif
 }
 
 // Return the number of spray tags loaded in the server

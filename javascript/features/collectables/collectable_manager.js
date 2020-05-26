@@ -9,7 +9,7 @@ import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
 
 // Identifier of the setting that controls collectable map icon visibility.
-const kVisibilitySetting = 'playground/enable_collectable_map_icons';
+const kVisibilitySetting = 'playground/collectable_map_icons_display';
 
 // Manages player state in regards to their collectables: tracking, statistics and maintaining. Will
 // make sure that the appropriate information is available at the appropriate times.
@@ -47,6 +47,11 @@ export class CollectableManager {
         this.settings_().addSettingObserver(
             kVisibilitySetting,
             this, CollectableManager.prototype.onMapIconVisibilityChange.bind(this));
+    }
+
+    initialize() {
+        for (const delegate of this.delegates_.values())
+            delegate.initialize();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -103,14 +108,17 @@ export class CollectableManager {
 
         // Create all the collectables on the map for the given |player|.
         for (const delegate of this.delegates_.values())
-            delegate.refreshCollectablesForPlayer(player);
+            delegate.refreshCollectablesForPlayer(player, new Set());
     }
 
     // Called when visibility of collectables on the mini map has changed. The |setting| may be
     // NULL when called during feature initialization, so do not depend on it.
     onMapIconVisibilityChange(setting, visible) {
+        const streamDistance =
+            this.settings_().getValue('playground/collectable_map_icons_distance');
+
         for (const delegate of this.delegates_.values())
-            delegate.refreshCollectableMapIcons(visible, new Set());
+            delegate.refreshCollectableMapIcons(visible, streamDistance);
     }
 
     // ---------------------------------------------------------------------------------------------

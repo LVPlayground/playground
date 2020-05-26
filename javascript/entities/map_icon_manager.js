@@ -15,12 +15,15 @@ export class MapIconManager {
         this.icons_ = new Set();
     }
 
+    get count() { return this.icons_.size; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Creates a new map icon with the given options. Most are optional, only |position| (in 3D
     // space) and |type| are required. Constants are available in the MapIcon class.
     createMapIcon({ position, type, color = null, style = null, interiors = null, interiorId = -1,
-                    virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1 } = {}) {
+                    virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1,
+                    streamDistance = null } = {}) {
         const mapIcon = new this.iconConstructor_(this);
 
         // Initializes the |mapIcon| with all the configuration passed to the manager.
@@ -30,7 +33,7 @@ export class MapIconManager {
             color: color ?? 0,
             style: style ?? MapIcon.kStyleLocal,
 
-            streamDistance: 200.0,
+            streamDistance: streamDistance ?? 200.0,
 
             interiors: interiors ?? [ interiorId ],
             virtualWorlds: virtualWorlds ?? [ virtualWorld ],

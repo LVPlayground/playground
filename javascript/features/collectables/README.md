@@ -2,10 +2,16 @@
 There are various _things_ that can be collected on Las Venturas Playground, in a variety of ways,
 all of which are implemented through this feature.
 
-## Multiple rounds
+### Multiple rounds
 Collectables can be collected in multiple _rounds_: this enables players to restart again once they
 have found them all, without affecting the benefits granted by locating them in the first place, nor
 the achievements they've earned as part of this.
+
+### Visualizing the collectables
+Management members have the ability to enable the `collectable_map_icons_display` setting in the
+`Playground` group via `/lvp settings`. This will create map icons for all of the collectables, with
+graphics appropriate for the kind of collectable. There deliberately is no mechanism for displaying
+positions of the collectables _you have not yet collected_, as that would not be fair.
 
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to

@@ -9,9 +9,12 @@ import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 // detectors are responsible for detecting it, after which it ends up here for decision making and
 // distribution of the knowledge to in-game administrators.
 export class AbuseMonitor {
-    constructor(announce) {
+    constructor(announce, settings) {
         this.announce_ = announce;
         this.database_ = new AbuseDatabase();
+        this.settings_ = settings;
+
+        provideNative('ReportAbuse', 'iss', AbuseMonitor.prototype.reportAbusePawn.bind(this));
     }
 
     // Reports abuse by the given |player|, indicating that they've been observed exercising the
@@ -37,9 +40,28 @@ export class AbuseMonitor {
                 break;
         }
 
-        if (!server.isTest())
+        if (!server.isTest() && evidence)
             this.database_.storeEvidence({ player, detectorName, certainty, evidence });
     }
 
-    dispose() {}
+    // Called when abuse is being reported from Pawn, by the |playerid|.
+    reportAbusePawn(playerid, detectorName, certainty) {
+        const player = server.playerManager.getById(playerid);
+        if (!player)
+            return 0;  // invalid |playerid| received
+        
+        // The setting allows Pawn-based abuse detectors to be muted. We still output information to
+        // the console, so that they can be investigated after the fact.
+        if (!this.settings_().getValue('abuse/pawn_based_detectors')) {
+            console.log(`[abuse] Detected ${player.name} for ${detectorName}: ${certainty}.`);
+            return 0;
+        }
+
+        this.reportAbuse(player, detectorName, certainty);
+        return 1;
+    }
+
+    dispose() {
+        provideNative('ReportAbuse', 'iss', (playerid, detectorName, certainty) => 0);
+    }
 }

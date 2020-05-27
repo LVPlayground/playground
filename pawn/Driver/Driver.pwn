@@ -4,6 +4,9 @@
 
 // Natives provided by the PlaygroundJS plugin.
 native ProcessSprayTagForPlayer(playerid);
+native ReportAbuse(playerid, detectorName[], certainty[]);
+
+#include "Driver/Abuse/AimDetection.pwn"
 
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
@@ -117,6 +120,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
     return 1;
+}
+
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
+#if Feature::EnableServerSideWeaponConfig == 0
+    DetectAimbotOnWeaponShot(playerid, hittype, hitid);
+#endif
+    return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }
 
 // Zone management, powered by the streamer.

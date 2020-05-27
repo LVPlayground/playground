@@ -8,6 +8,9 @@ EchoMessage
 # native ProcessSprayTagForPlayer(playerid);
 ProcessSprayTagForPlayer
 
+# native ReportAbuse(playerid, detectorName[], certainty[]);
+ReportAbuse
+
 # native SetIsRegistered(playerid, bool: isRegistered);
 SetIsRegistered
 

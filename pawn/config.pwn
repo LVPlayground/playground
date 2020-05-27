@@ -34,7 +34,7 @@ class Feature {
     //
     // https://github.com/oscar-broman/samp-weapon-config
     //
-    public const EnableServerSideWeaponConfig = 1;
+    public const EnableServerSideWeaponConfig = 0;
 
     /** **************************************************************************************** **/
 };

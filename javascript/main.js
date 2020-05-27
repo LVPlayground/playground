@@ -51,6 +51,15 @@ testRunner.run('.*\.test\.js').then(time => {
         'settings',
 
         // -----------------------------------------------------------------------------------------
+        // Low-level features.
+        //
+        // May only depend on each other and foundational features, and are expected to be depended
+        // on by various other features because of the functionality they provide.
+        // -----------------------------------------------------------------------------------------
+
+        'collectables',
+
+        // -----------------------------------------------------------------------------------------
         // Regular features
         // -----------------------------------------------------------------------------------------
 

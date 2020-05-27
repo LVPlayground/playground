@@ -7,6 +7,7 @@ import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import Menu from 'components/menu/menu.js';
 import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
+import { kBenefitQuickVehicleAccess } from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
@@ -30,22 +31,18 @@ const QuickVehicleCommands = {
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, abuse, announce, playground) {
+    constructor(manager, abuse, announce, collectables, playground) {
         this.manager_ = manager;
 
         this.abuse_ = abuse;
         this.announce_ = announce;
+        this.collectables_ = collectables;
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
             this, VehicleCommands.prototype.registerTrackedCommands);
 
         this.registerTrackedCommands(playground());
-
-        // Function that checks whether the |player| has sprayed all tags. Will be overridden by
-        // tests to prevent accidentially hitting the Pawn code.
-        this.hasFinishedSprayTagCollection_ = player =>
-            !!pawnInvoke('OnHasFinishedSprayTagCollection', 'i', player.id);
 
         // Command: /lock
         server.commandManager.buildCommand('lock')
@@ -257,9 +254,9 @@ class VehicleCommands {
         // TODO: This should just be an alias for `/v [modelId]` when the spray tag requirement
         // has been dropped, or at least changed into a progressive model.
 
-        const allowed = this.playground_().canAccessCommand(player, 'v') ||
-                        await Promise.resolve().then(() =>
-                            this.hasFinishedSprayTagCollection_(player));
+        const allowed =
+            this.playground_().canAccessCommand(player, 'v') ||
+            this.collectables_().isPlayerEligibleForBenefit(player, kBenefitQuickVehicleAccess);
 
         if (!allowed) {
             player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);

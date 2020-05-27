@@ -30,7 +30,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         playground.access.addException('v', gunther);
 
         commands = vehicles.commands_;
-        commands.hasFinishedSprayTagCollection_ = player => false;
 
         manager = vehicles.manager_;
         manager.reportVehicleDestroyed_ = vehicleId => false;
@@ -200,7 +199,13 @@ describe('VehicleCommands', (it, beforeEach) => {
             finishedSprayTagCollection = enabled;
 
         // Now make sure that we're in control of the spray tag access check.
-        commands.hasFinishedSprayTagCollection_ = player => finishedSprayTagCollection;
+        commands.collectables_ = () => {
+            return new class {
+                isPlayerEligibleForBenefit(player, benefit) {
+                    return finishedSprayTagCollection;
+                }
+            };
+        };
 
         // (1) Players who can neither use `/v`, nor have all spray tags, can use these commands.
         {

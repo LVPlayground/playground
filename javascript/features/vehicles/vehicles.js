@@ -20,6 +20,9 @@ class Vehicles extends Feature {
         // Used for making announcements to administrators.
         const announce = this.defineDependency('announce');
 
+        // Used to determine whether players get access to special vehicle goodies.
+        const collectables = this.defineDependency('collectables');
+
         // Used to add commands and vehicle access to the `/lvp access` console.
         const playground = this.defineDependency('playground');
 
@@ -31,7 +34,8 @@ class Vehicles extends Feature {
 
         this.natives_ = new VehicleNatives(this.manager_);
 
-        this.commands_ = new VehicleCommands(this.manager_, abuse, announce, playground);
+        this.commands_ = new VehicleCommands(
+            this.manager_, abuse, announce, collectables, playground);
     }
 
     dispose() {

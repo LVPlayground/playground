@@ -17,14 +17,9 @@ class KilltimeManager {
         this.callbacks_ = new ScopedCallbacks();
         this.weapon_ = null;
 
-        // Translates OnPawnEventName to respectively `onPawnEventName` or `pawneventname`.
-        const toMethodName = name => name.charAt(0).toLowerCase() + name.slice(1);
-        const toEventName = name => name.slice(2).toLowerCase();
-
-        [
-            'OnPlayerDeath',  // { playerid, killerid, reason }
-        ].forEach(name =>
-            this.callbacks_.addEventListener(toEventName(name), this.__proto__[toMethodName(name)].bind(this)));
+    
+        this.callbacks_.addEventListener(
+            'playerdeath', KilltimeManager.prototype.onPlayerDeath.bind(this));
         this.callbacks_.addEventListener(
             'playerspawn', KilltimeManager.prototype.onPlayerSpawn.bind(this));
     }
@@ -91,7 +86,7 @@ class KilltimeManager {
             return;  // invalid |player| given for the |event|
 
             
-        if(this.weapon_ === null || this.weapon_ === undefined)
+        if(!this.validWeapons.includes(this.weapon_))
             return;
 
         this.givePlayerWeapon(player);
@@ -131,9 +126,9 @@ class KilltimeManager {
 
     }
 
-    //Gives all currently online players the weapon
+    // Remove the weapons again from the players.
     removePlayerKillTimeWeapons() {        
-        if(this.weapon_ === null || this.weapon_ === undefined)
+        if(!this.validWeapons.includes(this.weapon_))
             return;
 
         server.playerManager.forEach(player => {

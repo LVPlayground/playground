@@ -86,7 +86,7 @@ export class RedBarrels extends CollectableDelegate {
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, collected) {
         if (this.playerBarrels_.has(player))
-            this.clearCollectablesForPlayer();
+            this.clearCollectablesForPlayer(player);
         
         const barrels = new Map();
         for (const [ barrelId, { area, position, rotation } ] of this.barrels_) {

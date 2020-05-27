@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
@@ -158,10 +159,28 @@ export class SprayTags extends CollectableDelegate {
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
-            console.log(`Tag: [${position.x}, ${position.y}], Player: [${playerPosition.x}, ${playerPosition.y}]`)
-            console.log(`Angle: [${position.angleTo(playerPosition)} or ${playerPosition.angleTo(position)}]`)
-            console.log(`Rotation: [${playerRotation}]`);
-            
+            // TODO: Show some decent UI to tell the player they've collected this spray tag.
+            player.sendMessage('You have shot the barrel with Id: ' + barrelId);
+    
+            // Mark the collectable as having been collected, updating the |player|'s stats.
+            this.manager_.markCollectableAsCollected(
+                player, CollectableDatabase.kSprayTag, sprayTagId);
+
+            // Delete the |tag|, since the player will no longer be needing it. Instead, we create
+            // a new tag in the same position with the |kSprayTagTaggedModelId|.
+            tag.dispose();
+
+            const completedTag = this.entities_.createObject({
+                modelId: kSprayTagTaggedModelId,
+                position, rotation,
+
+                interiorId: 0,  // main world
+                virtualWorld: 0,  // main world
+                playerId: player.id,
+            });
+
+            tags.set(completedTag, sprayTagId);
+            tags.delete(tag);
             break;
         }
     }

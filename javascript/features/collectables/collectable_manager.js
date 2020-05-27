@@ -78,6 +78,26 @@ export class CollectableManager {
         return count;
     }
 
+    // Marks the |collectableId| of the given |type| as having been collected by the |player|. This
+    // will take immediate effect within the game, and will be stored in the database as well.
+    markCollectableAsCollected(player, type, collectableId) {
+        if (!this.statistics_.has(player))
+            return;  // the |player|'s data hasn't loaded yet
+        
+        const collectables = this.statistics_.get(player);
+        if (!collectables.has(type))
+            throw new Error(`Invalid collectable type given: ${type}`);
+        
+        const data = collectables.get(type);
+        if (data.collectedRound.has(collectableId))
+            throw new Error(`The player (${player}) already collected the ${type} type.`);
+
+        data.collected.add(collectableId);
+        data.collectedRound.add(collectableId);
+
+        return this.database_.markCollectableForPlayer(player, type, data.round, collectableId);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has identified to their account, and the associated information is

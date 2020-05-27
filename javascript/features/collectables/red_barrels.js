@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 import { Vector } from 'base/vector.js';
@@ -151,8 +152,11 @@ export class RedBarrels extends CollectableDelegate {
         
         const barrelId = barrels.get(object);
 
-        // TODO: Properly mark the barrel as having been collected.
+        // TODO: Show some decent UI to tell the player they've collected this barrel.
         player.sendMessage('You have shot the barrel with Id: ' + barrelId);
+    
+        // Mark the collectable as having been collected, updating the |player|'s stats.
+        this.manager_.markCollectableAsCollected(player, CollectableDatabase.kRedBarrel, barrelId);
 
         // Dispose of the barrel's object, and delete it from any and all object tracking that's
         // remaining in this class. It won't be needed anymore.

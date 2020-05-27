@@ -10,6 +10,9 @@ import { Vector } from 'base/vector.js';
 // categorized per area, which are static properties on the RedBarrels class.
 const kBarrelDataFile = 'data/collectables/red_barrels.json';
 
+// Object Id that's been assigned to barrels throughout the map.
+const kBarrelObjectId = 1225;
+
 // Implements the Red Barrels functionality, where players have to shoot the red barrels scattered
 // across the map in an effort to clean up all those dangerous explosives.
 export class RedBarrels extends CollectableDelegate {
@@ -22,6 +25,9 @@ export class RedBarrels extends CollectableDelegate {
     entities_ = null;
     icons_ = null;
 
+    // Map from |player| to set of GameObject instances for all their personal barrels.
+    playerBarrels_ = null;
+
     constructor(manager) {
         super();
 
@@ -30,6 +36,8 @@ export class RedBarrels extends CollectableDelegate {
         this.barrels_ = new Map();
         this.entities_ = new ScopedEntities();
         this.icons_ = new Set();
+
+        this.playerBarrels_ = new Map();
 
         server.objectManager.addObserver(this);
     }
@@ -60,10 +68,47 @@ export class RedBarrels extends CollectableDelegate {
         }
     }
 
+    // Clears all the collectables for the given |player|, generally because they've left the server
+    // or, for some other reason, should not participate in the game anymore.
+    clearCollectablesForPlayer(player) {
+        if (!this.playerBarrels_.has(player))
+            return;  // the |player| already collected all the red barrels
+        
+        const barrels = this.playerBarrels_.get(player);
+        for (const barrel of barrels.keys())
+            barrel.dispose();
+        
+        this.playerBarrels_.delete(player);
+    }
+
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, collected) {}
+    refreshCollectablesForPlayer(player, collected) {
+        if (this.playerBarrels_.has(player))
+            this.clearCollectablesForPlayer();
+        
+        const barrels = new Map();
+        for (const [ barrelId, { area, position, rotation } ] of this.barrels_) {
+            if (collected.has(barrelId))
+                continue;  // the |player| has already collected this barrel
+
+            // TODO: Consider the |area| when barrels are all over the map.
+
+            const barrel = this.entities_.createObject({
+                modelId: kBarrelObjectId,
+                position, rotation,
+
+                interiorId: 0,  // main world
+                virtualWorld: 0,  // main world
+                playerId: player.id,
+            });
+
+            barrels.set(barrel, barrelId);
+        }
+
+        this.playerBarrels_.set(player, barrels);
+    }
 
     // Called when the map icons for the collectable should either be shown (when |visible| is set)
     // or hidden. This is a configuration setting available to Management members.
@@ -93,7 +138,28 @@ export class RedBarrels extends CollectableDelegate {
 
     // Called when the |player| has shot the given |object|. If this is one of their barrels, we'll
     // consider them as having scored a point.
-    onPlayerShootObject(player, object) {}
+    onPlayerShootObject(player, object) {
+        if (!this.playerBarrels_.has(player))
+            return;  // the |player| does not have any barrels
+        
+        const barrels = this.playerBarrels_.get(player);
+        if (!barrels.has(object))
+            return;  // it's not one of our barrels that the player shot
+        
+        const barrelId = barrels.get(object);
+
+        // TODO: Properly mark the barrel as having been collected.
+        player.sendMessage('You have shot the barrel with Id: ' + barrelId);
+
+        // Dispose of the barrel's object, and delete it from any and all object tracking that's
+        // remaining in this class. It won't be needed anymore.
+        object.dispose();
+
+        barrels.delete(object);
+
+        if (!barrels.size)
+            this.playerBarrels_.delete(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

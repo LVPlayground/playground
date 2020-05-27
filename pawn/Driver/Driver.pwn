@@ -2,6 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Natives provided by the PlaygroundJS plugin.
+native ProcessSprayTagForPlayer(playerid);
+
+// Number of milliseconds a player has to be spraying in order to collect a spray tag.
+new const kSprayTagTimeMs = 2000;
+
+// Keeps track of when each player started spraying the spray tag, to determine total duration.
+new g_sprayTagStartTime[MAX_PLAYERS];
+
 // Returns whether the given |modelId| is a remote controllable vehicle.
 IsModelRemoteControlVehicle(modelId) {
     switch (modelId) {
@@ -18,6 +27,13 @@ EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
 
     GetPlayerPos(playerId, position[0], position[1], position[2]);
     SetPlayerPos(playerId, position[0], position[1], position[2] + offsetZ);
+}
+
+public OnPlayerConnect(playerid) {
+    g_sprayTagStartTime[playerid] = 0;
+
+    // Proceed with legacy processing.
+    return PlayerEvents(playerid)->onPlayerConnect();
 }
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
@@ -77,6 +93,25 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 PutPlayerInVehicle(playerid, candidateVehicleId, /* driver= */ 0);
                 return 1;
             }
+        }
+    }
+
+    // Driver for the spray tag feature, where a player has to spray tags in order to collect them.
+    // This is implemented in Pawn because it requires tracking weapon interaction times.
+    if (GetPlayerWeapon(playerid) == WEAPON_SPRAYCAN &&
+            GetPlayerVirtualWorld(playerid) == 0 &&
+            GetPlayerState(playerid) == PLAYER_STATE_ONFOOT &&
+            GetPlayerWeaponState(playerid) != WEAPONSTATE_RELOADING) {
+        // If the |player| is currently is pressing the <fire> key, they've started spraying. Record
+        // the time. If they've just released the <fire> key, and were spraying for a decent amount
+        // of time, it might be time to track that they've been spraying something.
+        if(PRESSED(KEY_FIRE)) {
+            g_sprayTagStartTime[playerid] = GetTickCount();
+        } else if (RELEASED(KEY_FIRE) && g_sprayTagStartTime[playerid] > 0) {
+            if ((GetTickCount() - g_sprayTagStartTime[playerid]) > kSprayTagTimeMs) {
+                ProcessSprayTagForPlayer(playerid);
+            }
+            g_sprayTagStartTime[playerid] = 0;
         }
     }
 

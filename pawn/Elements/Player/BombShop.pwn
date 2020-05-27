@@ -98,7 +98,7 @@ CBomb__CheckPlayer(i)
 
             // Wait, we only allow players with experience to access the bombshop...
             #if BuildGamemodeInReleaseMode == 1
-                if (sprayTagGetPlayerCount(i) < MIN_SPRAY_TAGS) {
+                if (PlayerSyncedData(i)->collectables() < MIN_SPRAY_TAGS) {
                     ShowPlayerBox(i, "You need to have sprayed at least %d spray tags to unlock the bombshop.", MIN_SPRAY_TAGS);
                     RemovePlayerFromBombShop(i);
                     return 1;

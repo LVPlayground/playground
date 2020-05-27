@@ -157,9 +157,9 @@ class Statistics {
             fightclubDeaths, fightclubKDRatio);
 
         format(dialogMessage, sizeof(dialogMessage),
-            "%s{B4CCE8}Achievements: {FF8E02}%d / %d\r\n{B4CCE8}Spraytags: {FF8E02}%d / %d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reaction Tests: {FF8E02}%d\r\n",
-            dialogMessage, achievementCount, TotalAchievements-UnavailableTotalAchievements, sprayTagGetPlayerCount(playerId),
-            n_SprayTagCount, WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
+            "%s{B4CCE8}Achievements: {FF8E02}%d / %d\r\n{B4CCE8}Collectables: {FF8E02}%d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reaction Tests: {FF8E02}%d\r\n",
+            dialogMessage, achievementCount, TotalAchievements-UnavailableTotalAchievements, PlayerSyncedData(playerId)->collectables(),
+            WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
 
         format(dialogMessage, sizeof(dialogMessage),
             "%s{B4CCE8}Carbombs detonated: {FF8E02}%d",

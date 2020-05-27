@@ -153,9 +153,7 @@
 #include Elements/Player/Ramping.pwn
 #include Elements/Player/Balloon.pwn
 #include Elements/Player/Tow.pwn
-
 #include Elements/Player/WantedLevel.pwn
-#include Elements/Player/SprayTags.pwn
 
 // Player connections
 #include Elements/Player/Connections/SaveInfo.pwn

@@ -5,6 +5,9 @@
 # native EchoMessage(tag[], format[], message[]);
 EchoMessage
 
+# native ProcessSprayTagForPlayer(playerid);
+ProcessSprayTagForPlayer
+
 # native SetIsRegistered(playerid, bool: isRegistered);
 SetIsRegistered
 

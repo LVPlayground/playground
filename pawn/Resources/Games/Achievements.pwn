@@ -203,8 +203,9 @@ CAchieve__DetonateBomb(playerid) {
     CAchieve__Achieved(playerid, BOMB1);
 }
 
-CAchieve__SprayTag(playerid) {
-    switch (sprayTagGetPlayerCount(playerid)) {
+// TODO: Re-activate this functionality
+stock CAchieve__SprayTag(playerid) {
+    switch (PlayerSyncedData(playerid)->collectables()) {
         case 15: CAchieve__Achieved(playerid, SPRAY15);
         case 30: CAchieve__Achieved(playerid, SPRAY30);
         case 60: CAchieve__Achieved(playerid, SPRAY60);

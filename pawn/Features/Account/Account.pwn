@@ -184,8 +184,6 @@ class Account <playerId (MAX_PLAYERS)> {
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
         CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 0 /* undercover */);
-
-        sprayTagLoadSprayedTags(playerId);
     }
 
     /**

@@ -30,7 +30,6 @@
     <DiskObject>\Elements\Player\playerHandler.pwn</DiskObject>
     <DiskObject>\Elements\Player\Ramping.pwn</DiskObject>
     <DiskObject>\Elements\Player\SpawnPos.pwn</DiskObject>
-    <DiskObject>\Elements\Player\SprayTags.pwn</DiskObject>
     <DiskObject>\Elements\Player\Taxi.pwn</DiskObject>
     <DiskObject>\Elements\Player\Tow.pwn</DiskObject>
     <DiskObject>\Elements\Player\WantedLevel.pwn</DiskObject>

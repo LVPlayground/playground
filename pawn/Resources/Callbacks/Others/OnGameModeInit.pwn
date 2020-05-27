@@ -54,7 +54,6 @@ public OnGameModeInit() {
 #if Feature::DisableFights == 0
     rwResetData(true);              // RWTW
 #endif
-    sprayTagInitialize();           // Spray tag handler
     InitHotAirBalloon();
     BagCash__Initialize();
 

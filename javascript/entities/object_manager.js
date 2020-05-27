@@ -26,6 +26,11 @@ class ObjectManager {
     // Gets the number of objects currently created on the server.
     get count() { return this.objects_.size; }
 
+    // Returns an iterator that can be used to iterate over the created objects.
+    [Symbol.iterator]() { return this.objects_.values(); }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Creates a new object with the given options. The options are based on the available settings
     // as part of the Object Streamer, and some can be changed after the object's creation.
     createObject({ modelId, position, rotation, interiors = null, interiorId = -1,

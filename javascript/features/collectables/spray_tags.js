@@ -15,8 +15,8 @@ const kSprayTargetDistance = 2;
 const kSprayTargetMaximumDistance = 3;
 
 // Model Ids for the spray tags, depending on whether they're tagged or untagged.
-const kSprayTagTaggedModelId = 18659;
-const kSprayTagUntaggedModelId = 18664;
+export const kSprayTagTaggedModelId = 18659;
+export const kSprayTagUntaggedModelId = 18664;
 
 // Implements the SprayTag functionality, where players have to find the spray tags (usually on the
 // walls) and spray them in order to collect them. Detection of the spray action is done in Pawn.
@@ -155,12 +155,12 @@ export class SprayTags extends CollectableDelegate {
             if (tag.modelId === kSprayTagTaggedModelId)
                 continue;  // this |tag| has already been collected
             
-            const { position } = this.tags_.get(sprayTagId);
+            const { position, rotation } = this.tags_.get(sprayTagId);
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
             // TODO: Show some decent UI to tell the player they've collected this spray tag.
-            player.sendMessage('You have shot the barrel with Id: ' + barrelId);
+            player.sendMessage('You have collected the spray tag with Id: ' + sprayTagId);
     
             // Mark the collectable as having been collected, updating the |player|'s stats.
             this.manager_.markCollectableAsCollected(

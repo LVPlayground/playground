@@ -495,4 +495,39 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(result.length, 1);
         assert.includes(result[0], 'https://profile.sa-mp.nl/%5BBB%5DRicky92');
     });
+
+    it('should be able to highlight when players are currently online', async (assert) => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+        gunther.identify({ userId: 42 });
+
+        const differentNameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!players [BB]Ricky92',
+        });
+
+        assert.equal(differentNameResult.length, 1);
+        assert.includes(
+            differentNameResult[0], '[BB]Ricky92 is currently playing on the server as Gunther!');
+
+        gunther.name = '[BB]Ricky92';
+        
+        const sameNameResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!players [BB]Ricky92',
+        });
+
+        assert.equal(sameNameResult.length, 1);
+        assert.includes(sameNameResult[0], '[BB]Ricky92 is currently playing on the server!');
+
+        gunther.setUndercover(true);
+
+        const undercoverResult = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!players [BB]Ricky92',
+        });
+
+        assert.equal(undercoverResult.length, 1);
+        assert.doesNotInclude(undercoverResult[0], 'is currently playing on the server');
+
+    });
 });

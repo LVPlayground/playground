@@ -477,8 +477,30 @@ export class AccountNuwaniCommands {
             deathmatchFormat = killFormat + join + deathFormat + ratio + '. ';
         }
 
+        let onlinePlayer = null;
+
+        // (4) Determine if the player is currently connected to the server.
+        for (const player of server.playerManager) {
+            if (!player.account.isIdentified() || player.account.userId !== summary.user_id)
+                continue;
+            
+            if (player.isUndercover())
+                continue;  // avoid leaking details of undercover administrators
+
+            onlinePlayer = player;
+        }
+
         // (4) Format the information about when they were last seen.
-        if (summary.last_seen) {
+        if (onlinePlayer) {
+            params.push(nickname);
+
+            if (nickname === onlinePlayer.name) {
+                recencyFormat = `%s is currently playing on the server!`;
+            } else {
+                recencyFormat = `%s is currently playing on the server as %s!`;
+                params.push(onlinePlayer.name);
+            }
+        } else if (summary.last_seen) {
             const lastSeenText = fromNow({ date: new Date(summary.last_seen) });
 
             recencyFormat = `%s was last seen online ${lastSeenText}. `;

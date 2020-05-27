@@ -36,6 +36,7 @@ export class MockAccountDatabase extends AccountDatabase {
             return null;
 
         return {
+            user_id: 42,
             username: this.summary.username ?? nickname,
             level: this.summary.level ?? 'Management',
             is_vip: this.summary.vip ?? true,

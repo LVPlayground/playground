@@ -44,6 +44,7 @@ const PLAYER_HASHED_PASSWORD_QUERY = `
 // Query to retrieve the necessary information to display a player summary message.
 const PLAYER_SUMMARY_QUERY = `
     SELECT
+        users.user_id,
         users.username,
         users.level,
         users.is_vip,

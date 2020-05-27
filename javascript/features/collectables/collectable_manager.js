@@ -25,7 +25,7 @@ export class CollectableManager {
                                          : new CollectableDatabase();
 
         this.delegates_ = new Map([
-            [ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
+            //[ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
         ]);
 

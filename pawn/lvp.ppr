@@ -347,7 +347,7 @@
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
     <DiskObject>\Driver\Abuse\</DiskObject>
-    <DiskObject>\Driver\Abuse\AimDetection.pwn</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

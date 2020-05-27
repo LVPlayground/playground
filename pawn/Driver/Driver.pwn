@@ -6,7 +6,7 @@
 native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
 
-#include "Driver/Abuse/AimDetection.pwn"
+#include "Driver/Abuse/WeaponShotDetection.pwn"
 
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
@@ -33,6 +33,7 @@ EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
 }
 
 public OnPlayerConnect(playerid) {
+    g_aimbotSuspicionCount[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
 
     // Proceed with legacy processing.
@@ -124,7 +125,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
 #if Feature::EnableServerSideWeaponConfig == 0
-    DetectAimbotOnWeaponShot(playerid, hittype, hitid);
+    DetectAbuseOnWeaponShot(playerid, hittype, hitid);
 #endif
     return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }

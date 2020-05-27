@@ -8,6 +8,10 @@ export class CollectableDelegate {
     // Called when the collectables have to be initialized.
     initialize() {}
 
+    // Clears all the collectables for the given |player|, generally because they've left the server
+    // or, for some other reason, should not participate in the game anymore.
+    clearCollectablesForPlayer(player) {}
+
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.

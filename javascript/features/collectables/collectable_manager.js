@@ -121,6 +121,13 @@ export class CollectableManager {
             delegate.refreshCollectableMapIcons(visible, streamDistance);
     }
 
+    // Called when the |player| disconnects from the server. All collectables will be removed, as
+    // most involve per-player objects rather than global ones.
+    onPlayerDisconnect(player) {
+        for (const delegate of this.delegates_.values())
+            delegate.clearCollectablesForPlayer(player);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

@@ -79,6 +79,9 @@ export class RedBarrels extends CollectableDelegate {
             barrel.dispose();
         
         this.playerBarrels_.delete(player);
+
+        // Prune the scoped entities to get rid of references to deleted objects.
+        this.entities_.prune();
     }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined

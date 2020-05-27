@@ -302,6 +302,32 @@ class ScopedEntities {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Prunes all disconnected entities from this ScopedEntities instance. Useful in cases where
+    // there is a lot of churn in the entities going about, to not keep too many objects alive.
+    prune() {
+        const entitySets = [
+            this.actors_,
+            this.areas_,
+            this.mapIcons_,
+            this.npcs_,
+            this.objects_,
+            this.pickups_,
+            this.textLabels_,
+            this.vehicles_,
+        ];
+
+        for (const entities of entitySets) {
+            for (const entity of entities) {
+                if (entity.isConnected())
+                    continue;
+                
+                entities.delete(entity);
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Disposes of all entities that were created through this ScopedEntities instance. Remaining
     // references to the entity objects will indicate that they're not connected anymore.
     dispose() {

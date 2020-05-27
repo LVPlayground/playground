@@ -366,4 +366,26 @@ describe('ScopedEntities', it => {
         assert.isFalse(rectangle.isConnected());
         assert.isFalse(sphere.isConnected());
     });
+
+    it('is able to prune objects maintained within the ScopedEntities', assert => {
+        const entities = new ScopedEntities();
+
+        const actor = entities.createActor({ modelId: 121, position: new Vector(12, 13, 14) });
+        assert.isNotNull(actor);
+
+        assert.isTrue(entities.hasActor(actor));
+        assert.isTrue(actor.isConnected());
+
+        actor.dispose();
+
+        assert.isTrue(entities.hasActor(actor));
+        assert.isFalse(actor.isConnected());
+
+        entities.prune();
+
+        assert.isFalse(entities.hasActor(actor));
+        assert.isFalse(actor.isConnected());
+
+        entities.dispose();
+    });
 });

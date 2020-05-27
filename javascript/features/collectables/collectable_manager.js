@@ -37,9 +37,6 @@ export class CollectableManager {
         this.settings_.addReloadObserver(
             this, CollectableManager.prototype.initializeSettingObserver.bind(this));
         
-        this.onMapIconVisibilityChange(null, settings().getValue(kVisibilitySetting));
-        this.initializeSettingObserver();
-        
         server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
@@ -50,8 +47,12 @@ export class CollectableManager {
     }
 
     initialize() {
+        this.initializeSettingObserver();
+
         for (const delegate of this.delegates_.values())
             delegate.initialize();
+        
+        this.onMapIconVisibilityChange(null, this.settings_().getValue(kVisibilitySetting));
     }
 
     // ---------------------------------------------------------------------------------------------

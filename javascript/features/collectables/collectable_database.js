@@ -43,7 +43,7 @@ export class CollectableDatabase {
                 {
                     collected: new Set(),
                     collectedRound: new Set(),
-                    round: null,
+                    round: 1,
                 }
             ],
             [
@@ -51,7 +51,7 @@ export class CollectableDatabase {
                 {
                     collected: new Set(),
                     collectedRound: new Set(),
-                    round: null,
+                    round: 1,
                 }
             ]
         ]);
@@ -62,9 +62,8 @@ export class CollectableDatabase {
                     continue;  // ignore data we do not recognise
 
                 const data = collectables.get(row.collectable_type);
-                if (!data.round)
-                    data.round = row.collectable_round;
                 
+                data.round = Math.max(data.round, row.collectable_round);
                 if (data.round === row.collectable_round)
                     data.collectedRound.add(row.collectable_id);
 
@@ -82,6 +81,6 @@ export class CollectableDatabase {
     // Marks the given |collectableId| of the given |type| as found for the given |player|.
     async markCollectableForPlayer(player, type, round, collectableId) {
         await server.database.query(
-            MARK_COLLECTABLE_QUERY, player.account.Id, type, round, collectableId);
+            MARK_COLLECTABLE_QUERY, player.account.userId, type, round, collectableId);
     }
 }

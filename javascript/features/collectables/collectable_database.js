@@ -32,6 +32,7 @@ export class CollectableDatabase {
     // Types of collectables that are known to the database.
     static kSprayTag = 0;
     static kRedBarrel = 1;
+    static kAchievement = 2;
 
     // Loads the collectables for the given |player|. They are grouped by the kind of collectable,
     // and returned as a structure containing { collected<Set>, collectedRound<Set>, round }.

@@ -13,6 +13,12 @@ Management members have the ability to enable the `collectable_map_icons_display
 graphics appropriate for the kind of collectable. There deliberately is no mechanism for displaying
 positions of the collectables _you have not yet collected_, as that would not be fair.
 
+## Series: Achievements
+Players can earn achievements by proving themselves in a variety of ways on Las Venturas Playground,
+from excessive killing sprees to quick calculations and shooting explosive barrels. The actual
+achievements are defined in [achievements.js](achievements.js), and are granted by code throughout
+our system.
+
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to
 avoid any incidents. This is a minigame where players have to find all the explosive barrels

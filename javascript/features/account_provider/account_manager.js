@@ -38,7 +38,7 @@ export class AccountManager {
             player.account.isRegistered_ = registered;
         
         if (!registered)
-            wait(0).then(() => dispatchEvent('playerguestsession', { playerid }));
+            server.playerManager.onPlayerGuestSession(player);
 
         return 0;
     }
@@ -80,8 +80,7 @@ export class AccountManager {
             return;  // the |player| does not exist (anymore)
         
         server.playerManager.onPlayerNameChange(player, /* update= */ true);
-
-        wait(0).then(() => dispatchEvent('playerguestsession', { playerid: player.id }));
+        server.playerManager.onPlayerGuestSession(player);
     }
 
     // Called when the |player| has disconnected from the server.

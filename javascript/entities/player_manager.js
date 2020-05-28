@@ -118,6 +118,8 @@ class PlayerManager {
 
             if ('onPlayerLogin' in observer && player.account.isRegistered())
                 observer.onPlayerLogin(player, {});
+            else if ('onPlayerGuestSession' in observer && !player.account.isRegistered())
+                observer.onPlayerGuestSession(player);
         }
     }
 
@@ -199,6 +201,11 @@ class PlayerManager {
             player.updateName();
         
         this.notifyObservers('onPlayerNameChange', player);
+    }
+
+    // Called when the |player| does not have an account, and is starting to play after all.
+    onPlayerGuestSession(player) {
+        this.notifyObservers('onPlayerGuestSession', player);
     }
 
     // Called when a player logs in to their account. This marks availability of their user data

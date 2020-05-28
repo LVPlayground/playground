@@ -34,11 +34,9 @@ export class CollectableDatabase {
     static kRedBarrel = 1;
     static kAchievement = 2;
 
-    // Loads the collectables for the given |player|. They are grouped by the kind of collectable,
-    // and returned as a structure containing { collected<Set>, collectedRound<Set>, round }.
-    async loadCollectablesForPlayer(player) {
-        const results = await this._loadCollectablesForPlayerQuery(player);
-        const collectables = new Map([
+    // Creates a new Collectables map. Used for both registered players and for guests.
+    createDefaultCollectablesMap() {
+        return new Map([
             [
                 CollectableDatabase.kSprayTag,
                 {
@@ -56,6 +54,13 @@ export class CollectableDatabase {
                 }
             ]
         ]);
+    }
+
+    // Loads the collectables for the given |player|. They are grouped by the kind of collectable,
+    // and returned as a structure containing { collected<Set>, collectedRound<Set>, round }.
+    async loadCollectablesForPlayer(player) {
+        const results = await this._loadCollectablesForPlayerQuery(player);
+        const collectables = this.createDefaultCollectablesMap();
 
         if (results && results.rows.length > 0) {
             for (const row of results.rows) {

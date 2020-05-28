@@ -6,7 +6,6 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 import { CollectableNotification } from 'features/collectables/collectable_notification.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
 
 // Identifier of the setting that controls collectable map icon visibility.
@@ -15,7 +14,6 @@ const kVisibilitySetting = 'playground/collectable_map_icons_display';
 // Manages player state in regards to their collectables: tracking, statistics and maintaining. Will
 // make sure that the appropriate information is available at the appropriate times.
 export class CollectableManager {
-    callbacks_ = null;
     database_ = null;
     delegates_ = null;
     notifications_ = null;
@@ -32,10 +30,6 @@ export class CollectableManager {
             //[ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
         ]);
-
-        this.callbacks_ = new ScopedCallbacks();
-        this.callbacks_.addEventListener(
-            'playerguestsession', CollectableManager.prototype.onPlayerGuestSession.bind(this));
 
         this.settings_ = settings;
         this.settings_.addReloadObserver(
@@ -100,6 +94,8 @@ export class CollectableManager {
         data.collected.add(collectableId);
         data.collectedRound.add(collectableId);
 
+        player.syncedData.collectables = this.getCollectableCountForPlayer(player);
+
         return this.database_.markCollectableForPlayer(player, type, data.round, collectableId);
     }
 
@@ -159,10 +155,8 @@ export class CollectableManager {
 
     // Called when the player in |event| has started a session as a guest, which means that none of
     // their information will persist beyond this playing session.
-    onPlayerGuestSession(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |event| was sent for an invalid player
+    onPlayerGuestSession(player) {
+        this.statistics_.set(player, this.database_.createDefaultCollectablesMap());
 
         // Create all the collectables on the map for the given |player|.
         for (const delegate of this.delegates_.values())
@@ -184,15 +178,14 @@ export class CollectableManager {
     onPlayerDisconnect(player) {
         for (const delegate of this.delegates_.values())
             delegate.clearCollectablesForPlayer(player);
+        
+        this.statistics_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.playerManager.removeObserver(this);
-
-        this.callbacks_.dispose();
-        this.callbacks_ = null;
 
         for (const delegate of this.delegates_.values())
             delegate.dispose();

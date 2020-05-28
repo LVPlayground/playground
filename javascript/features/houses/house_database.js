@@ -533,7 +533,6 @@ class HouseDatabase {
 
     // Updates the audio stream URL for the |location|. The |streamUrl| may be an empty string.
     async updateHouseStreamUrl(location, streamUrl) {
-        console.log(streamUrl);
         await server.database.query(
             UPDATE_STREAM_URL_SETTING_QUERY, streamUrl, location.settings.id);
     }

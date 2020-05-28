@@ -126,7 +126,7 @@ export class MockPlayer extends Player {
     }
 
     removeWeapon(weaponId) {
-         pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id_, weaponId);
+        pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id_, weaponId);
     }
 
     // Resets all the weapons a player has.

@@ -14,6 +14,9 @@ const kBarrelDataFile = 'data/collectables/red_barrels.json';
 // Object Id that's been assigned to barrels throughout the map.
 const kBarrelObjectId = 1225;
 
+// Title of the notification that will be shown to the player upon blowing up a Red Barrel.
+const kNotificationTitle = 'exploded!';
+
 // Implements the Red Barrels functionality, where players have to shoot the red barrels scattered
 // across the map in an effort to clean up all those dangerous explosives.
 export class RedBarrels extends CollectableDelegate {
@@ -151,9 +154,26 @@ export class RedBarrels extends CollectableDelegate {
             return;  // it's not one of our barrels that the player shot
         
         const barrelId = barrels.get(object);
+        const remaining = barrels.size - 1;
 
-        // TODO: Show some decent UI to tell the player they've collected this barrel.
-        player.sendMessage('You have shot the barrel with Id: ' + barrelId);
+        let message = null;
+
+        // Compose an appropriate message to show to the player now that they've cleared a given
+        // number of barrels. This depends on how many barrels are remaining.
+        switch (remaining) {
+            case 0:
+                message = 'all Red Barrels have been cleaned up!';
+                break;
+            case 1:
+                message = 'only one more barrel left to find';
+                break;
+            default:
+                message = `${this.barrels_.size - remaining} / ${this.barrels_.size}`;
+                break;
+        }
+
+        // Show a notification to the player about the Spray Tags they've collected.
+        this.manager_.showNotification(player, kNotificationTitle, message);
     
         // Mark the collectable as having been collected, updating the |player|'s stats.
         this.manager_.markCollectableAsCollected(player, CollectableDatabase.kRedBarrel, barrelId);

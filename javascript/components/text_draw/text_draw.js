@@ -230,7 +230,7 @@ class TextDraw {
   // Gets or sets the Model ID that should be previewed on this text draw.
   get previewModel() { return this.previewModel_; }
   set previewModel(value) {
-    if (!(value instanceof number))
+    if (typeof value !== 'number')
       throw new Error('The preview model of a text draw must be a number.');
     
     this.previewModel_ = value;
@@ -248,7 +248,7 @@ class TextDraw {
   // Gets or sets the zoom level of the model that should be previewed on this text draw.
   get previewZoom() { return this.previewZoom_; }
   set previewZoom(value) {
-    if (!(value instanceof number))
+    if (typeof value !== 'number')
       throw new Error('The preview zoom of a text draw must be a number.');
     
     this.previewZoom_ = value;

@@ -84,6 +84,7 @@ export default [
     new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),
     new Setting('playground', 'collectable_map_icons_distance', Setting.TYPE_NUMBER, 500, 'Distance from which collectable map icons will be visible.'),
     new Setting('playground', 'gunther_help_interval_sec', Setting.TYPE_NUMBER, 300, 'At which interval should Gunther issue helpful /show commands?'),
+    new Setting('playground', 'notification_display_time_sec', Setting.TYPE_NUMBER, 5, 'Number of seconds for which a notification should be displayed.'),
     new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
     new Setting('playground', 'reaction_test_expire_sec', Setting.TYPE_NUMBER, 300, 'After how many seconds does a reaction test expire?'),

@@ -6,6 +6,9 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
+// Title of the notification that will be shown to the player upon tagging a spray tag.
+const kNotificationTitle = 'tagged!';
+
 // File (JSON) in which all the spray tags have been stored. Each has a position and a rotation.
 const kSprayTagsDataFile = 'data/collectables/spray_tags.json';
 
@@ -159,8 +162,25 @@ export class SprayTags extends CollectableDelegate {
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
-            // TODO: Show some decent UI to tell the player they've collected this spray tag.
-            player.sendMessage('You have collected the spray tag with Id: ' + sprayTagId);
+            let remaining = this.countRemainingTagsForPlayer(player);
+            let message = null;
+
+            // Compose an appropriate message to show to the player now that they've tagged a
+            // particular Spray Tag. This depends on how many tags they've got remaining.
+            switch (remaining) {
+                case 0:
+                    message = `all Spray Tags have been tagged!`;
+                    break;
+                case 1:
+                    message = 'only one more tag to go...';
+                    break;
+                default:
+                    message = `${this.tags_.size - remaining} / ${this.tags_.size}`;
+                    break;
+            }
+
+            // Show a notification to the player about the Spray Tags they've collected.
+            this.manager_.showNotification(player, kNotificationTitle, message);
     
             // Mark the collectable as having been collected, updating the |player|'s stats.
             this.manager_.markCollectableAsCollected(
@@ -183,6 +203,21 @@ export class SprayTags extends CollectableDelegate {
             tags.delete(tag);
             break;
         }
+    }
+
+    // Counts the number of tags |player| still has to find before finishing the Spray Tag game.
+    countRemainingTagsForPlayer(player) {
+        if (!this.playerTags_.has(player))
+            return;  // the |player| hasn't had their state initialized
+        
+        let count = 0;
+
+        for (const tag of this.playerTags_.get(player).keys()) {
+            if (tag.modelId !== kSprayTagTaggedModelId)
+                ++count;
+        }
+
+        return count;
     }
 
     // ---------------------------------------------------------------------------------------------

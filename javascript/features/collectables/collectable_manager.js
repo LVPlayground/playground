@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
+import { CollectableNotification } from 'features/collectables/collectable_notification.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
@@ -17,12 +18,15 @@ export class CollectableManager {
     callbacks_ = null;
     database_ = null;
     delegates_ = null;
+    notifications_ = null;
     settings_ = null;
     statistics_ = new WeakMap();
 
     constructor(settings) {
         this.database_ = server.isTest() ? new MockCollectableDatabase()
                                          : new CollectableDatabase();
+
+        this.notifications_ = new WeakMap();
 
         this.delegates_ = new Map([
             //[ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
@@ -97,6 +101,39 @@ export class CollectableManager {
         data.collectedRound.add(collectableId);
 
         return this.database_.markCollectableForPlayer(player, type, data.round, collectableId);
+    }
+
+    // Shows a notification to the |player| with the given |title| and |message. Will wait until
+    // the existing notification has finished displaying before being presented on screen.
+    async showNotification(player, title, message) {
+        if (!this.notifications_.has(player))
+            this.notifications_.set(player, new Array());
+        
+        const queue = this.notifications_.get(player);
+
+        // Always push the notification to the end of the queue.
+        queue.push({ title, message });
+
+        // If there still are other notifications in the queue, append the new one and exit. The
+        // previous notification(s) will eventually end up clearing the queue.
+        if (queue.length > 1)
+            return;
+
+        // Otherwise asynchronously clear the queue. This code path should only be executed once at
+        // a time for a given player, as further notifications will be added to the queue instead.
+        while (queue.length) {
+            const notification = queue.shift();
+            const displayTime =
+                this.settings_().getValue('playground/notification_display_time_sec');
+
+            await CollectableNotification.showForPlayer(
+                player, displayTime, notification.title, notification.message);
+            
+            await wait(displayTime * 1000 * 0.1);  // 10% of display time between notifications
+            
+            if (!player.isConnected())
+                return;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

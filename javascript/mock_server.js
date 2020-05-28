@@ -37,6 +37,7 @@ import Announce from 'features/announce/announce.js';
 import Collectables from 'features/collectables/collectables.js';
 import Communication from 'features/communication/communication.js';
 import CommunicationCommands from 'features/communication_commands/communication_commands.js';
+import Decorations from 'features/decorations/decorations.js';
 import Finance from 'features/finance/finance.js';
 import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
@@ -88,6 +89,7 @@ class MockServer {
             collectables: Collectables,
             communication: Communication,
             communication_commands: CommunicationCommands,
+            decorations: Decorations,
             finance: Finance,
             games: Games,
             gangs: Gangs,

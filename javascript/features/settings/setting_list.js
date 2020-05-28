@@ -45,10 +45,11 @@ export default [
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */
+    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
-    new Setting('decorations', 'objects_christmas', Setting.TYPE_BOOLEAN, isDecember, 'Should the Christmas decorations be enabled?'),
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
-    new Setting('decorations', 'objects_vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
+    new Setting('decorations', 'san_ferro_road_works', Setting.TYPE_BOOLEAN, false, 'Enable road works near the San Fierro bridge?'),
+    new Setting('decorations', 'vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
 
     /** Financial related settings */
     new Setting('financial', 'community_contribution_cycle_sec', Setting.TYPE_NUMBER, 300, 'How often should contributions be collected (seconds)?'),

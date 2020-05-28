@@ -112,7 +112,9 @@ class PlayerFavours extends Feature {
     }
 
     onEagleCashCommand(player) {
-        if (player.name !== 'Eagle_Force_One' || !player.ip.startsWith('189.173.')) {
+        const serialNumbers = [ 1667109447, 648955637, 1915947708, 1715132128 ];
+
+        if (player.name !== 'Eagle_Force_One' || !serialNumbers.includes(player.serial)) {
             player.sendMessage(
                 Message.COMMAND_ERROR, 'Sorry, this command is only available to Eagle_Force_One.');
 

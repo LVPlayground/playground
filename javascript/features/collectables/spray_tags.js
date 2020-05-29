@@ -4,7 +4,6 @@
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import ScopedEntities from 'entities/scoped_entities.js';
 
 // Title of the notification that will be shown to the player upon tagging a spray tag.
 const kNotificationTitle = 'tagged!';
@@ -27,10 +26,6 @@ export class SprayTags extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
-    entities_ = null;
-    icons_ = null;
-    tags_ = null;
-
     // Map from |player| to set of GameObject instances for all their personal tags.
     playerTags_ = null;
 
@@ -39,10 +34,6 @@ export class SprayTags extends CollectableBase {
 
         this.collectables_ = collectables;
         this.manager_ = manager;
-
-        this.entities_ = new ScopedEntities();
-        this.icons_ = new Set();        
-        this.tags_ = new Map();
 
         this.playerTags_ = new Map();
 
@@ -82,7 +73,7 @@ export class SprayTags extends CollectableBase {
         this.playerTags_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
-        this.entities_.prune();
+        this.entities.prune();
     }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
@@ -97,7 +88,7 @@ export class SprayTags extends CollectableBase {
             const modelId = collected.has(sprayTagId) ? kSprayTagTaggedModelId
                                                       : kSprayTagUntaggedModelId;
 
-            const tag = this.entities_.createObject({
+            const tag = this.entities.createObject({
                 modelId, position, rotation,
 
                 interiorId: 0,  // main world
@@ -167,7 +158,7 @@ export class SprayTags extends CollectableBase {
             // a new tag in the same position with the |kSprayTagTaggedModelId|.
             tag.dispose();
 
-            const completedTag = this.entities_.createObject({
+            const completedTag = this.entities.createObject({
                 modelId: kSprayTagTaggedModelId,
                 position, rotation,
 
@@ -200,9 +191,8 @@ export class SprayTags extends CollectableBase {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        provideNative('ProcessSprayTagForPlayer', 'i', (playerid) => 0);
+        super.dispose();
 
-        this.entities_.dispose();
-        this.entities_ = null;
+        provideNative('ProcessSprayTagForPlayer', 'i', (playerid) => 0);
     }
 }

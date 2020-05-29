@@ -30,51 +30,6 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
             delegate.dispose();
     });
 
-    it('should be able to load the predefined spray tags', assert => {
-        // If this test fails, then there's an error in the "spray_tags.json" data file that would
-        // prohibit the server from loading this feature correctly.
-
-        assert.doesNotThrow(() => delegate.initialize());
-        assert.isAbove(delegate.getCollectableCount(), 0);
-    });
-
-    it('is able to show and hide map icons for each of the defined barrels', assert => {
-        delegate.initialize();
-
-        const existingIconCount = server.mapIconManager.count;
-
-        // Disabling the icons when they're already disabled has no effect.
-        delegate.refreshCollectableMapIcons(false);
-
-        assert.equal(server.mapIconManager.count, existingIconCount);
-
-        // Creating the icons will add a bunch of map icons to the server.
-        delegate.refreshCollectableMapIcons(true);
-
-        const updatedIconCount = server.mapIconManager.count;
-        assert.isAbove(updatedIconCount, existingIconCount);
-
-        // Creating the icons again will be a no-op as well, as they already exist.
-        delegate.refreshCollectableMapIcons(true);
-
-        assert.equal(server.mapIconManager.count, updatedIconCount);
-
-        // Disabling the icons again will bring us back to the original icon count.
-        delegate.refreshCollectableMapIcons(false);
-
-        assert.equal(server.mapIconManager.count, existingIconCount);
-
-        // Creating them again, and then disposing the delegate, should remove all of them.
-        delegate.refreshCollectableMapIcons(true);
-
-        assert.equal(server.mapIconManager.count, updatedIconCount);
-
-        delegate.dispose();
-        delegate = null;
-
-        assert.equal(server.mapIconManager.count, existingIconCount);
-    });
-
     it('should create the right tag depending on whether they have been collected', assert => {
         delegate.initialize();
 

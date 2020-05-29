@@ -4,7 +4,6 @@
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import ScopedEntities from 'entities/scoped_entities.js';
 import { Vector } from 'base/vector.js';
 
 // File (JSON) in which all the individual barrels have been stored. The JSON data will have been
@@ -26,10 +25,6 @@ export class RedBarrels extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
-    barrels_ = null;
-    entities_ = null;
-    icons_ = null;
-
     // Map from |player| to set of GameObject instances for all their personal barrels.
     playerBarrels_ = null;
 
@@ -38,10 +33,6 @@ export class RedBarrels extends CollectableBase {
 
         this.collectables_ = collectables;
         this.manager_ = manager;
-
-        this.barrels_ = new Map();
-        this.entities_ = new ScopedEntities();
-        this.icons_ = new Set();
 
         this.playerBarrels_ = new Map();
 
@@ -84,7 +75,7 @@ export class RedBarrels extends CollectableBase {
         this.playerBarrels_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
-        this.entities_.prune();
+        this.entities.prune();
     }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
@@ -101,7 +92,7 @@ export class RedBarrels extends CollectableBase {
 
             // TODO: Consider the |area| when barrels are all over the map.
 
-            const barrel = this.entities_.createObject({
+            const barrel = this.entities.createObject({
                 modelId: kBarrelObjectId,
                 position, rotation,
 
@@ -168,9 +159,8 @@ export class RedBarrels extends CollectableBase {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.objectManager.removeObserver(this);
+        super.dispose();
 
-        this.entities_.dispose();
-        this.entities_ = null;
+        server.objectManager.removeObserver(this);
     }
 }

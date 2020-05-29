@@ -2,20 +2,27 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import ScopedEntities from 'entities/scoped_entities.js';
+
 // Interface for collectable types that's called by the CollectableManager when there's a change in
 // available data for a particular player, for example when they log in.
 export class CollectableBase {
     mapIconType_ = null;
 
     collectableItems_ = null;
+    entities_ = null;
     icons_ = null;
 
     constructor({ mapIconType = null } = {}) {
         this.mapIconType_ = mapIconType;
 
         this.collectableItems_ = new Map();
+        this.entities_ = new ScopedEntities({ interiorId: 0, virtualWorld: 0 });
         this.icons_ = new Set();
     }
+
+    // Gets the entities using which objects, tags and other things can be created.
+    get entities() { return this.entities_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Access to each of the collectables
@@ -82,6 +89,13 @@ export class CollectableBase {
                 type: this.mapIconType_,
                 position, streamDistance,
             }));
+        }
+    }
+
+    dispose() {
+        if (this.entities_) {
+            this.entities_.dispose();
+            this.entities_ = null;
         }
     }
 }

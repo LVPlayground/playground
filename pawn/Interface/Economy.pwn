@@ -127,7 +127,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 45 * 1.45);
         case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 45 * 1.45 * 0.1);
         case WantedLevelAward:                  return 4775 * inputValue /* wanted level stars */;
-        case WantedLevelOwnerShare:             return 47.75 * inputValue /* wanted level stars */;
+        case WantedLevelOwnerShare:             return 48 * inputValue /* wanted level stars */;
     }
 
     return 0;

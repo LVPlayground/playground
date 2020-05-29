@@ -70,7 +70,7 @@ OnPlayerLameKill(playerId, killerId) {
  * @param killerid Id of the killer, or INVALID_PLAYER_ID if none.
  * @param reason Id of the weapon/reason.
  */
-public OnPlayerDeath(playerid, killerid, reason) {
+LegacyPlayerDeath(playerid, killerid, reason) {
     Annotation::ExpandList<OnPlayerDeath>(playerid, killerid, reason);
 
     // ---- GENERAL CHECKS AND VARIABLES -----------------------------------------------------------

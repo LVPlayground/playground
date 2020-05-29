@@ -11,6 +11,11 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
 
+// Keeps track of the last vehicle they entered, and hijacked, to work around "ninja jack" kills.
+new g_ninjaJackCurrentVehicleId[MAX_PLAYERS];
+new g_ninjaJackLastAttemptTime[MAX_PLAYERS];
+new g_ninjaJackLastAttemptVictim[MAX_PLAYERS];
+
 // Keeps track of when each player started spraying the spray tag, to determine total duration.
 new g_sprayTagStartTime[MAX_PLAYERS];
 
@@ -22,6 +27,21 @@ IsModelRemoteControlVehicle(modelId) {
     }
 
     return false;
+}
+
+// Gets the ID of the player who is currently driving the given |vehicleId|.
+GetVehicleDriverID(vehicleId) {
+    for (new playerId = 0; playerId < GetPlayerPoolSize(); ++playerId) {
+        if (GetPlayerVehicleID(playerId) != vehicleId)
+            continue;  // the |playerId| is not in the |vehicleId|
+
+        if (GetPlayerVehicleSeat(playerId) != 0)
+            continue;  // the |playerId| is not driving that vehicle
+
+        return playerId;
+    }
+
+    return INVALID_PLAYER_ID;
 }
 
 // Ejects the given |playerId| from the vehicle they're currently in.
@@ -86,13 +106,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             // If a |candidate| has been found, eject the current driver (if any) and then insert
             // the |playerid| to be driving the vehicle instead.
             if (candidateVehicleId != INVALID_VEHICLE_ID) {
-                for (new otherPlayerId = 0; otherPlayerId < GetPlayerPoolSize(); ++otherPlayerId) {
-                    if (GetPlayerVehicleID(otherPlayerId) != candidateVehicleId)
-                        continue;
-
-                    EjectPlayerFromVehicle(otherPlayerId);
-                    break;
-                }
+                new const currentDriverId = GetVehicleDriverID(candidateVehicleId);
+                if (currentDriverId != INVALID_PLAYER_ID)
+                    EjectPlayerFromVehicle(currentDriverId);
 
                 PutPlayerInVehicle(playerid, candidateVehicleId, /* driver= */ 0);
                 return 1;
@@ -121,6 +137,53 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
     return 1;
+}
+
+public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+    // Detects cases where the |playerid| is jacking the |vehicleid| from another player, which may
+    // be the first steps towards the "ninja jacking" bug.
+    if (!ispassenger) {
+        new const currentDriverId = GetVehicleDriverID(vehicleid);
+        if (currentDriverId) {
+            g_ninjaJackLastAttemptTime[playerid] = GetTickCount();
+            g_ninjaJackLastAttemptVictim[playerid] = currentDriverId;
+        }
+    }
+
+    return 1;
+}
+
+public OnPlayerStateChange(playerid, newstate, oldstate) {
+    // Track the most recently entered vehicle for the |playerid|, as a driver, to be able to detect
+    // "ninja jacking", which will kill the driver.
+    if (newstate == PLAYER_STATE_DRIVER) {
+        g_ninjaJackCurrentVehicleId[playerid] = GetPlayerVehicleID(playerid);
+    } else {
+        g_ninjaJackCurrentVehicleId[playerid] = INVALID_VEHICLE_ID;
+    }
+
+    return LegacyPlayerStateChange(playerid, newstate, oldstate);
+}
+
+public OnPlayerDeath(playerid, killerid, reason) {
+    // Corrects the |killerid| when the "ninja jacking" bug has been used, and issues a monitor-
+    // level abuse report on the player abusing that bug, informing administrators.
+    if (killerid == INVALID_PLAYER_ID &&
+            g_ninjaJackCurrentVehicleId[playerid] != INVALID_VEHICLE_ID) {
+        new const currentDriverId = GetVehicleDriverID(g_ninjaJackCurrentVehicleId[playerid]);
+        if (currentDriverId != INVALID_PLAYER_ID &&
+                g_ninjaJackLastAttemptVictim[currentDriverId] == playerid) {
+            printf("[abuse] Ninja jack detected after %d ms.",
+                (GetTickCount() - g_ninjaJackLastAttemptTime[currentDriverId]));
+
+            ReportAbuse(currentDriverId, "Ninja Jack", "monitor");
+
+            killerid = currentDriverId;
+            reason = WEAPON_VEHICLE;
+        }
+    }
+
+    return LegacyPlayerDeath(playerid, killerid, reason);
 }
 
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {

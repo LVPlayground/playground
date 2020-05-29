@@ -111,11 +111,20 @@ export default class CommunicationCommands extends Feature {
             await wait(this.settings_().getValue('playground/gunther_help_interval_sec') * 1000);
             if (this.disposed_)
                 return;
-            
+
+            let hasOnlinePlayers = 0;
+            for (const player of server.playerManager) {
+                if (player.isNonPlayerCharacter())
+                    continue;
+                
+                hasOnlinePlayers = true;
+                break;
+            }
+
             const message = kGuntherMessages[Math.floor(Math.random() * kGuntherMessages.length)];
             const gunther = server.playerManager.getByName('Gunther', false);
 
-            if (gunther)
+            if (gunther && hasOnlinePlayers)
                 this.onShowCommand(gunther, message, null);
 
         } while (true);

@@ -303,8 +303,10 @@ TimeHelp:
     }
 
 SetHelp:
+   if (Player(playerId)->isManagement())
     SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/shiprail/time/weather]");
-
+   else if (Player(playerId)->isAdministrator())
+    SendClientMessage(playerId, Color::Information, "Usage: /set [shiprail/time/weather]");
     return 1;
 }
 

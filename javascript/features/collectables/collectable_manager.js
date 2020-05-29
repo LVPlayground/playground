@@ -102,6 +102,9 @@ export class CollectableManager {
 
         player.syncedData.collectables = this.getCollectableCountForPlayer(player);
 
+        if (!player.account.isRegistered())
+            return;  // the |player| does not have an account, data will not persist
+
         return this.database_.markCollectableForPlayer(player, type, data.round, collectableId);
     }
 

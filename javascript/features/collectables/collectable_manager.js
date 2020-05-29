@@ -27,7 +27,7 @@ export class CollectableManager {
         this.notifications_ = new WeakMap();
 
         this.delegates_ = new Map([
-            //[ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
+            [ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
         ]);
 

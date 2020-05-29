@@ -32,7 +32,7 @@ export class PublicChannel extends Channel {
 
         // Enables players to mention each other by using @Nick. This will highlight the mention in
         // the chat, and play a beep to the other player when they're not ignoring each other.
-        message = message.replace(kMentionExpression, mention => {
+        const richMessage = message.replace(kMentionExpression, mention => {
             const mentionedPlayer = server.playerManager.getByName(mention.substring(1), true);
             if (!mentionedPlayer || mentionedPlayer === player)
                 return mention;  // invalid player, or a self-mention
@@ -45,12 +45,12 @@ export class PublicChannel extends Channel {
         // Message to send to players in another virtual world.
         const remoteMessage =
             Message.format(Message.COMMUNICATION_WORLD_MESSAGE, playerColor, player.id,
-                           playerVirtualWorld, player.name, message);
+                           playerVirtualWorld, player.name, richMessage);
 
         // Message to send to the player, as well as players in the same virtual world.
         const localMessage =
             Message.format(Message.COMMUNICATION_MESSAGE, playerColor, player.id, player.name,
-                           message);
+                           richMessage);
 
         // Fast-path to take in case the |player| is isolated.
         if (player.syncedData.isIsolated()) {

@@ -40,6 +40,10 @@ export class MockGameObject extends GameObject {
 
     // ---------------------------------------------------------------------------------------------
 
+    setMaterial(index, modelId, txdName, textureName, color) {}
+
+    // ---------------------------------------------------------------------------------------------
+
     async moveToInternal(position, speed) {}
 
     async editInternal(player) {}

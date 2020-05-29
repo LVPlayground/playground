@@ -38,6 +38,7 @@ export class DecorationSet {
                 modelId: object.modelId,
                 position: new Vector(...object.position),
                 rotation: new Vector(...object.rotation),
+                effect: object.effect || null,
             });
         }
     }
@@ -51,8 +52,16 @@ export class DecorationSet {
         this.entities_ = new ScopedEntities({ interiorId: 0, virtualWorld: 0 });
 
         // Create all the objects that are part of this decoration set.
-        for (const { modelId, position, rotation } of this.objects_)
-            this.entities_.createObject({ modelId, position, rotation });
+        for (const { modelId, position, rotation, effect } of this.objects_) {
+            const object = this.entities_.createObject({ modelId, position, rotation });
+            switch (effect) {
+                case 'snow':
+                    for (let material = 0; material <= 15; ++material)
+                        object.setMaterial(material, 17944, 'lngblok_lae2', 'white64bumpy', 0);
+
+                    break;
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

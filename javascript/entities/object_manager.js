@@ -34,7 +34,8 @@ class ObjectManager {
     // Creates a new object with the given options. The options are based on the available settings
     // as part of the Object Streamer, and some can be changed after the object's creation.
     createObject({ modelId, position, rotation, interiors = null, interiorId = -1,
-                   virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1 } = {}) {
+                   virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1,
+                   streamDistance = null, drawDistance = null } = {}) {
         const object = new this.objectConstructor_(this);
 
         // Initializes the |object| with all the configuration passed to the manager.
@@ -49,8 +50,8 @@ class ObjectManager {
             players: players ?? [ playerId ],
             areas: [ -1 ], 
 
-            streamDistance: 300.0,
-            drawDistance: 0.0,
+            streamDistance: streamDistance ?? 300.0,
+            drawDistance: drawDistance ?? 0.0,
             priority: 0,
         });
 

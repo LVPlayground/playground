@@ -98,6 +98,14 @@ export class GameObject {
 
     // ---------------------------------------------------------------------------------------------
 
+    setMaterial(index, modelId, txdName, textureName, color) {
+        pawnInvoke(
+            'SetDynamicObjectMaterial', 'iiissi', this.#id_, index, modelId, txdName, textureName,
+                                                  color);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     async editInternal(player) { pawnInvoke('EditDynamicObject', 'ii', player.id, this.#id_); }
     async edit(player) {
         if (this.#editResolver_ !== null)

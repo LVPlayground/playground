@@ -8,11 +8,21 @@ import { SprayTags,
 import { range } from 'base/range.js';
 
 describe('SprayTags', (it, beforeEach, afterEach) => {
+    let collectables = null;
     let delegate = null;
 
     beforeEach(() => {
         const feature = server.featureManager.loadFeature('collectables');
-        delegate = new SprayTags(feature.manager_);
+
+        collectables = new class {
+            achievements = [];
+
+            awardAchievement(player, achievement) {
+                this.achievements.push(achievement);
+            }
+        };
+
+        delegate = new SprayTags(collectables, feature.manager_);
     });
 
     afterEach(() => {
@@ -25,7 +35,7 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         // prohibit the server from loading this feature correctly.
 
         assert.doesNotThrow(() => delegate.initialize());
-        assert.isAbove(delegate.tags_.size, 0);
+        assert.isAbove(delegate.getCollectableCount(), 0);
     });
 
     it('is able to show and hide map icons for each of the defined barrels', assert => {
@@ -140,5 +150,9 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
 
         // The tag should've been replaced, not removed from the map, so count stays equal.
         assert.equal(server.objectManager.count, updatedObjectCount);
+    });
+
+    it('awards achievements when exploding a certain number of barrels', async (assert) => {
+
     });
 });

@@ -22,7 +22,7 @@ export default class Collectables extends Feature {
 
         // The manager is responsible for keeping track which collectables have been collected by
         // which players, and enables creation of new "rounds" of collectables.
-        this.manager_ = new CollectableManager(settings);
+        this.manager_ = new CollectableManager(this, settings);
 
         // Enable Pawn code to determine whether a particular player is eligible to receive a given
         // benefit. The Pawn code is responsible for issuing an error when they're not.

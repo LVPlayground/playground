@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
 // Title of the notification that will be shown to the player upon tagging a spray tag.
@@ -23,7 +23,8 @@ export const kSprayTagUntaggedModelId = 18664;
 
 // Implements the SprayTag functionality, where players have to find the spray tags (usually on the
 // walls) and spray them in order to collect them. Detection of the spray action is done in Pawn.
-export class SprayTags extends CollectableDelegate {
+export class SprayTags extends CollectableBase {
+    collectables_ = null;
     manager_ = null;
 
     entities_ = null;
@@ -33,9 +34,10 @@ export class SprayTags extends CollectableDelegate {
     // Map from |player| to set of GameObject instances for all their personal tags.
     playerTags_ = null;
 
-    constructor(manager) {
-        super();
+    constructor(collectables, manager) {
+        super({ mapIconType: 63 /* Pay 'n' Spray */ });
 
+        this.collectables_ = collectables;
         this.manager_ = manager;
 
         this.entities_ = new ScopedEntities();
@@ -51,7 +53,7 @@ export class SprayTags extends CollectableDelegate {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // CollectableDelegate implementation:
+    // CollectableBase implementation:
     // ---------------------------------------------------------------------------------------------
 
     // Called when the collectables have to be initialized. The data file lists them all, with two
@@ -60,10 +62,7 @@ export class SprayTags extends CollectableDelegate {
         const data = JSON.parse(readFile(kSprayTagsDataFile));
 
         for (const sprayTag of data) {
-            if (this.tags_.has(sprayTag.id))
-                throw new Error(`Duplicate spray tag found for Id:${sprayTag.id}`);
-
-            this.tags_.set(sprayTag.id, {
+            this.addCollectable(sprayTag.id, {
                 position: new Vector(...sprayTag.position),
                 rotation: new Vector(...sprayTag.rotation),
             });
@@ -94,7 +93,7 @@ export class SprayTags extends CollectableDelegate {
             this.clearCollectablesForPlayer(player);
         
         const tags = new Map();
-        for (const [ sprayTagId, { position, rotation } ] of this.tags_) {
+        for (const [ sprayTagId, { position, rotation } ] of this.getCollectables()) {
             const modelId = collected.has(sprayTagId) ? kSprayTagTaggedModelId
                                                       : kSprayTagUntaggedModelId;
 
@@ -112,30 +111,6 @@ export class SprayTags extends CollectableDelegate {
         this.playerTags_.set(player, tags);
     }
 
-    // Called when the map icons for the collectable should either be shown (when |visible| is set)
-    // or hidden. This is a configuration setting available to Management members.
-    refreshCollectableMapIcons(visible, streamDistance) {
-        if ((visible && this.icons_.size) || (!visible && !this.icons_.size))
-            return;  // no change in visibility state
-
-        // Remove all created icons if |visible| has been set to false.
-        if (!visible) {
-            for (const mapIcon of this.icons_)
-                mapIcon.dispose();
-            
-            this.icons_.clear();
-            return;
-        }
-
-        // Otherwise create an icon for each of the defined spray tags.
-        for (const { position } of this.tags_.values()) {
-            this.icons_.add(this.entities_.createMapIcon({
-                type: 63,  // Pay 'n' Spray
-                position, streamDistance,
-            }));
-        }
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     // Called when a spray tag has to be processed for the given |playerid|. When they're close
@@ -148,6 +123,8 @@ export class SprayTags extends CollectableDelegate {
         if (!this.playerTags_.has(player))
             return;  // the |player| hasn't had their state initialized
         
+        const kTotalSprayTags = this.getCollectableCount();
+
         const playerPosition = player.position;
         const playerRotation = player.rotation;
 
@@ -158,7 +135,7 @@ export class SprayTags extends CollectableDelegate {
             if (tag.modelId === kSprayTagTaggedModelId)
                 continue;  // this |tag| has already been collected
             
-            const { position, rotation } = this.tags_.get(sprayTagId);
+            const { position, rotation } = this.getCollectable(sprayTagId);
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
@@ -175,7 +152,7 @@ export class SprayTags extends CollectableDelegate {
                     message = 'only one more tag to go...';
                     break;
                 default:
-                    message = `${this.tags_.size - remaining} / ${this.tags_.size}`;
+                    message = `${kTotalSprayTags - remaining} / ${kTotalSprayTags}`;
                     break;
             }
 

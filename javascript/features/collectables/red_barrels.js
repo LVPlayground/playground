@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 import { Vector } from 'base/vector.js';
 
@@ -19,10 +19,11 @@ const kNotificationTitle = 'exploded!';
 
 // Implements the Red Barrels functionality, where players have to shoot the red barrels scattered
 // across the map in an effort to clean up all those dangerous explosives.
-export class RedBarrels extends CollectableDelegate {
+export class RedBarrels extends CollectableBase {
     // Identifiers for the different categories of barrels.
     static kAreaLasVenturas = 'Las Venturas';
 
+    collectables_ = null;
     manager_ = null;
 
     barrels_ = null;
@@ -32,9 +33,10 @@ export class RedBarrels extends CollectableDelegate {
     // Map from |player| to set of GameObject instances for all their personal barrels.
     playerBarrels_ = null;
 
-    constructor(manager) {
-        super();
+    constructor(collectables, manager) {
+        super({ mapIconType: 20 /* Fire */ });
 
+        this.collectables_ = collectables;
         this.manager_ = manager;
 
         this.barrels_ = new Map();
@@ -47,7 +49,7 @@ export class RedBarrels extends CollectableDelegate {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // CollectableDelegate implementation:
+    // CollectableBase implementation:
     // ---------------------------------------------------------------------------------------------
 
     // Called when the collectables have to be initialized. All the Red Barrel data will be loaded
@@ -60,10 +62,7 @@ export class RedBarrels extends CollectableDelegate {
                 throw new Error(`No barrels are defined for the ${area} area.`);
 
             for (const barrel of data[area]) {
-                if (this.barrels_.has(barrel.id))
-                    throw new Error(`Duplicate barrels found for Id:${barrel.id}`);
-
-                this.barrels_.set(barrel.id, {
+                this.addCollectable(barrel.id, {
                     area,
                     position: new Vector(...barrel.position),
                     rotation: new Vector(...barrel.rotation),
@@ -96,7 +95,7 @@ export class RedBarrels extends CollectableDelegate {
             this.clearCollectablesForPlayer(player);
         
         const barrels = new Map();
-        for (const [ barrelId, { area, position, rotation } ] of this.barrels_) {
+        for (const [ barrelId, { area, position, rotation } ] of this.getCollectables()) {
             if (collected.has(barrelId))
                 continue;  // the |player| has already collected this barrel
 
@@ -116,30 +115,6 @@ export class RedBarrels extends CollectableDelegate {
 
         this.playerBarrels_.set(player, barrels);
     }
-
-    // Called when the map icons for the collectable should either be shown (when |visible| is set)
-    // or hidden. This is a configuration setting available to Management members.
-    refreshCollectableMapIcons(visible, streamDistance) {
-        if ((visible && this.icons_.size) || (!visible && !this.icons_.size))
-            return;  // no change in visibility state
-
-        // Remove all created icons if |visible| has been set to false.
-        if (!visible) {
-            for (const mapIcon of this.icons_)
-                mapIcon.dispose();
-            
-            this.icons_.clear();
-            return;
-        }
-
-        // Otherwise create an icon for each of the defined spray tags.
-        for (const { position } of this.barrels_.values()) {
-            this.icons_.add(this.entities_.createMapIcon({
-                type: 20,  // Fire
-                position, streamDistance,
-            }));
-        }
-    }
     
     // ---------------------------------------------------------------------------------------------
 
@@ -153,6 +128,8 @@ export class RedBarrels extends CollectableDelegate {
         if (!barrels.has(object))
             return;  // it's not one of our barrels that the player shot
         
+        const kTotalBarrels = this.getCollectableCount();
+
         const barrelId = barrels.get(object);
         const remaining = barrels.size - 1;
 
@@ -168,7 +145,7 @@ export class RedBarrels extends CollectableDelegate {
                 message = 'only one more barrel left to find';
                 break;
             default:
-                message = `${this.barrels_.size - remaining} / ${this.barrels_.size}`;
+                message = `${kTotalBarrels - remaining} / ${kTotalBarrels}`;
                 break;
         }
 

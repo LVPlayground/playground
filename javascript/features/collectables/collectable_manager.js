@@ -14,26 +14,29 @@ const kVisibilitySetting = 'playground/collectable_map_icons_display';
 // Manages player state in regards to their collectables: tracking, statistics and maintaining. Will
 // make sure that the appropriate information is available at the appropriate times.
 export class CollectableManager {
+    collectables_ = null;
+    settings_ = null;
+
     database_ = null;
     delegates_ = null;
     notifications_ = null;
-    settings_ = null;
     statistics_ = new WeakMap();
 
-    constructor(settings) {
+    constructor(collectables, settings) {
+        this.collectables_ = collectables;
+        this.settings_ = settings;
+        this.settings_.addReloadObserver(
+            this, CollectableManager.prototype.initializeSettingObserver.bind(this));
+
         this.database_ = server.isTest() ? new MockCollectableDatabase()
                                          : new CollectableDatabase();
 
         this.notifications_ = new WeakMap();
 
         this.delegates_ = new Map([
-            [ CollectableDatabase.kRedBarrel, new RedBarrels(this) ],
-            [ CollectableDatabase.kSprayTag, new SprayTags(this) ],
+            [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
+            [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
         ]);
-
-        this.settings_ = settings;
-        this.settings_.addReloadObserver(
-            this, CollectableManager.prototype.initializeSettingObserver.bind(this));
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);
     }

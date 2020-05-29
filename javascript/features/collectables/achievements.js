@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CollectableDelegate } from 'features/collectables/collectable_delegate.js';
+import { CollectableBase } from 'features/collectables/collectable_base.js';
 
 // -------------------------------------------------------------------------------------------------
 // Next ID: 9
@@ -46,7 +46,7 @@ export const kAchievements = new Map([
 
 // Implements tracking and collecting of achievements for each of the players. They cannot be drawn
 // on the map, but fit in with other collectables reasonably well otherwise.
-export class Achievements extends CollectableDelegate {
+export class Achievements extends CollectableBase {
     manager_ = null;
 
     constructor(manager) {
@@ -69,7 +69,7 @@ export class Achievements extends CollectableDelegate {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // CollectableDelegate implementation:
+    // CollectableBase implementation:
     // ---------------------------------------------------------------------------------------------
 
     // Clears all the collectables for the given |player|, generally because they've left the server

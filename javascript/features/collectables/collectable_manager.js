@@ -53,6 +53,9 @@ export class CollectableManager {
         this.onMapIconVisibilityChange(null, this.settings_().getValue(kVisibilitySetting));
     }
 
+    // Gets the given |delegate|, or NULL when the delegate has not been loaded.
+    getDelegate(delegate) { return this.delegates_.get(delegate) ?? null; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns the number of collectables collected by the player, filtered by the given |type| when

@@ -10,7 +10,7 @@ import { CollectableDelegate } from 'features/collectables/collectable_delegate.
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
 export const kAchievementSprayTagBronze = 1;
-export const kAchievementSprayTagSilver = 2;
+export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
 export const kAchievementSprayTagGold = 3;
 export const kAchievementSprayTagPlatinum = 4;
 
@@ -53,6 +53,19 @@ export class Achievements extends CollectableDelegate {
         super();
 
         this.manager_ = manager;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns whether the |player| has the given |achievement|. The |round| boolean, when set, will
+    // restrict the check to the player's current round of collecting achievements.
+    hasAchievement(player, achievement, round = true) {
+
+    }
+
+    // Awards the |player| the given |achievement|. Should no-op when they've already got it.
+    awardAchievement(player, achievement) {
+
     }
 
     // ---------------------------------------------------------------------------------------------

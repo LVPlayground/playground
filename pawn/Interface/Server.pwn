@@ -7,9 +7,13 @@ native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
+native IsPlayerEligibleForBenefit(playerid, benefit);
+native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);
 
-native IsPlayerMinimized(playerId);
+// Defined in //javascript/features/collectables/collectable_benefits.js
+#define PLAYER_BENEFIT_QUICK_VEHICLE_ACCESS 0
+#define PLAYER_BENEFIT_BOMB_SHOP 1
 
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);

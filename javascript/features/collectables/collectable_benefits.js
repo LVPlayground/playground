@@ -4,3 +4,6 @@
 
 // Whether a player is able to use the quick vehicle commands. (/nrg & co.)
 export const kBenefitQuickVehicleAccess = 0;
+
+// Whether a player is able to use the bomb shop.
+export const kBenefitBombShop = 1;

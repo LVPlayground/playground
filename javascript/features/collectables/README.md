@@ -2,22 +2,29 @@
 There are various _things_ that can be collected on Las Venturas Playground, in a variety of ways,
 all of which are implemented through this feature.
 
-### Multiple rounds
 Collectables can be collected in multiple _rounds_: this enables players to restart again once they
 have found them all, without affecting the benefits granted by locating them in the first place, nor
 the achievements they've earned as part of this.
-
-### Visualizing the collectables
-Management members have the ability to enable the `collectable_map_icons_display` setting in the
-`Playground` group via `/lvp settings`. This will create map icons for all of the collectables, with
-graphics appropriate for the kind of collectable. There deliberately is no mechanism for displaying
-positions of the collectables _you have not yet collected_, as that would not be fair.
 
 ## Series: Achievements
 Players can earn achievements by proving themselves in a variety of ways on Las Venturas Playground,
 from excessive killing sprees to quick calculations and shooting explosive barrels. The actual
 achievements are defined in [achievements.js](achievements.js), and are granted by code throughout
 our system.
+
+The following achievements are available on Las Venturas Playground. It's an evolving list, and some
+of the achievements have benefits associated with them as well.
+
+Achievement       | What                    | Benefit
+------------------|-------------------------|-------------------------
+Tag               | Tag 10 Spray Tags       |
+Back to Back      | Tag 40 Spray Tags       | Unlocks use of the Bomb Shop
+Heaven Spot       | Tag 90 Spray Tags       |
+Graffiti Angel    | Tag all Spray Tags      | Unlocks the ability to spawn vehicles with `/v`
+Firebug           | Explode 10 Red Barrels  |
+Arsonist          | Explode 40 Red Barrels  |
+Incendiarist      | Explode 90 Red Barrels  |
+Jomeri's Syndrome | Explode all Red Barrels |
 
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to
@@ -47,3 +54,9 @@ spray can for at least two seconds. If so, we check if there are any nearby spra
 aiming at, and mark them as collected when successful.
 
 This game, also, was originally introduced by [Jay](https://forum.sa-mp.nl/user-180.html).
+
+## Visualizing the collectables
+Management members have the ability to enable the `collectable_map_icons_display` setting in the
+`Playground` group via `/lvp settings`. This will create map icons for all of the collectables, with
+graphics appropriate for the kind of collectable. There deliberately is no mechanism for displaying
+positions of the collectables _you have not yet collected_, as that would not be fair.

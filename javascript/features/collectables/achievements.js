@@ -51,9 +51,10 @@ export class Achievements extends CollectableBase {
     manager_ = null;
     players_ = new WeakMap();
 
-    constructor(manager) {
+    constructor(collectables, manager) {
         super();
 
+        this.collectables_ = collectables;
         this.manager_ = manager;
     }
 
@@ -82,6 +83,9 @@ export class Achievements extends CollectableBase {
         if (statistics.collectedRound.has(achievement))
             return;  // the |player| already obtained the given |achievement|
 
+        if (!statistics.collected.has(achievement))
+            this.activateAchievementEffects(player, achievement);
+
         statistics.collected.add(achievement);
         statistics.collectedRound.add(achievement);
 
@@ -93,6 +97,20 @@ export class Achievements extends CollectableBase {
         const { name, text, level } = kAchievements.get(achievement);
 
         this.manager_.showNotification(player, name, text);
+    }
+
+    // Called when the |player| has been awarded the given |achievement|, activating its effects.
+    // This is only necessary for some of the achievements.
+    activateAchievementEffects(player, achievement) {
+        switch (achievement) {
+            case kAchievementRedBarrelSilver:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysColourChange;
+                break;
+              
+            case kAchievementRedBarrelPlatinum:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
+                break;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -109,7 +127,19 @@ export class Achievements extends CollectableBase {
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, statistics) {
+        const existingAchievements = new Set();
+        if (this.players_.has(player)) {
+            const achievements = this.players_.get(player);
+            for (const achievement of achievements.collected)
+                existingAchievements.add(achievement);
+        }
+
         this.players_.set(player, statistics);
+
+        for (const achievement of statistics.collected) {
+            if (!existingAchievements.has(achievement))
+                this.activateAchievementEffects(player, achievement);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

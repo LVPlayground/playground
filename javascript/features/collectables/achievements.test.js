@@ -2,9 +2,21 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
+
 import * as achievements from 'features/collectables/achievements.js';
 
-describe('Achievements', it => {
+describe('Achievements', (it, beforeEach) => {
+    let delegate = null;
+    let gunther = null;
+
+    beforeEach(() => {
+        const feature = server.featureManager.loadFeature('collectables');
+
+        delegate = feature.manager_.getDelegate(CollectableDatabase.kAchievement);
+        gunther = server.playerManager.getById(/* Gunther= */ 0);
+    });
+
     it('should have complete and unique information on all achievements', assert => {
         const whitelistedExports = new Set([ 'Achievements', 'kAchievements' ]);
 
@@ -30,5 +42,21 @@ describe('Achievements', it => {
             // that doesn't have the appropriate information set in |kAchievements|.
             assert.isTrue(achievements.kAchievements.has(value));
         }
+    });
+
+    it('should activate effects with certain achievements', assert => {
+        assert.equal(gunther.syncedData.vehicleKeys, 0);
+
+        delegate.activateAchievementEffects(gunther, achievements.kAchievementRedBarrelSilver);
+        assert.equal(gunther.syncedData.vehicleKeys, 2);
+
+        delegate.activateAchievementEffects(gunther, achievements.kAchievementRedBarrelPlatinum);
+        assert.equal(gunther.syncedData.vehicleKeys, 18);
+    });
+
+    it('should activate effects when a player logs in', async (assert) => {
+        await gunther.identify();
+
+        assert.equal(gunther.syncedData.vehicleKeys, 18);
     });
 });

@@ -22,7 +22,9 @@ export class MockCollectableDatabase extends CollectableDatabase {
                 { collectable_type: 1, collectable_id: 3, collectable_round: 1 },
                 { collectable_type: 1, collectable_id: 4, collectable_round: 1 },
                 { collectable_type: 1, collectable_id: 5, collectable_round: 1 },
-                { collectable_type: 1, collectable_id: 6, collectable_round: 1 }
+                { collectable_type: 1, collectable_id: 6, collectable_round: 1 },
+                { collectable_type: 2, collectable_id: 6, collectable_round: 1 },
+                { collectable_type: 2, collectable_id: 8, collectable_round: 1 }
             ],
 
             affectedRows: 0,

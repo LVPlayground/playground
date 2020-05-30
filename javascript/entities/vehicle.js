@@ -7,6 +7,14 @@
 class Vehicle {
     static kInvalidId = 65535;
 
+    // Vehicle keys that can be awarded to players through various achievements.
+    static kVehicleKeysBoost = 1;
+    static kVehicleKeysColourChange = 2;
+    static kVehicleKeysFix = 4;
+    static kVehicleKeysFlip = 8;
+    static kVehicleKeysJump = 16;
+    static kVehicleKeysNos = 32;
+
     constructor(manager, options) {
         this.manager_ = manager;
         this.modelId_ = options.modelId;

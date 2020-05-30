@@ -832,6 +832,11 @@ GodHelp:
             return 1;
         }
 
+        if (tempLevel[subjectId] != 2 && !Player(playerId)->isManagement()) {
+            SendClientMessage(playerId, Color::Error, "You can't take rights from permanent administrators.");
+            return 1;
+        }
+
         if (tempLevel[playerId] == 2 && playerId != subjectId) {
             SendClientMessage(playerId, Color::Error, "You can't take someone else's admin rights as temp-admin.");
             return 1;

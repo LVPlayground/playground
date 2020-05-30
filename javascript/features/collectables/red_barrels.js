@@ -6,6 +6,8 @@ import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { Vector } from 'base/vector.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 // File (JSON) in which all the individual barrels have been stored. The JSON data will have been
 // categorized per area, which are static properties on the RedBarrels class.
 const kBarrelDataFile = 'data/collectables/red_barrels.json';
@@ -162,6 +164,7 @@ export class RedBarrels extends CollectableBase {
         statistics.collected.add(barrelId);
         statistics.collectedRound.add(barrelId);
 
+        this.awardAchievementWhenApplicable(player);
         this.manager_.markCollectableAsCollected(player, CollectableDatabase.kRedBarrel, barrelId);
 
         // Dispose of the barrel's object, and delete it from any and all object tracking that's
@@ -172,6 +175,21 @@ export class RedBarrels extends CollectableBase {
 
         if (!barrels.size)
             this.playerBarrels_.delete(player);
+    }
+
+        // Awards an achievement to the |player| when their collectable stats in the current round are
+    // applicable to be awarded one. The thresholds are defined in achievements.js as well.
+    awardAchievementWhenApplicable(player) {
+        const kMilestones = new Map([
+            [  10, achievements.kAchievementRedBarrelBronze ],
+            [  40, achievements.kAchievementRedBarrelSilver ],
+            [  90, achievements.kAchievementRedBarrelGold ],
+            [ 100, achievements.kAchievementRedBarrelPlatinum ],
+        ]);
+
+        const achievement = kMilestones.get(this.countCollectablesForPlayer(player).round);
+        if (achievement)
+            this.collectables_.awardAchievement(player, achievement);
     }
 
     // ---------------------------------------------------------------------------------------------

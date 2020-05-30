@@ -49,9 +49,7 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         assert.isAbove(updatedObjectCount, existingObjectCount);
         assert.includes(updatedObjects, kSprayTagUntaggedModelId);
         assert.doesNotInclude(updatedObjects, kSprayTagTaggedModelId);
-        assert.equal(
-            delegate.countRemainingTagsForPlayer(gunther),
-            updatedObjectCount - existingObjectCount);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
 
         // Now update the tags to a situation in which half of 'em have been collected. The same
         // number of objects should be created, just with a different model Id composition.
@@ -65,9 +63,7 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         assert.equal(refreshedObjectCount, updatedObjectCount);
         assert.includes(refreshedObjects, kSprayTagUntaggedModelId);
         assert.includes(refreshedObjects, kSprayTagTaggedModelId);
-        assert.isBelow(
-            delegate.countRemainingTagsForPlayer(gunther),
-            updatedObjectCount - existingObjectCount - 1);
+        assert.isAboveOrEqual(delegate.countCollectablesForPlayer(gunther).round, 1);
 
         // Remove all spray tags for the player, this should null them out again.
         delegate.clearCollectablesForPlayer(gunther);

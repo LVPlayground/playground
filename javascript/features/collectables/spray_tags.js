@@ -5,6 +5,8 @@
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 // Title of the notification that will be shown to the player upon tagging a spray tag.
 const kNotificationTitle = 'tagged!';
 
@@ -145,7 +147,7 @@ export class SprayTags extends CollectableBase {
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
-            let remaining = this.countRemainingTagsForPlayer(player);
+            let remaining = kTotalSprayTags - this.countCollectablesForPlayer(player) - 1;
             let message = null;
 
             // Compose an appropriate message to show to the player now that they've tagged a
@@ -169,6 +171,7 @@ export class SprayTags extends CollectableBase {
             statistics.collected.add(sprayTagId);
             statistics.collectedRound.add(sprayTagId);
 
+            this.awardAchievementWhenApplicable(player);
             this.manager_.markCollectableAsCollected(
                 player, CollectableDatabase.kSprayTag, sprayTagId);
 
@@ -191,19 +194,19 @@ export class SprayTags extends CollectableBase {
         }
     }
 
-    // Counts the number of tags |player| still has to find before finishing the Spray Tag game.
-    countRemainingTagsForPlayer(player) {
-        if (!this.playerTags_.has(player))
-            return;  // the |player| hasn't had their state initialized
-        
-        let count = 0;
+    // Awards an achievement to the |player| when their collectable stats in the current round are
+    // applicable to be awarded one. The thresholds are defined in achievements.js as well.
+    awardAchievementWhenApplicable(player) {
+        const kMilestones = new Map([
+            [  10, achievements.kAchievementSprayTagBronze ],
+            [  40, achievements.kAchievementSprayTagSilver ],
+            [  90, achievements.kAchievementSprayTagGold ],
+            [ 100, achievements.kAchievementSprayTagPlatinum ],
+        ]);
 
-        for (const tag of this.playerTags_.get(player).keys()) {
-            if (tag.modelId !== kSprayTagTaggedModelId)
-                ++count;
-        }
-
-        return count;
+        const achievement = kMilestones.get(this.countCollectablesForPlayer(player).round);
+        if (achievement)
+            this.collectables_.awardAchievement(player, achievement);
     }
 
     // ---------------------------------------------------------------------------------------------

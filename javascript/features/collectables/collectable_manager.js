@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Achievements } from 'features/collectables/achievements.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { CollectableNotification } from 'features/collectables/collectable_notification.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
@@ -38,6 +39,7 @@ export class CollectableManager {
         this.delegates_ = new Map([
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
+            [ CollectableDatabase.kAchievement, new Achievements(this) ],
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);
@@ -169,6 +171,8 @@ export class CollectableManager {
     // Called when the |player| disconnects from the server. All collectables will be removed, as
     // most involve per-player objects rather than global ones.
     onPlayerDisconnect(player) {
+        this.notifications_.delete(player);
+
         for (const delegate of this.delegates_.values())
             delegate.clearCollectablesForPlayer(player);
     }

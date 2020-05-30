@@ -173,7 +173,7 @@ export class SprayTags extends CollectableBase {
 
             this.awardAchievementWhenApplicable(player);
             this.manager_.markCollectableAsCollected(
-                player, CollectableDatabase.kSprayTag, sprayTagId);
+                player, CollectableDatabase.kSprayTag, statistics.rounds, sprayTagId);
 
             // Delete the |tag|, since the player will no longer be needing it. Instead, we create
             // a new tag in the same position with the |kSprayTagTaggedModelId|.

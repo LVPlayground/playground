@@ -84,13 +84,13 @@ export class CollectableManager {
 
     // Marks the |collectableId| of the given |type| as having been collected by the |player|. This
     // will take immediate effect within the game, and will be stored in the database as well.
-    markCollectableAsCollected(player, type, collectableId) {
+    markCollectableAsCollected(player, type, round, collectableId) {
         player.syncedData.collectables = this.getCollectableCountForPlayer(player);
 
         if (!player.account.isRegistered())
             return;  // the |player| does not have an account, data will not persist
 
-        return this.database_.markCollectableForPlayer(player, type, data.round, collectableId);
+        return this.database_.markCollectableForPlayer(player, type, round, collectableId);
     }
 
     // Shows a notification to the |player| with the given |title| and |message. Will wait until
@@ -112,7 +112,7 @@ export class CollectableManager {
         // Otherwise asynchronously clear the queue. This code path should only be executed once at
         // a time for a given player, as further notifications will be added to the queue instead.
         while (queue.length) {
-            const notification = queue.shift();
+            const notification = queue[0];
             const displayTime =
                 this.settings_().getValue('playground/notification_display_time_sec');
 
@@ -121,6 +121,8 @@ export class CollectableManager {
             
             await wait(displayTime * 1000 * 0.1);  // 10% of display time between notifications
             
+            queue.shift();
+
             if (!player.isConnected())
                 return;
         }

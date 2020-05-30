@@ -165,7 +165,8 @@ export class RedBarrels extends CollectableBase {
         statistics.collectedRound.add(barrelId);
 
         this.awardAchievementWhenApplicable(player);
-        this.manager_.markCollectableAsCollected(player, CollectableDatabase.kRedBarrel, barrelId);
+        this.manager_.markCollectableAsCollected(
+            player, CollectableDatabase.kRedBarrel, statistics.round, barrelId);
 
         // Dispose of the barrel's object, and delete it from any and all object tracking that's
         // remaining in this class. It won't be needed anymore.

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 
 // -------------------------------------------------------------------------------------------------
 // Next ID: 9
@@ -12,7 +13,7 @@ import { CollectableBase } from 'features/collectables/collectable_base.js';
 export const kAchievementSprayTagBronze = 1;
 export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
 export const kAchievementSprayTagGold = 3;
-export const kAchievementSprayTagPlatinum = 4;
+export const kAchievementSprayTagPlatinum = 4;  // kBenefitQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.
 export const kAchievementRedBarrelBronze = 5;
@@ -48,6 +49,7 @@ export const kAchievements = new Map([
 // on the map, but fit in with other collectables reasonably well otherwise.
 export class Achievements extends CollectableBase {
     manager_ = null;
+    players_ = new WeakMap();
 
     constructor(manager) {
         super();
@@ -60,12 +62,37 @@ export class Achievements extends CollectableBase {
     // Returns whether the |player| has the given |achievement|. The |round| boolean, when set, will
     // restrict the check to the player's current round of collecting achievements.
     hasAchievement(player, achievement, round = true) {
+        if (!this.players_.has(statistics))
+            return false;  // the data for |player| has not been loaded yet
+        
+        const statistics = this.players_.get(statistics);
 
+        if (round)
+            return statistics.collectedRound.has(achievement);
+        else
+            return statistics.collected.has(achievement);
     }
 
     // Awards the |player| the given |achievement|. Should no-op when they've already got it.
     awardAchievement(player, achievement) {
+        if (!this.players_.has(player))
+            return;  // the data for |player| has not been loaded yet
+          
+        const statistics = this.players_.get(player);
+        if (statistics.collectedRound.has(achievement))
+            return;  // the |player| already obtained the given |achievement|
 
+        statistics.collected.add(achievement);
+        statistics.collectedRound.add(achievement);
+
+        // Make sure that the achieved achievement will be stored between sessions.
+        this.manager_.markCollectableAsCollected(
+            player, CollectableDatabase.kAchievement, statistics.round, achievement);
+        
+        // Show a notification to the |player| about having achieved this milestone.
+        const { name, text, level } = kAchievements.get(achievement);
+
+        this.manager_.showNotification(player, name, text);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -74,12 +101,16 @@ export class Achievements extends CollectableBase {
 
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
-    clearCollectablesForPlayer(player) {}
+    clearCollectablesForPlayer(player) {
+        this.players_.delete(player);
+    }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, collected) {}
+    refreshCollectablesForPlayer(player, statistics) {
+        this.players_.set(player, statistics);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

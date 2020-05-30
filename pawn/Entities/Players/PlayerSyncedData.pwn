@@ -5,12 +5,13 @@
 // Provided by PlaygroundJS for updating JavaScript data.
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
-// Next ID: 4
+// Next ID: 5
 enum PlayerSyncedDataProperty {
     COLLECTABLES = 3,
     ISOLATED = 1,
     MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
+    VEHICLE_KEYS = 4,
 };
 
 #define INVALID_INT 0
@@ -24,18 +25,24 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     new bool: m_isolated;
     new m_minigameName[32];
     new m_preferredRadioChannel[64];
+    new m_vehicleKeys;
 
     public reset() {
         m_collectables = 0;
         m_isolated = false;
         m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
+        m_vehicleKeys = 0;
     }
 
     // ---------------------------------------------------------------------------------------------
 
     public inline collectables() {
         return m_collectables;
+    }
+
+    public inline vehicleKeys() {
+        return m_vehicleKeys;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -104,6 +111,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
             case PREFERRED_RADIO_CHANNEL:
                 format(m_preferredRadioChannel, sizeof(m_preferredRadioChannel), "%s", stringValue);
+
+            case VEHICLE_KEYS:
+                m_vehicleKeys = intValue;
         }
 
         #pragma unused floatValue

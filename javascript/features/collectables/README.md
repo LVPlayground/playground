@@ -22,9 +22,9 @@ Back to Back      | Tag 40 Spray Tags       | Unlocks use of the Bomb Shop
 Heaven Spot       | Tag 90 Spray Tags       |
 Graffiti Angel    | Tag all Spray Tags      | Unlocks the ability to spawn vehicles with `/v`
 Firebug           | Explode 10 Red Barrels  |
-Arsonist          | Explode 40 Red Barrels  |
+Arsonist          | Explode 40 Red Barrels  | Unlocks the _vehicle colour_ key shortcut.
 Incendiarist      | Explode 90 Red Barrels  |
-Jomeri's Syndrome | Explode all Red Barrels |
+Jomeri's Syndrome | Explode all Red Barrels | Unlocks the _vehicle jump_ key shortcut.
 
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to

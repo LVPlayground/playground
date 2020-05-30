@@ -12,6 +12,7 @@ class PlayerSyncedData {
         this.isolated_ = false;
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
+        this.vehicleKeys_ = 0;
     }
 
     // Gets or sets the number of collectables that have been collected by the player. This value
@@ -49,6 +50,17 @@ class PlayerSyncedData {
         this.sync(PlayerSyncedData.MINIGAME_NAME, value);
     }
 
+    // Gets or sets the vehicle keys, which control which vehicle shortcuts are available to the
+    // player. These are features that can be unlocked through collectables.
+    get vehicleKeys() { return this.vehicleKeys_; }
+    set vehicleKeys(value) {
+        if (typeof value !== 'number')
+            throw new Error('The vehicle keys must be set as a number.');
+
+        this.vehicleKeys_ = value;
+        this.sync(PlayerSyncedData.VEHICLE_KEYS, value);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Gets or sets the preferred radio channel for this player. Must be a string.
@@ -73,6 +85,7 @@ class PlayerSyncedData {
             // Integral properties.
             case PlayerSyncedData.COLLECTABLES:
             case PlayerSyncedData.ISOLATED:
+            case PlayerSyncedData.VEHICLE_KEYS:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            value ? 1 : 0, 0.0 /* invalid float */, '' /* empty string */);
                 break;
@@ -94,6 +107,7 @@ class PlayerSyncedData {
     apply(property, intValue, floatValue, stringValue) {
         switch (property) {
             case PlayerSyncedData.COLLECTABLES:
+            case PlayerSyncedData.VEHICLE_KEYS:
                 throw new Error('This value is not meant to be changed by Pawn.');
 
             case PlayerSyncedData.ISOLATED:
@@ -110,11 +124,12 @@ class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-// Next ID: 4
+// Next ID: 5
 PlayerSyncedData.COLLECTABLES = 3;
 PlayerSyncedData.ISOLATED = 1;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
+PlayerSyncedData.VEHICLE_KEYS = 4;
 
 
 export default PlayerSyncedData;

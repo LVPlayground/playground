@@ -8,6 +8,15 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 
 #include "Driver/Abuse/WeaponShotDetection.pwn"
 
+// The keys that have to be pressed by the player to activate certain vehicle key effects. These
+// have been carried over from the SAS gamemode by leaty, Lithirm and Kase.
+#define VEHICLE_KEYS_BINDING_BOOST      KEY_ACTION
+#define VEHICLE_KEYS_BINDING_COLOUR     KEY_ANALOG_LEFT
+#define VEHICLE_KEYS_BINDING_FIX        KEY_SUBMISSION
+#define VEHICLE_KEYS_BINDING_FLIP       KEY_ANALOG_RIGHT
+#define VEHICLE_KEYS_BINDING_JUMP       KEY_CROUCH
+#define VEHICLE_KEYS_BINDING_NOS        KEY_FIRE
+
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
 
@@ -132,6 +141,71 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 ProcessSprayTagForPlayer(playerid);
             }
             g_sprayTagStartTime[playerid] = 0;
+        }
+    }
+
+    // Implementation of the vehicle keys, that can be enabled for players when they achieve certain
+    // achievements. The exact requirements are documented elsewhere.
+    if (PlayerSyncedData(playerid)->vehicleKeys() > 0) {
+        new const vehicleId = GetPlayerVehicleID(playerid);
+        new const vehicleKeys = PlayerSyncedData(playerid)->vehicleKeys();
+
+        // Vehicle keys (1): speed boost
+        if (PRESSED(VEHICLE_KEYS_BINDING_BOOST) && (vehicleKeys & VEHICLE_KEYS_BOOST)) {
+            new const Float: boost = 2;
+            new Float: velocity[3];
+
+            GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
+            SetVehicleVelocity(
+                vehicleId, velocity[0] * boost, velocity[1] * boost, velocity[2] * boost);
+        }
+
+        // Vehicle keys (2): colour change
+        if (PRESSED(VEHICLE_KEYS_BINDING_COLOUR) && (vehicleKeys & VEHICLE_KEYS_COLOUR)) {
+            new primaryColour = random(126);
+            new secondaryColour = random(126);
+
+            ChangeVehicleColor(vehicleId, primaryColour, secondaryColour);
+        }
+
+        // Vehicle keys (3): full repair
+        if (PRESSED(VEHICLE_KEYS_BINDING_FIX) && (vehicleKeys & VEHICLE_KEYS_FIX)) {
+            RepairVehicle(vehicleId);
+
+            GameTextForPlayer(playerid, "FIXED", 1000, 3);
+        }
+
+        // Vehicle keys (4): flip
+        if (PRESSED(VEHICLE_KEYS_BINDING_FLIP) && (vehicleKeys & VEHICLE_KEYS_FLIP)) {
+            new Float: position[3];
+            new Float: rotation;
+
+            GetVehiclePos(vehicleId, position[0], position[1], position[2]);
+            GetVehicleZAngle(vehicleId, rotation);
+
+            SetVehiclePos(vehicleId, position[0], position[1], position[2] + 2);
+            SetVehicleZAngle(vehicleId, rotation);
+
+            RepairVehicle(vehicleId);
+
+            GameTextForPlayer(playerid, "FLIPPED", 1000, 3);
+        }
+
+        // Vehicle keys (5): jump
+        if (PRESSED(VEHICLE_KEYS_BINDING_JUMP) && (vehicleKeys & VEHICLE_KEYS_JUMP)) {
+            new const Float: vehicleJump = 0.3;
+            new Float: velocity[3];
+
+            GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
+            SetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2] + vehicleJump);
+        }
+
+        // Vehicle keys (6): nitro
+        if (PRESSED(VEHICLE_KEYS_BINDING_NOS) && (vehicleKeys & VEHICLE_KEYS_NOS)) {
+            new const modelId = GetVehicleModel(vehicleId);
+
+            if (VehicleModel(modelId)->isNitroInjectionAvailable())
+                AddVehicleComponent(vehicleId, 1010);
         }
     }
 

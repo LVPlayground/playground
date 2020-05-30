@@ -30,6 +30,13 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define TELEPORT_STATUS_REJECTED_TIME_LIMIT 2
 #define TELEPORT_STATUS_REJECTED_OTHER 3
 
+#define VEHICLE_KEYS_BOOST 1
+#define VEHICLE_KEYS_COLOUR 2
+#define VEHICLE_KEYS_FIX 4
+#define VEHICLE_KEYS_FLIP 8
+#define VEHICLE_KEYS_JUMP 16
+#define VEHICLE_KEYS_NOS 32
+
 native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);

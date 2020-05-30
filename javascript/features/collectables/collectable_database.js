@@ -35,32 +35,23 @@ export class CollectableDatabase {
     static kAchievement = 2;
 
     // Creates a new Collectables map. Used for both registered players and for guests.
-    createDefaultCollectablesMap() {
-        return new Map([
-            [
-                CollectableDatabase.kSprayTag,
-                {
-                    collected: new Set(),
-                    collectedRound: new Set(),
-                    round: 1,
-                }
-            ],
-            [
-                CollectableDatabase.kRedBarrel,
-                {
-                    collected: new Set(),
-                    collectedRound: new Set(),
-                    round: 1,
-                }
-            ]
-        ]);
+    static createDefaultCollectableStatistics() {
+        return {
+            collected: new Set(),
+            collectedRound: new Set(),
+            round: 1,
+        };
     }
 
     // Loads the collectables for the given |player|. They are grouped by the kind of collectable,
     // and returned as a structure containing { collected<Set>, collectedRound<Set>, round }.
     async loadCollectablesForPlayer(player) {
         const results = await this._loadCollectablesForPlayerQuery(player);
-        const collectables = this.createDefaultCollectablesMap();
+        const collectables = new Map([
+            CollectableDatabase.kSprayTag,
+            CollectableDatabase.kRedBarrel,
+            CollectableDatabase.kAchievement,
+        ].map(type => [ type, CollectableDatabase.createDefaultCollectableStatistics() ]));
 
         if (results && results.rows.length > 0) {
             for (const row of results.rows) {

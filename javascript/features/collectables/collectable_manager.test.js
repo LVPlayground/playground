@@ -30,17 +30,7 @@ describe('CollectableManager', (it, beforeEach) => {
         assert.equal(
             manager.getCollectableCountForPlayer(gunther, CollectableDatabase.kRedBarrel), 6);
         
-        assert.throws(() => manager.getCollectableCountForPlayer(gunther, 'bananas'));
-
         assert.equal(
             gunther.syncedData.collectables, manager.getCollectableCountForPlayer(gunther));
-    });
-
-    it('should be able to count collectables for guests', async (assert) => {
-        assert.equal(manager.getCollectableCountForPlayer(gunther), 0);
-
-        manager.markCollectableAsCollected(gunther, CollectableDatabase.kSprayTag, 1);
-
-        assert.equal(manager.getCollectableCountForPlayer(gunther), 1);
     });
 });

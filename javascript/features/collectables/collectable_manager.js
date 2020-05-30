@@ -19,8 +19,7 @@ export class CollectableManager {
 
     database_ = null;
     delegates_ = null;
-    notifications_ = null;
-    statistics_ = new WeakMap();
+    notifications_ = new WeakMap();
 
     constructor(collectables, settings) {
         this.collectables_ = collectables;
@@ -28,11 +27,14 @@ export class CollectableManager {
         this.settings_.addReloadObserver(
             this, CollectableManager.prototype.initializeSettingObserver.bind(this));
 
+        this.initializeSettingObserver();
+
+        // A mocked out database is used for testing, as we don't want to hit the actual MySQL
+        // database. Logic and other shared functionality will be consistent among both.
         this.database_ = server.isTest() ? new MockCollectableDatabase()
                                          : new CollectableDatabase();
 
-        this.notifications_ = new WeakMap();
-
+        // Create the actual collectable types, the "delegates".
         this.delegates_ = new Map([
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
@@ -41,15 +43,19 @@ export class CollectableManager {
         server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Starts observing the collectable map icon visibility setting. Will have to be re-applied each
+    // time the Settings module gets reloaded.
     initializeSettingObserver() {
         this.settings_().addSettingObserver(
             kVisibilitySetting,
             this, CollectableManager.prototype.onMapIconVisibilityChange.bind(this));
     }
 
+    // Initializes the collectable data from their JSON configuration files, and applies the current
+    // configuration setting on whether collectable map icons should be shown.
     initialize() {
-        this.initializeSettingObserver();
-
         for (const delegate of this.delegates_.values())
             delegate.initialize();
         
@@ -63,22 +69,13 @@ export class CollectableManager {
 
     // Returns the number of collectables collected by the player, filtered by the given |type| when
     // given, or aggregated across all types when omitted.
-    getCollectableCountForPlayer(player, type = null) {
-        if (!this.statistics_.has(player))
-            return 0;
-
-        const statistics = this.statistics_.get(player);
-        if (type !== null) {
-            if (!statistics.has(type))
-                throw new Error(`Invalid collectable type given: ${type}.`);
-            
-            return statistics.get(type).collected.size;
-        }
-
+    getCollectableCountForPlayer(player, filterType = null) {
         let count = 0;
 
-        for (const data of statistics.values())
-            count += data.collected.size;
+        for (const [ type, delegate ] of this.delegates_) {
+            if (filterType === null || filterType === type)
+                count += delegate.countCollectablesForPlayer(player).total;
+        }
 
         return count;
     }
@@ -86,20 +83,6 @@ export class CollectableManager {
     // Marks the |collectableId| of the given |type| as having been collected by the |player|. This
     // will take immediate effect within the game, and will be stored in the database as well.
     markCollectableAsCollected(player, type, collectableId) {
-        if (!this.statistics_.has(player))
-            return;  // the |player|'s data hasn't loaded yet
-        
-        const collectables = this.statistics_.get(player);
-        if (!collectables.has(type))
-            throw new Error(`Invalid collectable type given: ${type}`);
-        
-        const data = collectables.get(type);
-        if (data.collectedRound.has(collectableId))
-            throw new Error(`The player (${player}) already collected the ${type} type.`);
-
-        data.collected.add(collectableId);
-        data.collectedRound.add(collectableId);
-
         player.syncedData.collectables = this.getCollectableCountForPlayer(player);
 
         if (!player.account.isRegistered())
@@ -150,26 +133,27 @@ export class CollectableManager {
             if (!player.isConnected())
                 return;  // the |player| has disconnected from the server since
 
-            this.statistics_.set(player, collectables);
+            // Create all the collectables on the map for the given |player|.
+            for (const [ type, delegate ] of this.delegates_) {
+                if (!collectables.has(type))
+                    throw new Error(`Unable to load statistics for ${player} (type: ${type}).`);
+
+                delegate.refreshCollectablesForPlayer(player,  collectables.get(type));
+            }
 
             // Ensure that Pawn has the latest metric on the number of collectables available for
             // the given |player|, as a number of benefits are still implemented there.
             player.syncedData.collectables = this.getCollectableCountForPlayer(player);
-
-            // Create all the collectables on the map for the given |player|.
-            for (const [ type, delegate ] of this.delegates_)
-                delegate.refreshCollectablesForPlayer(player, collectables.get(type).collected);
         });
     }
 
     // Called when the player in |event| has started a session as a guest, which means that none of
     // their information will persist beyond this playing session.
     onPlayerGuestSession(player) {
-        this.statistics_.set(player, this.database_.createDefaultCollectablesMap());
-
-        // Create all the collectables on the map for the given |player|.
-        for (const delegate of this.delegates_.values())
-            delegate.refreshCollectablesForPlayer(player, new Set());
+        for (const delegate of this.delegates_.values()) {
+            delegate.refreshCollectablesForPlayer(
+                player, CollectableDatabase.createDefaultCollectableStatistics());
+        }
     }
 
     // Called when visibility of collectables on the mini map has changed. The |setting| may be
@@ -187,8 +171,6 @@ export class CollectableManager {
     onPlayerDisconnect(player) {
         for (const delegate of this.delegates_.values())
             delegate.clearCollectablesForPlayer(player);
-        
-        this.statistics_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

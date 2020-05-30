@@ -25,16 +25,15 @@ export class RedBarrels extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
-    // Map from |player| to set of GameObject instances for all their personal barrels.
-    playerBarrels_ = null;
+    // Maps with per-player information on the created barrel objects, and progress statistics.
+    playerBarrels_ = new Map();
+    playerStatistics_ = new Map();
 
     constructor(collectables, manager) {
         super({ mapIconType: 20 /* Fire */ });
 
         this.collectables_ = collectables;
         this.manager_ = manager;
-
-        this.playerBarrels_ = new Map();
 
         server.objectManager.addObserver(this);
     }
@@ -62,6 +61,17 @@ export class RedBarrels extends CollectableBase {
         }
     }
 
+    // Counts the number of collectables that the player has collected already. Returns a structure
+    // in the format of { total, round }, both of which are numbers.
+    countCollectablesForPlayer(player) {
+        const statistics = this.playerStatistics_.get(player);
+
+        return {
+            total: statistics?.collected.size ?? 0,
+            round: statistics?.collectedRound.size ?? 0,
+        };
+    }
+
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
@@ -73,6 +83,7 @@ export class RedBarrels extends CollectableBase {
             barrel.dispose();
         
         this.playerBarrels_.delete(player);
+        this.playerStatistics_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -81,13 +92,15 @@ export class RedBarrels extends CollectableBase {
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, collected) {
+    refreshCollectablesForPlayer(player, statistics) {
         if (this.playerBarrels_.has(player))
             this.clearCollectablesForPlayer(player);
         
+        this.playerStatistics_.set(player, statistics);
+
         const barrels = new Map();
         for (const [ barrelId, { area, position, rotation } ] of this.getCollectables()) {
-            if (collected.has(barrelId))
+            if (statistics.collectedRound.has(barrelId))
                 continue;  // the |player| has already collected this barrel
 
             // TODO: Consider the |area| when barrels are all over the map.
@@ -112,10 +125,12 @@ export class RedBarrels extends CollectableBase {
     // Called when the |player| has shot the given |object|. If this is one of their barrels, we'll
     // consider them as having scored a point.
     onPlayerShootObject(player, object) {
-        if (!this.playerBarrels_.has(player))
+        if (!this.playerBarrels_.has(player) || !this.playerStatistics_.has(player))
             return;  // the |player| does not have any barrels
         
         const barrels = this.playerBarrels_.get(player);
+        const statistics = this.playerStatistics_.get(player);
+
         if (!barrels.has(object))
             return;  // it's not one of our barrels that the player shot
         
@@ -144,6 +159,9 @@ export class RedBarrels extends CollectableBase {
         this.manager_.showNotification(player, kNotificationTitle, message);
     
         // Mark the collectable as having been collected, updating the |player|'s stats.
+        statistics.collected.add(barrelId);
+        statistics.collectedRound.add(barrelId);
+
         this.manager_.markCollectableAsCollected(player, CollectableDatabase.kRedBarrel, barrelId);
 
         // Dispose of the barrel's object, and delete it from any and all object tracking that's

@@ -26,16 +26,15 @@ export class SprayTags extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
-    // Map from |player| to set of GameObject instances for all their personal tags.
-    playerTags_ = null;
+    // Maps with per-player information on progress statistics and the created tag objects.
+    playerStatistics_ = new Map();
+    playerTags_ = new Map();
 
     constructor(collectables, manager) {
         super({ mapIconType: 63 /* Pay 'n' Spray */ });
 
         this.collectables_ = collectables;
         this.manager_ = manager;
-
-        this.playerTags_ = new Map();
 
         // native ProcessSprayTagForPlayer(playerid);
         provideNative(
@@ -60,6 +59,16 @@ export class SprayTags extends CollectableBase {
         }
     }
 
+    // Counts the number of collectables that the player has collected already. Returns a structure
+    // in the format of { total, round }, both of which are numbers.
+    countCollectablesForPlayer(player) {
+        const statistics = this.playerStatistics_.get(player);
+        return {
+            total: statistics?.collected.size ?? 0,
+            round: statistics?.collectedRound.size ?? 0,
+        };
+    }
+
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
@@ -71,6 +80,7 @@ export class SprayTags extends CollectableBase {
             tag.dispose();
         
         this.playerTags_.delete(player);
+        this.playerStatistics_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -79,14 +89,17 @@ export class SprayTags extends CollectableBase {
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, collected) {
+    refreshCollectablesForPlayer(player, statistics) {
         if (this.playerTags_.has(player))
             this.clearCollectablesForPlayer(player);
         
+        this.playerStatistics_.set(player, statistics);
+
         const tags = new Map();
         for (const [ sprayTagId, { position, rotation } ] of this.getCollectables()) {
-            const modelId = collected.has(sprayTagId) ? kSprayTagTaggedModelId
-                                                      : kSprayTagUntaggedModelId;
+            const collected = statistics.collectedRound.has(sprayTagId);
+            const modelId = collected ? kSprayTagTaggedModelId
+                                      : kSprayTagUntaggedModelId;
 
             const tag = this.entities.createObject({
                 modelId, position, rotation,
@@ -110,14 +123,16 @@ export class SprayTags extends CollectableBase {
         const player = server.playerManager.getById(playerid);
         if (!player)
             return;  // the |player| is not connected to the server, an invalid event
-        
-        if (!this.playerTags_.has(player))
+
+        if (!this.playerTags_.has(player) || !this.playerStatistics_.has(player))
             return;  // the |player| hasn't had their state initialized
         
         const kTotalSprayTags = this.getCollectableCount();
 
         const playerPosition = player.position;
         const playerRotation = player.rotation;
+        
+        const statistics = this.playerStatistics_.get(player);
 
         const target = playerPosition.translateTo2D(kSprayTargetDistance, playerRotation);
         const tags = this.playerTags_.get(player);
@@ -151,6 +166,9 @@ export class SprayTags extends CollectableBase {
             this.manager_.showNotification(player, kNotificationTitle, message);
     
             // Mark the collectable as having been collected, updating the |player|'s stats.
+            statistics.collected.add(sprayTagId);
+            statistics.collectedRound.add(sprayTagId);
+
             this.manager_.markCollectableAsCollected(
                 player, CollectableDatabase.kSprayTag, sprayTagId);
 

@@ -52,6 +52,10 @@ export class CollectableBase {
     // Called when the collectables have to be initialized.
     initialize() {}
 
+    // Counts the number of collectables that the player has collected already. Returns a structure
+    // in the format of { total, round }, both of which are numbers.
+    countCollectablesForPlayer(player) { return { total: 0, round: 0 }; }
+
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {}
@@ -59,7 +63,7 @@ export class CollectableBase {
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, collected) {}
+    refreshCollectablesForPlayer(player, statistics) {}
 
     // ---------------------------------------------------------------------------------------------
     // Section: Default behaviour

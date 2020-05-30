@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { SprayTags,
-         kSprayTagTaggedModelId, kSprayTagUntaggedModelId } from 'features/collectables/spray_tags.js';
+         kSprayTagTaggedModelId,
+         kSprayTagUntaggedModelId } from 'features/collectables/spray_tags.js';
 
 import { range } from 'base/range.js';
 
@@ -37,7 +39,9 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all spray tags, as if the player has not collected any yet.
-        delegate.refreshCollectablesForPlayer(gunther, new Set());
+        const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+
+        delegate.refreshCollectablesForPlayer(gunther, emptyStatistics);
 
         const updatedObjectCount = server.objectManager.count;
         const updatedObjects = [ ...server.objectManager ].map(object => object.modelId);
@@ -51,7 +55,9 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
 
         // Now update the tags to a situation in which half of 'em have been collected. The same
         // number of objects should be created, just with a different model Id composition.
-        delegate.refreshCollectablesForPlayer(gunther, new Set([ ...range(50) ]));
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(50) ]);
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
 
         const refreshedObjectCount = server.objectManager.count;
         const refreshedObjects = [ ...server.objectManager ].map(object => object.modelId);
@@ -76,7 +82,8 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all spray tags, as if the player has not collected any yet.
-        delegate.refreshCollectablesForPlayer(gunther, new Set());
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
 
         const updatedObjectCount = server.objectManager.count;
 

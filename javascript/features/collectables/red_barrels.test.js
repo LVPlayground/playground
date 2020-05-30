@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
 
 import { range } from 'base/range.js';
@@ -36,14 +37,19 @@ describe('RedBarrels', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all barrels, as if the player has not collected any yet.
-        delegate.refreshCollectablesForPlayer(gunther, new Set());
+        const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+
+        delegate.refreshCollectablesForPlayer(gunther, emptyStatistics);
 
         const updatedObjectCount = server.objectManager.count;
 
         assert.isAbove(updatedObjectCount, existingObjectCount);
 
         // Now update the barrels to a situation in which half of 'em have been collected.
-        delegate.refreshCollectablesForPlayer(gunther, new Set([ ...range(50) ]));
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(50) ]);
+
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
 
         assert.isAbove(server.objectManager.count, existingObjectCount);
         assert.isBelow(server.objectManager.count, updatedObjectCount);
@@ -61,7 +67,8 @@ describe('RedBarrels', (it, beforeEach, afterEach) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all barrels, as if the player has not collected any yet.
-        delegate.refreshCollectablesForPlayer(gunther, new Set());
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
 
         const updatedObjectCount = server.objectManager.count;
 

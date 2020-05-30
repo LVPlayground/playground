@@ -64,6 +64,12 @@ export class CallCommands {
         const currentRecipient =
             this.callChannel.getConversationPartner(player) || this.dialing_.get(player);
     
+        // Bail out if the |player| is trying to call themselves.
+        if (player === targetPlayer) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_SELF);
+            return;
+        }
+
         // Bail out if the |player| is already on the phone.
         if (currentRecipient) {
             player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);

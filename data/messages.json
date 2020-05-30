@@ -68,6 +68,7 @@
   "COMMUNICATION_DIAL_REJECTED": "{DC143C}[Phone]{FFFFFF} * You have rejected the phone call from %s.",
   "COMMUNICATION_DIAL_REJECTED_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s has rejected your phone call.",
   "COMMUNICATION_DIAL_REQUEST": "{DC143C}[Phone]{FFFFFF} * %s is calling you. Respond by using either {DC143C}/answer{FFFFFF} or {DC143C}/reject{FFFFFF}.",
+  "COMMUNICATION_DIAL_SELF": "{DC143C}[Phone]{FFFFFF} * You cannot call yourself, silly billy.",
   "COMMUNICATION_DIAL_WAITING": "{DC143C}[Phone]{FFFFFF} * You are currently dialing %s...",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
   "COMMUNICATION_IRCPM_ADMIN": "{FF9900}* PM: %s (Id:%d) to %s (IRC):{FFFFFF} %s",

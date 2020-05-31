@@ -107,6 +107,13 @@ public OnPlayerDisconnect(playerid, reason) {
     return PlayerEvents(playerid)->onPlayerDisconnect(reason);
 }
 
+// Returns whether vehicle keys are available to the |playerid|, based on their current state.
+bool: AreVehicleKeysAvailable(playerid) {
+    return !PlayerSyncedData(playerid)->hasMinigameName() &&
+           !PlayerActivity(playerid)->isJavaScriptActivity() &&
+           !IsPlayerInMinigame(playerid);
+}
+
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // Fix: enables the player to leave remote control vehicles when they're currently in one. This
     // avoids having to listen to the `playerkeystatechange` event in JavaScript.
@@ -184,7 +191,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     // Implementation of the vehicle keys, that can be enabled for players when they achieve certain
     // achievements. The exact requirements are documented elsewhere.
-    if (PlayerSyncedData(playerid)->vehicleKeys() > 0) {
+    if (PlayerSyncedData(playerid)->vehicleKeys() > 0 && AreVehicleKeysAvailable(playerid)) {
         new const vehicleId = GetPlayerVehicleID(playerid);
         new const vehicleKeys = PlayerSyncedData(playerid)->vehicleKeys();
 

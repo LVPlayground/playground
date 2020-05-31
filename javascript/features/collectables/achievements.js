@@ -83,8 +83,10 @@ export class Achievements extends CollectableBase {
         if (statistics.collectedRound.has(achievement))
             return;  // the |player| already obtained the given |achievement|
 
+        this.announceAchievement(player, achievement);
+
         if (!statistics.collected.has(achievement))
-            this.activateAchievementEffects(player, achievement);
+            this.activateAchievementEffects(player, achievement, /* unlocked= */ true);
 
         statistics.collected.add(achievement);
         statistics.collectedRound.add(achievement);
@@ -101,15 +103,41 @@ export class Achievements extends CollectableBase {
 
     // Called when the |player| has been awarded the given |achievement|, activating its effects.
     // This is only necessary for some of the achievements.
-    activateAchievementEffects(player, achievement) {
+    activateAchievementEffects(player, achievement, unlocked = false) {
         switch (achievement) {
+            case kAchievementSprayTagSilver:
+                if (unlocked)
+                    player.sendMessage(Message.ACHIEVEMENT_BOMB_SHOP);
+                  
+                break;
+
             case kAchievementRedBarrelSilver:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysColourChange;
+                if (unlocked)
+                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_COLOR);
+
                 break;
               
             case kAchievementRedBarrelPlatinum:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
+                if (unlocked)
+                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_JUMP);
+
                 break;
+        }
+    }
+
+    // Announces the given |achievement|, obtained by |player|, to other people on the server. This
+    // is a big deal, as most achievements are not easy to obtain.
+    announceAchievement(player, achievement) {
+        const { name } = kAchievements.get(achievement);
+        const formattedMessage = Message.format(Message.ACHIEVEMENT, player.name, name);
+
+        for (const recipient of server.playerManager) {
+            if (recipient.isNonPlayerCharacter())
+                continue;
+            
+            recipient.sendMessage(formattedMessage);
         }
     }
 

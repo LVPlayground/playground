@@ -28,6 +28,9 @@ new g_ninjaJackLastAttemptVictim[MAX_PLAYERS];
 // Keeps track of when each player started spraying the spray tag, to determine total duration.
 new g_sprayTagStartTime[MAX_PLAYERS];
 
+// Time at which the player last used the boost Vehicle Keys feature.
+new g_vehicleKeysLastBoost[MAX_PLAYERS];
+
 // Returns whether the given |modelId| is a remote controllable vehicle.
 IsModelRemoteControlVehicle(modelId) {
     switch (modelId) {
@@ -151,17 +154,24 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         new const vehicleKeys = PlayerSyncedData(playerid)->vehicleKeys();
 
         // Vehicle keys (1): speed boost
-        if (PRESSED(VEHICLE_KEYS_BINDING_BOOST) && (vehicleKeys & VEHICLE_KEYS_BOOST)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_BOOST) && (vehicleKeys & VEHICLE_KEYS_BOOST)) {
+            new const boostLimitMs = 1250;
             new const Float: boost = 2;
+
             new Float: velocity[3];
 
-            GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
-            SetVehicleVelocity(
-                vehicleId, velocity[0] * boost, velocity[1] * boost, velocity[2] * boost);
+            new const currentTime = GetTickCount();
+            if (g_vehicleKeysLastBoost[playerid] <= (currentTime - boostLimitMs)) {
+                g_vehicleKeysLastBoost[playerid] = currentTime;
+
+                GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
+                SetVehicleVelocity(
+                    vehicleId, velocity[0] * boost, velocity[1] * boost, velocity[2] * boost);
+            }
         }
 
         // Vehicle keys (2): colour change
-        if (PRESSED(VEHICLE_KEYS_BINDING_COLOUR) && (vehicleKeys & VEHICLE_KEYS_COLOUR)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_COLOUR) && (vehicleKeys & VEHICLE_KEYS_COLOUR)) {
             new primaryColour = random(126);
             new secondaryColour = random(126);
 
@@ -169,14 +179,14 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         }
 
         // Vehicle keys (3): full repair
-        if (PRESSED(VEHICLE_KEYS_BINDING_FIX) && (vehicleKeys & VEHICLE_KEYS_FIX)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_FIX) && (vehicleKeys & VEHICLE_KEYS_FIX)) {
             RepairVehicle(vehicleId);
 
             GameTextForPlayer(playerid, "FIXED", 1000, 3);
         }
 
         // Vehicle keys (4): flip
-        if (PRESSED(VEHICLE_KEYS_BINDING_FLIP) && (vehicleKeys & VEHICLE_KEYS_FLIP)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_FLIP) && (vehicleKeys & VEHICLE_KEYS_FLIP)) {
             new Float: position[3];
             new Float: rotation;
 
@@ -192,7 +202,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         }
 
         // Vehicle keys (5): jump
-        if (PRESSED(VEHICLE_KEYS_BINDING_JUMP) && (vehicleKeys & VEHICLE_KEYS_JUMP)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_JUMP) && (vehicleKeys & VEHICLE_KEYS_JUMP)) {
             new const Float: vehicleJump = 0.3;
             new Float: velocity[3];
 
@@ -201,7 +211,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         }
 
         // Vehicle keys (6): nitro
-        if (PRESSED(VEHICLE_KEYS_BINDING_NOS) && (vehicleKeys & VEHICLE_KEYS_NOS)) {
+        if (HOLDING(VEHICLE_KEYS_BINDING_NOS) && (vehicleKeys & VEHICLE_KEYS_NOS)) {
             new const modelId = GetVehicleModel(vehicleId);
 
             if (VehicleModel(modelId)->isNitroInjectionAvailable())

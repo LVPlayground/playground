@@ -84,8 +84,12 @@ class PlayerSyncedData {
         switch (property) {
             // Integral properties.
             case PlayerSyncedData.COLLECTABLES:
-            case PlayerSyncedData.ISOLATED:
             case PlayerSyncedData.VEHICLE_KEYS:
+                pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property, value,
+                           0.0 /* invalid float */, '' /* empty string */);
+                break;
+
+            case PlayerSyncedData.ISOLATED:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            value ? 1 : 0, 0.0 /* invalid float */, '' /* empty string */);
                 break;

@@ -112,8 +112,14 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
             case PREFERRED_RADIO_CHANNEL:
                 format(m_preferredRadioChannel, sizeof(m_preferredRadioChannel), "%s", stringValue);
 
-            case VEHICLE_KEYS:
+            case VEHICLE_KEYS: {
                 m_vehicleKeys = intValue;
+                if(m_vehicleKeys | VEHICLE_KEYS_BLINKER_RIGHT) {
+                    // Blinking enable/disable always goes together.
+                    // If right is disable blinking is disabled thus stop the blinking.
+                    StopBlinking(playerId);
+                }
+            }
         }
 
         #pragma unused floatValue

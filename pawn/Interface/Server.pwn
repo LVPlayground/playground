@@ -36,6 +36,8 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define VEHICLE_KEYS_FLIP 8
 #define VEHICLE_KEYS_JUMP 16
 #define VEHICLE_KEYS_NOS 32
+#define VEHICLE_KEYS_BLINKER_RIGHT 64
+#define VEHICLE_KEYS_BLINKER_LEFT 256
 
 native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();

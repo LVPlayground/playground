@@ -57,6 +57,7 @@
 
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
+  "COMMUNICATION_CALL_SELF": "@error You can't call yourself over the phone.",
   "COMMUNICATION_CALL_CONNECTED": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has been established. Use {DC143C}/hangup{FFFFFF} to hang up.",
   "COMMUNICATION_CALL_DISCONNECTED": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because %s hung up the phone.",
   "COMMUNICATION_CALL_DISCONNECTED_LEFT": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because they left the server.",

@@ -19,6 +19,7 @@
   "ACHIEVEMENT_BOMB_SHOP": "{00E676}* You can now use the Vehicle Bomb Shop in Las Venturas!",
   "ACHIEVEMENT_VEHICLE_COLOR": "{00E676}* You can now change your vehicle's colour by clicking on numpad 4!",
   "ACHIEVEMENT_VEHICLE_JUMP": "{00E676}* You can now jump in your vehicle outside of Las Venturas by using the horn!",
+  "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}/%s{00E676} and {388E3C}/%s{00E676} commands to spawn vehicles!",
 
   "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
   "ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has made an announcement: %s",

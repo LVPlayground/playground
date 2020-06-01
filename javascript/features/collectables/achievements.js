@@ -104,25 +104,46 @@ export class Achievements extends CollectableBase {
     // Called when the |player| has been awarded the given |achievement|, activating its effects.
     // This is only necessary for some of the achievements.
     activateAchievementEffects(player, achievement, unlocked = false) {
+        if (unlocked) {
+            const kUnlockMessages = new Map([
+                [
+                    kAchievementSprayTagBronze,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/pre', '/sul')
+                ],
+                [
+                    kAchievementSprayTagGold,
+                    Message.ACHIEVEMENT_BOMB_SHOP
+                ],
+                [
+                    kAchievementSprayTagPlatinum,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/nrg', '/inf')
+                ],
+                [
+                    kAchievementRedBarrelBronze,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/ele', '/tur')
+                ],
+                [
+                    kAchievementRedBarrelSilver,
+                    Message.ACHIEVEMENT_VEHICLE_COLOR
+                ],
+                [
+                    kAchievementRedBarrelPlatinum,
+                    Message.ACHIEVEMENT_VEHICLE_JUMP
+                ],
+            ]);
+
+            const message = kUnlockMessages.get(achievement);
+            if (message)
+                player.sendMessage(message);
+        }
+
         switch (achievement) {
-            case kAchievementSprayTagGold:
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_BOMB_SHOP);
-
-                break;
-
             case kAchievementRedBarrelSilver:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysColourChange;
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_COLOR);
-
                 break;
               
             case kAchievementRedBarrelPlatinum:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_JUMP);
-
                 break;
         }
     }

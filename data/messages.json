@@ -57,7 +57,6 @@
 
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
-  "COMMUNICATION_CALL_SELF": "@error You can't call yourself over the phone.",
   "COMMUNICATION_CALL_CONNECTED": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has been established. Use {DC143C}/hangup{FFFFFF} to hang up.",
   "COMMUNICATION_CALL_DISCONNECTED": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because %s hung up the phone.",
   "COMMUNICATION_CALL_DISCONNECTED_LEFT": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because they left the server.",
@@ -74,7 +73,7 @@
   "COMMUNICATION_DIAL_REJECTED": "{DC143C}[Phone]{FFFFFF} * You have rejected the phone call from %s.",
   "COMMUNICATION_DIAL_REJECTED_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s has rejected your phone call.",
   "COMMUNICATION_DIAL_REQUEST": "{DC143C}[Phone]{FFFFFF} * %s is calling you. Respond by using either {DC143C}/answer{FFFFFF} or {DC143C}/reject{FFFFFF}.",
-  "COMMUNICATION_DIAL_SELF": "{DC143C}[Phone]{FFFFFF} * You cannot call yourself, silly billy.",
+  "COMMUNICATION_DIAL_SELF": "{DC143C}[Phone]{FFFFFF} * You cannot call yourself over the phone, silly billy.",
   "COMMUNICATION_DIAL_WAITING": "{DC143C}[Phone]{FFFFFF} * You are currently dialing %s...",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
   "COMMUNICATION_IRCPM_ADMIN": "{FF9900}* PM: %s (Id:%d) to %s (IRC):{FFFFFF} %s",

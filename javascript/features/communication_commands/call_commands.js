@@ -61,13 +61,6 @@ export class CallCommands {
     // Begins calling the |targetPlayer| to establish a phone call. They have to acknowledge the
     // request, and it will automatically expire after |kCallExpirationTimeSec| seconds.
     onCallCommand(player, targetPlayer) {
-        
-        //Don't let him call himself.
-        if (player === targetPlayer) {
-            player.sendMessage(Message.COMMUNICATION_CALL_SELF);
-            return;
-            }
-        
         const currentRecipient =
             this.callChannel.getConversationPartner(player) || this.dialing_.get(player);
     

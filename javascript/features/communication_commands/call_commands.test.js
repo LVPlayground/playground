@@ -138,6 +138,6 @@ describe('CallCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/call Gunther'));
         assert.equal(gunther.messages.length, 12);
         assert.equal(
-            gunther.messages[11], Message.format(Message.COMMUNICATION_CALL_SELF));      
+            gunther.messages[11], Message.format(Message.COMMUNICATION_DIAL_SELF));      
     });
 });

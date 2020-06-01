@@ -241,11 +241,15 @@ class VehicleCommands {
             }
         }
 
+        // Stop the vehicle, because it shouldn't be moving.
+        pawnInvoke('SetVehicleVelocity', 'ifff', vehicleId, 0, 0, 0);
+
         // Move them out of the vehicle first to avoid desyncs.
         player.position = player.position;
 
-        // Now move them in to the vehicle again.
-        pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0);
+        // Move them in to the vehicle again.
+        wait(750).then(() =>
+            pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0));
 
         // They've seized the vehicle, good for them. Let them know :).
         player.sendMessage(Message.VEHICLE_SEIZED);

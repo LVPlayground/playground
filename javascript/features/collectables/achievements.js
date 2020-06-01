@@ -17,9 +17,9 @@ export const kAchievementSprayTagPlatinum = 4;  // kBenefitQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.
 export const kAchievementRedBarrelBronze = 5;
-export const kAchievementRedBarrelSilver = 6;
+export const kAchievementRedBarrelSilver = 6;  // kBenefitVehicleKeysColour
 export const kAchievementRedBarrelGold = 7;
-export const kAchievementRedBarrelPlatinum = 8;
+export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
 
 // -------------------------------------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ export class Achievements extends CollectableBase {
             case kAchievementSprayTagSilver:
                 if (unlocked)
                     player.sendMessage(Message.ACHIEVEMENT_BOMB_SHOP);
-                  
+
                 break;
 
             case kAchievementRedBarrelSilver:

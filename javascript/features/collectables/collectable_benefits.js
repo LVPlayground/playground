@@ -7,3 +7,9 @@ export const kBenefitQuickVehicleAccess = 0;
 
 // Whether a player is able to use the bomb shop.
 export const kBenefitBombShop = 1;
+
+// Whether a player can use the vehicle colour changing keys.
+export const kBenefitVehicleKeysColour = 2;
+
+// Whether a player can use the vehicle jump keys outside of Las Venturas.
+export const kBenefitVehicleKeysJump = 3;

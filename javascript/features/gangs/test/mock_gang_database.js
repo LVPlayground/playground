@@ -95,13 +95,13 @@ class MockGangDatabase {
                     role: Gang.ROLE_MEMBER,
                     userId: 1338,
                     username: 'Harry',
-                    lastSeen: new Date(Date.now() - 14 * 86400 * 1000)
+                    lastSeen: new Date(Date.now() - 13.75 * 86400 * 1000)
                 },
                 {
                     role: Gang.ROLE_MEMBER,
                     userId: 1337,
                     username: 'Russell',
-                    lastSeen: new Date(Date.now() - 65 * 86400 * 1000)
+                    lastSeen: new Date(Date.now() - 64.75 * 86400 * 1000)
                 },
                 {
                     role: Gang.ROLE_MEMBER,

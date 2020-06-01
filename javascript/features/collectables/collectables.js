@@ -46,6 +46,13 @@ export default class Collectables extends Feature {
         achievements.awardAchievement(player, achievement);
     }
 
+    // Returns whether the |player| has the given |achievement|. Do not use this to change the
+    // availability of benefits, instead, use `isPlayerEligibleForBenefit` to that purpose.
+    hasAchievement(player, achievement, round = true) {
+        const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
+        return achievements && achievements.hasAchievement(player, achievement, round);
+    }
+
     // Returns whether the |player| is able to use the given |benefit|. Each benefit is strongly
     // tied to a particular achievement that can be awarded to the |player|. This method is the
     // canonical place for such associations to live, used by both JavaScript and Pawn code.

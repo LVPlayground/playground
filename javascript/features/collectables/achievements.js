@@ -63,10 +63,10 @@ export class Achievements extends CollectableBase {
     // Returns whether the |player| has the given |achievement|. The |round| boolean, when set, will
     // restrict the check to the player's current round of collecting achievements.
     hasAchievement(player, achievement, round = true) {
-        if (!this.players_.has(statistics))
+        if (!this.players_.has(player))
             return false;  // the data for |player| has not been loaded yet
         
-        const statistics = this.players_.get(statistics);
+        const statistics = this.players_.get(player);
 
         if (round)
             return statistics.collectedRound.has(achievement);

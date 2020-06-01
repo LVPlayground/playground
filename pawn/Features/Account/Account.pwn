@@ -204,6 +204,8 @@ class Account <playerId (MAX_PLAYERS)> {
         Player(playerId)->setIsRegistered(false);
         Player(playerId)->setIsLoggedIn(false);
 
+        SpawnManager(playerId)->setSkinId(/* invalid skin Id= */ -1);
+
         m_userId = 0;
 
         Announcements->announcePlayerGuestPlay(playerId, oldNickname);

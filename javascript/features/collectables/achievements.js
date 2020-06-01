@@ -10,13 +10,13 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 // -------------------------------------------------------------------------------------------------
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
-export const kAchievementSprayTagBronze = 1;
-export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
-export const kAchievementSprayTagGold = 3;
-export const kAchievementSprayTagPlatinum = 4;  // kBenefitQuickVehicleAccess
+export const kAchievementSprayTagBronze = 1;  // kBenefitBasicSprayQuickVehicleAccess
+export const kAchievementSprayTagSilver = 2;
+export const kAchievementSprayTagGold = 3;  // kBenefitBombShop
+export const kAchievementSprayTagPlatinum = 4;  // kBenefitFullQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.
-export const kAchievementRedBarrelBronze = 5;
+export const kAchievementRedBarrelBronze = 5;  // kBenefitBasicBarrelQuickVehicleAccess
 export const kAchievementRedBarrelSilver = 6;  // kBenefitVehicleKeysColour
 export const kAchievementRedBarrelGold = 7;
 export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
@@ -105,7 +105,7 @@ export class Achievements extends CollectableBase {
     // This is only necessary for some of the achievements.
     activateAchievementEffects(player, achievement, unlocked = false) {
         switch (achievement) {
-            case kAchievementSprayTagSilver:
+            case kAchievementSprayTagGold:
                 if (unlocked)
                     player.sendMessage(Message.ACHIEVEMENT_BOMB_SHOP);
 

@@ -17,11 +17,11 @@ of the achievements have benefits associated with them as well.
 
 Achievement       | What                    | Benefit
 ------------------|-------------------------|-------------------------
-Tag               | Tag 10 Spray Tags       |
-Back to Back      | Tag 40 Spray Tags       | Unlocks use of the Bomb Shop
-Heaven Spot       | Tag 90 Spray Tags       |
-Graffiti Angel    | Tag all Spray Tags      | Unlocks the ability to spawn vehicles with `/v`
-Firebug           | Explode 10 Red Barrels  |
+Tag               | Tag 10 Spray Tags       | Unlocks `/pre` and `/sul` to spawn vehicles.
+Back to Back      | Tag 40 Spray Tags       | 
+Heaven Spot       | Tag 90 Spray Tags       | Unlocks use of the Bomb Shop
+Graffiti Angel    | Tag all Spray Tags      | Unlocks `/nrg` and `/inf` to spawn vehicles.
+Firebug           | Explode 10 Red Barrels  | Unlocks `/ele` and `/tur` to spawn vehicles.
 Arsonist          | Explode 40 Red Barrels  | Unlocks the _vehicle colour_ key shortcut.
 Incendiarist      | Explode 90 Red Barrels  |
 Jomeri's Syndrome | Explode all Red Barrels | Unlocks the _vehicle jump_ key shortcut.

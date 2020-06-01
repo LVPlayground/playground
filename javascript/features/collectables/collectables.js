@@ -10,6 +10,16 @@ import Feature from 'components/feature_manager/feature.js';
 import * as achievements from 'features/collectables/achievements.js';
 import * as benefits from 'features/collectables/collectable_benefits.js';
 
+// Mapping of which benefits map to having to obtain which achievements.
+const kBenefitMapping = new Map([
+    [ benefits.kBenefitBasicSprayQuickVehicleAccess, achievements.kAchievementSprayTagBronze ],
+    [ benefits.kBenefitBasicBarrelQuickVehicleAccess, achievements.kAchievementRedBarrelBronze ],
+    [ benefits.kBenefitFullQuickVehicleAccess, achievements.kAchievementSprayTagPlatinum ],
+    [ benefits.kBenefitBombShop, achievements.kAchievementSprayTagSilver ],
+    [ benefits.kBenefitVehicleKeysColour, achievements.kAchievementRedBarrelSilver ],
+    [ benefits.kBenefitVehicleKeysJump, achievements.kAchievementRedBarrelPlatinum ],
+]);
+
 // Implementation of the Red Barrels feature, which scatters a series of barrels throughout San
 // Andreas that players can "collect" by blowing them up.
 export default class Collectables extends Feature {
@@ -63,18 +73,7 @@ export default class Collectables extends Feature {
     // tied to a particular achievement that can be awarded to the |player|. This method is the
     // canonical place for such associations to live, used by both JavaScript and Pawn code.
     isPlayerEligibleForBenefit(player, benefit) {
-        const requiredAchievements = [];
-
-        switch (benefit) {
-            case benefits.kBenefitQuickVehicleAccess:
-                requiredAchievements.push(achievements.kAchievementSprayTagPlatinum);
-                break;
-            
-            case benefits.kBenefitBombShop:
-                requiredAchievements.push(achievements.kAchievementSprayTagSilver);
-                break;
-        }
-
+        const requiredAchievements = kBenefitMapping.get(benefit) || [];
         const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
 
         // Allow the |benefit| if the requirements are not known, otherwise it's unachievable.

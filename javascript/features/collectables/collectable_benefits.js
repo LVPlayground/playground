@@ -3,13 +3,15 @@
 // be found in the LICENSE file.
 
 // Whether a player is able to use the quick vehicle commands. (/nrg & co.)
-export const kBenefitQuickVehicleAccess = 0;
+export const kBenefitBasicSprayQuickVehicleAccess = 0;
+export const kBenefitBasicBarrelQuickVehicleAccess = 1;
+export const kBenefitFullQuickVehicleAccess = 2;
 
 // Whether a player is able to use the bomb shop.
-export const kBenefitBombShop = 1;
+export const kBenefitBombShop = 3;
 
 // Whether a player can use the vehicle colour changing keys.
-export const kBenefitVehicleKeysColour = 2;
+export const kBenefitVehicleKeysColour = 4;
 
 // Whether a player can use the vehicle jump keys outside of Las Venturas.
-export const kBenefitVehicleKeysJump = 3;
+export const kBenefitVehicleKeysJump = 5;

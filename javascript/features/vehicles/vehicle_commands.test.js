@@ -312,10 +312,12 @@ describe('VehicleCommands', (it, beforeEach) => {
     it('should enable players to use the quick vehicle commands', async(assert) => {
         assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
 
-        const commands = ['ele', 'inf', 'nrg', 'sul', 'tur', 'vor'];
+        const commands = ['pre', 'sul', 'ele', 'tur', 'inf', 'nrg'];
         let previousVehicle = null;
 
         for (const command of commands) {
+            assert.setContext(command);
+
             assert.isTrue(await gunther.issueCommand('/' + command));
             assert.equal(gunther.messages.length, 1);
 

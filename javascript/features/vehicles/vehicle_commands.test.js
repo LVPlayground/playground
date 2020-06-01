@@ -214,7 +214,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_SPRAY_TAGS);
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_COLLECTABLES);
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();

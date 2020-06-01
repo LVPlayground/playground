@@ -264,7 +264,7 @@ class VehicleCommands {
             this.collectables_().isPlayerEligibleForBenefit(player, benefit);
 
         if (!allowed) {
-            player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);
+            player.sendMessage(Message.VEHICLE_QUICK_COLLECTABLES);
             return;
         }
 

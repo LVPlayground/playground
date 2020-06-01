@@ -299,9 +299,6 @@ lvp_stats(playerid, params[])
     format(szStatMsg, 128, "Players Online: %d  Admins Online: %d", iPlayersOnline, iAdminsOnline);
     SendClientMessage(playerid, Color::Green, szStatMsg);
 
-    format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
-    SendClientMessage(playerid, Color::Green, szStatMsg);
-
     format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);
     SendClientMessage(playerid, Color::Green, szStatMsg);
 
@@ -1230,7 +1227,7 @@ HideHelp:
     }
 
 MyHelp:
-    SendClientMessage(playerid, Color::White, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
+    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[allchat/armour/color/health/hide/(goto/save)loc/maptp]");

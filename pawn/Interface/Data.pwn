@@ -6,5 +6,4 @@
 #include "Interface/Data/AccountDataRequest.pwn"
 #include "Interface/Data/ModLoginRequest.pwn"
 #include "Interface/Data/PasswordVerificationRequest.pwn"
-#include "Interface/Data/PlayerAchievementRequest.pwn"
 #include "Interface/Data/PlayerRegisteredRequest.pwn"

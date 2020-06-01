@@ -51,10 +51,6 @@
 // Peter has his own car, yeah!
 #include "Features/Gameplay/Vehicles/PeterVehicleFeature.pwn"
 
-// Achievements provide a way of recognizing the player's achievements, such as paying certain sums
-// in tax, killing a certain amount of people or being in-game for a decent amount of time.
-#include "Features/Gameplay/Achievements.pwn"
-
 // Announcing certain events to players is generalized in the Announcements class, whereas we
 // generalize responses to certain actions in the Responses class.
 #include "Features/Gameplay/Communication/Announcements.pwn"

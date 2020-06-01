@@ -87,8 +87,6 @@ class LegacyAccountBridge {
             SavedPos2[playerId][4] = floatstr(strtok(savedLocation, locationIndex));
         }
 
-        /// @todo: Load achievements of this player.
-
         CSave__BeginLoad(playerId);
 
         firstJoin[playerId] = 1;

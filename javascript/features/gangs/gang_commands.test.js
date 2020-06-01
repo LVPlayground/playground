@@ -441,18 +441,33 @@ describe('GangCommands', (it, beforeEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
 
+        player.respondToDialog({ response: 0 /* Dismiss */ });
+
         assert.isTrue(await player.issueCommand('/gang members'));
 
-        assert.equal(player.messages.length, 3);
-
-        assert.isTrue(player.messages[0].includes(gang.tag));
-        assert.isTrue(player.messages[0].includes(gang.name));
-
-        assert.isTrue(player.messages[1].includes(player.name));
-        assert.isTrue(player.messages[1].includes('Id:')); /* Gunther is |player| */
-
-        assert.isTrue(player.messages[2].includes(russell.name));
-        assert.isTrue(player.messages[2].includes('Id:')); /* Russell is |russell| */
+        assert.equal(player.messages.length, 0);
+        assert.deepEqual(player.getLastDialogAsTable(/* hasColumn= */ true).rows, [
+            [
+                'Leader',
+                'Gunther',
+                'now',
+            ],
+            [
+                'Member',
+                'Harry',
+                '14 days ago',
+            ],
+            [
+                'Member',
+                'Russell',
+                'now',
+            ],
+            [
+                'Member',
+                'Sander',
+                '1 year ago',
+            ]
+        ]);
     });
 
     it('should only allow leaders to see and amend the gang settings', assert => {

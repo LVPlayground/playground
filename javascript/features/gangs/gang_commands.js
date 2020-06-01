@@ -17,7 +17,7 @@ import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
 
 import { format } from 'base/string_formatter.js';
-import { formatDate } from 'base/time.js';
+import { formatDate, fromNow } from 'base/time.js';
 
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
@@ -405,42 +405,40 @@ class GangCommands {
         }
 
         // Retrieve the full memberlist of this gang, not those who are currently in-game.
-        const members = await this.manager_.getFullMemberList(gang, true /* groupByRole */);
+        const members = await this.manager_.getFullMemberList(gang, false /* groupByRole */);
+        
+        // Compile a set of online users, to reflect their last activity time more accurately than
+        // relying on the database, which may not have updated yet.
+        const ingame = new Set();
 
-        player.sendMessage(Message.GANG_MEMBERS_HEADER, gang.tag, gang.name);
-
-        // Formats messages for a particular group of members and sends them to the player when
-        // there is at least a single player in the group.
-        function formatAndSendGroup(label, members) {
-            if (!members.length)
-                return;
-
-            const membersPerRow = 8;
-            for (let i = 0; i < members.length; i += membersPerRow) {
-                const membersRow = members.slice(i, membersPerRow);
-
-                let message = '';
-                if (i == 0 /* first row */)
-                    message += '{B1FC17}' + label + '{FFFFFF}: ';
-
-                // Format and append each member. Online members will visually stand out.
-                membersRow.forEach(member => {
-                    const { nickname, player } = member;
-
-                    if (player)
-                        message += '{B1FC17}' + nickname + '{FFFFFF} (Id: ' + player.id + '), ';
-                    else
-                        message += nickname + ', ';
-                });
-
-                // Finally, send the message to the player.
-                player.sendMessage(message.substr(0, message.length - 2));
-            }
+        for (const otherPlayer of server.playerManager) {
+            if (otherPlayer.account.isIdentified())
+                ingame.add(otherPlayer.account.userId);
         }
 
-        formatAndSendGroup('Leaders', members.leaders);
-        formatAndSendGroup('Managers', members.managers);
-        formatAndSendGroup('Members', members.members);
+        // Display a dialog with all the relevant information about the member(s).
+        const dialog = new Menu('Gang members', [
+            'Position',
+            'Nickname',
+            'Last seen',
+
+        ], { pageSize: this.settings_().getValue('gangs/member_page_count') });
+
+        for (const member of members) {
+            const position = GangDatabase.toRoleString(member.role);
+            const nickname = member.nickname;
+
+            if (ingame.has(member.userId))
+                member.lastSeen = new Date();
+
+            let lastSeen = '{CCCCCC}never';
+            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime()))
+                lastSeen = fromNow({ date: member.lastSeen });
+            
+            dialog.addItem(position, nickname, lastSeen);
+        }
+
+        await dialog.displayForPlayer(player);
     }
 
     // Called when a player types the `/gang settings` command. This command is only available for

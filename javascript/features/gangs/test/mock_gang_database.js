@@ -85,31 +85,52 @@ class MockGangDatabase {
     async getFullMemberList(gang) {
         if (gang.tag === 'CC') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MEMBER, userId: 1338, username: 'Harry' },
-                { role: Gang.ROLE_MEMBER, userId: 1337, username: 'Russell' },
-                { role: Gang.ROLE_MEMBER, userId: 1339, username: 'Sander' }
+                {
+                    role: Gang.ROLE_LEADER,
+                    userId: 42,
+                    username: 'Gunther',
+                    lastSeen: new Date()
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1338,
+                    username: 'Harry',
+                    lastSeen: new Date(Date.now() - 14 * 86400 * 1000)
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1337,
+                    username: 'Russell',
+                    lastSeen: new Date(Date.now() - 65 * 86400 * 1000)
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1339,
+                    username: 'Sander',
+                    lastSeen: new Date(Date.now() - 720 * 86400 * 1000)
+                }
             ];
         }
 
         if (gang.tag === 'HKO') {
             return [
-                { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell' }
+                { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell', lastSeen: new Date() }
             ];
         }
 
         if (gang.tag === 'HKO2') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell' }
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell', lastSeen: new Date() }
             ];
         }
 
         if (gang.tag === 'HKO3') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer' }
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer',
+                  lastSeen: new Date() }
             ];
         }
 

@@ -78,11 +78,14 @@ const GANG_MEMBERS_QUERY = `
     SELECT
         users_gangs.user_id,
         users_gangs.user_role,
-        users.username
+        users.username,
+        users_mutable.last_seen
     FROM
         users_gangs
     LEFT JOIN
         users ON users.user_id = users_gangs.user_id
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = users_gangs.user_id
     WHERE
         users_gangs.gang_id = ? AND
         users_gangs.left_gang IS NULL AND
@@ -373,6 +376,7 @@ class GangDatabase {
                 role: GangDatabase.toRoleValue(row.user_role),
                 userId: row.user_id,
                 username: row.username,
+                lastSeen: new Date(row.last_seen),
             });
         });
 

@@ -34,13 +34,15 @@ export class AccountManager {
         const player = server.playerManager.getById(playerid);
         const registered = !!isRegistered;
 
-        if (player)
-            player.account.isRegistered_ = registered;
+        if (!player)
+            return 0;  // the given |playerid| does not point to a valid player
+
+        player.account.isRegistered_ = registered;
         
         if (!registered)
             server.playerManager.onPlayerGuestSession(player);
 
-        return 0;
+        return 1;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -79,6 +81,8 @@ export class AccountManager {
         if (!player)
             return;  // the |player| does not exist (anymore)
         
+        player.account.isRegistered_ = false;
+
         server.playerManager.onPlayerNameChange(player, /* update= */ true);
         server.playerManager.onPlayerGuestSession(player);
     }

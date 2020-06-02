@@ -301,8 +301,7 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
 }
 
 // This resets the whole blinking status and removes the objects.
-forward StopBlinking(playerid);
-public StopBlinking(playerid) {
+StopBlinking(playerid) {
     DestroyDynamicBlinkerObject(playerid, 0);
     DestroyDynamicBlinkerObject(playerid, 1);
     DestroyDynamicBlinkerObject(playerid, 2);

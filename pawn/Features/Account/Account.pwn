@@ -63,11 +63,12 @@ class Account <playerId (MAX_PLAYERS)> {
      */
     public onRegisteredRequestComplete(bool: registered, userId, skinId, bool: enableAutomaticIdentification = false) {
         BanManager->verifyPlayerAllowedToPlay(playerId, userId);
+
+        // Let JavaScript know about the player being registered or not.
+        SetIsRegistered(playerId, registered);
+
         if (registered == false)
             return;
-
-        // Let JavaScript know about the player being registered.
-        SetIsRegistered(playerId, true);
 
         Player(playerId)->setIsRegistered(true);
         Player(playerId)->setIsLoggedIn(false);
@@ -183,8 +184,6 @@ class Account <playerId (MAX_PLAYERS)> {
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
         CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 0 /* undercover */);
-
-        sprayTagLoadSprayedTags(playerId);
     }
 
     /**
@@ -205,6 +204,8 @@ class Account <playerId (MAX_PLAYERS)> {
         Player(playerId)->setIsRegistered(false);
         Player(playerId)->setIsLoggedIn(false);
 
+        SpawnManager(playerId)->setSkinId(/* invalid skin Id= */ -1);
+
         m_userId = 0;
 
         Announcements->announcePlayerGuestPlay(playerId, oldNickname);
@@ -212,7 +213,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Annotation::ExpandList<OnPlayerGuestLogin>(playerId);
 
         // Broadcast an OnPlayerGuestLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerGuestLogin", "is", playerId, Player(playerId)->nicknameString());
+        CallRemoteFunction("OnPlayerGuestLogin", "i", playerId);
     }
 
     /**
@@ -256,8 +257,10 @@ class Account <playerId (MAX_PLAYERS)> {
             (level == ManagementLevel ? "manager" : "administrator"));
         Admin(playerId, notice);
 
+        EchoMessage("notice-crew", "z", notice);
+
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, originalUserId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
 
         Annotation::ExpandList<OnPlayerModLogin>(playerId);
 
@@ -288,5 +291,5 @@ class Account <playerId (MAX_PLAYERS)> {
 forward OnPlayerLogin(playerid, userid, vip, gangId, undercover);
 public OnPlayerLogin(playerid, userid, vip, gangId, undercover) {}
 
-forward OnPlayerGuestLogin(playerId, guestPlayerName[]);
-public OnPlayerGuestLogin(playerId, guestPlayerName[]) {}
+forward OnPlayerGuestLogin(playerId);
+public OnPlayerGuestLogin(playerId) {}

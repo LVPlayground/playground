@@ -4,8 +4,8 @@
 
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 import { CallChannel } from 'features/communication/channels/call_channel.js';
+import { PublicChannel } from 'features/communication/channels/public_channel.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
-import { SpamTracker } from 'features/communication/spam_tracker.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
 import { relativeTime } from 'base/time.js';
@@ -17,6 +17,7 @@ export class CommunicationManager {
     delegates_ = null;
     messageFilter_ = null;
     muteManager_ = null;
+    visibilityManager_ = null;
     nuwani_ = null;
 
     callChannel_ = null;
@@ -24,10 +25,13 @@ export class CommunicationManager {
     prefixChannels_ = null;
     spamTracker_ = null;
     
-    constructor(messageFilter, muteManager, nuwani) {
+    constructor(messageFilter, muteManager, spamTracker, visibilityManager, nuwani) {
         this.delegates_ = new Set();
         this.messageFilter_ = messageFilter;
         this.muteManager_ = muteManager;
+        this.spamTracker_ = spamTracker;
+        this.visibilityManager_ = visibilityManager;
+
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
@@ -43,6 +47,7 @@ export class CommunicationManager {
             new AdministratorChannel(),
             new VipChannel(),
             new CallChannel(),
+            new PublicChannel(this.visibilityManager_),
         ];
 
         // Split the |kChannels| based on whether they're a prefix channel or a generic channel.
@@ -58,9 +63,6 @@ export class CommunicationManager {
             else
                 throw new Error('Channel prefixes must be exactly one character long.')
         }
-
-        // Create the spam tracker, which verifies that players aren't being naughty.
-        this.spamTracker_ = new SpamTracker();
     }
 
     // Returns the channel used for phone conversations.
@@ -98,20 +100,29 @@ export class CommunicationManager {
         if (!player || !unprocessedMessage || !unprocessedMessage.length)
             return;  // the player is not connected to the server, or they sent an invalid message
 
+        // Tests inject a |resolver| property in the |event|, which is to be invoked when the
+        // message has been processed. This is not necessary for production usage.
+        if (event.resolver) {
+            Promise.resolve().then(() => this.handlePlayerMessage(player, unprocessedMessage))
+                             .then(event.resolver);
+        } else {
+            Promise.resolve().then(() => this.handlePlayerMessage(player, unprocessedMessage));
+        }
+    }
+
+    // Asynchronous handling of player's text messages. This introduces a server frame's delay,
+    // approximately 4ms, for the benefit of taking it out of the critical path.
+    handlePlayerMessage(player, unprocessedMessage) {
         // The |player| might still be identifying themselves, in which case they're muted.
         if (player.account.isRegistered() && !player.account.isIdentified() &&
                 unprocessedMessage[0] != '@' /* allow messages to administrators */) {
             player.sendMessage(Message.COMMUNICATION_LOGIN_BLOCKED);
-
-            event.preventDefault();
             return;
         }
 
         // The entire server might be muted, we will drop the player's message in that case.
         if (this.muteManager_.isCommunicationMuted() && !player.isAdministrator()) {
             player.sendMessage(Message.COMMUNICATION_SERVER_MUTE_BLOCKED);
-
-            event.preventDefault();
             return;
         }
 
@@ -124,41 +135,28 @@ export class CommunicationManager {
                 const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
 
                 player.sendMessage(Message.COMMUNICATION_MUTE_BLOCKED, formattedExpiration.text);
-
-                event.preventDefault();
                 return;
             }
         }
 
         // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
         // not trying to make everyone else on the server go crazy by... overcommunicating.
-        if (this.spamTracker_.isSpamming(player, unprocessedMessage)) {
-            event.preventDefault();
+        if (this.spamTracker_.isSpamming(player, unprocessedMessage))
             return;
-        }
 
         // Process the |message| through the message filter, which may block it as well.
         const message = this.messageFilter_.filter(player, unprocessedMessage);
-        if (!message) {
-            event.preventDefault();
+        if (!message)
             return;
-        }
-
-        // TODO: Once most communication is handled by JavaScript, do all further processing on a
-        // deferred task instead.
 
         for (const delegate of this.delegates_) {
-            if (!!delegate.onPlayerText(player, message)) {
-                event.preventDefault();
+            if (!!delegate.onPlayerText(player, message))
                 return;
-            }
         }
 
         // First check prefix-based channels, as we can check them off quite easily.
         const prefixChannel = this.prefixChannels_.get(message[0]);
         if (prefixChannel !== undefined) {
-            event.preventDefault();
-
             if (!prefixChannel.confirmChannelAccessForPlayer(player))
                 return;  // they have no access, an error message has been sent
             

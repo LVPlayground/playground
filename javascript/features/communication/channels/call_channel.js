@@ -71,7 +71,8 @@ export class CallChannel extends Channel {
     distribute(player, message, nuwani) {
         const recipient = this.activeConversations_.get(player);
         const formattedMessage =
-            Message.format(Message.COMMUNICATION_CALL_MESSAGE, player.id, player.name, message);
+            Message.format(Message.COMMUNICATION_CALL_MESSAGE, player.color.toHexRGB(), player.id,
+                           player.name, message);
 
         if (!recipient)
             throw new Error('Cannot distribute a message without an on-going phone call.');

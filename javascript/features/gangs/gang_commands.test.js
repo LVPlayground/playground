@@ -3,6 +3,8 @@
 // be found in the LICENSE file.
 
 import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
+import { GangFinance } from 'features/gangs/gang_finance.js';
 import Gangs from 'features/gangs/gangs.js';
 
 describe('GangCommands', (it, beforeEach) => {
@@ -32,6 +34,8 @@ describe('GangCommands', (it, beforeEach) => {
             name: name,
             goal: goal || 'Testing gang',
             color: color,
+            balance: 0,
+            balanceAccess: GangDatabase.kAccessLeaderAndManagers,
             chatEncryptionExpiry: 0,
             skinId: null,
         }));
@@ -437,18 +441,33 @@ describe('GangCommands', (it, beforeEach) => {
         addPlayerToGang(player, gang, Gang.ROLE_LEADER);
         addPlayerToGang(russell, gang, Gang.ROLE_MEMBER);
 
+        player.respondToDialog({ response: 0 /* Dismiss */ });
+
         assert.isTrue(await player.issueCommand('/gang members'));
 
-        assert.equal(player.messages.length, 3);
-
-        assert.isTrue(player.messages[0].includes(gang.tag));
-        assert.isTrue(player.messages[0].includes(gang.name));
-
-        assert.isTrue(player.messages[1].includes(player.name));
-        assert.isTrue(player.messages[1].includes('Id:')); /* Gunther is |player| */
-
-        assert.isTrue(player.messages[2].includes(russell.name));
-        assert.isTrue(player.messages[2].includes('Id:')); /* Russell is |russell| */
+        assert.equal(player.messages.length, 0);
+        assert.deepEqual(player.getLastDialogAsTable(/* hasColumn= */ true).rows, [
+            [
+                'Leader',
+                'Gunther',
+                'now',
+            ],
+            [
+                'Member',
+                'Harry',
+                '14 days ago',
+            ],
+            [
+                'Member',
+                'Russell',
+                'now',
+            ],
+            [
+                'Member',
+                'Sander',
+                '1 year ago',
+            ]
+        ]);
     });
 
     it('should only allow leaders to see and amend the gang settings', assert => {
@@ -467,6 +486,30 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.isFalse(player.lastDialog.includes('Gang name'));  // Leader-only option
         assert.isTrue(player.lastDialog.includes('My color'));  // Member option
+    });
+
+    it('should enable leaders to change gang balance access settings', async (assert) => {
+        assert.isTrue(player.issueCommand('/gang settings'));
+
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.GANG_NOT_IN_GANG);
+
+        player.clearMessages();
+
+        const gang = createGang();
+
+        addPlayerToGang(player, gang, Gang.ROLE_LEADER);
+
+        assert.equal(gang.balanceAccess, GangDatabase.kAccessLeaderAndManagers);
+
+        player.respondToDialog({ listitem: 7 /* Gang balance access */ }).then(() =>
+            player.respondToDialog({ listitem: 0 /* Leader only */ })).then(() =>
+            player.respondToDialog({ response: 0 /* Ok */}));
+        
+        assert.isTrue(await player.issueCommand('/gang settings'));
+
+        assert.equal(player.messages.length, 0);
+        assert.equal(gang.balanceAccess, GangDatabase.kAccessLeader);
     });
 
     it('should not enable leaders to edit their own settings', async(assert) => {
@@ -587,7 +630,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.lastDialog,
-            Message.format(Message.GANG_SETTINGS_NEW_COLOR, '0x' + gang.color.toHexRGB()));
+            Message.format(Message.GANG_SETTINGS_NEW_COLOR, '#' + gang.color.toHexRGB()));
     });
 
     it('should enable managers to purchase gang chat encryption time', async(assert) => {
@@ -862,5 +905,138 @@ describe('GangCommands', (it, beforeEach) => {
         assert.isTrue(player.messages[1].includes(gangColor.toHexRGB()));
         assert.isTrue(player.messages[1].includes('HKO'));
         assert.isTrue(player.messages[1].includes('Hello Kitty Online'));
+    });
+
+    it('should be possible for players to interact with their gang bank account', async(assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+        const gang = createGang({ tag: 'CC', name: 'Creative Cows', goal: 'We rule!' });
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
+        addPlayerToGang(russell, gang, Gang.ROLE_LEADER);
+
+        finance.givePlayerCash(player, 1000000);
+
+        assert.equal(gang.balance, 0);
+
+        // (1) Players need to be in a gang in order to deposit money.
+        assert.isTrue(await player.issueCommand('/gbank all'));
+        assert.equal(player.messages.length, 1);
+        assert.equal(player.messages[0], Message.format(Message.GBANK_NOT_IN_GANG));
+
+        assert.equal(finance.getPlayerCash(player), 1000000);
+
+        // (2) Players need to be in a gang in order to withdraw money.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500'));
+        assert.equal(player.messages.length, 2);
+        assert.equal(player.messages[1], Message.format(Message.GBANK_NOT_IN_GANG));
+
+        // (3) Players need to be in a gang in order to see the current balance.
+        assert.isTrue(await player.issueCommand('/gbalance'));
+        assert.equal(player.messages.length, 3);
+        assert.equal(player.messages[2], Message.format(Message.GBANK_NOT_IN_GANG));
+
+        addPlayerToGang(player, gang, Gang.ROLE_MANAGER);
+
+        // (4) When in a gang, they can see the gang's current balance.
+        assert.isTrue(await player.issueCommand('/gbalance'));
+        assert.equal(player.messages.length, 4);
+        assert.equal(
+            player.messages[3],
+            Message.format(Message.GBANK_BALANCE, gang.name, gang.balance,
+                           GangFinance.kMaximumBankAmount));
+
+        // (5) Players can deposit money into the bank account.
+        assert.isTrue(await player.issueCommand('/gbank 2500000'));
+        assert.equal(player.messages.length, 5);
+        assert.equal(
+            player.messages[4], Message.format(Message.GBANK_NOT_ENOUGH_CASH, 2500000));
+
+        assert.isTrue(await player.issueCommand('/gbank 250000'));
+        assert.equal(player.messages.length, 6);
+        assert.equal(
+            player.messages[5],
+            Message.format(Message.GBANK_STORED, 250000, gang.name, gang.balance));
+
+        assert.equal(finance.getPlayerCash(player), 750000);
+        assert.equal(gang.balance, 250000);
+
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id, 250000));
+
+        // (6) Players cannot deposit more money than gang bank accounts allow.
+        gang.balance = GangFinance.kMaximumBankAmount;
+
+        assert.isTrue(await player.issueCommand('/gbank 10'));
+        assert.equal(player.messages.length, 7);
+        assert.equal(
+            player.messages[6],
+            Message.format(Message.GBANK_NO_AVAILABLE_BALANCE, GangFinance.kMaximumBankAmount));
+
+        assert.equal(finance.getPlayerCash(player), 750000);
+        assert.equal(gang.balance, GangFinance.kMaximumBankAmount);
+
+        gang.balance = 250000;  // reset their account to something reasonable
+        gang.balanceAccess = GangDatabase.kAccessLeader;
+
+        // (7) Gang members can be restricted from withdrawing money.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500'));
+        assert.equal(player.messages.length, 8);
+        assert.equal(player.messages[7], Message.format(Message.GBANK_NOT_ALLOWED));
+
+        gang.balanceAccess = GangDatabase.kAccessLeaderAndManagers;
+
+        // (8) When allowed, gang members are able to withdraw money from the account.
+        assert.isTrue(await player.issueCommand('/gwithdraw 2500000'));
+        assert.equal(player.messages.length, 9);
+        assert.equal(
+            player.messages[8], Message.format(Message.GBANK_NOT_ENOUGH_FUNDS, gang.name, 2500000));
+        
+        assert.isTrue(await player.issueCommand('/gwithdraw 100000'));
+        assert.equal(player.messages.length, 10);
+        assert.equal(
+            player.messages[9],
+            Message.format(Message.GBANK_WITHDRAWN, 100000, gang.name, gang.balance));
+        
+        assert.equal(finance.getPlayerCash(player), 850000);
+        assert.equal(gang.balance, 150000);
+
+        assert.equal(russell.messages.length, 2);
+        assert.includes(
+            russell.messages[1],
+            Message.format(Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, 100000));
+    });
+
+    it('should enable gang members to see their account transaction logs', async (assert) => {
+        const gang = createGang({ tag: 'CC', name: 'Creative Cows', goal: 'We rule!' });
+
+        addPlayerToGang(player, gang, Gang.ROLE_MEMBER);
+
+        player.respondToDialog({ response: 0 /* Ok */});
+
+        assert.isTrue(await player.issueCommand('/gang transactions'));
+        
+        const data = await player.getLastDialogAsTable(/* hasColumn= */ true);
+        assert.deepEqual(data.rows, [
+            [
+                'May 24, 2020',
+                'LVP',
+                '{F4511E}-$215,000',
+                'Daily maintenance fee',
+            ],
+            [
+                'May 23, 2020',
+                'Russell',
+                '{F4511E}-$1,000,000',
+                'Personal withdrawal',
+            ],
+            [
+                'May 21, 2020',
+                'Russell',
+                '{43A047}$25,000,000',
+                'Personal contribution',
+            ]
+        ]);
     });
 });

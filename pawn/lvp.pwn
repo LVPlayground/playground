@@ -53,7 +53,7 @@
 
 #include "Interface/Server/a_samp.pwn"
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
 #define WC_CUSTOM_VENDING_MACHINES false
 
@@ -84,8 +84,6 @@
 #include "Interface/JSON.pwn"
 #include "Interface/MySQL.pwn"
 #include "Interface/Time.pwn"
-#include "Interface/ZoneLayer.pwn"
-#include "Interface/ZoneManager.pwn"
 
 // Entity classes without dependencies.
 #include "Entities/Players.pwn"
@@ -155,9 +153,7 @@
 #include Elements/Player/Ramping.pwn
 #include Elements/Player/Balloon.pwn
 #include Elements/Player/Tow.pwn
-
 #include Elements/Player/WantedLevel.pwn
-#include Elements/Player/SprayTags.pwn
 
 // Player connections
 #include Elements/Player/Connections/SaveInfo.pwn
@@ -223,7 +219,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerLeaveCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerEnterRaceCheckpoint.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerKeyStateChange.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerText.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerStateChange.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerInteriorChange.pwn
 #include Resources/Callbacks/Others/OnGameModeInit.pwn

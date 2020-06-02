@@ -3,6 +3,8 @@
   <FileList>
     <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
+    <DiskObject>\Driver\Abuse\</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
     <DiskObject>\Driver\ThirdParty\</DiskObject>
     <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
@@ -30,7 +32,6 @@
     <DiskObject>\Elements\Player\playerHandler.pwn</DiskObject>
     <DiskObject>\Elements\Player\Ramping.pwn</DiskObject>
     <DiskObject>\Elements\Player\SpawnPos.pwn</DiskObject>
-    <DiskObject>\Elements\Player\SprayTags.pwn</DiskObject>
     <DiskObject>\Elements\Player\Taxi.pwn</DiskObject>
     <DiskObject>\Elements\Player\Tow.pwn</DiskObject>
     <DiskObject>\Elements\Player\WantedLevel.pwn</DiskObject>
@@ -145,7 +146,6 @@
     <DiskObject>\Features\External\PlayerTracker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\</DiskObject>
-    <DiskObject>\Features\Gameplay\Achievements.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
@@ -156,8 +156,6 @@
     <DiskObject>\Features\Gameplay\Commands\PlayerSpectateHandler.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Announcements.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\PrivateMessagingCommands.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Communication\PrivateMessagingManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Communication\Responses.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\</DiskObject>
     <DiskObject>\Features\Gameplay\Jail\JailCommands.pwn</DiskObject>
@@ -204,7 +202,6 @@
     <DiskObject>\Interface\Data\AccountDataRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\ModLoginRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\PasswordVerificationRequest.pwn</DiskObject>
-    <DiskObject>\Interface\Data\PlayerAchievementRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\PlayerRegisteredRequest.pwn</DiskObject>
     <DiskObject>\Interface\defines.pwn</DiskObject>
     <DiskObject>\Interface\Dialog.pwn</DiskObject>
@@ -233,14 +230,11 @@
     <DiskObject>\Interface\Server\a_samp.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_streamer.pwn</DiskObject>
     <DiskObject>\Interface\Server\a_vehicles.pwn</DiskObject>
-    <DiskObject>\Interface\Server\a_zones.pwn</DiskObject>
     <DiskObject>\Interface\Time.pwn</DiskObject>
     <DiskObject>\Interface\Time.tests.pwn</DiskObject>
     <DiskObject>\Interface\TimerController.pwn</DiskObject>
     <DiskObject>\Interface\timers.pwn</DiskObject>
     <DiskObject>\Interface\vars.pwn</DiskObject>
-    <DiskObject>\Interface\ZoneLayer.pwn</DiskObject>
-    <DiskObject>\Interface\ZoneManager.pwn</DiskObject>
     <DiskObject>\lvp.pwn</DiskObject>
     <DiskObject>\release.pwn</DiskObject>
     <DiskObject>\Resources\</DiskObject>
@@ -259,7 +253,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerText.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDynamicObjectMoved.pwn</DiskObject>
@@ -310,9 +303,6 @@
     <DiskObject>\Resources\Minigames\Core\Brief.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\DeathmatchHandler.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Derby.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\Core.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\HayStack\minigame.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\HideGame.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Lyse.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\main.pwn</DiskObject>

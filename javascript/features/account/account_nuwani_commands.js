@@ -82,12 +82,12 @@ export class AccountNuwaniCommands {
 
         // !supported
         this.commandManager_.buildCommand('supported')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(AccountNuwaniCommands.prototype.onSupportedCommand.bind(this));
 
         // !getvalue [field]
         this.commandManager_.buildCommand('getvalue')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER }])
@@ -95,7 +95,7 @@ export class AccountNuwaniCommands {
 
         // !setvalue [field] [value]
         this.commandManager_.buildCommand('setvalue')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER },
@@ -255,7 +255,13 @@ export class AccountNuwaniCommands {
     // Displays a list of the supported fields in the player account data store that can be read and
     // updated by the commands. Type and table information is omitted.
     onSupportedCommand(context) {
-        const supported = Object.keys(this.database_.getSupportedFields()).sort();
+        let supported = null;
+
+        if (context.level === Player.LEVEL_ADMINISTRATOR)
+            supported = this.database_.getSupportedFieldsForAdministrators().sort();
+        else
+            supported = Object.keys(this.database_.getSupportedFields()).sort();
+
         context.respond('5Supported fields: ' + supported.join(', '));
     }
 
@@ -263,6 +269,12 @@ export class AccountNuwaniCommands {
     //
     // Displays the given |field| from |nickname|'s account data. Only available to management.
     async onGetValueCommand(context, nickname, field) {
+        const administratorFields = this.database_.getSupportedFieldsForAdministrators();
+        if (context.level != Player.LEVEL_MANAGEMENT && !administratorFields.includes(field)) {
+            context.respond(`4Error: Sorry, the "${field}" field is not accessible to you.`);
+            return;
+        }
+
         try {
             const value = await this.database_.getPlayerField(nickname, field);
             context.respond(`5Value of "${field}": ${value}`);
@@ -278,6 +290,12 @@ export class AccountNuwaniCommands {
     async onSetValueCommand(context, nickname, field, value) {
         if (server.playerManager.getByName(nickname) !== null) {
             context.respond('4Error: Cannot update account data of in-game players.');
+            return;
+        }
+
+        const administratorFields = this.database_.getSupportedFieldsForAdministrators();
+        if (context.level != Player.LEVEL_MANAGEMENT && !administratorFields.includes(field)) {
+            context.respond(`4Error: Sorry, the "${field}" field is not accessible to you.`);
             return;
         }
 
@@ -306,10 +324,11 @@ export class AccountNuwaniCommands {
             const name = player.name;
             const registered = player.account.isRegistered();
             const vip = player.isVip();
+            const minimized = isPlayerMinimized(player.id);
             const level = player.isUndercover() ? Player.LEVEL_PLAYER
                                                 : player.level;
 
-            players.push({ name, registered, vip, level });
+            players.push({ name, registered, vip, level, minimized });
         });
 
         // (2) Sort the list of |players| alphabetically for display. 
@@ -318,6 +337,7 @@ export class AccountNuwaniCommands {
         // (3) Format each of the entries in |players| in accordance with the information we've
         // gathered on them.
         for (const info of players) {
+            let prefix = info.minimized ? '' : '';
             let color = '';
 
             if (!info.registered) {
@@ -340,7 +360,8 @@ export class AccountNuwaniCommands {
                 }
             }
 
-            formattedPlayers.push(color + info.name + (color ? '' : ''));
+            formattedPlayers.push(
+                prefix + color + info.name + (color ? '' : '') + (info.minimized ? '' : ''));
         }
 
         // (4) Output the formatted result to the requester on IRC.
@@ -456,8 +477,30 @@ export class AccountNuwaniCommands {
             deathmatchFormat = killFormat + join + deathFormat + ratio + '. ';
         }
 
+        let onlinePlayer = null;
+
+        // (4) Determine if the player is currently connected to the server.
+        for (const player of server.playerManager) {
+            if (!player.account.isIdentified() || player.account.userId !== summary.user_id)
+                continue;
+            
+            if (player.isUndercover())
+                continue;  // avoid leaking details of undercover administrators
+
+            onlinePlayer = player;
+        }
+
         // (4) Format the information about when they were last seen.
-        if (summary.last_seen) {
+        if (onlinePlayer) {
+            params.push(nickname);
+
+            if (nickname === onlinePlayer.name) {
+                recencyFormat = `%s is currently playing on the server!`;
+            } else {
+                recencyFormat = `%s is currently playing on the server as %s!`;
+                params.push(onlinePlayer.name);
+            }
+        } else if (summary.last_seen) {
             const lastSeenText = fromNow({ date: new Date(summary.last_seen) });
 
             recencyFormat = `%s was last seen online ${lastSeenText}. `;

@@ -12,6 +12,7 @@ OnPlayerLVPConnect(playerid) {
     }
 
     ResetDeathFloodCountForPlayer(playerid);
+    SetInvolvedInJavaScriptGame(playerid, false);
 
     ResetPlayerStats(playerid);
 
@@ -30,7 +31,6 @@ OnPlayerLVPConnect(playerid) {
     CCrush__Connect(playerid);
     CAchieve__OnPlayerConnect(playerid);
     InitializeMapZoneTextDrawsForPlayer(playerid);
-    sprayTagUpdateForPlayer(playerid);
     DisablePlayerCheckpoint(playerid);
     CDerby__InitPlayerData( playerid );
 
@@ -46,14 +46,6 @@ OnPlayerLVPConnect(playerid) {
 
     GetPlayerName(playerid, PlayerInfo[playerid][playerName], 32);
     iRconLoginAttempts[playerid] = 0;
-
-#if BuildGamemodeInReleaseMode == 0
-    new ver[32], str[128];
-    GetPlayerVersion(playerid, ver, 32);
-
-    format(str, 128, "Your SA-MP Client Version: %s", ver);
-    SendClientMessage(playerid, Color::Debug, str);
-#endif
 
     return 1;
 }

@@ -7,6 +7,14 @@
 class Vehicle {
     static kInvalidId = 65535;
 
+    // Vehicle keys that can be awarded to players through various achievements.
+    static kVehicleKeysBoost = 1;
+    static kVehicleKeysColourChange = 2;
+    static kVehicleKeysFix = 4;
+    static kVehicleKeysFlip = 8;
+    static kVehicleKeysJump = 16;
+    static kVehicleKeysNos = 32;
+
     constructor(manager, options) {
         this.manager_ = manager;
         this.modelId_ = options.modelId;
@@ -238,6 +246,20 @@ class Vehicle {
 
         pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 0 /* unlocked */);
         this.locks_.delete(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Toggles whether the engine for this vehicle is running.
+    toggleEngine(engineRunning) {
+        const [engine, lights, alarm, doors, bonnet, boot, objective] =
+            pawnInvoke('GetVehicleParamsEx', 'iIIIIIII', this.id_);
+        
+        if (!!engine === engineRunning)
+            return;  // no change from the current engine status
+
+        pawnInvoke('SetVehicleParamsEx', 'iiiiiiii', this.id_, engineRunning ? 1 : 0, lights, alarm,
+                                                     doors, bonnet, boot, objective);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -42,7 +42,6 @@ new __iCMDIDX;
  */
 #define DIALOG_COMMANDS_LIST                4000
 #define DIALOG_MINIGAMES                    4007
-#define DIALOG_DRIVEBY                      4008
 #define DIALOG_GYM_FIGHT                    4009
 #define DIALOG_FIGHTCLUB                    4010
 #define DIALOG_FIGHTCLUB_DUEL_PLACE         4011

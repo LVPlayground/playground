@@ -59,11 +59,6 @@ class BanCommands {
             return 1;
         }
 
-#if ReleaseSettings::EnableBetaCommands == 1
-        if (!Player(playerId)->isDeveloper())
-            subjectId = playerId;
-#endif
-
         Player(subjectId)->ban(params[parameterOffset], playerId, duration);
 
         new administrator[MAX_PLAYER_NAME+1], message[256];
@@ -107,11 +102,6 @@ class BanCommands {
             SendClientMessage(playerId, Color::Error, "You can't kick a NPC!");
             return 1;
         }
-
-#if ReleaseSettings::EnableBetaCommands == 1
-        if (!Player(playerId)->isDeveloper())
-            return this->onBanCommand(playerId, params);
-#endif
 
         new subject[MAX_PLAYER_NAME+1], parameterOffset = 0;
         Command->stringParameter(params, 0, subject, sizeof(subject));

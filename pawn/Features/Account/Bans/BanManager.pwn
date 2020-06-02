@@ -33,6 +33,38 @@ public DelayedKick(playerId) {
 native MurmurIIIHashGenerateHash(key[], len, hash[]);
 
 /**
+ * Formats the range ban described by the given |rangeStart| and |rangeEnd| into the |buffer|.
+ */
+formatRange(rangeStart[], rangeEnd[], buffer[], bufferSize = sizeof(buffer)) {
+    new index = 0;
+    new dots = 0;
+
+    while (index < bufferSize && rangeStart[index] == rangeEnd[index]) {
+        if (rangeStart[index] == '.')
+            ++dots;
+
+        buffer[index] = rangeStart[index];
+        index++;
+    }
+
+    buffer[index] = 0;
+
+    switch (dots) {
+        case 0:
+            format(buffer, bufferSize, "*.*.*.*");
+
+        case 1:
+            strcat(buffer, "*.*.*", bufferSize);
+
+        case 2:
+            strcat(buffer, "*.*",  bufferSize);
+
+        case 3:
+            strcat(buffer, "*", bufferSize);
+    }
+}
+
+/**
  * Administrators have the ability to disallow a player to play on Las Venturas Playground for a
  * certain amount of time, which is known as being banned from the server. The Ban Manager will
  * verify whether a player is allowed to play on the server when they join it. Furthermore, it also
@@ -47,6 +79,9 @@ class BanManager {
 
     // The query we use to verify whether a player can play on LVP.
     new m_verifyQuery;
+
+    // Query for increasing the tally of a range ban exception.
+    new m_incrementTallyQuery;
 
     // The query used for creating a new entry in the logs table.
     new m_createEntryQuery;
@@ -69,11 +104,16 @@ class BanManager {
                                           "    DATE_FORMAT(log_date, '%W, %M %D') AS ban_start_date, " ...
                                           "    DATE_FORMAT(ban_expiration_date, '%W, %M %D at %h:%i %p GMT') AS ban_end_date, " ...
                                           "    IF(ban_expiration_date = '0000-00-00 00:00:00', 0, 1) AS ban_has_end_date, " ...
-                                          "    user_nickname, description " ...
+                                          "    IFNULL(range_exceptions.exception_author, '') AS exception_author, INET_NTOA(ban_ip_range_start) AS range_start, " ...
+                                          "    INET_NTOA(ban_ip_range_end) as range_end, range_exceptions.exception_id, user_nickname, description " ...
                                           "FROM " ...
                                           "    logs " ...
+                                          "LEFT JOIN " ...
+                                          "    range_exceptions ON (range_exceptions.ip_range_begin = logs.ban_ip_range_start AND " ...
+                                          "                         range_exceptions.ip_range_end = logs.ban_ip_range_end AND " ...
+                                          "                         range_exceptions.nickname = ?) " ...
                                           "WHERE " ...
-                                          "    log_type = 'ban' AND " ...
+                                          "    (log_type = 'ban' OR log_type = 'banip') AND " ...
                                           "    ban_expiration_date > NOW() AND " ...
                                           "    ((subject_user_id <> 0 AND subject_user_id = ?) OR " ...
                                           "     (ban_ip_range_start <= INET_ATON(?) AND ban_ip_range_end >= INET_ATON(?)) OR " ...
@@ -81,7 +121,15 @@ class BanManager {
                                           "ORDER BY " ...
                                           "    log_date DESC " ...
                                           "LIMIT " ...
-                                          "    1", "isss");
+                                          "    1", "sisss");
+
+        // The query for incrementing the usage count tally for a range exception.
+        m_incrementTallyQuery = Database->prepare("UPDATE " ...
+                                                  "    range_exceptions " ...
+                                                  "SET " ...
+                                                  "    exception_tally = exception_tally + 1 " ...
+                                                  "WHERE " ...
+                                                  "    exception_id = ?", "i");
 
         // The query used for creating a new entry in the logs table.
         m_createEntryQuery = Database->prepare("INSERT INTO " ...
@@ -120,7 +168,7 @@ class BanManager {
         gpci(playerId, playerGpci, sizeof(playerGpci));
         MurmurIIIHashGenerateHash(playerGpci, 0, hashedPlayerGpci);
 
-        Database->execute(m_verifyQuery, "OnBanVerificationCompleted", playerId, /** ? **/ userId, ipAddress, ipAddress, hashedPlayerGpci);
+        Database->execute(m_verifyQuery, "OnBanVerificationCompleted", playerId, /** ? **/ Player(playerId)->nicknameString(), userId, ipAddress, ipAddress, hashedPlayerGpci);
     }
 
     /**
@@ -141,7 +189,47 @@ class BanManager {
             return; // we couldn't fetch useful information from the database.
         }
 
-        new message[128], administratorNickname[24], buffer[64];
+        new rangeStart[16], rangeEnd[16];
+        DatabaseResult(resultId)->readString("range_start", rangeStart);
+        DatabaseResult(resultId)->readString("range_end", rangeEnd);
+
+        new const rangeStartLength = strlen(rangeStart);
+        new const rangeEndLength = strlen(rangeEnd);
+
+        new message[256];
+
+        // If this is a range ban, we certainly want to inform folks in #LVP.Crew, but might also
+        // want to ignore the ban if the |playerId| is on the range exception list.
+        if (rangeStartLength >= 7 &&
+                (rangeStartLength != rangeEndLength || strcmp(rangeStart, rangeEnd, false, rangeEndLength) != 0)) {
+            new exceptionAuthor[32];
+            DatabaseResult(resultId)->readString("exception_author", exceptionAuthor);
+
+            new range[16];
+            formatRange(rangeStart, rangeEnd, range, sizeof(range));
+
+            if (strlen(exceptionAuthor)) {
+                format(message, sizeof(message), "%s (Id:%d) joined with the IP address %s, which is part of the banned range %s. %s added them to the exception list.",
+                    Player(playerId)->nicknameString(), playerId, Player(playerId)->ipAddressString(), range, exceptionAuthor);
+
+                EchoMessage("notice-crew", "z", message);
+
+                // Increment the tally of the range ban, to keep track of how useful it is.
+                Database->execute(m_incrementTallyQuery, "", 0, DatabaseResult(resultId)->readInteger("exception_id"));
+
+
+                return;
+
+            } else {
+                format(message, sizeof(message), "%s (Id:%d) joined with the IP address %s, which is part of the banned range %s. No exceptions where found.",
+                    Player(playerId)->nicknameString(), playerId, Player(playerId)->ipAddressString(), range);
+
+                EchoMessage("notice-crew", "z", message);
+            }
+        }
+
+        // Otherwise we're certain that the |playerId| has been banned. Let 'em know.
+        new administratorNickname[24], buffer[64];
         DatabaseResult(resultId)->readString("user_nickname", administratorNickname);
         if (strlen(administratorNickname) == 0)
             format(administratorNickname, sizeof(administratorNickname), "an administrator");
@@ -168,7 +256,7 @@ class BanManager {
 
         SendClientMessage(playerId, Color::Information, ""); // spacing.
         SendClientMessage(playerId, Color::Information, "You may appeal this ban on our forums (http://forum.sa-mp.nl) or on our IRC channel,");
-        SendClientMessage(playerId, Color::Information, "available through www.sa-mp.nl/chat");
+        SendClientMessage(playerId, Color::Information, "available at https://sa-mp.nl/chat, or through Discord at https://sa-mp.nl/discord.");
 
         m_automaticallyBanned[playerId] = true;
 

@@ -15,6 +15,7 @@ export class PlayerAccountSupplement extends Supplement {
 
     userId_ = null;
     bankAccountBalance_ = 0;
+    cashBalance_ = 0;
     reactionTests_ = 0;
     mutedUntil_ = null;
 
@@ -31,6 +32,10 @@ export class PlayerAccountSupplement extends Supplement {
         this.bankAccountBalance_ = balance;
         this.requestUpdate();
     }
+
+    // Gets or sets the amount of cash the player has on their person right now.
+    get cashBalance() { return this.cashBalance_; }
+    set cashBalance(value) { this.cashBalance_ = value; }
 
     // Gets or sets the number of reaction tests that this player has won.
     get reactionTests() { return this.reactionTests_; }
@@ -54,6 +59,7 @@ export class PlayerAccountSupplement extends Supplement {
     initializeFromDatabase(databaseRow) {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
+        this.cashBalance_ = databaseRow.money_cash;
         this.reactionTests_ = databaseRow.stats_reaction;
         this.mutedUntil_ = null;
 
@@ -74,6 +80,7 @@ export class PlayerAccountSupplement extends Supplement {
         return {
             user_id: this.userId_,
             money_bank: this.bankAccountBalance_,
+            money_cash: this.cashBalance_,
             stats_reaction: this.reactionTests_,
             muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
         };

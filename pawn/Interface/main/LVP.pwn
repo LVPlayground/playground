@@ -7,7 +7,7 @@ SetPlayerPosHook(playerId, Float: x, Float: y, Float: z) {
     return SetPlayerPos(playerId, Float: x, Float: y, Float: z);
 }
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef SetPlayerPos
 #endif
 
@@ -34,8 +34,12 @@ ResetPlayerWeaponsHook(playerId) {
     ClearSafeWeapons(playerId);
     return ResetPlayerWeapons(playerId);
 }
-
 #define ResetPlayerWeapons ResetPlayerWeaponsHook
+
+forward OnResetPlayerWeapons(playerId);
+public OnResetPlayerWeapons(playerId) {
+    ResetPlayerWeapons(playerId);
+}
 
 str_shift(string[], start) {
     new i;

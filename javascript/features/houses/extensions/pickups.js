@@ -7,7 +7,7 @@ import confirm from 'components/dialogs/confirm.js';
 
 import HouseExtension from 'features/houses/house_extension.js';
 import Menu from 'components/menu/menu.js';
-import StoredPickup from 'features/streamer/stored_pickup.js';
+import ScopedEntities from 'entities/scoped_entities.js';
 
 // Delay, in seconds, after which a health pickup in a house respawns.
 const HealthPickupRespawnDelay = 180;
@@ -17,22 +17,18 @@ const ArmourPickupRespawnDelay = 180;
 
 // Extension that allows players to place health and armour pickups in their house.
 class Pickups extends HouseExtension {
-    constructor(manager, economy, finance, streamer) {
+    constructor(manager, economy, finance) {
         super();
 
         this.manager_ = manager;
         this.economy_ = economy;
         this.finance_ = finance;
 
-        // Map of locations to the pickups created as part of them.
-        this.locations_ = new Map();
+        this.entities_ = new ScopedEntities();
+        this.pickups_ = new Map();
 
-        this.streamer_ = streamer;
-        this.streamer_.addReloadObserver(this, Pickups.prototype.onStreamerReloaded);
+        server.pickupManager.addObserver(this);
     }
-
-    // Gets the global instance of the PickupStreamer. Value should not be cached.
-    get streamer() { return this.streamer_().getPickupStreamer(); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -148,26 +144,25 @@ class Pickups extends HouseExtension {
             this.internalCreatePickup(location, feature, position);
     }
 
-    // Called when the house in the |location| is about to be removed. Remove any pickups from the
-    // streamer that were created as part of it.
-    onHouseRemoved(location) {
-        const storedPickups = this.locations_.get(location);
-        if (!storedPickups)
-            return;  // the |location| has no pickup features
-
-        for (const [feature, storedPickup] of storedPickups)
-            this.streamer.delete(storedPickup);
-
-        this.locations_.delete(location);
+    // Called when the house in the |location| is about to be removed. This method also is O(n) in
+    // time complexity on the number of pickups, but removing a house is super rare.
+    onHouseRemoved(houseLocation) {
+        for (const [ pickup, { location } ] of this.pickups_) {
+            if (location !== houseLocation)
+                continue;
+            
+            pickup.dispose();
+            
+            this.pickups_.delete(pickup);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Creates the pickup responsible for providing |feature| for the |location|. Does not return
-    // any value. The streamer will be responsible for making sure the pickup works.
+    // Creates the pickup responsible for providing |feature| for the |location|.
     internalCreatePickup(location, feature, position) {
         let modelId = null;
-        let respawnDelay = -1;
+        let respawnDelay = null;
 
         switch (feature) {
             case 'health':
@@ -184,45 +179,39 @@ class Pickups extends HouseExtension {
         if (!modelId)
             return;  // not one of the features supported by this extension
 
-        if (!this.locations_.has(location))
-            this.locations_.set(location, new Map());
-
-        const storedPickup = new StoredPickup({
-            type: Pickup.TYPE_PERSISTENT,
-            virtualWorld: VirtualWorld.forHouse(location),
-
+        const pickup = this.entities_.createPickup({
             modelId, position, respawnDelay,
-
-            enterFn: Pickups.prototype.onFeatureActivate.bind(this, location, feature)
+            virtualWorld: VirtualWorld.forHouse(location),
         });
 
-        this.locations_.get(location).set(feature, storedPickup);
-        this.streamer.add(storedPickup);
+        this.pickups_.set(pickup, { location, feature });
     }
 
-    // Deletes the pickup responsible for providing |feature| for the |location|. Does not return
-    // any value. The pickup will be removed from the streamer immediately.
-    internalDeletePickup(location, feature) {
-        const features = this.locations_.get(location);
-        if (!features)
-            throw new Error('The |location| does not have any registered pickups.');
+    // Deletes the pickup responsible for providing |feature| for the |location|. This method is
+    // O(n) in time complexity on the number of pickups, but should be rather infrequent.
+    internalDeletePickup(houseLocation, houseFeature) {
+        for (const [ pickup, { location, feature } ] of this.pickups_) {
+            if (location !== houseLocation || feature !== houseFeature)
+                continue;
+            
+            pickup.dispose();
 
-        const storedPickup = features.get(feature);
-        if (!storedPickup)
-            throw new Error('The |feature| has not been enabled for the |location|.');
+            this.pickups_.delete(pickup);
+            return;
+        }
 
-        features.delete(feature);
-
-        if (!features.size)
-            this.locations_.delete(location);
-
-        this.streamer.delete(storedPickup);
+        throw new Error(`Unable to find pickup for ${houseFeature} of the given ${houseLocation}.`);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the |feature| has to be activated for the |player|.
-    onFeatureActivate(location, feature, player) {
+    // Called when the |player| has picked up the given |pickup|.
+    onPlayerEnterPickup(player, pickup) {
+        if (!this.pickups_.has(pickup))
+            return;  // the |pickup| is owned by another feature
+        
+        const { location, feature } = this.pickups_.get(pickup);
+
         const isOwner = player.account.userId == location.settings.ownerId;
 
         const ownerName = location.settings.ownerName;
@@ -266,33 +255,13 @@ class Pickups extends HouseExtension {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the streamer has been reloaded. All pickups that were created as part of houses
-    // should be re-added to the new instance.
-    onStreamerReloaded() {
-        const streamer = this.streamer;
-
-        for (const storedPickups of this.locations_.values()) {
-            for (const storedPickup of storedPickups.values())
-                streamer.add(storedPickup);
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     dispose() {
-        this.streamer_.removeReloadObserver(this);
+        server.pickupManager.removeObserver(this);
 
-        {
-            const streamer = this.streamer;
+        this.entities_.dispose();
+        this.entities_ = null;
 
-            for (const storedPickups of this.locations_.values()) {
-                for (const storedPickup of storedPickups.values())
-                    streamer.delete(storedPickup);
-            }
-        }
-
-        this.locations_.clear();
-        this.locations_ = null;
+        this.pickups_.clear();
     }
 }
 

@@ -18,6 +18,7 @@
     "chat-irc": "<target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color> %s{3}",
     "chat-irc-notice": "<command:NOTICE><target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color> %s{3}",
     "chat-private": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
+    "chat-private-to-irc": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(IRC):<color> %s",
     "chat-private-irc": "<prefix:%><color:7>PM from <color:5>%s <color:7>(IRC) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-vip": "<prefix:+><color:12>VIP chat <color:2>[%d] <color:7>%s:<color> %s",
     "chat-vip-irc": "<prefix:+><color:12>VIP chat <color:2>[IRC] <color:7>%s:<color> %s",
@@ -25,11 +26,15 @@
 
     "notice-admin": "<prefix:%><color:2>*** <color:5>%s",
     "notice-announce": "<color:12>*** Announcement: %s",
+    "notice-crew": "<target:#LVP.Crew><color:7>Notice:<color> %s",
     "notice-minigame": "<color:10>*** %s (Id:%d) has signed up for the %s.",
+    "notice-minigame-win": "<color:10>*** %s (Id:%d) has finished the %s game in %d%s position%s.",
     "notice-report": "<prefix:%><color:2>*** <color:7>Report from %s (Id:%d) about %s (Id:%d):<color> %s",
     "notice-say": "<color:10>*** Message from %s: %s",
 
     "status": "<color:2>[%d] <color:7>%s %s",
+
+    "report": "<target:#LVP.Crew><color:7>Report from <color:5>%s <color:7>(Id:%d) about <color:5>%s <color:7>(Id:%d):<color> %s",
 
     "death": "<color:4>*** %s has died.",
     "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",

@@ -42,6 +42,10 @@ class TextDraw {
 
     this.selectable_ = null;
 
+    this.previewModel_ = null;
+    this.previewRotation_ = null;
+    this.previewZoom_ = null;
+
     if (!options)
       return;
 
@@ -50,7 +54,26 @@ class TextDraw {
       throw new Error('The options for a text draw must be an object.');
 
     // Walk through all available settings for the text-draw, then apply them using the setter.
-    ['position', 'useBox', 'text', 'font', 'alignment', 'proportional', 'textSize', 'letterSize', 'color', 'boxColor', 'outlineSize', 'shadowSize', 'shadowColor', 'selectable'].forEach(property => {
+    [
+      'alignment',  // TextDraw.ALIGN_*
+      'boxColor',  // Color
+      'color',  // Color
+      'font',  // TextDraw.FONT_*
+      'letterSize',  // [ x, y ]
+      'outlineSize',  // number
+      'position',  // [ x, y ]
+      'previewModel',  // number
+      'previewRotation',  // Vector
+      'previewZoom',  // number
+      'proportional',  // boolean
+      'selectable',  // boolean
+      'shadowColor',  // Color
+      'shadowSize',  // number
+      'text',  // string
+      'textSize',  // [ x, y ]
+      'useBox',  // boolean
+
+    ].forEach(property => {
       if (options.hasOwnProperty(property))
         this[property] = options[property];
     });
@@ -200,9 +223,36 @@ class TextDraw {
     this.shadowColor_ = value;
   }
 
-  // Gets or sets whether the
+  // Gets or sets whether the text draw can be selected by the player.
   get selectable() { return this.selectable_; }
   set selectable(value) { this.selectable_ = value; }
+
+  // Gets or sets the Model ID that should be previewed on this text draw.
+  get previewModel() { return this.previewModel_; }
+  set previewModel(value) {
+    if (typeof value !== 'number')
+      throw new Error('The preview model of a text draw must be a number.');
+    
+    this.previewModel_ = value;
+  }
+
+  // Gets or sets the rotation of the model that should be previewed on this text draw.
+  get previewRotation() { return this.previewRotation_; }
+  set previewRotation(value) {
+    if (!(value instanceof Vector))
+      throw new Error('The preview zoom of a text draw must be given as a Vector instance.');
+    
+    this.previewRotation_ = value;
+  }
+
+  // Gets or sets the zoom level of the model that should be previewed on this text draw.
+  get previewZoom() { return this.previewZoom_; }
+  set previewZoom(value) {
+    if (typeof value !== 'number')
+      throw new Error('The preview zoom of a text draw must be a number.');
+    
+    this.previewZoom_ = value;
+  }
 
   // Builds and displays the text draw to |player|. This method is a no-op if the text draw is
   // already being shown for the player.
@@ -210,6 +260,9 @@ class TextDraw {
     let textDrawId = server.textDrawManager.createForPlayer(player, this);
     if (textDrawId === null)
       return true;  // |this| is already being displayed.
+
+    if (this.previewModel_ && !this.font_)
+      this.font_ = TextDraw.FONT_MODEL_PREVIEW;
 
     if (this.font_ !== null)
       pawnInvoke('PlayerTextDrawFont', 'iii', player.id, textDrawId, this.font_);
@@ -247,9 +300,17 @@ class TextDraw {
     if (this.selectable_ !== null)
       pawnInvoke('PlayerTextDrawSetSelectable', 'iii', player.id, textDrawId, this.selectable_ ? 1 : 0);
 
-    // TODO: PlayerTextDrawSetPreviewModel: Set model ID of a 3D player textdraw preview.
+    if (this.previewModel_ !== null)
+      pawnInvoke('PlayerTextDrawSetPreviewModel', 'iii', player.id, textDrawId, this.previewModel_);
 
-    // TODO: PlayerTextDrawSetPreviewRot: Set rotation of a 3D player textdraw preview.
+    if (this.previewRotation_ !== null || this.previewZoom_ !== null) {
+      const rotation = this.previewRotation_ ?? new Vector(0, 0, 0);
+      const zoom = this.previewZoom_ ?? 1;
+
+      pawnInvoke(
+        'PlayerTextDrawSetPreviewRot', 'iiffff', player.id, textDrawId, rotation.x, rotation.y,
+                                                 rotation.z, zoom);
+    }
 
     // TODO: PlayerTextDrawSetPreviewVehCol: Set the colours of a vehicle in a 3D player textdraw preview.
 
@@ -274,6 +335,7 @@ TextDraw.FONT_SANS_SERIF = 1;
 TextDraw.FONT_MONOSPACE = 2;
 TextDraw.FONT_PRICEDOWN = 3;
 TextDraw.FONT_TEXTURE = 4;
+TextDraw.FONT_MODEL_PREVIEW = 5;
 
 // The alignment values that may be used with a text draw.
 TextDraw.ALIGN_LEFT = 1;

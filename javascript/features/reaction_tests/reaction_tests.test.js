@@ -6,6 +6,8 @@ import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 describe('ReactionTests', (it, beforeEach) => {
     /**
      * @type ReactionTests
@@ -95,6 +97,8 @@ describe('ReactionTests', (it, beforeEach) => {
     });
 
     it('should enable players to win reaction tests', async (assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+
         const delay = settings.getValue('playground/reaction_test_delay_sec');
         const jitter = settings.getValue('playground/reaction_test_jitter_sec');
         const prize = settings.getValue('playground/reaction_test_prize');
@@ -106,28 +110,32 @@ describe('ReactionTests', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.account.reactionTests, 0);
+        assert.equal(finance.getPlayerCash(gunther), 0);
         
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
 
-        gunther.issueMessage(driver.activeTest_.answer);
+        await gunther.issueMessage(driver.activeTest_.answer);
 
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 4);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
+        assert.includes(gunther.messages[3], driver.activeTest_.answer);
+
         assert.equal(gunther.account.reactionTests, 1);
+        assert.equal(finance.getPlayerCash(gunther), prize);
 
         // (2) Subsequent players will receive a generic "too late!" message.
-        assert.equal(lucy.messages.length, 2);
+        assert.equal(lucy.messages.length, 3);
 
         await server.clock.advance(1230);
 
-        lucy.issueMessage(driver.activeTest_.answer);
+        await lucy.issueMessage(driver.activeTest_.answer);
 
         assert.equal(lucy.account.reactionTests, 0);
-        assert.equal(lucy.messages.length, 3);
+        assert.equal(lucy.messages.length, 4);
         assert.equal(
-            lucy.messages[2], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
+            lucy.messages[3], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
     });
 
     it('should automatically schedule a new test after someone won', async (assert) => {
@@ -138,16 +146,17 @@ describe('ReactionTests', (it, beforeEach) => {
 
         // Wait until we're certain that the first reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
+        await server.clock.advance(3000);  // three extra seconds
 
         assert.equal(gunther.messages.length, 1);
 
-        gunther.issueMessage(driver.activeTest_.answer);
-        assert.equal(gunther.messages.length, 3);
+        await gunther.issueMessage(driver.activeTest_.answer);
+        assert.equal(gunther.messages.length, 4);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 4);
+        assert.equal(gunther.messages.length, 5);
     });
 
     it('should automatically schedule a new test after one times out', async (assert) => {
@@ -167,12 +176,64 @@ describe('ReactionTests', (it, beforeEach) => {
         // Wait for the timeout. Giving the right answer thereafter will be ignored.
         await server.clock.advance(timeout * 1000);
 
-        gunther.issueMessage(answer);
-        assert.equal(gunther.messages.length, 1);
+        await gunther.issueMessage(answer);  // goes to main chat
+        assert.equal(gunther.messages.length, 2);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 3);
+    });
+
+    it('should award achievements at certain milestones', async (assert) => {
+        const collectables = server.featureManager.loadFeature('collectables');
+
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+
+        // (1) Achievement based on speed of answering.
+        assert.isFalse(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSpeed));
+
+        {
+            await server.clock.advance((delay + jitter) * 1000);
+            await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+        }
+
+        assert.isTrue(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSpeed));
+
+        // (2) Achievements based on number of answered reaction tests.
+        const kMilestones = new Map([
+            [   10, achievements.kAchievementReactionTestBronze ],
+            [  100, achievements.kAchievementReactionTestSilver ],
+            [ 1000, achievements.kAchievementReactionTestGold ],
+        ]);
+
+        for (const [ milestone, achievement ] of kMilestones) {
+            assert.isFalse(collectables.hasAchievement(gunther, achievement));
+
+            gunther.account.reactionTests = milestone - 1;
+
+            {
+                await server.clock.advance((delay + jitter) * 1000);
+                await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+            }
+
+            assert.equal(gunther.account.reactionTests, milestone);
+            assert.isTrue(collectables.hasAchievement(gunther, achievement));
+        }
+
+        // (3) Achievement based on sequence of wins in a row.
+        assert.isFalse(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
+
+        for (let iteration = kMilestones.size; iteration <= 10; ++iteration) {
+            await server.clock.advance((delay + jitter) * 1000);
+            await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+        }
+        
+        assert.isTrue(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
     });
 });

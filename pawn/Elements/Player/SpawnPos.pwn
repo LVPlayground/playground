@@ -44,27 +44,6 @@ SetPlayerRandomSpawnPos(playerId) {
     return 1;
 }
 
-SavePlayerSpawnData(playerId) {
-    new Float: spawnPosX, Float: spawnPosY, Float: spawnPosZ, Float: spawnAngle, spawnInteriorId;
-
-    GetPlayerPos(playerId, spawnPosX, spawnPosY, spawnPosZ);
-    GetPlayerFacingAngle(playerId, spawnAngle);
-    spawnInteriorId = GetPlayerInterior(playerId);
-
-    AddSpawnPos(spawnPosX, spawnPosY, spawnPosZ, spawnAngle, spawnInteriorId);
-
-    new File: spawnFile, fileName[13] = "SpawnPos.txr", notice[128];
-    if ((spawnFile = fopen(fileName, io_append))) {
-        format(notice, sizeof(notice), "AddSpawnPos(%f, %f, %f, %f, %d);\r\n", spawnPosX, spawnPosY,
-            spawnPosZ, spawnAngle, spawnInteriorId);
-
-        fwrite(spawnFile, notice);
-        fclose(spawnFile);
-    }
-
-    return 1;
-}
-
 InitSpawnPos() {
     AddSpawnPos(1675.272705, 1447.991333, 10.787893, 269.266143, 0);
     AddSpawnPos(1319.331298, 1252.010498, 10.820312, 355.673431, 0);

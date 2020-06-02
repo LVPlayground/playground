@@ -1,4 +1,3 @@
-AUTHOR
 *.amx
 *.ppd
 config-release.pwn
@@ -6,3 +5,4 @@ config-staging.pwn
 out.pwn
 .idea
 tools/sftp-config.json
+.vs

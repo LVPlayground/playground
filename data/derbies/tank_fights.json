@@ -1,0 +1,21 @@
+{
+    "name": "Tank Fights",
+    "id": 3,
+
+    "environment": {
+        "boundaries": [ -1734.164, -680.1617, -1116.134, 436.2632 ]
+    },
+
+    "spawnPositions": [
+        { "position": [ -1483.8771,    1.1518, 14.1629 ], "facingAngle": 135.3240, "vehicleModelId": 432 },
+        { "position": [ -1470.0740,  -91.3307, 14.1632 ], "facingAngle":  73.0504, "vehicleModelId": 432 },
+        { "position": [ -1519.4749, -154.1453, 14.1619 ], "facingAngle":  73.0557, "vehicleModelId": 432 },
+        { "position": [ -1585.9424, -222.8500, 14.1665 ], "facingAngle":   1.9901, "vehicleModelId": 432 },
+        { "position": [ -1643.1460, -177.5443, 14.1977 ], "facingAngle": 353.7942, "vehicleModelId": 432 },
+        { "position": [ -1527.2362, -175.8123, 14.1635 ], "facingAngle":  17.8551, "vehicleModelId": 432 }
+    ],
+
+    "settings": {
+        "invisible": true
+    }
+}

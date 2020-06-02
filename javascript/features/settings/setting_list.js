@@ -19,6 +19,8 @@ export default [
     new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
 
+    new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
+
     new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
     new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
 
@@ -28,8 +30,9 @@ export default [
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */
+    new Setting('account', 'info_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to see information about their account?'),
     new Setting('account', 'nickname_control', Setting.TYPE_BOOLEAN, true, 'Should players be able to change their nickname?'),
-    new Setting('account', 'nickname_limit_days', Setting.TYPE_NUMBER, 30, 'Minimum number of days between nickname changes.'),
+    new Setting('account', 'nickname_limit_days', Setting.TYPE_NUMBER, 14, 'Minimum number of days between nickname changes.'),
     new Setting('account', 'password_control', Setting.TYPE_BOOLEAN, true, 'Should players be able to change their password?'),
     new Setting('account', 'record_visibility', Setting.TYPE_BOOLEAN, true, 'Should players be able to access their record?'),
     new Setting('account', 'record_page_count', Setting.TYPE_NUMBER, 30, 'Maximum number of record entries to display per page.'),
@@ -42,10 +45,12 @@ export default [
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */
+    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
-    new Setting('decorations', 'objects_christmas', Setting.TYPE_BOOLEAN, isDecember, 'Should the Christmas decorations be enabled?'),
+    new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
-    new Setting('decorations', 'objects_vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
+    new Setting('decorations', 'san_ferro_road_works', Setting.TYPE_BOOLEAN, false, 'Enable road works near the San Fierro bridge?'),
+    new Setting('decorations', 'vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
 
     /** Financial related settings */
     new Setting('financial', 'community_contribution_cycle_sec', Setting.TYPE_NUMBER, 300, 'How often should contributions be collected (seconds)?'),
@@ -55,17 +60,34 @@ export default [
     new Setting('financial', 'community_contribution_player_pct', Setting.TYPE_NUMBER, 4, 'What percentage of cash should registered players contribute?'),
     new Setting('financial', 'community_contribution_vip_base', Setting.TYPE_NUMBER, 2500000, 'Starting at what wealth level should VIPs contribute?'),
     new Setting('financial', 'community_contribution_vip_pct', Setting.TYPE_NUMBER, 3, 'What percentage of cash should VIPs contribute?'),
+    new Setting('financial', 'spawn_money', Setting.TYPE_NUMBER, 10000, 'How much money should a player get when they spawn?'),
+
+    /** Game-related settings */
+    new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
 
     /** Gang-related settings */
-    new Setting('gangs', 'zones_area_bonus_members', Setting.TYPE_NUMBER, 8, 'Starting at how many members will an area bonus be applied?'),
-    new Setting('gangs', 'zones_area_bonus_members_pct', Setting.TYPE_NUMBER, 20, 'Area increase percentage granted for the member bonus.'),
-    new Setting('gangs', 'zones_area_max_distance', Setting.TYPE_NUMBER, 100, 'Maximum distance from the mean for gang areas.'),
-    new Setting('gangs', 'zones_area_min_edge_length', Setting.TYPE_NUMBER, 50, 'Minimum length of each of the areas edges (width/height).'),
-    new Setting('gangs', 'zones_area_min_representation', Setting.TYPE_NUMBER, 50, 'Representation percentage required for gang areas.'),
-    new Setting('gangs', 'zones_area_padding_pct', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
-    new Setting('gangs', 'zones_cluster_limit', Setting.TYPE_NUMBER, 8, 'Maximum number of clusters when running k-means clustering.'),
+    new Setting('gangs', 'account_transaction_count', Setting.TYPE_NUMBER, 50, 'Maximum number of transactions to fetch from the database.'),
+    new Setting('gangs', 'account_transaction_page_count', Setting.TYPE_NUMBER, 25, 'Maximum number of transactions to display on a single page.'),
+    new Setting('gangs', 'member_page_count', Setting.TYPE_NUMBER, 25, 'Maximum number of members to display on a single page.'),
+    new Setting('gangs', 'zones_area_bonus_medium_count', Setting.TYPE_NUMBER, 8, 'Number of active members in an area to get the medium-gang bonus.'),
+    new Setting('gangs', 'zones_area_bonus_medium_units', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to medium-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_large_count', Setting.TYPE_NUMBER, 15, 'Number of active members in an area to get the large-gang bonus.'),
+    new Setting('gangs', 'zones_area_bonus_large_units', Setting.TYPE_NUMBER, 20, 'Area bonus, in map units, applied to large-sized gang areas.'),
+    new Setting('gangs', 'zones_area_bonus_vip_units', Setting.TYPE_NUMBER, 1, 'Area bonus, in map units, awarded for each VIP that owns a house.'),
+    new Setting('gangs', 'zones_area_limit', Setting.TYPE_NUMBER, 4, 'Maximum number of areas owned by a gang.'),
+    new Setting('gangs', 'zones_area_mean_shift_bandwidth', Setting.TYPE_NUMBER, 40, 'Bandwidth used for the mean shift algorithm\'s kernel.'),
+    new Setting('gangs', 'zones_area_min_members', Setting.TYPE_NUMBER, 5, 'How many members need to be in a particular area for it to be a zone?'),
+    new Setting('gangs', 'zones_area_padded_percentage', Setting.TYPE_NUMBER, 20, 'Percentage of padding applied over the strictly enclosing area.'),
+    new Setting('gangs', 'zones_area_viable_edge_length', Setting.TYPE_NUMBER, 50, 'Target edge length of each side of a viable area.'),
+    new Setting('gangs', 'zones_area_viable_shape_threshold', Setting.TYPE_NUMBER, 50, 'Ratio threshold (*100) for maintaining an area shape.'),
+    new Setting('gangs', 'zones_area_viable_shape_adjust', Setting.TYPE_NUMBER, 22, 'Percentage of area to shift w/h to maintain area shape.'),
 
     /** Playground related settings */
+    new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
+    new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),
+    new Setting('playground', 'collectable_map_icons_distance', Setting.TYPE_NUMBER, 500, 'Distance from which collectable map icons will be visible.'),
+    new Setting('playground', 'gunther_help_interval_sec', Setting.TYPE_NUMBER, 300, 'At which interval should Gunther issue helpful /show commands?'),
+    new Setting('playground', 'notification_display_time_sec', Setting.TYPE_NUMBER, 5, 'Number of seconds for which a notification should be displayed.'),
     new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
     new Setting('playground', 'reaction_test_expire_sec', Setting.TYPE_NUMBER, 300, 'After how many seconds does a reaction test expire?'),

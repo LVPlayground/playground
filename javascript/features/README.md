@@ -23,6 +23,7 @@ The following features have been implemented in JavaScript.
   - **[Announce](announce/)**: Provides the ability to announce events to players, administrators
     and IRC.
   - **[Communication](communication/)**: Provides the lower-level player communication capabilities.
+  - **[DeathMatch](death_match/)**: Enables players to fight each other in FFA a death match.
   - **[Economy](economy/)**: Provides primitives for managing LVP's economy.
   - **[Friends](friends/)**: Gives players the ability to list who their friends are, as well as
     the `/friends` command.
@@ -34,7 +35,7 @@ The following features have been implemented in JavaScript.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.
   - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.
-  - **[PlayerSettings](playersettings/)**: This allows to add (persistent) settings for the player.
+  - **[PlayerSettings](player_settings/)**: This allows to add (persistent) settings for the player.
   - **[Report](report/)**: Give the ability to players to report other players when they use illegal
     stuff.
   - **[Settings](settings/)**: Framework providing fast, categorized and persistent settings.

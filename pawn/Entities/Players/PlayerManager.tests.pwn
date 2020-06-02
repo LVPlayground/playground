@@ -21,7 +21,7 @@ DisconnectFakePlayerForTests(id) {
     PlayerManager->onPlayerDisconnect(id);
 }
 
-stock PlayerManagerTestSuite() {
+PlayerManagerTestSuite() {
     // Connect five random players to the server.
     PlayerManager->onPlayerConnect(0);
     Player(0)->onConnect();

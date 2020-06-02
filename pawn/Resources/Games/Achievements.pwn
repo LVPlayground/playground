@@ -89,7 +89,7 @@ REMEMBER TO MAKE IT RESET IN CAchieve__OnPlayerConnect
 #define SPRAY90         64
 #define SPRAY100        65
 
-new sAchievements[TotalAchievements][72] = {
+new sAchievements[66][72] = {
     "Fast Guy (3 reactiontest wins in a row)",
     "Quick Boss (5 reactiontest wins in a row)",
     "Reactiontest King (10 reactiontest wins in a row)",
@@ -158,7 +158,7 @@ new sAchievements[TotalAchievements][72] = {
     "Sprayed (Spray 100 tags)"
 };
 
-new iAchievements[MAX_PLAYERS][TotalAchievements];
+new iAchievements[MAX_PLAYERS][66];
 
 enum gPlayerStats {
     ACdeaths,
@@ -177,12 +177,8 @@ enum gThingsToSave {
 };
 new iGlobalStats[gGlobalStats][gThingsToSave];
 
-CAchieve_GetPlayerAchievement(playerId, achievement) {
-    return iAchievements[playerId][achievement];
-}
-
 CAchieve__OnPlayerConnect(playerid) {
-    for (new i = 0; i < TotalAchievements; i++)
+    for (new i = 0; i < 66; i++)
         iAchievements[playerid][i] = 0;
 
     iStatistics[playerid][ACdeaths] = 0;
@@ -203,8 +199,9 @@ CAchieve__DetonateBomb(playerid) {
     CAchieve__Achieved(playerid, BOMB1);
 }
 
-CAchieve__SprayTag(playerid) {
-    switch (sprayTagGetPlayerCount(playerid)) {
+// TODO: Re-activate this functionality
+stock CAchieve__SprayTag(playerid) {
+    switch (PlayerSyncedData(playerid)->collectables()) {
         case 15: CAchieve__Achieved(playerid, SPRAY15);
         case 30: CAchieve__Achieved(playerid, SPRAY30);
         case 60: CAchieve__Achieved(playerid, SPRAY60);
@@ -349,16 +346,9 @@ CAchieve__Achieved(playerid, achievement, silentmsg = 0) {
             PlayerPlaySound(playerid, 1132, 0.0, 0.0, 0.0);
         }
 
-        for (new i = 0; i < TotalAchievements; i++) {
+        for (new i = 0; i < 66; i++) {
             if (iAchievements[playerid][i] == 1)
                 count++;
-        }
-
-        if (count == 1)
-            SendClientMessage(playerid, COLOR_YELLOW, "You completed your first achievement! Congratulations!");
-        else {
-            format(string, sizeof(string), "You completed %d of the %d achievements so far!", count, TotalAchievements-UnavailableTotalAchievements);
-            SendClientMessage(playerid, COLOR_YELLOW, string);
         }
 
         if (Player(playerid)->isLoggedIn() == true) {
@@ -377,19 +367,4 @@ CAchieve__Achieved(playerid, achievement, silentmsg = 0) {
             Database->query(query, "", -1);
         }
     }
-}
-
-MarkAchievementAsAchievedForPlayer(achievementId, playerId) {
-    iAchievements[playerId][achievementId] = 1;
-}
-
-DeprecatedAchievementIdCheck(playerId, achievementId) {
-    if (iAchievements[playerId][achievementId] == 1)
-        return 1;
-
-    return 0;
-}
-
-DeprecatedAchievementString(achievementId) {
-    return sAchievements[achievementId];
 }

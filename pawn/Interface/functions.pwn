@@ -34,10 +34,6 @@ LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {
     validReasonId[forPlayerId] = reasonId;
 }
 
-bool: LegacyIsPlayerIgnored(playerId, subjectId) {
-    return !!g_Ignore[playerId][subjectId];
-}
-
 bool: LegacyIsUserTempAdmin(playerId) {
     return tempLevel[playerId] > 0;
 }
@@ -63,11 +59,6 @@ RemovePlayerFromAnyGame(playerId) {
         return 1;
     }
 #endif
-
-    if (hayHasPlayerSignedUp(playerId)) {
-        hayRemovePlayer(playerId);
-        return 1;
-    }
 
 #if Feature::DisableFights == 0
     if (waterFightIsPlayerSignedUp(playerId)) {
@@ -197,13 +188,6 @@ ResetPlayerGameStateVariables(playerId) {
 }
 
 ResetPlayerStats(playerId) {
-    for (new i = 0; i < MAX_PLAYERS; i++) g_Ignore[playerId][i] = false;
-    for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-        if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerId] == false)
-            continue;
-
-        g_Ignore[subjectId][playerId] = false;
-    }
     g_VirtualWorld[playerId] = 0;
 #if Feature::DisableFights == 0
     IsPlayerWatchingFC[playerId] = false;
@@ -215,14 +199,12 @@ ResetPlayerStats(playerId) {
     waterFightOnDisconnect(playerId);
 #endif
     iPlayerSesKills[playerId] = 0;
-    hayResetPlayerData(playerId);
 #if Feature::DisableFights == 0
     rwRemovePlayerFromMinigame(playerId);
 #endif
     DestroyPlayerBox(playerId);
     CTaxi_ResetMayTaxi(playerId);
     ResetTeleCheatData(playerId);
-    sprayTagResetData(playerId);
     playerLastQuitInterior[playerId] = 0;
     WantedLevel[playerId] = 0;
     preventKillLamers[ playerId ] = 0;
@@ -263,7 +245,6 @@ ResetPlayerStats(playerId) {
     g_RivershellPlayer[playerId] = 0;
     preventKillLamers[playerId] = 0;
     Drivebyer[playerId] = -1;
-    HeliKill[playerId] = 0;
     UserTemped[playerId] = "";
     PlayerHandOfGod[playerId] = 0;
     g_LastSlapTime[playerId] = 0;
@@ -306,7 +287,6 @@ ResetPlayerStats(playerId) {
     iPlayerSawnoffWeapon[playerId] = 0;
     DeliveryResetStuff(playerId);
     ResetPlayerGameStateVariables(playerId);
-    g_iTimeInfCommandLastUsed[playerId] = 0;
 
     return 1;
 }
@@ -370,11 +350,6 @@ FortCarsonUpdate() {
         SetPlayerArmour(ownerId, Math->min(100.0, armour + 2));
 
     return 1;
-}
-
-ShowServerMessage() {
-    new serverMessageCommands[9][7] = {"beg", "donate", "irc", "report", "rules", "forum", "reg", "swear", "weaps"};
-    lvp_show(GetPlayerId("Gunther"), serverMessageCommands[random(9)]);
 }
 
 UpdatePlayerIngameTime(playerId) {
@@ -488,14 +463,6 @@ Float:GetDistance(playerId, Float: x, Float: y, Float: z) {
     z2 = z;
 
     return floatsqroot(floatpower(floatsqroot(floatpower(floatsub(x2, x1), 2) + floatpower(floatsub(y2, y1), 2)), 2) + floatpower(floatsub(z2, z1), 2));
-}
-
-right(source[], len) {
-    new retval[255], srclen;
-    srclen = strlen(source);
-    strmid(retval, source, srclen - len, srclen, sizeof(retval));
-
-    return retval;
 }
 
 formatPrice(price) {
@@ -703,6 +670,11 @@ RemovePlayerWeapon(playerId, weaponId) {
     return 1;
 }
 
+forward OnRemovePlayerWeapon(playerId, weaponId);
+public OnRemovePlayerWeapon(playerId, weaponId) {
+    RemovePlayerWeapon(playerId, weaponId);
+}
+
 PlayerName(playerId) {                          
     new name[MAX_PLAYER_NAME+1];
     GetPlayerName(playerId, name, sizeof(name));
@@ -755,8 +727,6 @@ GameTextForAllEx(const message[], time, style, playerWorldId = -1) {
 
             GameTextForPlayer(playerId, message, time, style);
         }
-
-        lastShowmsg = Time->currentTime();
     }
     return 1;
 }
@@ -833,80 +803,6 @@ OnPlayerEnterGymCheckpoint(playerId) {
     ShowPlayerDialog(playerId, DIALOG_GYM_FIGHT, DIALOG_STYLE_LIST, "Training to Fight", listItems, "Select", "Cancel");
 
     return 1;
-}
-
-Float: DistanceCameraTargetToLocation(Float: CamX, Float: CamY, Float: CamZ, Float: ObjX, Float: ObjY, Float: ObjZ, Float: FrX, Float: FrY, Float: FrZ) {
-    new Float: TGTDistance, Float: tmpX, Float: tmpY, Float: tmpZ;
-    TGTDistance = floatsqroot((CamX - ObjX) * (CamX - ObjX) + (CamY - ObjY) * (CamY - ObjY) + (CamZ - ObjZ) * (CamZ - ObjZ));
-
-    tmpX = FrX * TGTDistance + CamX;
-    tmpY = FrY * TGTDistance + CamY;
-    tmpZ = FrZ * TGTDistance + CamZ;
-
-    return floatsqroot((tmpX - ObjX) * (tmpX - ObjX) + (tmpY - ObjY) * (tmpY - ObjY) + (tmpZ - ObjZ) * (tmpZ - ObjZ));
-}
-
-Float: GetPointAngleToPoint(Float: x2, Float: y2, Float: X, Float: Y) {
-    new Float: DX, Float: DY, Float: fAng;
-
-    DX = floatabs(floatsub(x2,X));
-    DY = floatabs(floatsub(y2,Y));
-
-    if (DY == 0.0 || DX == 0.0) {
-        if (DY == 0 && DX > 0) fAng = 0.0;
-        else if (DY == 0 && DX < 0) fAng = 180.0;
-        else if  (DY > 0 && DX == 0) fAng = 90.0;
-        else if(DY < 0 && DX == 0) fAng = 270.0;
-        else if (DY == 0 && DX == 0) fAng = 0.0;
-    } else {
-        fAng = atan(DX/DY);
-
-        if(X > x2 && Y <= y2) fAng += 90.0;
-        else if(X <= x2 && Y < y2) fAng = floatsub(90.0, fAng);
-        else if(X < x2 && Y >= y2) fAng -= 90.0;
-        else if(X >= x2 && Y > y2) fAng = floatsub(270.0, fAng);
-    }
-
-    return floatadd(fAng, 90.0);
-}
-
-GetXYInFrontOfPoint(&Float: x, &Float: y, Float: fAng, Float: distance) {
-    x += (distance * floatsin(-fAng, degrees));
-    y += (distance * floatcos(-fAng, degrees));
-}
-
-IsPlayerAimingAt(playerId, Float:x, Float:y, Float:z, Float:radius) {
-    new Float: camera_x, Float: camera_y, Float: camera_z, Float: vector_x, Float: vector_y,
-        Float: vector_z, Float: vertical, Float: horizontal;
-
-    GetPlayerCameraPos(playerId, camera_x, camera_y, camera_z);
-    GetPlayerCameraFrontVector(playerId, vector_x, vector_y, vector_z);
-
-    switch (GetPlayerWeapon(playerId)) {
-        case 34, 35, 36: {
-            if (DistanceCameraTargetToLocation(camera_x, camera_y, camera_z, x, y, z, vector_x, vector_y, vector_z) < radius)
-                return true;
-            return false;
-        } case 30, 31: {
-            vertical = 4.0;
-            horizontal = -1.6;
-        } case 33: {
-            vertical = 2.7;
-            horizontal = -1.0;
-        } default: {
-            vertical = 6.0;
-            horizontal = -2.2;
-        }
-    }
-
-    new Float: fAng = GetPointAngleToPoint(0, 0, floatsqroot(vector_x * vector_x + vector_y * vector_y), vector_z) - 270.0;
-    new Float: resize_x, Float: resize_y, Float: resize_z = floatsin(fAng+vertical, degrees);
-    GetXYInFrontOfPoint(resize_x, resize_y, GetPointAngleToPoint(0, 0, vector_x, vector_y) + horizontal, floatcos(fAng + vertical, degrees));
-
-    if (DistanceCameraTargetToLocation(camera_x, camera_y, camera_z, x, y, z, resize_x, resize_y, resize_z) < radius)
-        return true;
-
-    return false;
 }
 
 PlaySoundForPlayersInRange(soundId, Float: range, Float: x, Float: y, Float: z) {

@@ -87,13 +87,7 @@
 #define     INVALID_DERBY_PICKUP_ID     -1
 #define     DERBY_PICKUP_TYPE           14  // SA:MP Pickup type ID - 14 - can only be picked up in vehicles.
 
-
-// Can this derby be ran with just one player? This is used for testing.
-#if BuildGamemodeInReleaseMode == 1
-    #define DERBY_ALLOW_SINGLE 0
-#else
-    #define DERBY_ALLOW_SINGLE 1
-#endif
+#define DERBY_ALLOW_SINGLE 0
 
 // Defines to make things a little easier when it comes to making them,
 // uses the same method as the race handler.

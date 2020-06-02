@@ -9,12 +9,15 @@ import { MockFinancialNativeCalls } from 'features/finance/test/mock_financial_n
 describe('FinancialRegulator', (it, beforeEach, afterEach) => {
     let gunther = null;
     let regulator = null;
+    let settings = null;
 
     beforeEach(() => {
         server.featureManager.loadFeature('account');
 
+        settings = server.featureManager.loadFeature('settings');
+
         gunther = server.playerManager.getById(/* Gunther= */ 0);
-        regulator = new FinancialRegulator(MockFinancialNativeCalls);
+        regulator = new FinancialRegulator(() => settings, MockFinancialNativeCalls);
     });
 
     afterEach(() => regulator.dispose());
@@ -23,6 +26,17 @@ describe('FinancialRegulator', (it, beforeEach, afterEach) => {
         // Any balance outside of these numbers will cause truncation and inaccuracies.
         assert.isAboveOrEqual(FinancialRegulator.kMinimumBankAmount, Number.MIN_SAFE_INTEGER);
         assert.isBelowOrEqual(FinancialRegulator.kMaximumBankAmount, Number.MAX_SAFE_INTEGER);
+    });
+
+    it('should award some spawn money on each player spawn', assert => {
+        assert.equal(regulator.getPlayerCashAmount(gunther), 0);
+
+        dispatchEvent('playerspawn', {
+            playerid: gunther.id,
+        });
+
+        assert.equal(
+            regulator.getPlayerCashAmount(gunther), settings.getValue('financial/spawn_money'));
     });
 
     it('should be able to keep track of cash money held by players', assert => {

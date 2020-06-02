@@ -458,4 +458,56 @@ describe('CommandBuilder', (it, beforeEach) => {
     assert.isNull(parameterFoo);
   });
 
+  it('should properly check parameter existence for multiple parameters', assert => {
+    let foo, bar, baz, qux = null;
+
+    builder('testcommand')
+        .parameters([
+          { name: 'foo', type: CommandBuilder.PLAYER_PARAMETER },
+          { name: 'bar', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 3 },
+          { name: 'baz', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
+          { name: 'qux', type: CommandBuilder.WORD_PARAMETER, defaultValue: 'aye' }])
+        .build((_, inFoo, inBar, inBaz, inQux) => [foo, bar, baz, qux] = [inFoo, inBar, inBaz, inQux]);
+
+    listener(player, '');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo] [bar=3] [baz]? [qux=aye]');
+
+    listener(player, 'Gunther');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo] [bar=3] [baz]? [qux=aye]');
+
+    assert.strictEqual(foo.name, 'Gunther');
+    assert.strictEqual(bar, 3);
+    assert.strictEqual(baz, undefined);
+    assert.strictEqual(qux, 'aye');
+
+    listener(player, 'Lucy qux');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo] [bar=3] [baz]? [qux=aye]');
+
+    assert.strictEqual(foo.name, 'Gunther');  // `qux` cannot be parsed
+    assert.strictEqual(bar, 3);
+    assert.strictEqual(baz, undefined);
+    assert.strictEqual(qux, 'aye');
+
+    listener(player, 'Russell 5');
+    assert.equal(Message.filter(lastMessage), 'Usage: /testcommand [foo] [bar=3] [baz]? [qux=aye]');
+
+    assert.strictEqual(foo.name, 'Russell');
+    assert.strictEqual(bar, 5);
+    assert.strictEqual(baz, undefined);
+    assert.strictEqual(qux, 'aye');
+
+    listener(player, 'Gunther 7 10');
+
+    assert.strictEqual(foo.name, 'Gunther');
+    assert.strictEqual(bar, 7);
+    assert.strictEqual(baz, 10);
+    assert.strictEqual(qux, 'aye');
+
+    listener(player, 'Russell 8 9 nay');
+
+    assert.strictEqual(foo.name, 'Russell');
+    assert.strictEqual(bar, 8);
+    assert.strictEqual(baz, 9);
+    assert.strictEqual(qux, 'nay');
+  });
 });

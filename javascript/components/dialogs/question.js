@@ -22,7 +22,8 @@ const PrivateSymbol = Symbol('Please use the static methods.');
 class Question {
     // Asks |question| to |player|, optionally constrained by the |constraints|. Returns a promise
     // that will be resolved with the answer when available or NULL when no answer has been entered.
-    static ask(player, { question, message = null, leftButton = 'Next', constraints = {} } = {}) {
+    static ask(player, { question, message = null, leftButton = 'Next', isPrivate = false,
+                         constraints = {} } = {}) {
         const checkedConstraints = {
             validation: constraints.validation || null,
             explanation: constraints.explanation || null,
@@ -30,7 +31,8 @@ class Question {
         };
 
         const questionInstance =
-            new Question(PrivateSymbol, player, question, message, leftButton, checkedConstraints);
+            new Question(PrivateSymbol, player, question, message, leftButton, isPrivate,
+                         checkedConstraints);
 
         // Immediately ask the question to the user.
         questionInstance.askPlayer();
@@ -45,14 +47,16 @@ class Question {
                           ',' + maximumLength + '}$', 'u');
     }
 
-    constructor(privateSymbol, player, question, message, leftButton, constraints) {
+    constructor(privateSymbol, player, question, message, leftButton, isPrivate, constraints) {
         if (privateSymbol !== PrivateSymbol)
             throw new TypeError('Illegal constructor. Use the static methods instead.');
 
         this.player_ = player;
         this.question_ = question;
         this.leftButton_ = leftButton;
-        this.constraints_ = constraints;
+        this.isPrivate_ = isPrivate;
+
+        this.constraints_ = constraints;        
 
         this.message_ = message;
 
@@ -78,7 +82,7 @@ class Question {
             message: this.message_,
             leftButton: this.leftButton_,
             rightButton: 'Cancel',
-            isPrivate: false
+            isPrivate: this.isPrivate_
         };
 
         Dialog.displayInput(this.player_, dialogOptions).then(async (result) => {
@@ -99,7 +103,11 @@ class Question {
             // If the player is able to make another attempt and an explanation message was given,
             // display that in a dialog box and allow them to try again unless they cancel.
             if (this.attempts_ > 0 && this.constraints_.explanation !== null) {
-                Dialog.displayMessage(this.player_, this.question_, this.constraints_.explanation,
+                let explanation = this.constraints_.explanation;
+                if (typeof explanation === 'function')
+                    explanation = explanation();
+
+                Dialog.displayMessage(this.player_, this.question_, explanation,
                                       'Try again', 'Cancel').then(result => {
                     // Bail out if the player clicked on "Cancel".
                     if (!result.response) {

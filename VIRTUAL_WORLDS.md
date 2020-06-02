@@ -29,4 +29,4 @@ The following worlds are reserved for usage by specific features.
   - **112**: The _Sawnoff Fights_ minigame (`/sawnoff`).
   - **113**: The _Random Deathmatch_ minigame (`/random`).
   - **114**: The _Island Deathmatch_ minigame (`/islanddm`).
-  - **115-199**: _Available._
+  - **115-199**: Minigames powered by the `Games` feature.

@@ -4,6 +4,7 @@
 
 import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
+import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
 // maintains its own books, and will continuously align player's own monitary values with it. Some
@@ -19,13 +20,44 @@ export class FinancialRegulator {
     static kMaximumBankAmount = 5354228880;
     static kMinimumBankAmount = 0;
 
+    callbacks_ = null;
     nativeCalls_ = null;
+    settings_ = null;
 
-    // Map from |player| => |amount|, indicating the amount of cash they carry.
-    cash_ = new WeakMap();
-
-    constructor(FinancialNativeCallsConstructor = FinancialNativeCalls) {
+    constructor(settings, FinancialNativeCallsConstructor = FinancialNativeCalls) {
         this.nativeCalls_ = new FinancialNativeCallsConstructor();
+        this.settings_ = settings;
+
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerspawn', FinancialRegulator.prototype.onPlayerSpawn.bind(this));
+
+        server.playerManager.addObserver(this);
+    }
+
+    // Gets the amount of spawn money players are supposed to get when they spawn.
+    get spawnMoney() { return this.settings_().getValue('financial/spawn_money'); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: bank account
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has identified to their account. All the money they were carrying
+    // during their previous session will be refunded. They might get some more spawn money too.
+    onPlayerLogin(player) {
+        this.setPlayerCashAmount(player, player.account.cashBalance);
+    }
+
+    // Called when a player has spawned in the world. Award them their spawn money.
+    onPlayerSpawn(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // the |player| has not identified to their account yet
+
+        if (player.activity !== Player.PLAYER_ACTIVITY_NONE || player.syncedData.minigameName)
+            return;  // the |player| is doing some activity, skip this for now
+
+        this.setPlayerCashAmount(player, player.account.cashBalance + this.spawnMoney);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -33,14 +65,14 @@ export class FinancialRegulator {
     // ---------------------------------------------------------------------------------------------
 
     // Returns the current account balance from |player|.
-    async getAccountBalance(player) {
+    getAccountBalance(player) {
         return player.account.bankAccountBalance;
     }
     
     // Deposits the given |amount| to the account owned by |player|. Will throw in case the deposit
     // for whatever reason is not possible.
-    async depositToAccount(player, amount) {
-        const currentBalance = await this.getAccountBalance(player);  // force load
+    depositToAccount(player, amount) {
+        const currentBalance = this.getAccountBalance(player);
 
         if (amount < 0)
             throw new Error('This method must not be used for withdrawing money.');
@@ -54,8 +86,8 @@ export class FinancialRegulator {
 
     // Withdraws the given |amount| from the account owned by |player|. Will throw in case the
     // withdrawal is not possible for any reason, for example because they're out of money.
-    async withdrawFromAccount(player, amount) {
-        const currentBalance = await this.getAccountBalance(player);  // force load
+    withdrawFromAccount(player, amount) {
+        const currentBalance = this.getAccountBalance(player);
 
         if (amount < 0)
             throw new Error('This method must not be used for depositing money.');
@@ -73,7 +105,7 @@ export class FinancialRegulator {
 
     // Returns the amount of cash money the |player| is currently carrying.
     getPlayerCashAmount(player) {
-        return this.cash_.get(player) || 0;
+        return player.account.cashBalance;
     }
 
     // Updates the amount of cash money the |player| is currently carrying to the given |amount|.
@@ -86,9 +118,9 @@ export class FinancialRegulator {
         if (amount > FinancialRegulator.kMaximumCashAmount)
             amount = FinancialRegulator.kMaximumCashAmount;
         
-        const difference = amount - this.getPlayerCashAmount(player);
+        const difference = amount - player.account.cashBalance;
 
-        this.cash_.set(player, amount);
+        player.account.cashBalance = amount;
         if (isAdjustment)
             return;  // silent adjustment, all done here
 
@@ -99,5 +131,10 @@ export class FinancialRegulator {
 
     // ---------------------------------------------------------------------------------------------
 
-    dispose() {}
+    dispose() {
+        server.playerManager.removeObserver(this);
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+    }
 }

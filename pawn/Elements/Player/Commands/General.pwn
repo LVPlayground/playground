@@ -20,9 +20,9 @@ lvp_Minigames(playerid, params[])
     }
 
 #if Feature::DisableFights == 0
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
 #else
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE\nHaystack", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
 #endif
 
     #pragma unused params
@@ -120,13 +120,6 @@ lvp_minigaming(playerid, params[]) {
             continue;
         }
 #endif
-
-        if (hayHasPlayerSignedUp(subjectId)) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
-            continue;
-        }
 
         if (CLyse__GetPlayerState(subjectId) != LYSE_STATE_NONE) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[0], sizeof(colorBuffer[]));
@@ -304,9 +297,6 @@ lvp_stats(playerid, params[])
     SendClientMessage(playerid, COLOR_YELLOW, szStatMsg);
 
     format(szStatMsg, 128, "Players Online: %d  Admins Online: %d", iPlayersOnline, iAdminsOnline);
-    SendClientMessage(playerid, Color::Green, szStatMsg);
-
-    format(szStatMsg, 128, "Achievements: %d NPCs: %d", TotalAchievements-UnavailableTotalAchievements, iNPCSOnline);
     SendClientMessage(playerid, Color::Green, szStatMsg);
 
     format(szStatMsg, 128, "Vehicles: %d Properties: %d", VehicleManager->vehicleCount(), iProperties);
@@ -699,17 +689,14 @@ l_Tune:
 }
 
 // Command: /leave
-lvp_leave(playerid,params[]) {
-    // Right. This command is unique. For players, it has to just simply leave
-    // them from the minigame, but for admins, if an ID is specified, we have
-    // to force the specified id to leave.
+//
+// The /leave command will be triggered by JavaScript when it cannot handle the event.
+forward OnPlayerLeaveCommand(playerid, targetid);
+public OnPlayerLeaveCommand(playerid, targetid) {
     new targetPlayer = playerid;
 
-    // right, we make a default var assigned to the playerid, however, if
-    // this command is used by an admin, and includes params, we assign
-    // that var to the value of the params!
-    if (strlen(params) > 0 && Player(playerid)->isAdministrator() == true)
-        targetPlayer = SelectPlayer(params);
+    if (Player(playerid)->isAdministrator() && Player(targetid)->isConnected())
+        targetPlayer = targetid;
 
     new MinigameType: minigameType = GetPlayerMinigameType(targetPlayer), name[48];
     strncpy(name, GetPlayerMinigameName(targetPlayer), sizeof(name));
@@ -737,108 +724,6 @@ lvp_leave(playerid,params[]) {
         }
     } else
         SendClientMessage(playerid, Color::Error, "Invalid player.");
-
-    return 1;
-}
-
-// Command: /showmessage
-// Level: player
-// Parameters: color/msg
-// Author: Jay
-// Notes: Improved & removed a SetTimer statement.
-lvp_showmessage(playerid,params[])
-{
-    new const price = GetEconomyValue(ShowMessageCommand);
-    new message[128];
-
-    // Has the player got enough money?
-    if(GetPlayerMoney(playerid) < price && Player(playerid)->isAdministrator() == false) {
-        format(message, sizeof(message), "This command costs $%s to use.", formatPrice(price));
-        ShowBoxForPlayer(playerid, message);
-        return 1;
-    }
-    // has a showmessage been done recently?
-    if(Time->currentTime() - lastShowmsg < 4) {
-        SendClientMessage(playerid,Color::Red,"* A showmessage is currently active.");
-        return 1;
-    }
-
-    // Get the params...
-    param_shift(tmp);
-
-    // Are they correct?
-    if(!strlen(tmp)) {
-        SendClientMessage(playerid,Color::White,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
-        return 1;
-    }
-    if(!params[0]) {
-        SendClientMessage(playerid,Color::White,"Correct Usage: /showmessage [colour] [message] (Colours: red/yellow/green/blue/white/purple)");
-        return 1;
-    }
-
-    // Now, we find out what colour they used
-    new
-    str[256];
-
-    if(!strcmp(tmp,"red",true,3)) str = "~r~";
-    else if(!strcmp(tmp,"yellow",true,6)) str = "~y~";
-    else if(!strcmp(tmp,"green",true,5)) str = "~g~";
-    else if(!strcmp(tmp,"blue",true,4)) str = "~b~";
-    else if(!strcmp(tmp,"white",true,5)) str = "~w~";
-    else if(!strcmp(tmp,"purple",true,6)) str = "~p~";
-    else
-    {
-        SendClientMessage(playerid,Color::White,"Invalid Colour! Available Colours: red / yellow / green / blue / white / purple");
-        return 1;
-    }
-
-    new iTmp[256];
-    format(iTmp,sizeof(iTmp),"%s",params);
-
-    // Have they used a crash safe string?
-    for (new j; j < strlen(iTmp); j++) {
-        if (strcmp(iTmp[j],"~",true,1) == 0 || strcmp(iTmp[j],"\\",true,1) == 0) {
-            SendClientMessage(playerid,Color::Red,"You cannot use this character in a showmessage.");
-            return 1;
-        }
-    }
-
-    // Format the string,
-    format(message,256,"%s%s",str,iTmp);
-
-    // and finally show it, however, we only show it for people who are in
-    // the same World, and are not in a minigame.
-    new G_VWorld = GetPlayerVirtualWorld(playerid);
-
-    for (new j = 0; j <= PlayerManager->highestPlayerId(); j++)
-    {
-        if(!Player(j)->isConnected())
-            continue;
-
-        if(IsPlayerInMinigame(j))
-            continue;
-
-        if(GetPlayerVirtualWorld(j) != G_VWorld)
-            continue;
-
-        if(!showMessagesEnabled[j])
-            continue;
-
-        if (random(4) == 0)
-            SendClientMessage(j, Color::White, "Hint: Disable these showmessages with /settings showmsg off.");
-
-        GameTextForPlayer(j,message,4000,5);
-    }
-    // and finally, we send an admin message and inform the player it was successfull, oh, and take their cash.
-    format(message,sizeof(message),"%s (Id:%d) has shown: %s (%s) to world: %d.",PlayerName(playerid),playerid,iTmp,tmp,G_VWorld);
-    Admin(playerid, message);
-
-    ShowBoxForPlayer(playerid, "Message shown to all players in this world.");
-
-    lastShowmsg = Time->currentTime();
-
-    if (Player(playerid)->isAdministrator() == false)
-        TakeRegulatedMoney(playerid, ShowMessageCommand);
 
     return 1;
 }
@@ -1342,7 +1227,7 @@ HideHelp:
     }
 
 MyHelp:
-    SendClientMessage(playerid, Color::White, "Usage: /my [achievements/deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
+    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[allchat/armour/color/health/hide/(goto/save)loc/maptp]");

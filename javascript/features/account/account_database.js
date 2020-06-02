@@ -44,6 +44,7 @@ const PLAYER_HASHED_PASSWORD_QUERY = `
 // Query to retrieve the necessary information to display a player summary message.
 const PLAYER_SUMMARY_QUERY = `
     SELECT
+        users.user_id,
         users.username,
         users.level,
         users.is_vip,
@@ -108,6 +109,40 @@ const PLAYER_SESSIONS_QUERY = `
         session_date DESC
     LIMIT
         ?`;
+
+// Query to get information about a particular account from the database.
+const PLAYER_INFORMATION_QUERY = `
+    SELECT
+        users.username,
+        users.level,
+        users.is_vip,
+        (
+            SELECT
+                SUM(revenue_amount)
+            FROM
+                lvp_website.financial_revenue
+            WHERE
+                sender_id = users_links.user_id
+        ) AS donations,
+        (
+            SELECT
+                COUNT(1)
+            FROM
+                sessions
+            WHERE
+                user_id = users.user_id
+        ) AS sessions,
+        b.registered,
+        b.email,
+        b.karma
+    FROM
+        users
+    LEFT JOIN
+        lvp_website.users_links ON users_links.samp_id = users.user_id
+    LEFT JOIN
+        lvp_website.users b ON b.user_id = users_links.user_id
+    WHERE
+        users.user_id = ?`;
 
 // Query to get the aliases associated with a nickname, as well as a flag on whether a particular
 // entry is their main username.
@@ -195,6 +230,30 @@ const PLAYER_PAST_NICKNAMES_QUERY = `
     ORDER BY
         date DESC`;
 
+// Query to create a new user account in the database.
+const CREATE_ACCOUNT_QUERY = `
+    INSERT INTO
+        users
+        (username, password, password_salt, validated, level)
+    VALUES
+        (?, ?, ?, 1, "Player")`;
+
+// Query to associate a player's nickname with their new account.
+const CREATE_NICKNAME_ACCOUNT_QUERY = `
+    INSERT INTO
+        users_nickname
+        (user_id, nickname)
+    VALUES
+        (?, ?)`;
+    
+// Query to create the mutable user information in the database.
+const CREATE_MUTABLE_ACCOUNT_QUERY = `
+    INSERT INTO
+        users_mutable
+        (user_id)
+    VALUES
+        (?)`;
+
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
 
@@ -281,6 +340,35 @@ export class AccountDatabase {
     async _getPlayerSessionsQuery({ userId, limit }) {
         const results = await server.database.query(PLAYER_SESSIONS_QUERY, userId, limit);
         return results ? results.rows : [];
+    }
+
+    // Gets various bits of information about an account from the database.
+    async getAccountInformation(userId) {
+        let information = null;
+        try {
+            information = await this._getAccountInformationQuery(userId);
+        } catch {
+            // Getting account information requires access to the website's database, which is not
+            // allowed for the staging (and/or local) environments. 
+            return null;
+        }
+
+        return {
+            username: information.username,
+            email: information.email,
+            registered: new Date(information.registered),
+            karma: Math.round(information.karma),
+            level: information.level,
+            vip: information.is_vip,
+            donations: information.donations / 100,
+            sessions: information.sessions,
+        };
+    }
+
+    // Actually executes the MySQL query for getting an account's information.
+    async _getAccountInformationQuery(userId) {
+        const results = await server.database.query(PLAYER_INFORMATION_QUERY, userId);
+        return results ? results.rows[0] : [];
     }
 
     // Gets the list of aliases owned by the |nickname|, including their username.
@@ -415,6 +503,21 @@ export class AccountDatabase {
         return true;
     }
 
+    // Returns the fields which may be modified by administrators.
+    getSupportedFieldsForAdministrators() {
+        return [
+            'custom_color',
+            'death_message',
+            'money_bank',
+            'money_bounty',
+            'money_cash',
+            'money_debt',
+            'money_spawn',
+            'skin_id',
+            'validated',
+        ];
+    }
+
     // Returns which fields are supported by the !supported, !getvalue and !setvalue commands. This
     // is a hardcoded list because we only want to support a sub-set of the database column data.
     getSupportedFields() {
@@ -429,7 +532,6 @@ export class AccountDatabase {
             last_ip: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             last_seen: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             level: { table: 'users', type: AccountDatabase.kTypeCustom },
-            money_bank_type: { table: 'users_mutable', type: AccountDatabase.kTypeCustom },
             money_bank: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             money_bounty: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             money_cash: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
@@ -550,7 +652,6 @@ export class AccountDatabase {
         switch (fieldName) {
             case 'last_seen':
             case 'level':
-            case 'money_bank_type':
                 return value;
 
             case 'custom_color': {
@@ -606,11 +707,9 @@ export class AccountDatabase {
                 if (!/^#[0-9a-fA-F]{6}$/.test(value))
                     throw new Error(`"${value}" is not a valid color format (#RRGGBB).`);
                 
-                let color = parseInt(value.substring(1), 16);
-                if (color > 2147483647)
-                    color = -2147483648 + (color - (2147483647 + 1));
+                let color = Color.fromHex(value.substring(1), 0xAA);
 
-                processedValue = color;
+                processedValue = color.toNumberRGBA();
                 break;
 
             case 'last_ip':
@@ -631,13 +730,6 @@ export class AccountDatabase {
             case 'level':
                 if (!['Player', 'Administrator', 'Management'].includes(value))
                     throw new Error(`"${value}" is not a valid player level.`);
-                
-                processedValue = value;
-                break;
-            
-            case 'money_bank_type':
-                if (!['Normal', 'Premier'].includes(value))
-                    throw new Error(`"${value}" is not a valid bank account type.`);
                 
                 processedValue = value;
                 break;
@@ -695,5 +787,26 @@ export class AccountDatabase {
             throw new Error(`The player ${nickname} could not be found in the database.`);
 
         return value;
+    }
+
+    //  Registers a new account for |username|, identified by |password|.
+    async createAccount(username, password) {
+        if (!this.canUpdatePasswords())
+            throw new Error('The `passwordSalt` configuration option is required for this.');
+
+        const databaseSalt = this.generateDatabaseSalt();
+        const hashedPassword = sha1(`${databaseSalt}${password}${this.passwordSalt_}`);
+
+        const results = 
+            await server.database.query(CREATE_ACCOUNT_QUERY, username, hashedPassword,
+                                        databaseSalt);
+        
+        if (!results || !results.insertId)
+            throw new Error(`Unable to create an account for ${username} in the database.`);
+        
+        await Promise.all([
+            server.database.query(CREATE_MUTABLE_ACCOUNT_QUERY, results.insertId),
+            server.database.query(CREATE_NICKNAME_ACCOUNT_QUERY, results.insertId, username),    
+        ]);
     }
 }

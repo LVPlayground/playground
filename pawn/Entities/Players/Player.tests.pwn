@@ -4,7 +4,7 @@
 
 #pragma testcase PlayerTestSuite
 
-stock PlayerTestSuite() {
+PlayerTestSuite() {
     new playerId;
 
     // Test that players default to unconnected, even when overflows occur.

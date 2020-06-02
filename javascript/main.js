@@ -46,16 +46,26 @@ testRunner.run('.*\.test\.js').then(time => {
 
         'account_provider',
         'communication',
+        'finance',
         'nuwani',
         'settings',
+
+        // -----------------------------------------------------------------------------------------
+        // Low-level features.
+        //
+        // May only depend on each other and foundational features, and are expected to be depended
+        // on by various other features because of the functionality they provide.
+        // -----------------------------------------------------------------------------------------
+
+        'collectables',
 
         // -----------------------------------------------------------------------------------------
         // Regular features
         // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
-        'abuse', 'announce', 'economy', 'finance', 'location', 'minigames',
-        'streamer',
+        'abuse', 'announce', 'economy', 'location', 'minigames',
+        'streamer', 'games',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',
@@ -64,13 +74,20 @@ testRunner.run('.*\.test\.js').then(time => {
         'houses',
 
         // General smaller, self-contained features
-        'friends', 'killtime', 'nuwani_commands', 'playground', 'punishments', 'radio', 'report', 'vehicles',
+        'death_match', 'decorations', 'friends', 'killtime', 'nuwani_commands', 'playground',
+        'punishments', 'radio', 'report', 'vehicles',
 
         // Player-related features
         'account', 'player_favours', 'player_settings',
 
         // Communication features
         'communication_commands', 'reaction_tests',
+
+        // -----------------------------------------------------------------------------------------
+        // Games and minigames
+        // -----------------------------------------------------------------------------------------
+
+        'haystack',
 
         // -----------------------------------------------------------------------------------------
 

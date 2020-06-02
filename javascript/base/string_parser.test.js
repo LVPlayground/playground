@@ -180,7 +180,7 @@ describe('StringParser', it => {
     ]);
 
     assert.deepEqual(parser.parse('42 foo'), [42, 'foo']);
-    assert.deepEqual(parser.parse('42'), [42]);
+    assert.deepEqual(parser.parse('42'), [42, undefined]);
 
     assert.equal(parser.parse(''), StringParser.ERROR_MISSING_PARAMETER);
     assert.equal(parser.parse('word'), StringParser.ERROR_MISSING_PARAMETER);

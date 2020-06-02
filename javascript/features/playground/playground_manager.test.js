@@ -34,7 +34,6 @@ describe('PlaygroundManager', (it, beforeEach, afterEach) => {
 
         // List of settings that are expected to alter the server's object count.
         const object_focused_settings = [
-            'decorations/objects_christmas',
             'decorations/objects_pirate_party'
         ];
 
@@ -59,7 +58,6 @@ describe('PlaygroundManager', (it, beforeEach, afterEach) => {
         const initialObjectCount = server.objectManager.count;
 
         // Enable some features. There should be more objects afterwards.
-        settings.setValue('decorations/objects_christmas', true /* enabled */);
         settings.setValue('decorations/objects_pirate_party', true /* enabled */);
         assert.isAbove(server.objectManager.count, initialObjectCount);
 

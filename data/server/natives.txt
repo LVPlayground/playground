@@ -5,6 +5,15 @@
 # native EchoMessage(tag[], format[], message[]);
 EchoMessage
 
+# native ProcessSprayTagForPlayer(playerid);
+ProcessSprayTagForPlayer
+
+# native IsPlayerEligibleForBenefit(playerid, benefit);
+IsPlayerEligibleForBenefit
+
+# native ReportAbuse(playerid, detectorName[], certainty[]);
+ReportAbuse
+
 # native SetIsRegistered(playerid, bool: isRegistered);
 SetIsRegistered
 
@@ -29,10 +38,12 @@ SpawnPlayerInHouse
 # native GetPlayerMoneyJS(playerid);
 # native GivePlayerMoneyJS(playerid, amount);
 # native ResetPlayerMoneyJS(playerid);
+# native GetAccountBalanceJS(playerid, balance[]);
 # native DepositToAccountJS(playerid, amount);
 GetPlayerMoneyJS
 GivePlayerMoneyJS
 ResetPlayerMoneyJS
+GetAccountBalanceJS
 DepositToAccountJS
 
 # Required for testing.

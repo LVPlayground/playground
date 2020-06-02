@@ -1,0 +1,170 @@
+{
+    "Barriers": [
+        {
+            "name": "Wooden Barrier",
+            "model": 1427,
+            "price": 150000
+        },
+        {
+            "name": "Wooden Crates",
+            "model": 1431,
+            "price": 150000
+        },
+        {
+            "name": "Steel Barrier",
+            "model": 1424,
+            "price": 200000
+        },
+        {
+            "name": "Concrete Barrier",
+            "model": 1422,
+            "price": 250000
+        },
+        {
+            "name": "Container (black)",
+            "model": 3571,
+            "price": 1250000
+        },
+        {
+            "name": "Container (red)",
+            "model": 2934,
+            "price": 1250000
+        },
+        {
+            "name": "Container (yellow)",
+            "model": 2935,
+            "price": 1250000
+        },
+        {
+            "name": "Meshed Fence",
+            "model": 19868,
+            "price": 500000
+        },
+        {
+            "name": "Traffic Cone",
+            "model": 1238,
+            "price": 25000
+        },
+        {
+            "name": "Traffic Sign (do not enter)",
+            "model": 19967,
+            "price": 25000
+        },
+        {
+            "name": "Traffic Sign (stop)",
+            "model": 19966,
+            "price": 25000
+        }
+    ],
+    "Defenses": [
+        {
+            "name": "Rusty Sniper Rifle",
+            "model": 2036,
+            "price": 150000
+        },
+        {
+            "name": "Stationary Minigun",
+            "model": 2985,
+            "price": 750000
+        },
+        {
+            "name": "Watch Tower",
+            "model": 3279,
+            "price": 2500000
+        }
+    ],
+    "Nature": [
+        {
+            "name": "Cow",
+            "model": 19833,
+            "price": 1500000
+        },
+        {
+            "name": "Dead Tree (horizontal)",
+            "model": 846,
+            "price": 200000
+        },
+        {
+            "name": "Flower Bench",
+            "model": 1364,
+            "price": 150000
+        },
+        {
+            "name": "Flower Barrier",
+            "model": 1360,
+            "price": 150000
+        },
+        {
+            "name": "Pine Tree (full)",
+            "model": 655,
+            "price": 75000
+        },
+        {
+            "name": "Pine Tree (long)",
+            "model": 660,
+            "price": 75000
+        }
+    ],
+    "Relaxation": [
+        {
+            "name": "Bench (wooden)",
+            "model": 1280,
+            "price": 50000
+        },
+        {
+            "name": "Bench (modern)",
+            "model": 3657,
+            "price": 50000
+        },
+        {
+            "name": "Chair (foldable)",
+            "model": 1810,
+            "price": 50000
+        },
+        {
+            "name": "Chair (rocking)",
+            "model": 11734,
+            "price": 50000
+        },
+        {
+            "name": "Chair (wooden)",
+            "model": 2120,
+            "price": 50000
+        },
+        {
+            "name": "Chilli Dog Stand",
+            "model": 1340,
+            "price": 250000
+        },
+        {
+            "name": "Dancing Mat",
+            "model": 19128,
+            "price": 1500000
+        },
+        {
+            "name": "Hotdog Stand",
+            "model": 1342,
+            "price": 250000
+        },
+        {
+            "name": "Icecream Stand",
+            "model": 1341,
+            "price": 250000
+        },
+        {
+            "name": "Sofa",
+            "model": 1728,
+            "price": 75000
+        },
+        {
+            "name": "Table (pizza)",
+            "model": 2764,
+            "price": 75000
+        },
+        {
+            "name": "Table (wooden)",
+            "model": 2747,
+            "price": 75000
+        }
+    ]
+}

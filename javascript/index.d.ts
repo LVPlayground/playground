@@ -19,6 +19,8 @@ declare global {
     function clearModuleCache(filenamePrefix: string): void;
     function dispatchEvent(eventName: string, event?: any): void;
     function frameCounter(): { duration: number; fps: number };
+    function flushExceptionQueue(): void;
+    function getDeferredEvents(): Array<{ type: string, event: object }>;
     function glob(base: string, pattern: string): Array<string>;
     function hasEventListener(eventName: string, listener: Function): boolean;
     function highResolutionTime(): number;

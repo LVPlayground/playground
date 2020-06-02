@@ -10,10 +10,14 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 import Dialog from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import { GangFinance } from 'features/gangs/gang_finance.js';
 import Menu from 'components/menu/menu.js';
 import PlayerSetting from 'entities/player_setting.js';
 import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
+
+import { format } from 'base/string_formatter.js';
+import { formatDate, fromNow } from 'base/time.js';
 
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
@@ -46,8 +50,8 @@ const GOAL_QUESTION = {
     question: 'Choose your gang\'s goal',
     message: 'In one sentence, what is the purpose of your gang?',
     constraints: {
-        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_!?]{4,32}$/u,
-        explanation: 'The goal of your gang must be between 4 and 128 characters long and should ' +
+        validation: /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð\s,\.'\-~_!?]{4,50}$/u,
+        explanation: 'The goal of your gang must be between 4 and 50 characters long and should ' +
                      'not contain very exotic characters.',
 
         abort: 'Sorry, a gang must have a valid goal!'
@@ -70,10 +74,11 @@ const SKIN_QUESTION = {
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager, announce, finance) {
+    constructor(manager, announce, finance, settings) {
         this.manager_ = manager;
         this.announce_ = announce;
         this.finance_ = finance;
+        this.settings_ = settings;
 
         // Map of players to the gangs they have been invited by.
         this.invitations_ = new WeakMap();
@@ -96,6 +101,8 @@ class GangCommands {
                 .build(GangCommands.prototype.onGangMembersCommand.bind(this))
             .sub('settings')
                 .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
+            .sub('transactions')
+                .build(GangCommands.prototype.onGangTransactionsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // Command: /gangs
@@ -103,6 +110,24 @@ class GangCommands {
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
+        
+        // /gbalance
+        server.commandManager.buildCommand('gbalance')
+            .build(GangCommands.prototype.onGangBalanceCommand.bind(this));
+        
+        // /gbank [[amount] | all]
+        server.commandManager.buildCommand('gbank')
+            .sub('all')
+                .build(GangCommands.prototype.onGangBankCommand.bind(this))
+            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build(GangCommands.prototype.onGangBankCommand.bind(this));
+
+        // /gwithdraw [[amount] | all]
+        server.commandManager.buildCommand('gwithdraw')
+            .sub('all')
+                .build(GangCommands.prototype.onGangWithdrawCommand.bind(this))
+            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .build(GangCommands.prototype.onGangWithdrawCommand.bind(this));
     }
 
     // Called when the player uses the `/gang create` command to create a new gang. If the player is
@@ -380,42 +405,40 @@ class GangCommands {
         }
 
         // Retrieve the full memberlist of this gang, not those who are currently in-game.
-        const members = await this.manager_.getFullMemberList(gang, true /* groupByRole */);
+        const members = await this.manager_.getFullMemberList(gang, false /* groupByRole */);
+        
+        // Compile a set of online users, to reflect their last activity time more accurately than
+        // relying on the database, which may not have updated yet.
+        const ingame = new Set();
 
-        player.sendMessage(Message.GANG_MEMBERS_HEADER, gang.tag, gang.name);
-
-        // Formats messages for a particular group of members and sends them to the player when
-        // there is at least a single player in the group.
-        function formatAndSendGroup(label, members) {
-            if (!members.length)
-                return;
-
-            const membersPerRow = 8;
-            for (let i = 0; i < members.length; i += membersPerRow) {
-                const membersRow = members.slice(i, membersPerRow);
-
-                let message = '';
-                if (i == 0 /* first row */)
-                    message += '{B1FC17}' + label + '{FFFFFF}: ';
-
-                // Format and append each member. Online members will visually stand out.
-                membersRow.forEach(member => {
-                    const { nickname, player } = member;
-
-                    if (player)
-                        message += '{B1FC17}' + nickname + '{FFFFFF} (Id: ' + player.id + '), ';
-                    else
-                        message += nickname + ', ';
-                });
-
-                // Finally, send the message to the player.
-                player.sendMessage(message.substr(0, message.length - 2));
-            }
+        for (const otherPlayer of server.playerManager) {
+            if (otherPlayer.account.isIdentified())
+                ingame.add(otherPlayer.account.userId);
         }
 
-        formatAndSendGroup('Leaders', members.leaders);
-        formatAndSendGroup('Managers', members.managers);
-        formatAndSendGroup('Members', members.members);
+        // Display a dialog with all the relevant information about the member(s).
+        const dialog = new Menu('Gang members', [
+            'Position',
+            'Nickname',
+            'Last seen',
+
+        ], { pageSize: this.settings_().getValue('gangs/member_page_count') });
+
+        for (const member of members) {
+            const position = GangDatabase.toRoleString(member.role);
+            const nickname = member.nickname;
+
+            if (ingame.has(member.userId))
+                member.lastSeen = new Date();
+
+            let lastSeen = '{CCCCCC}never';
+            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime()))
+                lastSeen = fromNow({ date: member.lastSeen });
+            
+            dialog.addItem(position, nickname, lastSeen);
+        }
+
+        await dialog.displayForPlayer(player);
     }
 
     // Called when a player types the `/gang settings` command. This command is only available for
@@ -452,7 +475,7 @@ class GangCommands {
                 if (!color)
                     return;  // the leader decided to not update the gang's color
 
-                const colorName = '0x' + color.toHexRGB();
+                const colorName = '#' + color.toHexRGB();
 
                 await this.manager_.updateColor(gang, color);
 
@@ -635,6 +658,32 @@ class GangCommands {
                     message: Message.format(Message.GANG_SETTINGS_NEW_GOAL, answer)
                 });
             });
+
+            const balanceAccessOptions = new Map([
+                [ GangDatabase.kAccessLeader, 'Leader only' ],
+                [ GangDatabase.kAccessLeaderAndManagers, 'Leader and managers' ],
+                [ GangDatabase.kAccessEveryone, 'Everyone' ],
+            ]);
+
+            const balanceAccessLabel = balanceAccessOptions.get(gang.balanceAccess) ?? 'Unknown';
+
+            menu.addItem('Gang balance withdrawals', balanceAccessLabel, async() => {
+                const optionMenu = new Menu('Who can withdraw money?', ['Option', 'Selected']);
+
+                for (const [value, label] of balanceAccessOptions) {
+                    const selected = value === gang.balanceAccess ? 'X' : '';
+
+                    optionMenu.addItem(label, selected, async() => {
+                        await this.manager_.updateBalanceAccess(gang, value);
+                        await alert(player, {
+                            title: 'Access setting has been updated',
+                            message: 'Gang bank account withdrawal access has been updated.',
+                        });
+                    });
+                }
+
+                await optionMenu.displayForPlayer(player);
+            });
         }
 
         const usesGangColor = gang.usesGangColor(player);
@@ -790,6 +839,49 @@ class GangCommands {
         await optionMenu.displayForPlayer(player);
     }
 
+    // Called when the player uses the `/gang transactions` command, which shows them an overview of
+    // the most recent transactions to their gang bank.
+    async onGangTransactionsCommand(player) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        // Fetch the financial transactions from the database. Each is attributed with information.
+        const transactions = await this.manager_.database.getTransactionLog(gang.id, {
+            limit: this.settings_().getValue('gangs/account_transaction_count')
+        });
+
+        if (!transactions) {
+            return alert(player, {
+                title: 'Financial transactions',
+                message: 'No transactions could be found on this account.',
+            });
+        }
+
+        // Display a dialog with all the relevant information about the transaction(s).
+        const dialog = new Menu('Financial transactions', [
+            'Date',
+            'Nickname',
+            'Amount',
+            'Reason',
+
+        ], { pageSize: this.settings_().getValue('gangs/account_transaction_page_count') });
+
+        for (const transaction of transactions) {
+            const date = formatDate(transaction.date, /* includeTime= */ false);
+            const username = transaction.username ?? 'LVP';
+            const amount = transaction.amount > 0
+                ? format('{43A047}%$', transaction.amount)
+                : format('{F4511E}-%$', Math.abs(transaction.amount));
+            
+            dialog.addItem(date, username, amount, transaction.reason);
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
     // Called when the player uses the `/gang` command without parameters. It will show information
     // on the available sub commands, as well as the feature itself.
     onGangCommand(player) {
@@ -797,7 +889,8 @@ class GangCommands {
         player.sendMessage(Message.GANG_INFO_1);
         player.sendMessage(Message.GANG_INFO_2);
         player.sendMessage(
-            Message.COMMAND_USAGE, '/gang [create/invite/join/kick/leave/members/settings]');
+            Message.COMMAND_USAGE,
+            '/gang [create/invite/join/kick/leave/members/settings/transactions]');
     }
 
     // Called when the player uses the `/gangs [player]` command. It will display information about
@@ -846,8 +939,124 @@ class GangCommands {
             player.sendMessage(Message.GANGS_NONE_ONLINE);
     }
 
+    // /gbalance
+    //
+    // Displays the current balance of the gang's joint bank account. Transaction logs can be seen
+    // by using the "/gang settings" command, which has an option available for that.
+    async onGangBalanceCommand(player) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
+
+        player.sendMessage(
+            Message.GBANK_BALANCE, gang.name, balance, GangFinance.kMaximumBankAmount);
+    }
+
+    // /gbank [[amount] | all]
+    //
+    // Deposits either the given amount, or all cash being carried, into the gang's bank account.
+    // This is subject to the same checks, restrictions and syntax as the "/bank" command.
+    async onGangBankCommand(player, amount) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        const cash = this.finance_().getPlayerCash(player);
+        if (!amount)
+            amount = cash;
+
+        if (amount > cash) {
+            player.sendMessage(Message.GBANK_NOT_ENOUGH_CASH, amount);
+            return;
+        }
+
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
+        const availableBalance = GangFinance.kMaximumBankAmount - balance;
+
+        if (availableBalance < amount) {
+            player.sendMessage(Message.GBANK_NO_AVAILABLE_BALANCE, GangFinance.kMaximumBankAmount);
+            return;
+        }
+
+        // Actually deposit the |amount| in the gang's bank account, with attribution.
+        await this.manager_.finance.depositToAccount(
+            gang.id, player.account.userId, amount, 'Personal contribution');
+
+        // Take the |amount| of money away from the player personally.
+        this.finance_().takePlayerCash(player, amount);
+        
+        // Tell everyone in the gang who happens to be about about this mutation.
+        this.manager_.announceToGang(
+            gang, player, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id, amount);
+
+        player.sendMessage(Message.GBANK_STORED, amount, gang.name, gang.balance);
+    }
+
+    // /gwithdraw [[amount] | all]
+    //
+    // Withdraws the given amount of money from the gang's bank account. The |player| must have
+    // permission in order to be able to do this, as it's a dangerous functionality.
+    async onGangWithdrawCommand(player, amount) {
+        const gang = this.manager_.gangForPlayer(player);
+        if (!gang) {
+            player.sendMessage(Message.GBANK_NOT_IN_GANG);
+            return;
+        }
+
+        const isLeader = gang.getPlayerRole(player) === Gang.ROLE_LEADER;
+        const isManager = isLeader || gang.getPlayerRole(player) === Gang.ROLE_MANAGER;
+
+        // Gang leaders have the ability to restrict who's able to withdraw money from the gang's
+        // shared account. This is enforced by this piece of code.
+        const allowed =
+            (gang.balanceAccess === GangDatabase.kAccessEveryone) ||
+            (gang.balanceAccess === GangDatabase.kAccessLeaderAndManagers && isManager) ||
+            (gang.balanceAccess === GangDatabase.kAccessLeader && isLeader);
+
+        if (!allowed) {
+            player.sendMessage(Message.GBANK_NOT_ALLOWED);
+            return;
+        }
+
+        const balance = await this.manager_.finance.getAccountBalance(gang.id);
+        if (!amount)
+            amount = balance;
+
+        if (amount > balance) {
+            player.sendMessage(Message.GBANK_NOT_ENOUGH_FUNDS, gang.name, amount);
+            return;
+        }
+
+        // Actually give |player| the money they've withdrawn.
+        if (!this.finance_().givePlayerCash(player, amount)) {
+            player.sendMessage(
+                Message.GBANK_NO_AVAILABLE_CASH, FinancialRegulator.kMaximumCashAmount);
+            return;
+        }
+
+        // Take the money from the bank account as a personal withdraw, because all mutations will
+        // be attributed and shown in the account's financial records.
+        await this.manager_.finance.withdrawFromAccount(
+            gang.id, player.account.userId, amount, 'Personal withdrawal');
+        
+        // Tell everyone in the gang who happens to be about about this mutation.
+        this.manager_.announceToGang(
+            gang, player, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, amount);
+
+        player.sendMessage(Message.GBANK_WITHDRAWN, amount, gang.name, gang.balance);
+    }
+
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
+        server.commandManager.removeCommand('gwithdraw');
+        server.commandManager.removeCommand('gbank');
+        server.commandManager.removeCommand('gbalance');
         server.commandManager.removeCommand('gang');
         server.commandManager.removeCommand('gangs');
     }

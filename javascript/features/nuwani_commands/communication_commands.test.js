@@ -100,6 +100,29 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting[1].tag, 'notice-announce');
     });
 
+    it('should be able to share a Discord link', async (assert) => {
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!discord',
+        });
+
+        assert.equal(result.length, 1);
+        assert.includes(result[0], 'https://discord.sa-mp.nl/');
+    });
+
+    it('responds to the !hello command', async (assert) => {
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!help',
+        });
+        
+        assert.equal(result.length, 2);
+        assert.includes(result[0], '!getid, !getname, !msg, !players, !pm, !vip, !discord');
+        assert.includes(
+            result[1], 'Register for an account on https://sa-mp.nl/, and use the in-game ' +
+                       '"/account" command to change your name, password and settings.');
+     }); 
+
     it('should be able to send messages to in-game players', async (assert) => {
         const wrongChannelResult = await issueCommand(bot, commandManager, {
             source: kCommandSource,
@@ -149,10 +172,12 @@ describe('CommunicationCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.IRC_PRIVATE_MESSAGE, kCommandSourceUsername, 'Hey Gunther!'));
+            Message.format(Message.COMMUNICATION_PM_IRC_RECEIVER, kCommandSourceUsername,
+                           'Hey Gunther!'));
+
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, kCommandSourceUsername, gunther.name,
+            Message.format(Message.COMMUNICATION_IRC_PM_ADMIN, kCommandSourceUsername, gunther.name,
                            gunther.id, 'Hey Gunther!'));
 
         assert.equal(nuwani.messagesForTesting.length, 1);

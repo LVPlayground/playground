@@ -3,10 +3,13 @@
 // be found in the LICENSE file.
 
 import ActorManager from 'entities/actor_manager.js';
+import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
+import { MapIconManager } from 'entities/map_icon_manager.js';
+import { MockPickupManager } from 'entities/test/mock_pickup_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
 import PlayerManager from 'entities/player_manager.js';
@@ -16,24 +19,29 @@ import VehicleManager from 'entities/vehicle_manager.js';
 import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 import MockActor from 'entities/test/mock_actor.js';
+import { MockArea } from 'entities/test/mock_area.js';
 import MockClock from 'base/test/mock_clock.js';
+import { MockGameObject } from 'entities/test/mock_game_object.js';
+import { MockMapIcon } from 'entities/test/mock_map_icon.js';
 import MockNpc from 'entities/test/mock_npc.js';
-import MockObject from 'entities/test/mock_object.js';
 import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
-import MockPickup from 'entities/test/mock_pickup.js';
-import MockPickupManager from 'entities/test/mock_pickup_manager.js';
+import { MockPickup } from 'entities/test/mock_pickup.js';
 import { MockPlayer } from 'entities/test/mock_player.js';
-import MockTextLabel from 'entities/test/mock_text_label.js';
+import { MockTextLabel } from 'entities/test/mock_text_label.js';
 import MockVehicle from 'entities/test/mock_vehicle.js';
 
 import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
 import AccountProvider from 'features/account_provider/account_provider.js';
 import Announce from 'features/announce/announce.js';
+import Collectables from 'features/collectables/collectables.js';
 import Communication from 'features/communication/communication.js';
 import CommunicationCommands from 'features/communication_commands/communication_commands.js';
+import Decorations from 'features/decorations/decorations.js';
 import Finance from 'features/finance/finance.js';
+import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
+import Haystack from 'features/haystack/haystack.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
@@ -61,7 +69,9 @@ class MockServer {
         this.textDrawManager_ = new TextDrawManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
-        this.objectManager_ = new ObjectManager(MockObject /* objectConstructor */);
+        this.areaManager_ = new AreaManager(MockArea /* areaConstructor */);
+        this.mapIconManager_ = new MapIconManager(MockMapIcon /* mapIconConstructor= */);
+        this.objectManager_ = new ObjectManager(MockGameObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
@@ -76,10 +86,14 @@ class MockServer {
             account: Account,
             account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
+            collectables: Collectables,
             communication: Communication,
             communication_commands: CommunicationCommands,
+            decorations: Decorations,
             finance: Finance,
+            games: Games,
             gangs: Gangs,
+            haystack: Haystack,
             nuwani: MockNuwani,
             player_settings: PlayerSettings,
             playground: MockPlayground,
@@ -140,6 +154,12 @@ class MockServer {
     // Gets the real actor manager that maintains mocked actors.
     get actorManager() { return this.actorManager_; }
 
+    // Gets the global area manager, responsible for all areas in the game.
+    get areaManager() { return this.areaManager_; }
+
+    // Gets the map icon manager, through which icons can be added to the map.
+    get mapIconManager() { return this.mapIconManager_; }
+
     // Gets the global NPC manager, responsible for creating NPCs on the server.
     get npcManager() { return this.npcManager_; }
 
@@ -187,10 +207,19 @@ class MockServer {
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();
+        this.mapIconManager_.dispose();
+        this.areaManager_.dispose();
         this.actorManager_.dispose();
 
         this.pawnInvoke_.dispose();
         this.clock_.dispose();
+    }
+
+    // If dispose() fails for any reason, then the `safeDispose` method will be called to remove any
+    // left-over global state. This avoids hundreds of tests from failing in succession.
+    async safeDispose() {
+        Player.provideSupplement('account', null);
+        Player.provideSupplement('settings', null);
     }
 }
 

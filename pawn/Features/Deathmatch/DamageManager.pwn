@@ -167,7 +167,7 @@ class DamageManager <playerId (MAX_PLAYERS)> {
  * @param fY The Y coordinate that the shot hit.
  * @param fZ The Z coordinate that the shot hit.
  */
-public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
+LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
     if (!Player(playerid)->isConnected())
         return 0;
 
@@ -204,9 +204,10 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
     }
 
     return 1;
+    #pragma unused weaponid, fX, fY, fZ
 }
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
 public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart) {
     if (issuerid == Player::InvalidId)
@@ -284,7 +285,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     }
 
     return 1;
-    #pragma unused playerid, amount, weaponid, bodypart
+    #pragma unused amount
 }
 
 #endif  // Feature::EnableServerSideWeaponConfig

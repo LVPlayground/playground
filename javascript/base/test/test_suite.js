@@ -66,6 +66,8 @@ class TestSuite {
           return this.beforeEach_(assert);
 
       }).then(() => {
+        flushExceptionQueue();  // flush any errors thrown during async initialization
+
         // (3) Execute the test case itself. This will be considered asynchronous if it returns a
         // promise. A new Assert instance will be created for each test.
         return test.fn(assert);
@@ -83,12 +85,16 @@ class TestSuite {
         carriedException = error;
 
       }).then(() => {
+        flushExceptionQueue();  // flush any errors thrown during async test execution
+
         // (4) Execute the afterEach function, which, as the other steps, will be considered
         // asynchronous when it returns a promise.
         if (this.afterEach_)
           return this.afterEach_(assert);
 
       }).catch(error => {
+        flushExceptionQueue();  // flush any errors thrown during async turn down
+
         // (5) If the afterEach() method threw an exception, store this in |carriedException| unless
         // the test body itself already threw an exception.
         if (carriedException === null)
@@ -104,6 +110,8 @@ class TestSuite {
         // unless the test body itself already threw an exception.
         if (carriedException === null)
           carriedException = error;
+
+        return global.server.safeDispose();
 
       }).then(() => {
         // (8) Restore the original value of the globals.

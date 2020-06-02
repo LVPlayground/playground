@@ -1,97 +1,143 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// A pickup is an object spawned in the world that can be picked up by players, upon which an action
-// should occur. Pickups can be created for any valid object Id in San Andreas: Multiplayer.
-class Pickup {
-    constructor(manager, modelId, type, position, virtualWorld, respawnDelay) {
-        this.manager_ = manager;
+import { Supplementable } from 'base/supplementable.js';
 
-        this.modelId_ = modelId;
-        this.type_ = type;
-        this.position_ = position;
-        this.virtualWorld_ = virtualWorld;
-        this.respawnDelay_ = respawnDelay;
+// Represents a pickup on the server. They are some of the wackiest entities available as they
+// pretend to have respawning ability, but actually don't. At least not really. Our JavaScript code
+// presents a slightly higher level API over them, with consistent and dependable behaviour.
+export class Pickup extends Supplementable {
+    // Id to represent an invalid pickup. Maps to INVALID_STREAMER_ID, which is (0).
+    static kInvalidId = 0;
 
-        this.respawning_ = false;
-        this.id_ = pawnInvoke('CreatePickup', 'iifffi', modelId, type, position.x, position.y,
-                              position.z, virtualWorld);
+    // The type of pickup, which defines its behaviour. While any of the documented values is
+    // technically possible, we recommend sticking to the following.
+    // https://wiki.sa-mp.com/wiki/PickupTypes
+    static kTypeDefault = 1;
+    static kTypeVehicle = 14;
 
-        if (this.id_ == -1)
-            console.log('[Pickup] Failed to create a pickup with model Id ' + modelId +'.');
+    #id_ = null;
+    #manager_ = null;
+
+    #modelId_ = null;
+    #type_ = null;
+    #position_ = null;
+
+    #respawnDelay_ = null;
+    #respawnOptions_ = null;
+    #respawnPending_ = null;
+
+    #streamDistance_ = null;
+
+    #interiors_ = null;
+    #players_ = null;
+    #virtualWorlds_ = null;
+
+    constructor(manager) {
+        super();
+
+        this.#manager_ = manager;
+    }
+    
+    // Initializes the pickup on the server. Will call the |createInternal| method to actually
+    // create the pickup on the server, through the samp-incognito-streamer plugin.
+    initialize(options) {
+        this.#modelId_ = options.modelId;
+        this.#type_ = options.type;
+        this.#position_ = options.position;
+
+        this.#respawnDelay_ = options.respawnDelay;
+        this.#respawnOptions_ = options;
+        this.#respawnPending_ = false;
+        
+        this.#streamDistance_ = options.streamDistance;
+
+        this.#interiors_ = options.interiors;
+        this.#players_ = options.players;
+        this.#virtualWorlds_ = options.virtualWorlds;
+
+        this.#id_ = this.createInternal(options);
     }
 
-    // Gets the id assigned to this pickup by the SA-MP server.
-    get id() { return this.id_; }
-
-    // Returns whether the pickup still exists on the server.
-    isConnected() { return this.id_ !== null || this.respawning_; }
-
-    // Returns whether the pickup is in process of being respawned.
-    isRespawning() { return this.respawning_; }
-
-    // Gets the model Id used to present this pickup.
-    get modelId() { return this.modelId_; }
-
-    // Gets the type of this pickup, which defines its behaviour.
-    get type() { return this.type_; }
-
-    // Gets the position of this pickup in the world.
-    get position() { return this.position_; }
-
-    // Gets the Virtual World in which this pickup will appear.
-    get virtualWorld() { return this.virtualWorld_; }
-
-    // Gets the respawn delay for the pickup after it has been picked up. A respawn delay of -1
-    // means that the pickup will never be automatically removed.
-    get respawnDelay() { return this.respawnDelay_; }
-
-    // Schedules the pickup to respawn after the given respawn delay. Should only be called by the
-    // PickupManager, as this adds additional functionality on top of SA-MP features.
-    async scheduleRespawn() {
-        pawnInvoke('DestroyPickup', 'i', this.id_);
-
-        this.respawning_ = true;
-        this.id_ = null;
-
-        await seconds(this.respawnDelay_);
-
-        if (!this.isConnected())
-            return;  // the pickup has been disposed of since
-
-        this.respawning_ = false;
-        this.id_ = pawnInvoke('CreatePickup', 'iifffi', this.modelId_, this.type_, this.position_.x,
-                              this.position_.y, this.position_.z, this.virtualWorld_);
-
-        if (this.id_ == -1) {
-            console.log('[Pickup] Failed to recreate a pickup with model Id ' + modelId +'.');
-            return;
-        }
-
-        this.manager_.didRecreatePickup(this);
+    // Actually creates a pickup on the server. Returns the ID of the created pickup.
+    createInternal(options) {
+        return pawnInvoke('CreateDynamicPickupEx', 'iiffffaaaaiiiii',
+            /* modelId= */ options.modelId,
+            /* type= */ options.type,
+            /* x= */ options.position.x,
+            /* y= */ options.position.y,
+            /* z= */ options.position.z,
+            /* streamdistance= */ options.streamDistance,
+            /* worlds= */ options.virtualWorlds,
+            /* interiors= */ options.interiors,
+            /* players= */ options.players,
+            /* areas= */ options.areas,
+            /* priority= */ options.priority,
+            /* maxworlds= */ options.virtualWorlds.length,
+            /* maxinteriors= */ options.interiors.length,
+            /* maxplayers= */ options.players.length,
+            /* maxareas= */ options.areas.length);
     }
 
-    // Disposes of the pickup, and removes it from the server.
+    // Schedules the pickup to respawn after the configured delay.
+    async respawnInternal() {
+        this.destroyInternal();
+
+        this.#id_ = Pickup.kInvalidId;
+        this.#respawnPending_ = true;
+
+        await wait(this.#respawnDelay_ * 1000);
+
+        if (!this.#respawnPending_)
+            return;  // |this| got disposed of in the interim
+        
+        this.#respawnPending_ = false;
+        this.#id_ = this.createInternal(this.#respawnOptions_);
+
+        this.#manager_.didRespawnPickup(this);
+    }
+
+    // Actually destroys this pickup from the server. May be overridden for tests.
+    destroyInternal() { pawnInvoke('DestroyDynamicPickup', 'i', this.#id_); }
+
+    // ---------------------------------------------------------------------------------------------
+
+    get id() { return this.#id_; }
+
+    get modelId() { return this.#modelId_; }
+    get type() { return this.#type_; }
+    get position() { return this.#position_; }
+    get respawnDelay() { return this.#respawnDelay_; }
+
+    get streamDistance() { return this.#streamDistance_; }
+
+    get interiors() { return this.#interiors_; }
+    get players() { return this.#players_; }
+    get virtualWorlds() { return this.#virtualWorlds_; }
+
+    isConnected() { return this.#id_ !== Pickup.kInvalidId || this.#respawnPending_; }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
-        if (!this.respawning_) {
-            pawnInvoke('DestroyPickup', 'i', this.id_);
+        if (!this.#respawnPending_)
+            this.destroyInternal();
 
-            this.manager_.didDisposePickup(this);
-        }
+        this.#respawnPending_ = false;
 
-        this.manager_ = null;
+        this.#manager_.didDisposePickup(this);
+        this.#manager_ = null;
 
-        this.respawning_ = false;
-        this.id_ = null;
+        this.#id_ = Pickup.kInvalidId;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() {
+        return `[object Pickup(Id: ${this.#id_}, modelId: ${this.#modelId_})]`;
     }
 }
-
-// Pickups of this type will not disappear, nor will trigger default effects.
-Pickup.TYPE_PERSISTENT = 1;
-
-// Pickups of this type can only be picked up with a vehicle. Will disappear automatically.
-Pickup.TYPE_VEHICLE = 14;
 
 // Expose the Pickup object globally since it is an entity.
 global.Pickup = Pickup;

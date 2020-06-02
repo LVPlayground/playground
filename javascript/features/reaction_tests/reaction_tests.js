@@ -7,16 +7,20 @@ import Feature from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 import { format } from 'base/string_formatter.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
 // and repeat words or phrases. It's all powered by this feature.
 export default class ReactionTests extends Feature {
+    collectables_ = null;
     communication_ = null;
     nuwani_ = null;
     settings_ = null;
 
+    sequence_ = null;
     strategies_ = null;
 
     activeTest_ = null;
@@ -28,6 +32,9 @@ export default class ReactionTests extends Feature {
     constructor() {
         super();
 
+        // Depending on Collectables, because reaction tests can award achievements.
+        this.collectables_ = this.defineDependency('collectables');
+
         // This feature is a communication delegate, because we need to intercept messages.
         this.communication_ = this.defineDependency('communication');
         this.communication_.addReloadObserver(this, () =>
@@ -35,12 +42,22 @@ export default class ReactionTests extends Feature {
 
         this.communication_().addDelegate(this);
 
+        // Need to be able to actually award money to players.
+        this.finance_ = this.defineDependency('finance');
+
         // This feature depends on Nuwani to be able to echo messages.
         this.nuwani_ = this.defineDependency('nuwani');
 
         // This feature depends on Settings to allow Management members to change details about
         // how reaction tests work through the `/lvp settings` command.
         this.settings_ = this.defineDependency('settings');
+
+        // Keeps track of the current sequence in answering reaction tests. Players can earn an
+        // achievement when answering ten of them in a row.
+        this.sequence_ = {
+            nickname: null,
+            tally: 0,
+        };
 
         // Array of the available strategies for reaction tests. Each of those corresponds to a
         // particular type of tests, for example repeat-the-word, or calculations.
@@ -113,9 +130,16 @@ export default class ReactionTests extends Feature {
         if (this.activeTestToken_ !== activeTestToken)
             return;  // the token has expired, another test was scheduled
 
+        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
+
         const strategy = this.createReactionTestStrategy();
-        if (!strategy)
+
+        // If there are no tests that could be scheduled right now, try again after the timeout, as
+        // new players may have joined the server since.
+        if (!strategy) {
+            wait(timeout * 1000).then(() => this.scheduleNextTest());
             return;
+        }
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
@@ -127,9 +151,8 @@ export default class ReactionTests extends Feature {
         this.activeTestWinnerName_ = null;
         this.activeTestWinnerTime_ = null;
 
-        const timeout = this.settings_().getValue('playground/reaction_test_expire_sec');
         wait(timeout * 1000).then(() =>
-            this.reactionTestTimedOut(this.activeTestToken_));
+            this.reactionTestTimedOut(activeTestToken));
     }
 
     // Called when the |player| has sent the given |message|. If a test is active, and they've got
@@ -168,6 +191,11 @@ export default class ReactionTests extends Feature {
             // Increment the number of wins in the player's statistics.
             player.account.reactionTests++;
 
+            this.awardAchievementWhenApplicable(player, difference);
+
+            // Give them their prize money.
+            this.finance_().givePlayerCash(player, prize);
+
             // Finally, let the |player| know about the prize they've won.
             player.sendMessage(Message.REACTION_TEST_WON, prize);
 
@@ -176,9 +204,57 @@ export default class ReactionTests extends Feature {
 
             // Schedule the next test now that someone has given an answer.
             this.scheduleNextTest();
+
+            // The answer given by the first winning player should be shown in main chat.
+            return false;
         }
 
         return true;
+    }
+
+    // Awards a reaction-test based achievement to the |player|, when applicable. There are four for
+    // reaction tests because of how popular they are: three for quantity, one for reaction speed.
+    awardAchievementWhenApplicable(player, timeSec) {
+        let achievement = null;
+
+        switch (player.account.reactionTests) {
+            case 10:
+                achievement = achievements.kAchievementReactionTestBronze;
+                break;
+            
+            case 100:
+                achievement = achievements.kAchievementReactionTestSilver;
+                break;
+            
+            case 1000:
+                achievement = achievements.kAchievementReactionTestGold;
+                break;
+        }
+
+        // (1) Award the milestone achievements for # of solved reaction tests:
+        if (achievement)
+            this.collectables_().awardAchievement(player, achievement);
+        
+        // (2) Award the performance achievement for sequence of answered reaction tests:
+        if (this.sequence_.nickname === player.name) {
+            this.sequence_.tally++;
+
+            if (this.sequence_.tally === 10) {
+                this.collectables_().awardAchievement(
+                    player, achievements.kAchievementReactionTestSequence);
+            }
+        } else {
+            this.sequence_ = {
+                nickname: player.name,
+                tally: 1,
+            };
+        }
+
+        // (3) Award the performance achievement for speed of answering:
+        if (timeSec < 2) {
+            this.collectables_().awardAchievement(
+                player, achievements.kAchievementReactionTestSpeed);
+        }
     }
 
     // Called when a reaction test may have timed out. We verify this by checking the token. If it

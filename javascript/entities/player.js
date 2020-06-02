@@ -90,12 +90,13 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     #id_ = null;
+    #manager_ = null;
     #level_ = null;
     #connectionState_ = null;
 
     // To be removed:
     #syncedData_ = null;
-    #activity_ = 0;
+    #activity_ = Player.PLAYER_ACTIVITY_NONE;
     #gangId_ = null;
     #levelIsTemporary_ = false;
     #messageLevel_ = 0;
@@ -108,13 +109,16 @@ export class Player extends Supplementable {
     #ipAddress_ = null;
     #isNpc_ = null;
 
+    #selectObjectResolver_ = null;
+
     #vehicle_ = null;
     #vehicleSeat_ = null;
 
-    constructor(id, ...paramsForTesting) {
+    constructor(id, manager, ...paramsForTesting) {
         super();
 
         this.#id_ = id;
+        this.#manager_ = manager;
         this.#level_ = Player.LEVEL_PLAYER;
         this.#connectionState_ = Player.kConnectionEstablished;
 
@@ -146,6 +150,9 @@ export class Player extends Supplementable {
         pawnInvoke('OnPlayerNameChange', 'i', this.#id_);
 
         this.#name_ = value;
+
+        // Let other parts in the gamemode know about the name change.
+        server.playerManager.onPlayerNameChange(this, /* update= */ false);
     }
 
     get ip() { return this.#ipAddress_; }
@@ -173,7 +180,25 @@ export class Player extends Supplementable {
 
     kick() { pawnInvoke('Kick', 'i', this.#id_); }
 
-    setNameForGuestLogin(value) { this.#name_ = value; }
+    updateName() { this.#name_ = pawnInvoke('GetPlayerName', 'iS', this.#id_); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Weapons
+    // ---------------------------------------------------------------------------------------------
+
+    // Give a player a certain weapon with ammo.
+    giveWeapon(weaponId, ammo) {
+        wait(0).then(() => pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo));
+    }
+
+    removeWeapon(weaponId) {
+        wait(0).then(() => pawnInvoke('OnRemovePlayerWeapon', 'ii', this.#id_, weaponId));
+    }
+
+    // Resets all the weapons a player has.
+    resetWeapons() {
+        wait(0).then(() => pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_));
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Physics
@@ -201,6 +226,10 @@ export class Player extends Supplementable {
             return;
 
         pawnInvoke('SetPlayerVirtualWorld', 'ii', this.#id_, value);
+    }
+
+    setPlayerBounds(maxX, minX, maxY, minY) {        
+        pawnInvoke('SetPlayerWorldBounds', 'iffff', this.#id_, maxX, minX, maxY, minY)
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -269,6 +298,40 @@ export class Player extends Supplementable {
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
+    async cancelEdit(resolveActive = true) {
+        pawnInvoke('CancelEdit', 'i', this.#id_);
+
+        if (this.#selectObjectResolver_ && resolveActive) {
+            this.#selectObjectResolver_(null);
+            this.#selectObjectResolver_ = null;
+        }
+    }
+
+    async selectObjectInternal() { pawnInvoke('SelectObject', 'i', this.#id_); }
+    async selectObject() {
+        if (this.#selectObjectResolver_)
+            this.cancelEdit();
+
+        this.#manager_.didRequestSelectObject(this);
+        this.selectObjectInternal();
+
+        return new Promise(resolve => this.#selectObjectResolver_ = resolve);
+    }
+
+    isSelectingObject() { return this.#selectObjectResolver_ !== null; }
+
+    onObjectSelected(object) {
+        // Forcefully cancel the player's editing mode, which includes the ability to select an
+        // object, as we never want them to be able to select multiple objects at once.
+        this.cancelEdit(false);
+
+        if (!this.#selectObjectResolver_)
+            return;  // the |player| is not selecting an object
+
+        this.#selectObjectResolver_(object);
+        this.#selectObjectResolver_ = null;
+    }
+
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
         pawnInvoke('ShowPlayerDialog', 'iiissss', this.#id_, dialogId, style, caption, message,
                                                   leftButton, rightButton);
@@ -278,7 +341,11 @@ export class Player extends Supplementable {
         if (message instanceof Message)
             message = Message.format(message, ...args);
 
-        pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, message.toString());
+        // Escape all percentage signs with double percentage signs, as the |message| parameter of
+        // SendClientMessage is ran through vsprintf within the SA-MP server, which could crash.
+        const escapedMessage = String(message).replace(/%/g, '%%');
+
+        pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, escapedMessage);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -386,8 +453,9 @@ export class Player extends Supplementable {
 
     updateStreamerObjects() { pawnInvoke('Streamer_Update', 'ii', this.#id_, 0); }
     updateStreamer(position, virtualWorld, interiorId, type) {
-        pawnInvoke('Streamer_UpdateEx', 'ifffiii', this.#id_, position.x, position.y, position.z,
-                   virtualWorld, interiorId, type);
+        pawnInvoke('Streamer_UpdateEx', 'ifffiiiii', this.#id_, position.x, position.y, position.z,
+                   virtualWorld, interiorId, type, /* compensatedTime= */ -1,
+                   /* freezePlayer= */ 1);
     }
 
     get activity() { return this.#activity_; }
@@ -417,6 +485,8 @@ export class Player extends Supplementable {
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;
 Player.PLAYER_ACTIVITY_JS_RACE = 1;
+Player.PLAYER_ACTIVITY_JS_DM_ZONE = 2;
+
 
 // Utility function: convert a player's level to a string.
 global.playerLevelToString = (level, plural = false) => {

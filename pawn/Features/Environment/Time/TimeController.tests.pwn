@@ -4,7 +4,7 @@
 
 #pragma testcase TimeControllerTestSuite
 
-stock TimeControllerTestSuite() {
+TimeControllerTestSuite() {
     // Make sure that the total duration of an in-game day cycle is within 10% of the intended
     // duration of said cycle.
 

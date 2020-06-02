@@ -303,8 +303,10 @@ TimeHelp:
     }
 
 SetHelp:
+   if (Player(playerId)->isManagement())
     SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/shiprail/time/weather]");
-
+   else if (Player(playerId)->isAdministrator())
+    SendClientMessage(playerId, Color::Information, "Usage: /set [shiprail/time/weather]");
     return 1;
 }
 
@@ -817,9 +819,11 @@ GodHelp:
             Player(subjectId)->nicknameString(), subjectId);
         SendClientMessage(playerId, Color::Success, g_message);
 
-        format(g_message, sizeof(g_message), "%s (Id:%d) has granted temp. admin rights to %s (Id:%d).",
+        format(g_message, sizeof(g_message), "%s (Id:%d) has granted temporary admin rights to %s (Id:%d).",
             Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
         Admin(playerId, g_message);
+
+        EchoMessage("notice-crew", "z", g_message);
 
         return 1;
     }
@@ -827,6 +831,11 @@ GodHelp:
     if (!strcmp(playerParameter, "takeadmin", true, 9) && Player(playerId)->isAdministrator() == true) {
         if (Player(subjectId)->isAdministrator() == false) {
             SendClientMessage(playerId, Color::Error, "The selected player isn't an administrator.");
+            return 1;
+        }
+
+        if (tempLevel[subjectId] != 2 && !Player(playerId)->isManagement()) {
+            SendClientMessage(playerId, Color::Error, "You can't take rights from permanent administrators.");
             return 1;
         }
 
@@ -845,137 +854,24 @@ GodHelp:
             Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
         Admin(playerId, g_message);
 
+        EchoMessage("notice-crew", "z", g_message);
+
         return 1;
     }
 
-    PlayerHelp:
+PlayerHelp:
     SendClientMessage(playerId, Color::Information, "Usage: /p [player] [command]:");
 
+    if (Player(playerId)->isAdministrator() == true && tempLevel[subjectId] == 2) {
+        SendClientMessage(playerId, Color::Information, " armor, burn, (un)cage, cash, (un)freeze, god,");
+    } else {
+        SendClientMessage(playerId, Color::Information, " armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
+    }
+
     if (Player(playerId)->isAdministrator() == true) {
-        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
         SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nuke, weapon, weaponinfo, properties,");
         SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
     }
-
-    return 1;
-}
-
-
-#define REPORT_MESSAGE "Report cheaters using /report [suspected id/name] [cheat/reason]"
-
-lvp_show(playerId, params[]) {
-    if (Command->parameterCount(params) != 1)
-        goto ShowHelp;
-
-    new showParameter[12], bool: showInfo = false;
-    Command->stringParameter(params, 0, showParameter, sizeof(showParameter));
-
-    if (!strcmp(showParameter, "forum", true, 5)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Be part of our community and stay updated with the latest news at forum.sa-mp.nl!");
-    }
-
-    else if (!strcmp(showParameter, "swear", true, 5)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "No excessive swearing, flaming, or racism! Watch your language! Read /rules");
-    }
-
-    else if (!strcmp(showParameter, "reg", true, 3)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Save money and stats! Register your nickname at www.sa-mp.nl");
-    }
-
-    else if (!strcmp(showParameter, "report", true, 6)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), REPORT_MESSAGE);
-    }
-
-    else if (!strcmp(showParameter, "caps", true, 4)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "No CAPS please!");
-    }
-
-    else if (!strcmp(showParameter, "beg", true, 3)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Do not beg for money! Earn your own! Read /help");
-    }
-
-    else if (!strcmp(showParameter, "rules", true, 5)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "New on LVP? Read the rules! /rules");
-    }
-
-    else if (!strcmp(showParameter, "weaps", true, 5)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Weapons can be bought at Ammu-Nation: /taxi 4");
-    }
-
-    else if (!strcmp(showParameter, "donate", true, 6)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "VIP access is given with donations! donate.sa-mp.nl for more info!");
-    }
-
-    else if (!strcmp(showParameter, "nick", true, 4)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Need a nickchange? Use /account -> Change your nickname or ask an administrator!");
-    }
-
-    else if (!strcmp(showParameter, "spam", true, 4)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Don't spam in the mainchat, people will see it after one time!");
-    }
-
-    else if (!strcmp(showParameter, "ship", true, 4)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "The pirate ship is a peace zone! Please don't hit, shoot or throw grenades on it!");
-    }
-
-    else if (!strcmp(showParameter, "spraytag", true, 8)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Spray all 100 tags found around Las Venturas, and get the ability to spawn your own vehicles!");
-    }
-
-    else if (!strcmp(showParameter, "interior", true, 8)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!");
-    }
-
-    else if (!strcmp(showParameter, "irc", true, 3)) {
-        showInfo = true;
-        format(g_message, sizeof(g_message), "Join us on GTANet IRC! Click on \"contact\" on https://sa-mp.nl/ for more info.");
-    }
-
-    if (showInfo == true) {
-        new const bool: automated = !!IsPlayerNPC(playerId);
-        new informedPlayerCount = 0;
-
-        for (new receiverId = 0; receiverId <= PlayerManager->highestPlayerId(); ++receiverId) {
-            if (Player(receiverId)->isConnected() == false || IsPlayerInMinigame(receiverId))
-                continue;
-
-            if (Player(receiverId)->isNonPlayerCharacter())
-                continue;
-
-            if (automated && PlayerSettings(receiverId)->areAutomatedAnnouncementsDisabled())
-                continue;
-
-            SendClientMessage(receiverId, Color::Red, "-------------------");
-            SendClientMessage(receiverId, Color::Warning, g_message);
-            SendClientMessage(receiverId, Color::Red, "-------------------");
-            informedPlayerCount++;
-        }
-
-        if (informedPlayerCount > 0) {        
-            format(g_message, sizeof(g_message), "%s (Id:%d) has done /show %s.",
-                Player(playerId)->nicknameString(), playerId, showParameter);
-
-            Admin(playerId, g_message);
-        }
-        return 1;
-    }
-
-ShowHelp:
-    SendClientMessage(playerId, Color::Information, "Usage: /show [beg/caps/donate/forum/interior/nick/reg/report/rules/ship/spam/spraytag/swear/ts/weaps]");
 
     return 1;
 }
@@ -989,34 +885,6 @@ lvp_hs(playerId, params[]) {
         SendClientMessage(playerId, Color::Success, "You have enabled your hit sound.");
         PlayerSettings(playerId)->setPlayerHitSoundEnabled(true);
     }
-
-    return 1;
-    #pragma unused params
-}
-
-lvp_announce(playerId, params[]) {
-    if (Command->parameterCount(params) == 0) {
-        SendClientMessage(playerId, Color::Information, "Usage: /announce [message]");
-        return 1;
-    }
-
-    SendClientMessageToAll(Color::Red, "-------------------");
-    SendClientMessageToAll(Color::Warning, params);
-    SendClientMessageToAll(Color::Red, "-------------------");
-
-    format(g_message, sizeof(g_message), "Announce by %s (Id:%d): %s", Player(playerId)->nicknameString(), playerId, params);
-    Admin(playerId, g_message);
-
-    EchoMessage("notice-announce", "z", params);
-    return 1;
-}
-
-lvp_clear(playerId, params[]) {
-    for (new j = 1; j <= 120; j++)
-        SendClientMessageToAll(0, "\n");
-
-    format(g_message, sizeof(g_message), "%s (Id:%d) has cleared the chat.", Player(playerId)->nicknameString(), playerId);
-    Admin(playerId, g_message);
 
     return 1;
     #pragma unused params

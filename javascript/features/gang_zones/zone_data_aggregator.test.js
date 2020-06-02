@@ -21,7 +21,8 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         const housesWrapper = server.featureManager.createDependencyWrapperForFeature('houses');
 
         database = new MockZoneDatabase();
-        await database.populateTestHouses(houses);
+
+        await MockZoneDatabase.populateTestHouses(houses);
 
         aggregator = new ZoneDataAggregator(database, gangsWrapper, housesWrapper);
     });
@@ -80,7 +81,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         const baGang = aggregator.activeGangs.get(MockZoneDatabase.BA);
         
         assert.equal(baGang.name, 'BA Hooligans');
-        assert.deepEqual(baGang.color, Color.fromRGB(20, 147, 170));
+        assert.deepEqual(baGang.color, Color.fromRGBA(255, 20, 147, 170));
 
         aggregator.onGangSettingUpdated({
             id: MockZoneDatabase.BA,
@@ -107,7 +108,12 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // A new player joining the gang should reconsider all their information.
         const initializedReconsiderationCounter = reconsiderationCounter;
         {
-            await aggregator.onUserJoinGang(/* [NB]Dr.Vibrator= */ 3003, MockZoneDatabase.NB);
+            await aggregator.onUserJoinGang(/* [NB]Dr.Vibrator= */ 3003, MockZoneDatabase.NB, {
+                id: MockZoneDatabase.NB,
+                name: '99NINE',
+                goal: 'Cause havoc',
+            });
+
             await server.clock.advance(1);  // asynchronous reconsideration
         }
         assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);
@@ -139,7 +145,7 @@ describe('ZoneDataAggregator', (it, beforeEach, afterEach) => {
         // Recreate all the houses we populate for testing, which count as mutations.
         const initializedReconsiderationCounter = reconsiderationCounter;
         {
-            await database.populateTestHouses(houses);
+            await MockZoneDatabase.populateTestHouses(houses);
             await server.clock.advance(1);  // asynchronous reconsideration
         }
         assert.isAbove(reconsiderationCounter, initializedReconsiderationCounter);

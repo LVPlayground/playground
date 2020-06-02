@@ -1,0 +1,56 @@
+{
+    "name": "RC Barnstorm",
+    "id": 2,
+
+    "environment": {
+        "boundaries": [ -200, -200, 200, 200 ]
+    },
+
+    "spawnPositions": [
+        { "position": [  73.7883,   73.4238, 2.4082 ], "facingAngle": 260.5399, "vehicleModelId": 464 },
+        { "position": [   6.9850,   27.9988, 2.4112 ], "facingAngle": 201.7691, "vehicleModelId": 464 },
+        { "position": [   0.6782,  -16.0898, 2.4076 ], "facingAngle": 161.7720, "vehicleModelId": 464 },
+        { "position": [  46.3365,  -88.3937, 2.4092 ], "facingAngle": 180.7382, "vehicleModelId": 464 },
+        { "position": [  72.4389, -127.2939, 2.4107 ], "facingAngle": 113.5616, "vehicleModelId": 464 },
+        { "position": [ 128.1940, -144.1725, 2.4094 ], "facingAngle":  78.9676, "vehicleModelId": 464 },
+        { "position": [  93.3146,  -32.4889, 2.4085 ], "facingAngle": 186.0631, "vehicleModelId": 464 },
+        { "position": [ 130.7054,  -93.4983, 2.4124 ], "facingAngle":  73.8375, "vehicleModelId": 464 },
+        { "position": [ 117.4049,    4.2989, 2.4112 ], "facingAngle": 337.1284, "vehicleModelId": 464 },
+        { "position": [  26.1622,  135.8739, 2.4094 ], "facingAngle": 248.1580, "vehicleModelId": 464 },
+        { "position": [  45.5705,   86.7586, 2.0753 ], "facingAngle": 147.3342, "vehicleModelId": 464 },
+        { "position": [  54.9881,    2.2997, 1.1132 ], "facingAngle":  95.7173, "vehicleModelId": 464 },
+        { "position": [  60.1321,   55.5239, 2.4038 ], "facingAngle": 325.2209, "vehicleModelId": 464 },
+        { "position": [  60.9184,   47.9302, 5.7706 ], "facingAngle": 342.8299, "vehicleModelId": 464 },
+        { "position": [  70.0303,  -22.0071, 2.4113 ], "facingAngle": 165.2789, "vehicleModelId": 464 },
+        { "position": [ 138.3093,  -83.2640, 2.4152 ], "facingAngle":   4.0455, "vehicleModelId": 464 },
+        { "position": [  25.5989,   94.6100, 2.4041 ], "facingAngle": 150.8322, "vehicleModelId": 464 },
+        { "position": [  54.8308, -139.6148, 2.4119 ], "facingAngle": 258.7639, "vehicleModelId": 464 }
+    ],
+
+    "objects": [
+        { "modelId":  3625, "position": [ 1135.150757, 1306.274292, 12.655489 ], "rotation": [ 0, 0,  90 ] },
+        { "modelId":  3625, "position": [ 1124.537109, 1306.346313, 12.581337 ], "rotation": [ 0, 0, 270 ] },
+        { "modelId": 16317, "position": [ 1151.526123, 1254.440186,  9.806462 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":   647, "position": [ 1122.228394, 1308.241455, 14.553878 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":   782, "position": [ 1110.417969, 1353.680298,  9.837138 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId": 18609, "position": [ 1121.429688, 1245.572388, 10.992801 ], "rotation": [ 0, 0, 279 ] },
+        { "modelId": 18609, "position": [ 1120.243530, 1261.043091, 10.992801 ], "rotation": [ 0, 0, 279 ] },
+        { "modelId": 13645, "position": [ 1157.054321, 1290.627075, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1159.980469, 1290.727051, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1162.834229, 1290.832275, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1165.702393, 1290.900146, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1165.436890, 1306.551880, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1162.492676, 1306.564453, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1159.645874, 1306.386353, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1156.699829, 1306.192993, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13667, "position": [ 1164.485474, 1352.464478, 29.459023 ], "rotation": [ 0, 0, 243 ] },
+        { "modelId":  2780, "position": [ 1157.483032, 1298.132202,  9.820313 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1164.159912, 1298.344116, 10.107550 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1136.658081, 1300.326782,  9.820313 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1123.237671, 1313.078857,  9.820313 ], "rotation": [ 0, 0,   0 ] }
+    ],
+
+    "settings": {
+        "invisible": true
+    }
+}

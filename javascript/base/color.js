@@ -34,10 +34,10 @@ class Color {
     }
 
     // Create a new Color instance based on the |hex| string.
-    static fromHex(hex) {
+    static fromHex(hex, alpha = 255) {
         return new Color(PrivateSymbol,
                          parseInt(hex.substr(0, 2), 16), parseInt(hex.substr(2, 2), 16),
-                         parseInt(hex.substr(4, 2), 16), parseInt(hex.substr(6, 2), 16) || 255);
+                         parseInt(hex.substr(4, 2), 16), parseInt(hex.substr(6, 2), 16) || alpha);
     }
 
     // Constructor of the Color class. Not to be used except by the public static methods above.

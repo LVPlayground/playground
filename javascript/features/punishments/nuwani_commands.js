@@ -6,11 +6,14 @@ import { BanDatabase } from 'features/punishments/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { format } from 'base/string_formatter.js';
-import { fromNow } from 'base/time.js';
+import { fromNow, relativeTime } from 'base/time.js';
 import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 
 // By default, only show entries added in the past year when using !why.
 const kDefaultPlayerRecordRecencyDays = 365;
+
+// Delay kicking the player by this duration of time, to make sure that they receive the messages.
+export const kPlayerKickDelayMs = 1000;
 
 // Implementation of a series of commands that enables administrators to revoke access from certain
 // players, IP addresses and serial numbers from the server, as well as understanding why someone
@@ -98,6 +101,27 @@ export class NuwaniCommands {
                 { name: 'maxAge', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .build(NuwaniCommands.prototype.onIpInfoCommand.bind(this));
 
+        // !rexception
+        // !rexception list [range]?
+        // !rexception add [range] [nickname]
+        // !rexception remove [range] [nickname]
+        this.commandManager_.buildCommand('rexception')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .sub('list')
+                .parameters([{ name: 'range', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+                .build(NuwaniCommands.prototype.onRangeExceptionListCommand.bind(this))
+            .sub('add')
+                .parameters([
+                    { name: 'range', type: CommandBuilder.WORD_PARAMETER },
+                    { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+                .build(NuwaniCommands.prototype.onRangeExceptionAddCommand.bind(this))
+            .sub('remove')
+                .parameters([
+                    { name: 'range', type: CommandBuilder.WORD_PARAMETER },
+                    { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+                .build(NuwaniCommands.prototype.onRangeExceptionRemoveCommand.bind(this))
+            .build(NuwaniCommands.prototype.onRangeExceptionCommand.bind(this));
+
         // !serialinfo [nickname | serial] [maxAge = 1095]
         this.commandManager_.buildCommand('serialinfo')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -162,7 +186,7 @@ export class NuwaniCommands {
     //
     // Shows information about how to use the !ban command, since it's quite a complicated command.
     onBanCommand(context) {
-        context.respondWithUsage('!ban [player | ip | range | serial]');
+        context.respondWithUsage('!ban [[player] | ip | range | serial]');
     }
 
     // !ban [player] [days] [reason]
@@ -179,7 +203,7 @@ export class NuwaniCommands {
             Message.NUWANI_ADMIN_BANNED, context.nickname, player.name, player.id, days, reason);
 
         player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, context.nickname, days, reason);
-        player.kick();  // actually remove them from the server
+        wait(kPlayerKickDelayMs).then(() => player.kick());  // actually remove them from the server
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeBan,
@@ -387,7 +411,7 @@ export class NuwaniCommands {
             Message.NUWANI_ADMIN_KICKED, context.nickname, player.name, player.id, reason);
 
         player.sendMessage(Message.NUWANI_PLAYER_KICKED_NOTICE, context.nickname, reason);
-        player.kick();  // actually remove them from the server
+        wait(kPlayerKickDelayMs).then(() => player.kick());  // actually remove them from the server
 
         const success = await this.database_.addEntry({
             type: BanDatabase.kTypeKick,
@@ -449,6 +473,119 @@ export class NuwaniCommands {
             suffix = ` 15[${results.total - results.entries.length} omitted...]`;
 
         context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
+    }
+
+    // !rexception
+    //
+    // Displays information on how to hold the !rexception command to make it not blow up.
+    onRangeExceptionCommand(context) {
+        context.respondWithUsage('!rexception [list | add | remove]');
+    }
+
+    // !rexception list [range]?
+    //
+    // Displays either the ranges which have exceptions added to them, or, when given, the list of
+    // exceptions that have been created for the given |range|.
+    async onRangeExceptionListCommand(context, range) {
+        if (range) {
+            const exceptions = await this.database_.getRangeExceptions(range);
+            const formattedExceptions = exceptions.map(exception => {
+                const attribution = `by ${exception.author}`;
+                const usage =
+                    `used ${format('%d', exception.tally)} time${exception.tally !== 1 ? 's' : ''}`;
+
+                return `${exception.nickname} 14(${usage}, ${attribution})`;
+            });
+
+            if (!formattedExceptions.length) {
+                context.respond(`4Error: No exceptions could be found for ${range}.`);
+                return;
+            }
+
+            for (let message = 0; message < 2; ++message) {
+                const selection = formattedExceptions.splice(0, 10).join(', ');
+                if (!selection.length)
+                    return;
+
+                let suffix = '';
+
+                if (message === 1 && formattedExceptions.length > 0)
+                    suffix = ` 15[${formattedExceptions.length} omitted...]`;
+
+                context.respond(`5Exceptions for ${range}: ${selection}${suffix}`);
+            }
+
+        } else {
+            const ranges = await this.database_.getRangesWithExceptions();
+            const formattedRanges = ranges.map(({ range, count }) => {
+                return `${range} 14(${format('%d', count)} exception${count != 1 ? 's' : ''})`;
+            });
+
+            if (!formattedRanges.length) {
+                context.respond('4Error: No range ban exceptions have been created.');
+                return;
+            }
+
+            for (let message = 0; message < 2; ++message) {
+                const selection = formattedRanges.splice(0, 10).join(', ');
+                if (!selection.length)
+                    return;
+
+                let suffix = '';
+
+                if (message === 1 && formattedRanges.length > 0)
+                    suffix = ` 15[${formattedRanges.length} omitted...]`;
+
+                context.respond(`5Ranges with exceptions: ${selection}${suffix}`);
+            }
+        }
+    }
+
+    // !rexception add [range] [nickname]
+    //
+    // Adds the given |nickname| to the list of exceptions for the |range| ban. The |range| has to
+    // be a currently banned range in order for the exception to be added.
+    async onRangeExceptionAddCommand(context, range, nickname) {
+        const ban = await this.database_.findActiveBans({ range });
+
+        let identifiedBan = false;
+        for (const info of ban) {
+            if (info.range !== range)
+                continue;
+            
+            identifiedBan = true;
+        }
+
+        // No exact ban could be found, which means that there's absolutely no point in adding a new
+        // range ban exception to it.
+        if (!identifiedBan) {
+            context.respond(`4Error: The exact range ${range} is not currently banned.`);
+            return;
+        }
+
+        await this.database_.addRangeException(range, nickname, context.nickname);
+
+        context.respond(
+            `3Success: An exception has been added for ${nickname} on the ${range} IP range.`);
+    }
+
+    // !rexception remove [range] [nickname]
+    //
+    // Removes the given |nickname| from the list of exceptions on the given |range| ban.
+    async onRangeExceptionRemoveCommand(context, range, nickname) {
+        const exceptions = await this.database_.getRangeExceptions(range);
+        for (const exception of exceptions) {
+            if (exception.nickname !== nickname)
+                continue;
+            
+            await this.database_.removeRangeException(exception.id);
+
+            context.respond(
+                `3Success: The exception for ${nickname} on ${range} has been removed.`);
+            return;
+        }
+
+        context.respond(`4Error: ${nickname} does not have an exception for the ${range} range.`);
     }
 
     // !serialinfo [nickname | serial] [maxAge = 1095]
@@ -578,14 +715,18 @@ export class NuwaniCommands {
 
         const url = 'https://profile.sa-mp.nl/bans/' + encodeURIComponent(nickname);
 
-        context.respond(`4*** Player log for ${nickname} (${total} items) - ${url}`);
+        context.respond(`4*** Player log for ${nickname} (${total} items) - ${url}`);
         for (const entry of logs) {
             const date = entry.date.toISOString().replace(/^(.+?)T(.+?)\..*$/, '$1 $2');
             const attribution = `${entry.type} by ${entry.issuedBy}`;
             const reason = entry.reason;
 
             const banValue = entry.ip || entry.range || entry.serial;
-            const ban = banValue ? ` 14(${banValue})` : '';
+            const banDuration = entry.expiration.getTime() > entry.date.getTime()
+                    ? ', ' + relativeTime({ date1: entry.date, date2: entry.expiration }).text
+                    : '';
+
+            const ban = banValue ? ` 14(${banValue}${banDuration})` : '';
 
             context.respond(`4[${date}] 3(${attribution}): ${reason}${ban}`);
         }
@@ -686,7 +827,7 @@ export class NuwaniCommands {
             bannedPlayers.push([ player.name, player.id ]);
 
             player.sendMessage(Message.NUWANI_PLAYER_BANNED_NOTICE, nickname, days, reason);
-            player.kick();
+            wait(kPlayerKickDelayMs).then(() => player.kick());
         });
 
         // Tell administrators about the ban(s), in one message per three affected users.
@@ -744,6 +885,7 @@ export class NuwaniCommands {
         this.commandManager_.removeCommand('unban');
         this.commandManager_.removeCommand('why');
         this.commandManager_.removeCommand('serialinfo');
+        this.commandManager_.removeCommand('rexception');
         this.commandManager_.removeCommand('ipinfo');
         this.commandManager_.removeCommand('lastbans');
         this.commandManager_.removeCommand('kick');

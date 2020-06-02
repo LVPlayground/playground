@@ -26,7 +26,6 @@ class DeprecatedTimerRuntime {
 
     new m_fiveSecondTicker = 0;
     new m_threeMinuteTicker = 0;
-    new m_fiveMinuteTicker = 0;
     new m_twentyMinuteTicker = 0;
     new m_ninetyMinuteTicker = 0;
 
@@ -59,8 +58,6 @@ class DeprecatedTimerRuntime {
         rwProcess();
 #endif
 
-        hayProcess();
-
         ProcessMapZoneRaces();
 #if Feature::DisableFights == 0
         CFightClub__Process();
@@ -92,7 +89,6 @@ class DeprecatedTimerRuntime {
 
             CBomb__CheckPlayer (playerId);
             CDerby__PlayerProcess (playerId);
-            hayPlayerProcess(playerId);
             TeleportCheatProcess(playerId);
             ProcessPlayerBox(playerId);
             CheckPlayerClubAudioStream(playerId);
@@ -161,12 +157,6 @@ class DeprecatedTimerRuntime {
             m_threeMinuteTicker = 0;
         }
 
-        if (++m_fiveMinuteTicker == 5) {
-            ShowServerMessage();
-
-            m_fiveMinuteTicker = 0;
-        }
-
         if (++m_twentyMinuteTicker == 20) {
             BonusTime__Start();
             CExport__NewWantedVehicle();
@@ -181,12 +171,3 @@ class DeprecatedTimerRuntime {
         }
     }
 };
-
-StartTimers() {
-    SetTimer("QuickTimer", 100, 1);
-}
-
-forward QuickTimer();
-public QuickTimer() {
-    CHay__Process();
-}

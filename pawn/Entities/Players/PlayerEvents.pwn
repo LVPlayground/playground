@@ -191,7 +191,6 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  * implementation will reside. The cost of introducing an additional call here is negligible.
  */
 public OnIncomingConnection(playerid, ip_address[], port) { PlayerEvents(playerid)->onIncomingConnection(ip_address, port); return 1; }
-public OnPlayerConnect(playerid) { return PlayerEvents(playerid)->onPlayerConnect(); }
 public OnPlayerDisconnect(playerid, reason) { return PlayerEvents(playerid)->onPlayerDisconnect(reason); }
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) { PlayerEvents(playerid)->onPlayerClickMap(fX, fY, fZ); return 1; }
 public OnPlayerClickTextDraw(playerid, Text:clickedid) { return PlayerEvents(playerid)->onPlayerClickTextDraw(clickedid); }

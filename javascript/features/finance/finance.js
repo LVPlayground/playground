@@ -21,14 +21,13 @@ export default class Finance extends Feature {
     constructor() {
         super();
 
-        // Depend on the `account` feature, which provides the account supplement.
-        this.defineDependency('account');
+        this.markFoundational();
 
         // Many parts about the in-game financial situation are configurable.
         const settings = this.defineDependency('settings');
 
         // Responsible for doing the actual bookkeeping associated with in-game money.
-        this.regulator_ = new FinancialRegulator();
+        this.regulator_ = new FinancialRegulator(settings);
 
         // Community contributions are periodically taken from the money players carry with them in
         // cash. This is a form of tax, just with a nicer name because it feels better.

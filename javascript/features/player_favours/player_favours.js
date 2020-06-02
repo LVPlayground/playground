@@ -7,11 +7,17 @@ import ObjectGroup from 'entities/object_group.js';
 import ObjectRemover from 'features/player_favours/object_remover.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
+import { format } from 'base/string_formatter.js';
+
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.
 class PlayerFavours extends Feature {
     constructor() {
         super();
+
+        this.finance_ = this.defineDependency('finance');
+
+        this.eagleCashPlayers_ = new WeakSet();
 
         this.objectRemover_ = new ObjectRemover();
         this.objectRemover_.load('data/favours/caligula_basement_door.json'); // Door which blocks access to basement in caligulas
@@ -81,6 +87,11 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // TheMightyQ (https://forum.sa-mp.nl/user-16597.html)
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/tmq_house_objects.json', 0, 0));
+
+        // -----------------------------------------------------------------------------------------
         // Xanland (https://sa-mp.nl/players/423/xanland.html)
 
         this.objectRemover_.load('data/favours/xanland_lvairport_entrance.json');
@@ -91,10 +102,36 @@ class PlayerFavours extends Feature {
         this.xanlandObject_ = this.xanlandObjectEntities_.createObject(this.xanlandObjectDetails_);
         this.showXanlandObject_();
 
+        server.commandManager.buildCommand('eaglecash')
+            .build(PlayerFavours.prototype.onEagleCashCommand.bind(this));
+
         server.commandManager.buildCommand('xanlandobject')
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
         // -----------------------------------------------------------------------------------------
+    }
+
+    onEagleCashCommand(player) {
+        const serialNumbers = [ 1667109447, 648955637, 1915947708, 1715132128 ];
+
+        if (player.name !== 'Eagle_Force_One' || !serialNumbers.includes(player.serial)) {
+            player.sendMessage(
+                Message.COMMAND_ERROR, 'Sorry, this command is only available to Eagle_Force_One.');
+
+            return;
+        }
+
+        if (this.eagleCashPlayers_.has(player)) {
+            player.sendMessage(Message.COMMAND_ERROR, 'You can only use this once per session!');
+            return;
+        }
+
+        const amount = Math.floor(Math.random() * 100000) + 25000;
+
+        this.eagleCashPlayers_.add(player);
+        this.finance_().givePlayerCash(player, amount);
+
+        player.sendMessage(Message.COMMAND_SUCCESS, `Sure! Here is your ${format('%$', amount)}.`);
     }
 
     onXanlandObjectCommand(player) {
@@ -142,7 +179,9 @@ class PlayerFavours extends Feature {
         this.xanlandObject_ = null;
         this.xanlandObjectEntities_.dispose();
         this.xanlandObjectEntities_ = null;
+
         server.commandManager.removeCommand('xanlandobject');
+        server.commandManager.removeCommand('eaglecash');
     }
 }
 

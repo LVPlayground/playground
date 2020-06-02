@@ -28,7 +28,7 @@ public OnGameModeInit() {
 
 // *************************************************************************************************
 
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
 
     SetCbugAllowed(true);
     SetDamageSounds(0, 0);
@@ -45,8 +45,6 @@ public OnGameModeInit() {
     CRobbery__Initialize();         // Robbery
     CShell__CheckStatus();          // Rivershell
 
-    CHay__Initialize();         // Haystack minigame
-
     CDerby__Init();                 // Derby handler
 #if Feature::DisableFights == 0
     CWWTW__Initialize();            // Walkies Weapons Team War
@@ -56,7 +54,6 @@ public OnGameModeInit() {
 #if Feature::DisableFights == 0
     rwResetData(true);              // RWTW
 #endif
-    sprayTagInitialize();           // Spray tag handler
     InitHotAirBalloon();
     BagCash__Initialize();
 
@@ -77,7 +74,6 @@ public OnGameModeInit() {
     ShowPlayerMarkers(1);                    // Shows the player markers.
     ShowNameTags(1);                         // Shows the player nametags.
     AllowInteriorWeapons(0);                    // Enables the usage of interior weapons.
-    StartTimers();                              // Starts the LVP timers
     LoadMaps();                                 // Loads the mapped areas.
     SetMapIcons();                              // Map icons - Interface/functions.pwn
     InitSpawnPos();                             // Format the spawn position arrays - see Elements/Player/SpawnPos.pwn

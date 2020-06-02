@@ -27,6 +27,14 @@ export class CommunicationCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
+        // !discord
+        this.commandManager_.buildCommand('discord')
+            .build(CommunicationCommands.prototype.onDiscordCommand.bind(this));
+        
+        // !help
+        this.commandManager_.buildCommand('help')
+            .build(CommunicationCommands.prototype.onHelpCommand.bind(this));
+
         // !msg [message]
         this.commandManager_.buildCommand('msg')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -102,6 +110,25 @@ export class CommunicationCommands {
         context.respond('3Success: The announcement has been published.');
     }
 
+    // !discord
+    //
+    // Displays information on how people can join our Discord channel.
+    onDiscordCommand(context) {
+        context.respond('5LVP Discord: https://discord.sa-mp.nl/');
+    }
+
+    // !help
+    //
+    // Displays information on how people can use Nuwani on IRC.
+    onHelpCommand(context) {
+        context.respond(
+            '5Available IRC commands: !getid, !getname, !msg, !players, !pm, !vip, !discord');
+
+        context.respond(
+            'Register for an account on https://sa-mp.nl/, and use the in-game "5/account" ' +
+            'command to change your name, password and settings.');
+    }
+
     // !msg [message]
     //
     // Sends a regular message to in-game players who are in the main world. Everyone is able to
@@ -126,10 +153,10 @@ export class CommunicationCommands {
     // any channel, as the contents don't necessarily have to be public.
     onPrivageMessageCommand(context, player, message) {
         player.sendMessage(
-            Message.format(Message.IRC_PRIVATE_MESSAGE, context.nickname, message));
+            Message.format(Message.COMMUNICATION_PM_IRC_RECEIVER, context.nickname, message));
         
         const adminAnnouncement =
-            Message.format(Message.IRC_PRIVATE_MESSAGE_ADMIN, context.nickname, player.name,
+            Message.format(Message.COMMUNICATION_IRC_PM_ADMIN, context.nickname, player.name,
                            player.id, message);
 
         server.playerManager.forEach(player => {
@@ -141,6 +168,10 @@ export class CommunicationCommands {
             'chat-private-irc', context.nickname, player.name, player.id, message);
         
         context.respond(`3Success: Your message has been sent to ${player.name}`);
+        dispatchEvent('ircmessage', {
+            playerid: player.id,
+            username: context.nickname,
+        });
     }
 
     // !say [message]
@@ -179,6 +210,8 @@ export class CommunicationCommands {
         this.commandManager_.removeCommand('say');
         this.commandManager_.removeCommand('pm');
         this.commandManager_.removeCommand('msg');
+        this.commandManager_.removeCommand('help');
+        this.commandManager_.removeCommand('discord');
         this.commandManager_.removeCommand('announce');
         this.commandManager_.removeCommand('admin');
     }

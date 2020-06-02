@@ -24,8 +24,6 @@ forward bomb_Countdown(playerid);
 #define EXPLODE_TYPE_LARGE 2
 #define EXPLODE_TYPE_MASSIVE 3
 
-#define MIN_SPRAY_TAGS          30
-
 // Bomb shop locations, one in LS one in L.V, Credits to Simon for the co-ords.
 new Float:g_BombShops[2][6] =
 {
@@ -97,13 +95,11 @@ CBomb__CheckPlayer(i)
                 g_PlayerInBombShop[i][j] = true;
 
             // Wait, we only allow players with experience to access the bombshop...
-            #if BuildGamemodeInReleaseMode == 1
-                if (sprayTagGetPlayerCount(i) < MIN_SPRAY_TAGS) {
-                    ShowPlayerBox(i, "You need to have sprayed at least %d spray tags to unlock the bombshop.", MIN_SPRAY_TAGS);
-                    RemovePlayerFromBombShop(i);
-                    return 1;
-                }
-            #endif
+            if (!IsPlayerEligibleForBenefit(i, PLAYER_BENEFIT_BOMB_SHOP)) {
+                ShowBoxForPlayer(i, "You need to have sprayed at least 40 spray tags to unlock the bomb shop.");
+                RemovePlayerFromBombShop(i);
+                return 1;
+            }
 
             if (!IsPlayerInMainWorld(i)) {
                 ShowBoxForPlayer(i, "Sorry, the BombShop is only available in the main world. Use /world 0!");

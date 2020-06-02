@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Gang from 'features/gangs/gang.js';
+import GangDatabase from 'features/gangs/gang_database.js';
 
 const mockedGangInfo = {
     hko: {
@@ -27,6 +28,8 @@ class MockGangDatabase {
                     role: Gang.ROLE_MEMBER, 
                     useGangColor: false,
                     gang: mockedGangInfo.hko,
+                    balance: 0,
+                    balanceAccess: GangDatabase.kAccessLeaderAndManagers,
                     skinId: 42
                 };
                 break;
@@ -36,6 +39,8 @@ class MockGangDatabase {
                     role: Gang.ROLE_LEADER, 
                     useGangColor: true, 
                     gang: mockedGangInfo.hko,
+                    balance: 0,
+                    balanceAccess: GangDatabase.kAccessEveryone,
                     skinId: 42 
                 };
                 break;
@@ -66,6 +71,8 @@ class MockGangDatabase {
                 tag: tag,
                 name: name,
                 goal: goal,
+                balance: 0,
+                balanceAccess: GangDatabase.kAccessLeaderAndManagers,
                 color: null,
                 chatEncryptionExpiry: 0,
                 skinId: 42
@@ -78,31 +85,52 @@ class MockGangDatabase {
     async getFullMemberList(gang) {
         if (gang.tag === 'CC') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MEMBER, userId: 1338, username: 'Harry' },
-                { role: Gang.ROLE_MEMBER, userId: 1337, username: 'Russell' },
-                { role: Gang.ROLE_MEMBER, userId: 1339, username: 'Sander' }
+                {
+                    role: Gang.ROLE_LEADER,
+                    userId: 42,
+                    username: 'Gunther',
+                    lastSeen: new Date()
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1338,
+                    username: 'Harry',
+                    lastSeen: new Date(Date.now() - 13.75 * 86400 * 1000)
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1337,
+                    username: 'Russell',
+                    lastSeen: new Date(Date.now() - 64.75 * 86400 * 1000)
+                },
+                {
+                    role: Gang.ROLE_MEMBER,
+                    userId: 1339,
+                    username: 'Sander',
+                    lastSeen: new Date(Date.now() - 720 * 86400 * 1000)
+                }
             ];
         }
 
         if (gang.tag === 'HKO') {
             return [
-                { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell' }
+                { role: Gang.ROLE_MANAGER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_MANAGER, userId: 1337, username: 'Russell', lastSeen: new Date() }
             ];
         }
 
         if (gang.tag === 'HKO2') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell' }
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_LEADER, userId: 1337, username: 'Russell', lastSeen: new Date() }
             ];
         }
 
         if (gang.tag === 'HKO3') {
             return [
-                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther' },
-                { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer' }
+                { role: Gang.ROLE_LEADER, userId: 42, username: 'Gunther', lastSeen: new Date() },
+                { role: Gang.ROLE_MEMBER, userId: 1521, username: 'OfflinePlayer',
+                  lastSeen: new Date() }
             ];
         }
 
@@ -146,6 +174,37 @@ class MockGangDatabase {
     async updateTag(gang, tag) {}
 
     async updateGoal(gang, goal) {}
+
+    async updateBalanceAccess(gang, access) {}
+
+    async getBalance(gangId) {
+        return 25000000;
+    }
+
+    async getTransactionLog(gangId, limit) {
+        return [
+            {
+                date: new Date('2020-05-24 12:11:51'),
+                amount: -215000,
+                reason: 'Daily maintenance fee',
+                username: null,
+            },
+            {
+                date: new Date('2020-05-23 15:38:51'),
+                amount: -1000000,
+                reason: 'Personal withdrawal',
+                username: 'Russell',
+            },
+            {
+                date: new Date('2020-05-21 11:59:01'),
+                amount: 25000000,
+                reason: 'Personal contribution',
+                username: 'Russell',
+            },
+        ];
+    }
+
+    async processTransaction(gangId, userId, amount, reason) {}
 }
 
 // Magic userId values that can be used by the database.

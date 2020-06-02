@@ -4,6 +4,7 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import { GangFinance } from 'features/gangs/gang_finance.js';
 
 import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
 
@@ -18,14 +19,22 @@ class GangManager {
         this.gangs_ = new Map();
         this.gangPlayers_ = new WeakMap();
 
+        this.finance_ = new GangFinance(this.database_, this);
+
         this.observers_ = new Set();
 
         // Subscribe to notifications for connecting and disconnecting players.
         server.playerManager.addObserver(this, true /* replayHistory */);
     }
 
+    // Gets the database which provides long-term data access for the gang.
+    get database() { return this.database_; }
+
     // Gets an array having the Gang instances for each of the gangs for in-game representation.
     get gangs() { return Array.from(this.gangs_.values()); }
+
+    // Gets access to the GangFinance instance owned by this manager.
+    get finance() { return this.finance_; }
 
     // Returns the Gang that |player| is part of. Returns NULL when they are not part of a gang.
     gangForPlayer(player) {
@@ -131,7 +140,8 @@ class GangManager {
                     nickname: member.username,
                     player: gangPlayers[member.userId] || null,
                     role: member.role,
-                    userId: member.userId
+                    userId: member.userId,
+                    lastSeen: member.lastSeen,
                 };
 
                 // Add them to the single big array when not grouping by role.
@@ -341,6 +351,13 @@ class GangManager {
         gang.goal = goal;
     }
 
+    // Updates the |gang|'s bank account balance access to the given |balanceAccess| value.
+    async updateBalanceAccess(gang, balanceAccess) {
+        await this.database_.updateBalanceAccess(gang, balanceAccess);
+
+        gang.balanceAccess = balanceAccess;
+    }
+
     // Called when |player| has logged in to their Las Venturas Playground account. Will check with
     // the database to see if they should automatically join a gang.
     onPlayerLogin(player, eventData) {
@@ -398,6 +415,9 @@ class GangManager {
     // Cleans up all state stored by the gang manager.
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.finance_.dispose();
+        this.finance_ = null;
     }
 }
 

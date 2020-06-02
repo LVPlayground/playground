@@ -7,6 +7,8 @@ import { ZoneDatabase } from 'features/gang_zones/zone_database.js';
 const kGangBA = 1086;
 const kGangNB = 871;
 
+let globalDecorationId = 0;
+
 // Mock implementation of the gang zone database class. Mimics identical behaviour, just fakes the
 // actual database operations with mocked data.
 export class MockZoneDatabase extends ZoneDatabase {
@@ -16,7 +18,7 @@ export class MockZoneDatabase extends ZoneDatabase {
 
     // Populates a series of test houses to |houses| that are significant for the testability of
     // this feature. There could be other houses too, but we'll ignore those.
-    async populateTestHouses(houses) {
+    static async populateTestHouses(houses) {
         const houseManager = houses.manager_;
         const clownHousesForTesting = [
             [ 2564.6738, 1580.9309, 10.8203 ],
@@ -67,23 +69,23 @@ export class MockZoneDatabase extends ZoneDatabase {
         if (gangId === kGangNB) {
             return {
                 rows: [
-                    { gang_id: kGangNB, user_id: 3001 },  // [NB]D.R.E
-                    { gang_id: kGangNB, user_id: 3002 },  // [NB]90NINE
-                    { gang_id: kGangNB, user_id: 3003 },  // [NB]Dr.Vibrator
-                    { gang_id: kGangNB, user_id: 3004 },  // [NB]ExPloiTeD
-                    { gang_id: kGangNB, user_id: 3005 },  // [NB]Eminich
+                    { gang_id: kGangNB, user_id: 3001, is_vip: 0 },  // [NB]D.R.E
+                    { gang_id: kGangNB, user_id: 3002, is_vip: 0 },  // [NB]90NINE
+                    { gang_id: kGangNB, user_id: 3003, is_vip: 0 },  // [NB]Dr.Vibrator
+                    { gang_id: kGangNB, user_id: 3004, is_vip: 0 },  // [NB]ExPloiTeD
+                    { gang_id: kGangNB, user_id: 3005, is_vip: 0 },  // [NB]Eminich
                 ]
             };
         }
 
         return {
             rows: [
-                { gang_id: kGangBA, user_id: 9001 },  // [BA]AzKiller
-                { gang_id: kGangBA, user_id: 9002 },  // Agent[BA]
-                { gang_id: kGangBA, user_id: 9003 },  // [BA]Sammo
-                { gang_id: kGangBA, user_id: 9004 },  // [BA]Deer_Hunter
-                { gang_id: kGangBA, user_id: 9005 },  // [BA]Curry
-                { gang_id: kGangBA, user_id: 9006 },  // [BA]Slick
+                { gang_id: kGangBA, user_id: 9001, is_vip: 1 },  // [BA]AzKiller
+                { gang_id: kGangBA, user_id: 9002, is_vip: 0 },  // Agent[BA]
+                { gang_id: kGangBA, user_id: 9003, is_vip: 1 },  // [BA]Sammo
+                { gang_id: kGangBA, user_id: 9004, is_vip: 1 },  // [BA]Deer_Hunter
+                { gang_id: kGangBA, user_id: 9005, is_vip: 0 },  // [BA]Curry
+                { gang_id: kGangBA, user_id: 9006, is_vip: 1 },  // [BA]Slick
             ]
         };
     }
@@ -102,6 +104,7 @@ export class MockZoneDatabase extends ZoneDatabase {
                     rows.push({
                         gang_id: kGangBA,
                         gang_name: 'BA Hooligans',
+                        gang_goal: 'Cl0wning around',
                         gang_color: -15428694,
                     });
                     break;
@@ -112,4 +115,53 @@ export class MockZoneDatabase extends ZoneDatabase {
 
         return { rows };
     }
+
+    // Overridden.
+    async _loadDecorationsForZoneQuery(zone) {
+        const barrels = [
+            [ 2564.6738, 1580.9309, 10.8203 ],
+            [ 2563.9091, 1571.9478, 10.8203 ],
+            [ 2563.9909, 1551.9309, 10.8203 ],
+            [ 2564.4260, 1541.9356, 10.8203 ],
+            [ 2533.8684, 1507.8079, 11.5713 ],
+            [ 2483.4956, 1526.7932, 11.2776 ],
+        ];
+
+        const results = {
+            rows: [],
+            insertId: 0,
+            affectedRows: 0,
+        };
+        
+        for (const barrel of barrels) {
+            if (barrel[0] < zone.area.minX || barrel[0] >= zone.area.maxX)
+                continue;
+            if (barrel[1] < zone.area.minY || barrel[1] >= zone.area.maxY)
+                continue;
+            
+            results.rows.push({
+                decoration_id: ++globalDecorationId,
+                modelId: 1225,  // exploding barrel
+                position_x: barrel[0],
+                position_y: barrel[1],
+                position_z: barrel[2],
+                rotation_x: 0,
+                rotation_y: 0,
+                rotation_z: 0,
+            });
+        }
+
+        return results;
+    }
+
+    // Overridden.
+    async createDecoration(gangId, modelId, position, rotation) {
+        return ++globalDecorationId;
+    }
+
+    // Overridden.
+    async updateDecoration(gangId, decorationId, position, rotation) {}
+
+    // Overridden.
+    async removeDecoration(gangId, decorationId) {}
 }

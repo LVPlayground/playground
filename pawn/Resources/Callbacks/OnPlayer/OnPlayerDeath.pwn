@@ -28,34 +28,15 @@ OnPlayerLameKill(playerId, killerId) {
     // Handle the message and statistics for a drive-by/heli-kill separately.
     new message[256], modelId = GetVehicleModel(GetPlayerVehicleID(killerId));
     if (VehicleModel(modelId)->isHelicopter() == true) {
-        format(message, sizeof(message) , "Heli-kill's aren't exactly fair! Prepare to be punished by %s.",
-            Player(playerId)->nicknameString());
-
-        SendClientMessage(playerId, Color::Warning,
-            "You have been killed by a heli, because that isn't exactly fair, you have the opportunity to punish your killer.");
-
-        HeliKill[playerId] = 1;
         MyHeliKills[killerId]++;
     } else {
-        format(message, sizeof(message) , "Drive-by's aren't exactly fair! Prepare to be punished by %s.",
-            Player(playerId)->nicknameString());
-
-        SendClientMessage(playerId, Color::Warning,
-            "You have been drive-by'ed, because that isnt't exactly fair, you have the opportunity to punish your killer.");
-
         MyDrivebys[killerId]++;
     }
 
     // Handle achievements.
     CAchieve__OnPlayerLameKill(killerId, (MyDrivebys[killerId] + MyHeliKills[killerId]));
 
-    SendClientMessage(killerId, Color::Error, message);
     Drivebyer[playerId] = killerId;
-
-    // Show the revenge dialog to the killed player.
-    ShowPlayerDialog(playerId, DIALOG_DRIVEBY, DIALOG_STYLE_LIST, "Revenge!",
-        "Forgive\nSteal their money\nDetonate them\nThrow them in the air\nRespawn their vehicle\nHalve their health\nRemove their weapons", "Punish", "");
-    TogglePlayerControllable(playerId, false);
 
     // Inform the world about this wonderful event.
     new lameKills = MyDrivebys[killerId] + MyHeliKills[killerId];
@@ -89,7 +70,7 @@ OnPlayerLameKill(playerId, killerId) {
  * @param killerid Id of the killer, or INVALID_PLAYER_ID if none.
  * @param reason Id of the weapon/reason.
  */
-public OnPlayerDeath(playerid, killerid, reason) {
+LegacyPlayerDeath(playerid, killerid, reason) {
     Annotation::ExpandList<OnPlayerDeath>(playerid, killerid, reason);
 
     // ---- GENERAL CHECKS AND VARIABLES -----------------------------------------------------------

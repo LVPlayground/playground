@@ -7,6 +7,7 @@ import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import Menu from 'components/menu/menu.js';
 import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
+import * as benefits from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
@@ -18,34 +19,35 @@ const MaximumModelsInArea = 50;
 const MaximumVehiclesInArea = 90;
 
 // Mapping of vehicle commands to model Ids that should be created for quick access.
-const QuickVehicleCommands = {
-    ele: 562,
-    inf: 411,
-    nrg: 522,
-    sul: 560,
-    tur: 451,
-    vor: 539
+const kQuickVehicleCommands = {
+    // kBenefitBasicSprayQuickVehicleAccess, the easy tier
+    pre: { modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Premier
+    sul: { modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Sultan
+
+    // kBenefitBasicBarrelQuickVehicleAccess, the alternative easy tier
+    ele: { modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Elegy
+    tur: { modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Turismo
+
+    // kBenefitFullQuickVehicleAccess, the higher level tier
+    inf: { modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },  // Infernus
+    nrg: { modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },  // NRG-500
 };
 
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, abuse, announce, playground) {
+    constructor(manager, abuse, announce, collectables, playground) {
         this.manager_ = manager;
 
         this.abuse_ = abuse;
         this.announce_ = announce;
+        this.collectables_ = collectables;
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
             this, VehicleCommands.prototype.registerTrackedCommands);
 
         this.registerTrackedCommands(playground());
-
-        // Function that checks whether the |player| has sprayed all tags. Will be overridden by
-        // tests to prevent accidentially hitting the Pawn code.
-        this.hasFinishedSprayTagCollection_ = player =>
-            !!pawnInvoke('OnHasFinishedSprayTagCollection', 'i', player.id);
 
         // Command: /lock
         server.commandManager.buildCommand('lock')
@@ -55,10 +57,14 @@ class VehicleCommands {
         server.commandManager.buildCommand('unlock')
             .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
 
+        // Command: /seize
+        server.commandManager.buildCommand('seize')
+            .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
+
         // Quick vehicle commands.
-        for (const [command, modelId] of Object.entries(QuickVehicleCommands)) {
+        for (const command of Object.keys(kQuickVehicleCommands)) {
             server.commandManager.buildCommand(command)
-                .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, modelId));
+                .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 
         // Command: /v [vehicle]?
@@ -200,20 +206,69 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_UNLOCKED, player.vehicle.model.name);
     }
 
+    // Called when the player wants to seize the vehicle that they're in. This will move them to
+    // the driver seat, which only works when that seat is available. This command uses raw Pawn
+    // invocations to make sure it works on any vehicle.
+    onSeizeCommand(player) {
+        const vehicleId = pawnInvoke('GetPlayerVehicleID', 'i', player.id);
+        if (vehicleId === Vehicle.kInvalidId || !vehicleId) {
+            player.sendMessage(Message.VEHICLE_SEIZE_ON_FOOT);
+            return;
+        }
+
+        const seatId = pawnInvoke('GetPlayerVehicleSeat', 'i', player.id);
+        if (seatId === 0) {
+            player.sendMessage(Message.VEHICLE_SEIZE_DRIVER_SELF);
+            return;
+        }
+
+        const health = pawnInvoke('GetVehicleHealth', 'iF', vehicleId);
+        if (health <= 250) {
+            player.sendMessage(Message.VEHICLE_SEIZE_ON_FIRE);
+            return;
+        }
+
+        // Locate other players who are sitting in the same vehicle.
+        for (const otherPlayer of server.playerManager) {
+            const otherVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', otherPlayer.id);
+            if (otherVehicleId !== vehicleId)
+                continue;
+            
+            const otherSeatId = pawnInvoke('GetPlayerVehicleSeat', 'i', otherPlayer.id);
+            if (otherSeatId === 0) {
+                player.sendMessage(Message.VEHICLE_SEIZE_DRIVER, otherPlayer.name);
+                return;
+            }
+        }
+
+        // Stop the vehicle, because it shouldn't be moving.
+        pawnInvoke('SetVehicleVelocity', 'ifff', vehicleId, 0, 0, 0);
+
+        // Move them out of the vehicle first to avoid desyncs.
+        player.position = player.position;
+
+        // Move them in to the vehicle again.
+        wait(750).then(() =>
+            pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0));
+
+        // They've seized the vehicle, good for them. Let them know :).
+        player.sendMessage(Message.VEHICLE_SEIZED);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when the player executes one of the quick vehicle commands, for example `/inf` and
-    // `/ele`. This will create a personal vehicle for them.
-    async onQuickVehicleCommand(modelId, player) {
-        // TODO: This should just be an alias for `/v [modelId]` when the spray tag requirement
-        // has been dropped, or at least changed into a progressive model.
+    // `/ele`. This will create a personal vehicle for them. Commands can be unlocked by collecting
+    // achievements on the server, in different tier levels.
+    async onQuickVehicleCommand(command, player) {
+        const { modelId, benefit } = kQuickVehicleCommands[command];
 
-        const allowed = this.playground_().canAccessCommand(player, 'v') ||
-                        await Promise.resolve().then(() =>
-                            this.hasFinishedSprayTagCollection_(player));
+        const allowed =
+            this.playground_().canAccessCommand(player, 'v') ||
+            this.collectables_().isPlayerEligibleForBenefit(player, benefit);
 
         if (!allowed) {
-            player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);
+            player.sendMessage(Message.VEHICLE_QUICK_COLLECTABLES);
             return;
         }
 
@@ -554,7 +609,10 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['density', 'enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'color', 'delete', 'health', 'respawn', 'save'];
+        const vehicleOptions = ['access', 'color', 'health', 'respawn'];
+
+        if (!player.isTemporaryAdministrator())
+            vehicleOptions.push('delete', 'save');
 
         if (player.isManagement()) {
             globalOptions.push('optimise');
@@ -710,10 +768,12 @@ class VehicleCommands {
     dispose() {
         this.unregisterTrackedCommands(this.playground_());
 
-        for (const command of Object.keys(QuickVehicleCommands))
+        for (const command of Object.keys(kQuickVehicleCommands))
             server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');
+
+        server.commandManager.removeCommand('seize');
 
         server.commandManager.removeCommand('lock');
         server.commandManager.removeCommand('unlock');

@@ -87,45 +87,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     if (Annotation::ProcessCommand(cmd, playerid, cmdtext[idx]) == 1)
         return 1;
 
-#if BuildGamemodeInReleaseMode == 0
-        if(!strcmp(cmdtext, "/vehid", true))
-        {
-            new str[128];
-            format(str, 128, "Vehicle ID: %d. Model: %d. Name: %s.",GetPlayerVehicleID(playerid), GetVehicleModel(GetPlayerVehicleID(playerid)), VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->nameString());
-            SendClientMessage(playerid, Color::White, str);
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/timer1debug", true) ||
-           !strcmp(cmdtext, "/timer2debug", true) ||
-           !strcmp(cmdtext, "/1secdebug", true))
-        {
-            DeprecatedTimerRuntime->onSecondTimerTick();
-            return 1;
-        }
-
-        if(strcmp(cmdtext,"/hax",true) == 0)
-        {
-            GivePlayerMoney ( playerid, 2500000 );  // beta usage
-            SendClientMessage ( playerid, Color::Green, "No problem sir." );
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/gta", true))
-        {
-            CTheft__Initalize();
-            ShowBoxForPlayer(playerid, "GTA Initialized.");
-            return 1;
-        }
-
-        if(!strcmp(cmdtext, "/addspawn", true))
-        {
-            SavePlayerSpawnData(playerid);
-            SendClientMessage(playerid, Color::Green, "Spawn data saved to file.");
-            return 1;
-        }
-    #endif
-
     new namex[24];
     GetPlayerName( playerid, namex, 24 );
     param_reset();
@@ -485,7 +446,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         SendClientMessage(playerid,COLOR_LIGHTBLUE, "Donating to Las Venturas Playground is highly appreciated and offers a lot of");
         SendClientMessage(playerid,COLOR_LIGHTBLUE,"additional and fun features for players; from access to a VIP room, forum board,");
-        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit http://donate.sa-mp.nl");
+        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit https://sa-mp.nl/donate");
         return 1;
     }
 
@@ -502,9 +463,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(World,          5, PlayerLevel);
 
     // General player commands:
-	lvp_command(Ignore,         6, PlayerLevel);
-    lvp_command(Unignore,       8, PlayerLevel);
-    lvp_command(Ignored,        7, PlayerLevel);
     lvp_command(Commands,       8, PlayerLevel);
     lvp_command(cmds,           4, PlayerLevel);
     lvp_command(Minigames,      9, PlayerLevel);
@@ -513,7 +471,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Has,            3, PlayerLevel);
     lvp_command(Derby,          5, PlayerLevel);
     lvp_command(locate,         6, PlayerLevel);
-    lvp_command(leave,          5, PlayerLevel);
     lvp_command(lyse,           4, PlayerLevel);
     lvp_command(taxi,           4, PlayerLevel);
     lvp_command(tow,            3, PlayerLevel);
@@ -523,7 +480,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(countdown,      9, PlayerLevel);
     lvp_command(interest,       8, PlayerLevel);
     lvp_command(stats,          5, PlayerLevel);
-    lvp_command(showmessage,   11, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
     lvp_command(My,             2, PlayerLevel);
@@ -535,11 +491,8 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(minigaming,    10, PlayerLevel);
 
     // Commands for administrators:
-    lvp_command(clear,          5, AdministratorLevel);
-    lvp_command(show,           4, AdministratorLevel);
     lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
-    lvp_command(announce,       8, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
 #if Feature::DisableFights == 0
@@ -740,11 +693,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
 #endif
-
-    if(!strcmp(cmd, "/haystack", true))
-    {
-        return hayOnCommand(playerid);
-    }
 
     if(strcmp(cmd, "/ramping", true) == 0){
 
@@ -1012,43 +960,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club 13: Balloon (/t only)");
         else
             SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club");
-        return 1;
-    }
-
-    if (strcmp(cmd, "/me", true) == 0) {
-        new message[128];
-        message = strtok(cmdtext, idx);
-
-        if (!strlen(message)) {
-            SendClientMessage(playerid, Color::Information, "Usage: /me [message]");
-            return 1;
-        }
-
-        new actionText[256];
-        actionText = right(cmdtext, (strlen(cmdtext)-4));
-
-        new const bool: isIsolated = PlayerSyncedData(playerid)->isolated();
-
-        SetPlayerChatBubble(playerid, actionText, ColorManager->playerColor(playerid), 50, 10*1000);
-
-        format(string, sizeof(string), "* %s %s", Player(playerid)->nicknameString(), actionText);
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-            if (!Player(subjectId)->isConnected() || g_Ignore[subjectId][playerid])
-                continue;
-
-            if (GetPlayerVirtualWorld(subjectId) != GetPlayerVirtualWorld(playerid)
-                && (!PlayerSettings(subjectId)->isAllVirtualWorldChatEnabled() || !Player(subjectId)->isAdministrator()))
-                continue;
-
-            if (isIsolated && subjectId != playerid)
-                continue;
-
-            SendClientMessage(subjectId, ColorManager->playerColor(playerid), string);
-        }
-
-        format(string, sizeof(string), "%d %s %s", playerid, Player(playerid)->nicknameString(), actionText);
-        EchoMessage("status", "dss", string);
-
         return 1;
     }
 

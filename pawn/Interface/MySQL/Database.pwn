@@ -58,6 +58,9 @@ class Database {
     // object with five keys: {hostname, username, password, database, port}.
     const DatabaseConfigFile = "database.json";
 
+    // The password salt that's being used to more securely hash stored passwords.
+    new m_passwordSalt[24];
+
     // The connection Id which the gamemode uses for the database.
     new m_connectionId = -1;
 
@@ -80,7 +83,8 @@ class Database {
             Node: usernameNode = JSON->find(databaseConfig, "username"),
             Node: passwordNode = JSON->find(databaseConfig, "password"),
             Node: databaseNode = JSON->find(databaseConfig, "database"),
-            Node: portNode = JSON->find(databaseConfig, "port");
+            Node: portNode = JSON->find(databaseConfig, "port"),
+            Node: passwordSaltNode = JSON->find(databaseConfig, "salt");
 
         if (hostnameNode == JSON::InvalidNode || JSON->getType(hostnameNode) != JSONString ||
             usernameNode == JSON::InvalidNode || JSON->getType(usernameNode) != JSONString ||
@@ -100,8 +104,22 @@ class Database {
         new port = 3336;
         JSON->readInteger(portNode, port);
 
+        // Load the password salt from database.json. Always use it when it's set, or otherwise use
+        // the default value that's used for the staging server, which is Very Public.
+        if (passwordSaltNode != JSON::InvalidNode) {
+            JSON->readString(passwordSaltNode, m_passwordSalt, sizeof(m_passwordSalt));
+        } else {
+            format(m_passwordSalt, sizeof(m_passwordSalt), "^&lvp__@");
+        }
+
         mysql_debug(0);  // return to 1 to debug MySQL queries
         m_connectionId = mysql_connect(hostname, username, password, database, port);
+    }
+
+    // Returns a direct use of the password salt string, to be used in database queries involving
+    // player passwords.
+    public inline passwordSaltString() {
+        return m_passwordSalt;
     }
 
     /**

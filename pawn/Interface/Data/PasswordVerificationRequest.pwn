@@ -53,7 +53,7 @@ class PasswordVerificationRequest {
     public createForPlayer(playerId, userId, password[]) {
         new queryString[256];
 
-        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), userId, password, PasswordSalt);
+        QueryBuilder(m_queryId)->apply(queryString, sizeof(queryString), userId, password, Database->passwordSaltString());
         if (strlen(queryString))
             Database->query(queryString, "PasswordVerificationCallback", playerId);
     }

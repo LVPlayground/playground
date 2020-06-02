@@ -135,17 +135,13 @@ class Statistics {
         else
             fightclubKDRatio = fightclubKills;
 
-        // Earned achievements.
-        new achievementCount;
-        for (new achievement = 0; achievement < TotalAchievements; achievement++) {
-            if (CAchieve_GetPlayerAchievement(playerId, achievement) == 1)
-                achievementCount++;
-        }
+        new bankBalance[32];
+        GetAccountBalanceJS(playerId, bankBalance);
 
         // Time to format our dialog message.
         format(dialogMessage, sizeof(dialogMessage),
-            "{B4CCE8}Level: {FF8E02}%s\r\n{B4CCE8}Online time: {FF8E02}%s\r\n{B4CCE8}Total online time: {FF8E02}%s\r\n{B4CCE8}Kills: {FF8E02}%d\r\n{B4CCE8}Deaths: {FF8E02}%d\r\n{B4CCE8}K/D ratio: {FF8E02}%.2f\r\n",
-            playerLevel, sessionTime, totalOnlineTime, MyKills[playerId],
+            "{B4CCE8}Level: {FF8E02}%s\r\n{B4CCE8}Session time: {FF8E02}%s\r\n{B4CCE8}Online time: {FF8E02}%s\r\n{B4CCE8}Bank balance: {FF8E02}%s\r\n{B4CCE8}Kills: {FF8E02}%d\r\n{B4CCE8}Deaths: {FF8E02}%d\r\n{B4CCE8}Ratio: {FF8E02}%.2f\r\n",
+            playerLevel, sessionTime, totalOnlineTime, bankBalance, MyKills[playerId],
             MyDeaths[playerId], kdRatio);
 
         format(dialogMessage, sizeof(dialogMessage),
@@ -154,9 +150,9 @@ class Statistics {
             fightclubDeaths, fightclubKDRatio);
 
         format(dialogMessage, sizeof(dialogMessage),
-            "%s{B4CCE8}Achievements: {FF8E02}%d / %d\r\n{B4CCE8}Spraytags: {FF8E02}%d / %d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reactiontests: {FF8E02}%d\r\n",
-            dialogMessage, achievementCount, TotalAchievements-UnavailableTotalAchievements, sprayTagGetPlayerCount(playerId),
-            n_SprayTagCount, WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
+            "%s{B4CCE8}Collectables: {FF8E02}%d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reaction Tests: {FF8E02}%d\r\n",
+            dialogMessage, PlayerSyncedData(playerId)->collectables(),
+            WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
 
         format(dialogMessage, sizeof(dialogMessage),
             "%s{B4CCE8}Carbombs detonated: {FF8E02}%d",

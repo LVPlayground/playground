@@ -11,7 +11,7 @@ new lockedVehicleId[MAX_PLAYERS];
  * @param newstate The player's new state.
  * @param oldstate The player's old state.
  */
-public OnPlayerStateChange(playerid, newstate, oldstate) {
+LegacyPlayerStateChange(playerid, newstate, oldstate) {
     if (Player(playerid)->isNonPlayerCharacter() == true)
         return 0;
 

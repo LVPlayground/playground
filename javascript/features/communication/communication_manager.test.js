@@ -21,7 +21,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
     });
 
-    it('should block messages until the registered player identifies', assert => {
+    it('should block messages until the registered player identifies', async (assert) => {
         const messages = [];
 
         manager.addDelegate(new class {
@@ -35,21 +35,21 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         gunther.account.isRegistered_ = true;
         gunther.account.isIdentified_ = false;
 
-        assert.isTrue(gunther.issueMessage('Hello everyone!'));
+        await gunther.issueMessage('Hello everyone!');
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_LOGIN_BLOCKED));
     });
 
-    it('integrates with the spam tracker', assert => {
+    it('integrates with the spam tracker', async (assert) => {
         const excessivelyLongMessage = 'a'.repeat(1024);
 
         assert.equal(gunther.messages.length, 0);
-        assert.isTrue(gunther.issueMessage(excessivelyLongMessage));
+        await gunther.issueMessage(excessivelyLongMessage);
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_SPAM_BLOCKED));
     });
 
-    it('integrates with the message filter', assert => {
+    it('integrates with the message filter', async (assert) => {
         const messages = [];
 
         manager.addDelegate(new class {
@@ -59,9 +59,9 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             }
         });
 
-        assert.isTrue(gunther.issueMessage('hello'));
-        assert.isTrue(gunther.issueMessage('HELLO WORLD'));
-        assert.isTrue(gunther.issueMessage('Hey George'));
+        await gunther.issueMessage('hello');
+        await gunther.issueMessage('HELLO WORLD');
+        await gunther.issueMessage('Hey George');
 
         assert.equal(messages.length, 3);
         assert.equal(messages[0], 'hello');
@@ -69,7 +69,68 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(messages[2], 'Hey Geroge');
     });
 
-    it('should allow delegates to intercept received messages', assert => {
+    it('should allow players to mention other players in public chat', async (assert) => {
+        // (1) Verify that all nicknames can be matched
+        const nicknameTestCasePlayerId = 42;
+        const nicknameTestCases = [
+            'Rissell', 'Deer_Hunter', '[CP]Halsey', 'Death$tar', '=_Captain_=', '[A]Nick[B]==',
+        ];
+
+        for (const testCase of nicknameTestCases) {
+            assert.setContext(testCase);
+
+            server.playerManager.onPlayerConnect({
+                playerid: nicknameTestCasePlayerId,
+                name: testCase,
+            });
+
+            const testPlayer = server.playerManager.getById(nicknameTestCasePlayerId);
+
+            await gunther.issueMessage(`Hey @${testCase}, how are you?`);
+            assert.equal(gunther.messages.length, 1);
+            assert.includes(gunther.messages.pop(), `{FFFFFF}@${testCase}{FFFFFF}`);
+
+            assert.equal(testPlayer.soundIdForTesting, 1058);
+
+            testPlayer.disconnectForTesting();
+
+            await server.clock.advance(10 * 1000);  // get past the spam filter
+        }
+
+        // (2) Verify that mentions can be used in various ways within a message.
+        const grammarTestCases = [
+            'Hey @Russell', 'Yo @Russell, how are you?', '.@Russell?!', 'Mmm @Russell!', '.@Russell'
+        ];
+
+        for (const testCase of grammarTestCases) {
+            assert.setContext(testCase);
+
+            await gunther.issueMessage(testCase);
+            assert.equal(gunther.messages.length, 1);
+            assert.includes(gunther.messages.pop(), `{FFFFFF}@Russell{FFFFFF}`);
+
+            await server.clock.advance(10 * 1000);  // get past the spam filter
+        }
+
+        // (3) Verify that players cannot mention themselves, or invalid players.
+        await gunther.issueMessage('Hey @Gunther, how are you?');
+        assert.equal(gunther.messages.length, 1);
+        assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}@Gunther{FFFFFF}`);
+
+        // (4) Verify that it doesn't catch cases that aren't mentions.
+        await gunther.issueMessage('info@domain.com');
+        assert.equal(gunther.messages.length, 1);
+        assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}info@domain.com{FFFFFF}`);
+
+        // (5) Verify that it's got the ability to use the mentioned player's colour.
+        russell.color = Color.fromRGB(50, 150, 250);
+
+        await gunther.issueMessage('Heya @Russell, how are you?');
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(gunther.messages.pop(), `{3296FA}@Russell{FFFFFF}`);
+    });
+
+    it('should allow delegates to intercept received messages', async (assert) => {
         let invocationCount = 0;
 
         manager.addDelegate(new class {
@@ -86,16 +147,16 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             }
         });
 
-        assert.isTrue(gunther.issueMessage('hello'));
+        await gunther.issueMessage('hello');
         assert.equal(invocationCount, 1);
     });
 
-    it('should be able to provide administrator chat', assert => {
+    it('should be able to provide administrator chat', async (assert) => {
         assert.isFalse(gunther.isAdministrator());
         assert.isFalse(russell.isAdministrator());
 
         // (1) Messages sent by a non-administrator, with no administrators in-game.
-        assert.isTrue(gunther.issueMessage('@Hey'));
+        await gunther.issueMessage('@Hey');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_ADMIN_SENT));
@@ -116,7 +177,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (2) Messages sent by an administrator, with an administrator in-game.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueMessage('@Yo'));
+        await gunther.issueMessage('@Yo');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
@@ -135,7 +196,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (3) Messages sent by a Manager, with other administrators in-game.
         russell.level = Player.LEVEL_MANAGEMENT;
 
-        assert.isTrue(russell.issueMessage('@Test'));
+        await russell.issueMessage('@Test');
 
         assert.equal(gunther.messages.length, 3);
         assert.equal(
@@ -158,18 +219,18 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (4) Muted players can still send messages to admin chat.
         muteManager.mutePlayer(gunther, 60);
 
-        assert.isTrue(gunther.issueMessage('Testcase'));
+        await gunther.issueMessage('Testcase');
         assert.equal(gunther.messages.length, 4);
         assert.equal(russell.messages.length, 1);
 
-        assert.isTrue(gunther.issueMessage('@Testcase'));
+        await gunther.issueMessage('@Testcase');
         assert.equal(gunther.messages.length, 5);
         assert.equal(russell.messages.length, 2);
 
         // (5) Messages sent by an isolated person.
         gunther.syncedData.setIsolated(true);
 
-        assert.isTrue(gunther.issueMessage('@WTF!'));
+        await gunther.issueMessage('@WTF!');
 
         assert.equal(gunther.messages.length, 6);
         assert.equal(gunther.messages[5], Message.format(Message.COMMUNICATION_ADMIN_SENT));
@@ -198,11 +259,11 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(channel.getPrefixForPlayer(gunther), 'Manager');
     });
 
-    it('should be able to provide a private VIP chat', assert => {
+    it('should be able to provide a private VIP chat', async (assert) => {
         assert.isFalse(gunther.isVip());
         assert.isFalse(russell.isVip());
 
-        assert.isTrue(gunther.issueMessage('#Hello!'));
+        await gunther.issueMessage('#Hello!');
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMUNICATION_VIP_NO_ACCESS));
@@ -212,7 +273,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         gunther.setVip(true);
 
-        assert.isTrue(gunther.issueMessage('#Heya!'));
+        await gunther.issueMessage('#Heya!');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
@@ -229,7 +290,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         russell.setVip(true);
 
-        assert.isTrue(gunther.issueMessage('#Boo!'));
+        await gunther.issueMessage('#Boo!');
 
         assert.equal(gunther.messages.length, 3);
         assert.equal(
@@ -245,7 +306,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
         russell.syncedData.setIsolated(true);
 
-        assert.isTrue(russell.issueMessage('#Silence'));
+        await russell.issueMessage('#Silence');
 
         assert.equal(gunther.messages.length, 3); // no change
         assert.equal(russell.messages.length, 2);
@@ -256,7 +317,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting.length, 2);
     });
 
-    it('should provide the ability to have phone conversations', assert => {
+    it('should provide the ability to have phone conversations', async (assert) => {
         const lucy = server.playerManager.getById(/* Lucy= */ 2);
 
         const channel = manager.getCallChannel();
@@ -286,13 +347,13 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
             russell.messages[0],
             Message.format(Message.COMMUNICATION_CALL_CONNECTED, gunther.name));
 
-        gunther.issueMessage('Hey, how are you?');
+        await gunther.issueMessage('Hey, how are you?');
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.id, gunther.name,
-                           'Hey, how are you?'));
+            Message.format(Message.COMMUNICATION_CALL_MESSAGE, gunther.color.toHexRGB(), gunther.id,
+                           gunther.name, 'Hey, how are you?'));
 
         assert.equal(russell.messages.length, 2);
         assert.equal(russell.messages[1], gunther.messages[1]);

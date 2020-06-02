@@ -42,26 +42,6 @@ class AccountCommands {
     }
 
     /**
-     * Las Venturas Playground only allows players to register through our website, so when someone
-     * tried to do so in-game, we need to tell them about the website.
-     *
-     * @param playerId Id of the player who typed the command.
-     * @command /register
-     */
-    @command("register")
-    public onRegisterCommand(playerId, params[]) {
-        if (Player(playerId)->isRegistered() == true) {
-            SendClientMessage(playerId, Color::Error, "* You're already registered on Las Venturas Playground!");
-            return 1;
-        }
-
-        Interface->issueRegisterDialog(playerId);
-
-        return 1;
-        #pragma unused params
-    }
-
-    /**
      * Players can get bugged sometimes, meaning it may be convenient for LVP crew to force a
      * reconnect on that player. Actually we are kicking the player here, without registering it as
      * a kick.

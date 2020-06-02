@@ -13,14 +13,15 @@ class KilltimeCommands {
         server.commandManager.buildCommand('killtime')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('start')
-                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
+                            { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: true}])
                 .build(KilltimeCommands.prototype.onKilltimeStartCommand.bind(this))
             .sub('stop')
                 .build(KilltimeCommands.prototype.onKilltimeStopCommand.bind(this))
             .build(KilltimeCommands.prototype.onKilltimeCommand.bind(this));
     }
 
-    onKilltimeStartCommand(player, minutes = 2) {
+    onKilltimeStartCommand(player, minutes = 2, weapon) {
         if (minutes < 2) {
             player.sendMessage(Message.KILLTIME_MINIMUM_TWO_MINUTES);
             return;
@@ -31,7 +32,12 @@ class KilltimeCommands {
             return;
         }
 
-        this.manager_.start(minutes);
+        if(weapon !== undefined && weapon !== null && !this.manager_.validWeapons.includes(weapon)) {
+            player.sendMessage(Message.KILLTIME_INVALID_WEAPON);
+            return;
+        }
+
+        this.manager_.start(minutes, weapon);
     }
 
     onKilltimeStopCommand(player) {

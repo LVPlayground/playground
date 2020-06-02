@@ -30,7 +30,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         playground.access.addException('v', gunther);
 
         commands = vehicles.commands_;
-        commands.hasFinishedSprayTagCollection_ = player => false;
 
         manager = vehicles.manager_;
         manager.reportVehicleDestroyed_ = vehicleId => false;
@@ -200,7 +199,13 @@ describe('VehicleCommands', (it, beforeEach) => {
             finishedSprayTagCollection = enabled;
 
         // Now make sure that we're in control of the spray tag access check.
-        commands.hasFinishedSprayTagCollection_ = player => finishedSprayTagCollection;
+        commands.collectables_ = () => {
+            return new class {
+                isPlayerEligibleForBenefit(player, benefit) {
+                    return finishedSprayTagCollection;
+                }
+            };
+        };
 
         // (1) Players who can neither use `/v`, nor have all spray tags, can use these commands.
         {
@@ -209,7 +214,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_SPRAY_TAGS);
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_COLLECTABLES);
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -307,10 +312,12 @@ describe('VehicleCommands', (it, beforeEach) => {
     it('should enable players to use the quick vehicle commands', async(assert) => {
         assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
 
-        const commands = ['ele', 'inf', 'nrg', 'sul', 'tur', 'vor'];
+        const commands = ['pre', 'sul', 'ele', 'tur', 'inf', 'nrg'];
         let previousVehicle = null;
 
         for (const command of commands) {
+            assert.setContext(command);
+
             assert.isTrue(await gunther.issueCommand('/' + command));
             assert.equal(gunther.messages.length, 1);
 
@@ -1014,7 +1021,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 9);
+        assert.equal(server.commandManager.size, originalCommandCount - 10);
     });
 
     it('should be able to update and tell the color(s) of vehicles', async(assert) => {
@@ -1069,12 +1076,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.clearMessages();
         gunther.vehicle.primaryColor = 142;
         gunther.vehicle.secondaryColor = 241;
-
-        assert.isTrue(await gunther.issueCommand('/v color _ 210'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_CURRENT, 142, 241));
-        assert.equal(gunther.vehicle.primaryColor, 142);
-        assert.equal(gunther.vehicle.secondaryColor, 241);
     });
 
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {

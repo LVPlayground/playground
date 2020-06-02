@@ -12,137 +12,6 @@
 
 deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
     switch (dialogid) {
-        case DIALOG_DRIVEBY: {
-            if (response) {
-                new message[128], lameKill[12], lamerId = Drivebyer[playerid];
-
-                if (HeliKill[playerid] == 1)
-                    format(lameKill, sizeof(lameKill), "heli-kill");
-                else
-                    format(lameKill, sizeof(lameKill), "drive-by");
-
-                if (Player(lamerId)->isConnected() == false) {
-                    format(message, sizeof(message), "The %s'er has left the game.", lameKill);
-                    SendClientMessage(playerid, Color::Error, message);
-
-                    Drivebyer[playerid] = -1;
-                    HeliKill[playerid] = 0;
-                    return 1;
-                }
-
-                switch (listitem) {
-                    case 0:
-                        format(message, sizeof(message), "%s has forgiven you for your %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-
-                    case 1: {
-                        new const money = GetPlayerMoney(lamerId);
-                        if (money <= 0) {
-                            format(message, sizeof(message), "Sorry, but %s does not currently have any money! Please make another choice.",
-                                Player(lamerId)->nicknameString());
-                            SendClientMessage(playerid, Color::Error, message);
-
-                            ShowPlayerDialog(playerid, DIALOG_DRIVEBY, DIALOG_STYLE_LIST, "Revenge!", "Forgive\nSteal their money\nDetonate them\nThrow them in the air\nRespawn their vehicle\nHalve their health\nRemove their weapons", "Punish", "");
-                            TogglePlayerControllable(playerid, false);
-                            return 1;
-                        }
-
-                        format(message, sizeof(message), "Your money has been stolen by %s as punishment of a %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-
-                        new amount = floatround(float(money) * (GetEconomyValue(DeathDropMoneyPercentage) / 100.0));
-
-                        GivePlayerMoney(playerid, amount);  // controlled w/ DeathDropMoneyPercentage
-                        ResetPlayerMoney(lamerId);
-                    }
-
-                    case 2: {
-                        if (JailController->isPlayerJailed(lamerId) == true) {
-                            format(message, sizeof(message), "The %s'er is currently jailed, please make another choice.", lameKill);
-                            SendClientMessage(playerid, Color::Error, message);
-
-                            ShowPlayerDialog(playerid, DIALOG_DRIVEBY, DIALOG_STYLE_LIST, "Revenge!", "Forgive\nSteal their money\nDetonate them\nThrow them in the air\nRespawn their vehicle\nHalve their health\nRemove their weapons", "Punish", "");
-                            TogglePlayerControllable(playerid, false);
-                            return 1;
-                        }
-
-                        format(message, sizeof(message), "You have been detonated by %s as punishment of a %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-
-                        new Float: pos[3];
-                        SetPlayerHealth(lamerId, 0);
-                        validKillerId[lamerId] = playerid;
-                        validReasonId[lamerId] = WEAPON_EXPLOSION;
-
-                        GetPlayerPos(lamerId, pos[0], pos[1], pos[2]);
-                        CreateExplosion(pos[0], pos[1], pos[2], 1, 1);
-                    }
-
-                    case 3: {
-                        format(message, sizeof(message), "You have been thrown into the air by %s as punishment of a %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-
-                        new Float: pos[3];
-                        GetPlayerPos(lamerId, pos[0], pos[1], pos[2]);
-
-                        if (IsPlayerInAnyVehicle(lamerId)) {
-                            new vehicleId = GetPlayerVehicleID(lamerId);
-                            RemovePlayerFromVehicle(lamerId);
-                            SetVehicleToRespawn(vehicleId);
-                        }
-
-                        SetPlayerPos(lamerId, pos[0], pos[1], pos[2] + 400);
-                        SetPlayerHealth(lamerId, 1);
-
-                        PlayerHandOfGod[lamerId] = 1;
-                        ResetPlayerWeapons(lamerId);
-                    }
-
-                    case 4: {
-                        if (IsPlayerInAnyVehicle(lamerId)) {
-                            format(message, sizeof(message), "Your vehicle has been respawned by %s as punishment of a %s.",
-                                Player(playerid)->nicknameString(), lameKill);
-
-                            new vehicleId = GetPlayerVehicleID(lamerId);
-                            RemovePlayerFromVehicle(lamerId);
-                            SetVehicleToRespawn(vehicleId);
-                        } else {
-                            format(message, sizeof(message), "The %s'er is not in a vehicle, make another choice.", lameKill);
-                            SendClientMessage(playerid, Color::Error, message);
-
-                            ShowPlayerDialog(playerid, DIALOG_DRIVEBY, DIALOG_STYLE_LIST, "Revenge!", "Forgive\nSteal their money\nDetonate them\nThrow them in the air\nRespawn their vehicle\nHalve their health\nRemove their weapons", "Punish", "");
-                            TogglePlayerControllable(playerid, false);
-                            return 1;
-                        }
-                    }
-
-                    case 5: {
-                        format(message, sizeof(message), "Your health has been halved by %s as punishment of a %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-
-                        new Float: health;
-                        GetPlayerHealth(lamerId, health);
-                        SetPlayerHealth(lamerId, 0.5 * health);
-                    }
-
-                    case 6: {
-                        format(message, sizeof(message), "Your weapons have been removed by %s as punishment of a %s.",
-                            Player(playerid)->nicknameString(), lameKill);
-                        ResetPlayerWeapons(lamerId);
-                    }
-                }
-
-                SendClientMessage(lamerId, Color::Error, message);
-                SendClientMessage(playerid, Color::Success, "Done!");
-
-                Drivebyer[playerid] = -1;
-                HeliKill[playerid] = 0;
-            }
-
-            TogglePlayerControllable(playerid, true);
-            return 1;
-        }
-
         case DIALOG_MINIGAMES: {
             if (response) {
 #if Feature::DisableFights == 1
@@ -152,7 +21,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     case 2: CBrief__MenuActivate(playerid);
                     case 3: CShell__MenuActivate(playerid);
                     case 4: CLyse__MenuActivate(playerid);
-                    case 5: hayMenuActivate(playerid);
                 }
 #else
                 switch (listitem) {
@@ -164,8 +32,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                     case 6: CLyse__MenuActivate(playerid);
                     case 7: CWWTW__MenuActivate(playerid);
                     case 8: rwMenuActivate(playerid);
-                    case 9: hayMenuActivate(playerid);
-                    case 10: OnWaterFightCmdText(playerid);
+                    case 9: OnWaterFightCmdText(playerid);
                 }
 #endif
             }
@@ -430,7 +297,11 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 return 1;
 
             switch(listitem) {
+
                 case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/account\r\n/help\r\n/stats\r\n/nos\r\n/getstats\r\n/showmessage\r\n/world\r\n/my\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
+=======
+                case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/account\r\n/help\r\n/stats\r\n/nos\r\n/getstats\r\n/world\r\n/my\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
+
                 case 1: ShowPlayerDialog(playerid, DIALOG_COMMANDS_COMMUNICATION, DIALOG_STYLE_MSGBOX, "Communication commands", "@ (contact crew)\r\n# (VIP-chat)\r\n! (Gang-chat)\r\n/me\r\n/pm\r\n/r(eply)\r\n/ircpm\r\n/call\r\n/answer\r\n/hangup\r\n/ignore\r\n/unignore\r\n/ignored", "Continue", "Exit");
 			    case 2: ShowPlayerDialog(playerid, DIALOG_COMMANDS_TELEPORTATION, DIALOG_STYLE_MSGBOX, "Teleportation commands", "/locations\r\n/taxi\r\n/tow\r\n/tp\r\n/ctp\r\n/dive\r\n/cardive\r\n/locate\r\n/tune\r\n/world", "Continue", "Exit");
                 case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs", "Continue", "Exit");
@@ -526,7 +397,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 #endif
 
             if (listitem == 6) {
-                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nHaystack\nWaterfight", "Play!", "Cancel");
+                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
                 return 1;
             }
         }

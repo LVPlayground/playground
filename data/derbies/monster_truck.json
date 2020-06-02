@@ -1,0 +1,42 @@
+{
+    "name": "Monster Truck",
+    "id": 1,
+
+    "spawnPositions": [
+        { "position": [ 1152.0000, 1211.5000, 11.0444 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1145.0000, 1211.5000, 10.1042 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1138.0000, 1211.5000, 10.1041 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1131.0000, 1211.5000, 10.1042 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1124.0000, 1211.5000, 10.1041 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1117.0000, 1211.5000, 10.1042 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1110.0000, 1211.5000, 10.1041 ], "facingAngle": 0, "vehicleModelId": 444 },
+        { "position": [ 1103.0000, 1211.5000, 10.1041 ], "facingAngle": 0, "vehicleModelId": 444 }
+    ],
+
+    "objects": [
+        { "modelId":  3625, "position": [ 1135.150757, 1306.274292, 12.655489 ], "rotation": [ 0, 0,  90 ] },
+        { "modelId":  3625, "position": [ 1124.537109, 1306.346313, 12.581337 ], "rotation": [ 0, 0, 270 ] },
+        { "modelId": 16317, "position": [ 1151.526123, 1254.440186,  9.806462 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":   647, "position": [ 1122.228394, 1308.241455, 14.553878 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":   782, "position": [ 1110.417969, 1353.680298,  9.837138 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId": 18609, "position": [ 1121.429688, 1245.572388, 10.992801 ], "rotation": [ 0, 0, 279 ] },
+        { "modelId": 18609, "position": [ 1120.243530, 1261.043091, 10.992801 ], "rotation": [ 0, 0, 279 ] },
+        { "modelId": 13645, "position": [ 1157.054321, 1290.627075, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1159.980469, 1290.727051, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1162.834229, 1290.832275, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1165.702393, 1290.900146, 10.563171 ], "rotation": [ 0, 0,  0 ] },
+        { "modelId": 13645, "position": [ 1165.436890, 1306.551880, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1162.492676, 1306.564453, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1159.645874, 1306.386353, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13645, "position": [ 1156.699829, 1306.192993, 10.563171 ], "rotation": [ 0, 0, 182 ] },
+        { "modelId": 13667, "position": [ 1164.485474, 1352.464478, 29.459023 ], "rotation": [ 0, 0, 243 ] },
+        { "modelId":  2780, "position": [ 1157.483032, 1298.132202,  9.820313 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1164.159912, 1298.344116, 10.107550 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1136.658081, 1300.326782,  9.820313 ], "rotation": [ 0, 0,   0 ] },
+        { "modelId":  2780, "position": [ 1123.237671, 1313.078857,  9.820313 ], "rotation": [ 0, 0,   0 ] }
+    ],
+
+    "settings": {
+        "timeLimit": 180
+    }
+}

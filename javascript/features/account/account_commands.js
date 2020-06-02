@@ -10,6 +10,10 @@ import Question from 'components/dialogs/question.js';
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { formatDate } from 'base/time.js';
+import { format } from 'base/string_formatter.js';
+
+// File in which the registration message has been stored.
+const kRegistrationFile = 'data/commands/register.json';
 
 // Provides access to in-game commands related to account management. Access to the individual
 // abilities is gated through the Playground feature, which manages command access.
@@ -17,6 +21,9 @@ export class AccountCommands {
     announce_ = null;
     playground_ = null;
     settings_ = null;
+
+    // Cache for the contents of the registration dialog, which are stored in //data.
+    registrationDialogCache_ = null;
 
     // The AccountDatabase instance which will execute operations.
     database_ = null;
@@ -39,6 +46,10 @@ export class AccountCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
+        
+        // /register
+        server.commandManager.buildCommand('register')
+            .build(AccountCommands.prototype.onRegisterCommand.bind(this));
     }
 
     // /account
@@ -60,6 +71,7 @@ export class AccountCommands {
             changename: this.getSettingValue('nickname_control'),
             changepass: this.database_.canUpdatePasswords() &&
                         this.getSettingValue('password_control'),
+            information: this.getSettingValue('info_visibility'),
             record: this.getSettingValue('record_visibility'),
             sessions: this.getSettingValue('session_visibility'),
         };
@@ -90,6 +102,13 @@ export class AccountCommands {
             dialog.addItem(
                 'Manage nickname aliases',
                 AccountCommands.prototype.manageAliases.bind(this, currentPlayer, targetPlayer));
+        }
+
+        // Enables the |player| to see information about their account.
+        if (features.information) {
+            dialog.addItem(
+                'View account information',
+                AccountCommands.prototype.displayInfo.bind(this, currentPlayer, targetPlayer));
         }
 
         // Enables the |player| to view their record, with the exception of notes as they are only
@@ -208,6 +227,7 @@ export class AccountCommands {
         const verifyCurrentPassword = await Question.ask(player, {
             question: 'Changing your password',
             message: 'Enter your current password to verify your identity',
+            isPrivate: true,  // display this as a password
             constraints: {
                 validation: AccountDatabase.prototype.validatePassword.bind(
                                 this.database_, player.name),
@@ -225,6 +245,7 @@ export class AccountCommands {
         const password = await Question.ask(player, {
             question: 'Changing your password',
             message: 'Enter the new password that you have in mind',
+            isPrivate: true,  // display this as a password field
             constraints: {
                 validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),
                 explanation: 'The password must be at least 8 characters long, and contain at ' +
@@ -234,6 +255,22 @@ export class AccountCommands {
         });
 
         if (!password)
+            return;  // the user aborted out of the flow
+
+        // The |player| must confirm that they indeed picked the right password, so we ask again.
+        const confirmPassword = await Question.ask(player, {
+            question: 'Changing your password',
+            message: 'Please enter your password again to verify.',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: input => input === password,
+                explanation: 'You must enter exactly the same password again to make sure that ' +
+                             'you didn\'t accidentally misspell it.',
+                abort: 'Sorry, you need to confirm your password!'
+            }
+        });
+
+        if (!confirmPassword || confirmPassword !== password)
             return;  // the user aborted out of the flow
 
         // Now execute the command to actually change the password in the database.
@@ -408,6 +445,49 @@ export class AccountCommands {
         });
     }
 
+    // Displays a menu to the |currentPlayer| with information about the account owned by either
+    // themselves of the |targetPlayer|.
+    async displayInfo(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+        const information = await this.database_.getAccountInformation(player.account.userId);
+        if (!information) {
+            return alert(player, {
+                title: 'Account information of ' + player.name,
+                message: 'The information could not be retrieved. Note that this feature is not ' +
+                         'available on the staging and local servers.',
+            });
+        }
+
+        const display = new Menu('Account information of ' + player.name, [
+            'Property',
+            'Value',
+        ]);
+
+        display.addItem('Username', information.username);
+        display.addItem('E-mail', information.email);
+        display.addItem('Registered', formatDate(information.registered, true));
+        display.addItem('Level', information.level);
+        display.addItem('Karma', format('%d', information.karma));
+        display.addItem('----------', '----------');
+
+        // The financial information of an account is only accessible by the player themselves, or
+        // by Management members who have ways of getting it anyway.
+        const canAccessFinancialInformation =
+            currentPlayer.isManagement() || player === currentPlayer;
+
+        if ((information.vip || information.donations > 0) && canAccessFinancialInformation) {
+            const donations = format('%$', information.donations).replace('$', '') + ' euro';
+
+            display.addItem('VIP', information.vip ? 'Yes' : 'No');
+            display.addItem('Donations', donations);
+            display.addItem('----------', '----------');
+        }
+
+        display.addItem('Sessions', information.sessions);
+
+        await display.displayForPlayer(currentPlayer);
+    }
+
     // Displays a menu to the |currentPlayer| with the player record of their target. The Menu will
     // be paginated, and entries from the player's full history can be seen.
     async displayRecord(currentPlayer, targetPlayer) {
@@ -472,6 +552,90 @@ export class AccountCommands {
 
         await display.displayForPlayer(currentPlayer);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has typed the "/register" command. This will tell them where they
+    // can sign up to create an account. When beta functionality is enabled, a brief registration
+    // flow will be started immediately instead.
+    async onRegisterCommand(player) {
+        if (!this.settings_().getValue('playground/enable_beta_features')) {
+            if (!this.registrationDialogCache_)
+                this.registrationDialogCache_ = JSON.parse(readFile(kRegistrationFile));
+
+            const message = this.registrationDialogCache_.join('\r\n');
+            return alert(player, { message });
+        }
+
+        // Don't let players re-register their own account.
+        if (player.account.isRegistered() || player.account.isIdentified()) {
+            return await alert(player, {
+                title: 'Register your account',
+                message: `You are already logged in to an account. Join as a new user first.`,
+            });
+        }
+
+        // Don't let the |player| register the account if an account with that name already exists.
+        // This shouldn't ever happen unless the database connection was busted when they connected
+        // to the server, but better to guard against it to make sure stuff doesn't mess up.
+        const summary = await this.database_.getPlayerSummaryInfo(player.name);
+        if (summary !== null) {
+            return await alert(player, {
+                title: 'Register your account',
+                message: `An account named "${player.name}" already exists.`,
+            });
+        }
+
+        // Give the |player| multiple attempts to pick a reasonably secure password. We don't set
+        // high requirements, but we do need them to be a little bit sensible with their security.
+        const password = await Question.ask(player, {
+            question: 'Register your account',
+            message: 'Enter the password to use for your account',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: AccountCommands.prototype.isSufficientlySecurePassword.bind(this),
+                explanation: 'The password must be at least 8 characters long, and contain at ' +
+                             'least one number, symbol or a character of different casing.',
+                abort: 'Sorry, you need to have a reasonably secure password!'
+            }
+        });
+
+        if (!password)
+            return;  // the user aborted out of the flow
+
+        // The |player| must confirm that they indeed picked the right password, so we ask again.
+        const confirmPassword = await Question.ask(player, {
+            question: 'Register your account',
+            message: 'Please enter your password again to verify.',
+            isPrivate: true,  // display this as a password field
+            constraints: {
+                validation: input => input === password,
+                explanation: 'You must enter exactly the same password again to make sure that ' +
+                             'you didn\'t accidentally misspell it.',
+                abort: 'Sorry, you need to confirm your password!'
+            }
+        });
+
+        if (!confirmPassword)
+            return;  // the user aborted out of the flow
+
+        await this.database_.createAccount(player.name, password);
+
+        // Tell other administrators about the new account, giving everyone some opportunity to know
+        // what's going on. Not least of all the people watching through Nuwani.
+        this.announce_().announceToAdministrators(
+            Message.ACCOUNT_ADMIN_CREATED, player.name, player.id);
+
+        await alert(player, {
+            title: 'Register your account',
+            message: `Your account for "${player.name} has been created. You will be forced to ` +
+                     `reconnect after dismissing this dialog.`,
+        });
+
+        player.kick();
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.
     formatDuration(duration) {

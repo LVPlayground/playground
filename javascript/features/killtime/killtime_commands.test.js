@@ -174,4 +174,19 @@ describe('Killtime', (it, beforeEach) => {
 
         assert.equal(server.commandManager.size, commandCount);
     });
+
+    it('should give error upon using an invalid weapon', async assert => {
+        assert.isTrue(gunther.issueCommand('/killtime start 2 0'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.KILLTIME_INVALID_WEAPON);
+    });
+
+    it('should allow using a valid weapon', async assert => {
+        const minutesToRun = 2;
+        const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
+
+        assert.isTrue(gunther.issueCommand('/killtime start 2 35'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+    });
 });

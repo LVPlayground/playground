@@ -45,6 +45,11 @@ class CommandManager {
     return new CommandBuilder(CommandBuilder.COMMAND, this, this.delegate_, command);
   }
 
+  // Returns whether any command with the name |command| has been registered.
+  hasCommand(command) {
+    return this.commands_.hasOwnProperty(command);
+  }
+
   // Removes the |command| from the list of commands known and handled by this manager.
   removeCommand(command) {
     if (!this.commands_.hasOwnProperty(command))

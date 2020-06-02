@@ -7,21 +7,13 @@
  * incrementing this version. Significant changes justify a new Major release, use your gut feel.
  */
 class Version {
-    public const Major = 44;
-    public const Minor = 0;
+    public const Major = 46;
+    public const Minor = 1;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
 // whether config-release.pwn tries to define the prod password salt.
 #define BuildGamemodeInReleaseMode 0
-
-// Try to include the private release configuration file. If it can't be loaded, the staging server
-// value for the password salt will be used instead.
-#tryinclude "config-release.pwn"
-
-#if !defined PasswordSalt
-    #define PasswordSalt        "^&lvp__@"
-#endif
 
 // Toggling the availability of certain features should be done by changing their values in this
 // class. Please follow existing conventions and add features based on their alphabetical order.

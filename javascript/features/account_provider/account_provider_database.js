@@ -7,6 +7,7 @@ const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
         users_mutable.money_bank,
+        users_mutable.money_cash,
         users_mutable.stats_reaction,
         users_mutable.muted
     FROM
@@ -21,6 +22,7 @@ const ACCOUNT_SAVE_QUERY = `
         users_mutable
     SET
         users_mutable.money_bank = ?,
+        users_mutable.money_cash = ?,
         users_mutable.stats_reaction = ?,
         users_mutable.muted = ?
     WHERE
@@ -41,8 +43,8 @@ export class AccountProviderDatabase {
     // the `loadAccountData()` method. Generally composited by the AccountData structure.
     async saveAccountData(accountData) {
         await server.database.query(
-            ACCOUNT_SAVE_QUERY, accountData.money_bank, accountData.stats_reaction,
-            accountData.muted, accountData.user_id);
+            ACCOUNT_SAVE_QUERY, accountData.money_bank, accountData.money_cash,
+            accountData.stats_reaction, accountData.muted, accountData.user_id);
 
         return true;
     }

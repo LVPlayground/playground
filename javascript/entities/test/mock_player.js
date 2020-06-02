@@ -58,6 +58,7 @@ export class MockPlayer extends Player {
     #streamUrl_ = null;
     #soundId_ = null;
 
+    #hasBeenSerializedForTesting_ = false;
     #isSurfingVehicle_ = false;
 
     // To be removed:
@@ -106,13 +107,31 @@ export class MockPlayer extends Player {
 
     setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
 
-    setNameForGuestLogin(value) { this.#name_ = value; }
+    updateName() { this.#name_ += 'a'; /* any change will do */ }
 
     disconnectForTesting(reason = 0) {
         dispatchEvent('playerdisconnect', {
             playerid: this.id,
             reason: reason
         });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Weapons
+    // ---------------------------------------------------------------------------------------------
+
+    // Give a player a certain weapon with ammo.
+    giveWeapon(weaponId, ammo) {
+        pawnInvoke('OnGiveWeapon', 'iii', this.id_, weaponId, ammo);
+    }
+
+    removeWeapon(weaponId) {
+        pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id_, weaponId);
+    }
+
+    // Resets all the weapons a player has.
+    resetWeapons() {
+        pawnInvoke('OnResetPlayerWeapons', 'i', this.id_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -228,14 +247,20 @@ export class MockPlayer extends Player {
     // Section: Interaction
     // ---------------------------------------------------------------------------------------------
 
+    async cancelEdit() {}
+
+    async selectObjectInternal() {}
+
     showDialog(dialogId, style, caption, message, leftButton, rightButton) {
+        const oldMessage = this.#lastDialogMessage_;
+
         this.#lastDialogId_ = dialogId;
         this.#lastDialogTitle_ = caption;
         this.#lastDialogStyle_ = style;
         this.#lastDialogLabel_ = rightButton;
         this.#lastDialogMessage_ = message;
 
-        this.#lastDialogPromiseResolve_();
+        this.#lastDialogPromiseResolve_(oldMessage);
     }
 
     // Gets the most recent message that has been displayed in a dialog to the player.
@@ -346,11 +371,13 @@ export class MockPlayer extends Player {
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
 
-    restoreState() {}
-    serializeState() {}
+    restoreState() { this.#hasBeenSerializedForTesting_ = false; }
+    serializeState() { this.#hasBeenSerializedForTesting_ = true; }
 
     updateStreamerObjects() { this.#streamerObjectsUpdated_ = true; }
     updateStreamer(position, virtualWorld, interiorId, type) {}
+
+    get hasBeenSerializedForTesting() { return this.#hasBeenSerializedForTesting_; }
 
     streamerObjectsUpdatedForTesting() { return this.#streamerObjectsUpdated_; }
 
@@ -383,17 +410,20 @@ export class MockPlayer extends Player {
 
     // Issues |message| as if it has been said by this user. Returns whether the event with which
     // the chat message had been issues was prevented.
-    issueMessage(message) {
-        let defaultPrevented = false;
+    async issueMessage(message) {
+        let resolver = null;
+
+        const observerPromise = new Promise(resolve => resolver = resolve);
 
         dispatchEvent('playertext', {
-            preventDefault: () => defaultPrevented = true,
-
             playerid: this.id,
-            text: message
+            text: message,
+
+            // Injected for tests, should be called when processing the message is complete.
+            resolver,
         });
 
-        return defaultPrevented;
+        await observerPromise;
     }
 
     // Issues |commandText| as if it had been send by this player. Returns whether the event with

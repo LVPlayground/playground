@@ -48,9 +48,6 @@ OriginalOnPlayerSpawn(playerId) {
     if (CRobbery__Spawn(playerId))
         return 1;
 
-    if (hayOnPlayerSpawn(playerId))
-        return 1;
-
     if (CLyse__GetPlayerState(playerId) == LYSE_STATE_RUNNING) {
         CLyse__SpawnPlayer(playerId);
         return 1;
@@ -92,10 +89,6 @@ OriginalOnPlayerSpawn(playerId) {
         ColorManager->setPlayerMarkerHidden(playerId, false);
     }
 
-    // Freeze the player for the drive-by menu.
-    if (Drivebyer[playerId] > -1)
-        TogglePlayerControllable(playerId, false);
-
 #if Feature::DisableFights == 0
     // Remove the player from a minigame. If the player isn't in any minigame, make sure the skin
     // and color are correct.
@@ -119,12 +112,6 @@ OriginalOnPlayerSpawn(playerId) {
     if (IsPlayerWatchingFC[playerId])
         return true;
 #endif
-
-    if (!firstJoin[playerId] && GetPlayerMoney(playerId) > -1) {
-        GiveRegulatedMoney(playerId, SpawnMoney);
-    } else {
-        firstJoin[playerId] = 0;
-    }
 
     return 1;
 }

@@ -17,14 +17,6 @@ LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     Annotation::ExpandList<OnPlayerKeyStateChange>(playerid, newkeys, oldkeys);
 
-    // Spraytags
-    if (sprayTagOnKeyStateChange(playerid, newkeys, oldkeys))
-        return 1;
-
-    // Haystack
-    if (hayOnPlayerPunch(playerid, newkeys, oldkeys))
-        return 1;
-
     // Drinking
     CDrink__OnKey(playerid, newkeys);
 

@@ -7,13 +7,22 @@ native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
 // Provided by the PlaygroundJS plugin.
+native IsPlayerEligibleForBenefit(playerid, benefit);
+native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);
 
-native IsPlayerMinimized(playerId);
+// Defined in //javascript/features/collectables/collectable_benefits.js
+#define PLAYER_BENEFIT_SPRAY_QUICK_VEHICLE_ACCESS 0
+#define PLAYER_BENEFIT_BARREL_QUICK_VEHICLE_ACCESS 1
+#define PLAYER_BENEFIT_FULL_QUICK_VEHICLE_ACCESS 2
+#define PLAYER_BENEFIT_BOMB_SHOP 3
+#define PLAYER_BENEFIT_VEHICLE_KEYS_COLOUR 4
+#define PLAYER_BENEFIT_VEHICLE_KEYS_JUMP 5
 
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
 native ResetPlayerMoneyJS(playerid);
+native GetAccountBalanceJS(playerid, balance[]);
 native DepositToAccountJS(playerid, amount);
 
 // Provided by the Communication feature in JavaScript.
@@ -24,6 +33,13 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define TELEPORT_STATUS_REJECTED_FIGHTING 1
 #define TELEPORT_STATUS_REJECTED_TIME_LIMIT 2
 #define TELEPORT_STATUS_REJECTED_OTHER 3
+
+#define VEHICLE_KEYS_BOOST 1
+#define VEHICLE_KEYS_COLOUR 2
+#define VEHICLE_KEYS_FIX 4
+#define VEHICLE_KEYS_FLIP 8
+#define VEHICLE_KEYS_JUMP 16
+#define VEHICLE_KEYS_NOS 32
 
 native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();
@@ -69,7 +85,7 @@ stock AddStaticVehicleHook({Float,_}:...) { return Vehicle::InvalidId; }
 stock AddStaticVehicleExHook({Float,_}:...) { return Vehicle::InvalidId; }
 
 // And override the methods by telling the scanner to use the hooked methods instead.
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef CreateVehicle
     #undef DestroyVehicle
     #undef AddStaticVehicle
@@ -110,32 +126,11 @@ stock SetPlayerVirtualWorldHook(playerId, virtualWorldId) {
 }
 
 // And override the actual natives so that they're caught by our hook.
-#if Feature::EnableServerSideWeaponConfig
+#if Feature::EnableServerSideWeaponConfig == 1
     #undef SetPlayerVirtualWorld
 #endif
 
 #define SetPlayerVirtualWorld SetPlayerVirtualWorldHook
-
-// -------------------------------------------------------------------------------------------------
-// We override the TextDrawCreate method in beta builds because there is quite a bit of code around
-// which tries to destroy TextDraws with Id=0, even though this is perfectly valid. In such cases,
-// crash the current execution path for the sake of getting a stack trace.
-#if BuildGamemodeInReleaseMode == 0
-
-TextDrawDestroyHook(Text: textDrawId) {
-    if (_: textDrawId == 0)
-        return 0;
-
-    return TextDrawDestroy(textDrawId);
-}
-
-#if Feature::EnableServerSideWeaponConfig
-    #undef TextDrawDestroy
-#endif
-
-#define TextDrawDestroy TextDrawDestroyHook
-
-#endif
 
 // -------------------------------------------------------------------------------------------------
 
@@ -185,7 +180,6 @@ SendClientMessagePrivate(playerid, color, const message[]) {
 
 // Consider moving these elsewhere:
 #include "Interface/Server/a_mysql.pwn"
-#include "Interface/Server/a_zones.pwn"
 #include "Interface/Server/a_streamer.pwn"
 
 // TODO: Move this elsewhere (maybe a_additional or something?)

@@ -11,6 +11,8 @@ OnPlayerLVPDisconnect(playerId, reason) {
     if (reason != 2)
         CSave__OnPlayerDisconnect(playerId);
 
+    SetInvolvedInJavaScriptGame(playerId, false);
+
     CHideGame__onPlayerDisconnect(playerId);    // Hide & Seek
     CDrink__Disconnect(playerId);               // Drinking handler
     CRobbery__Disconnect(playerId);             // Robbery minigame

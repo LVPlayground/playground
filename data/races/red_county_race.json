@@ -1,0 +1,161 @@
+{
+    "name": "Red County Race",
+    "id": 38,
+
+    "time_limit": 600,
+    "laps": 1,
+
+    "environment": {
+        "weather": 0,
+        "time": [11, 13],
+        "interior": 0
+    },
+
+    "spawn_positions": [
+        {
+            "position": [2845.4768,-808.5312,10.4850],
+            "rotation": 357.1254,
+            "vehicle": {
+                "model": 522
+            }
+        },
+        {
+            "position": [2843.1140,-808.7473,10.5061],
+            "rotation": 5.5286,
+            "vehicle": {
+                "model": 522
+            }
+        },
+        {
+            "position": [2848.3718,-808.3508,10.4853],
+            "rotation": 1.3411,
+            "vehicle": {
+                "model": 522
+            }
+        },
+        {
+            "position": [2840.6172,-808.9856,10.5012],
+            "rotation": 358.7203,
+            "vehicle": {
+                "model": 522
+            }
+        }
+    ],
+
+    "settings": {
+        "disable_vehicle_damage": true,
+        "unlimited_nos": true
+    },
+
+    "checkpoints": [
+        { "position": [2841.7004,-594.6792,10.3855], "size": 10.0000, "_note": "RCR: Turn1, end start straight" },
+        { "position": [2779.0469,-495.0821,10.3972], "size": 10.0000, "_note": "RCR: Turn2, before tunnel" },
+        { "position": [2838.6177,-371.7874,7.5342], "size": 10.0000, "_note": "RCR: Turn3, after tunnel" },
+        { "position": [2829.9871,-308.0292,7.0824], "size": 10.0000, "_note": "RCR: Turn4, first tree" },
+        { "position": [2792.5649,-254.1891,9.5740], "size": 10.0000, "_note": "RCR: Turn5, second tree" },
+        { "position": [2859.3794,-163.4621,19.3135], "size": 10.0000, "_note": "RCR: Turn6, after trees" },
+        { "position": [2855.5098,-123.6933,21.5557], "size": 10.0000, "_note": "RCR: Turn7, chicane middle" },
+        { "position": [2883.6353,-78.3886,20.6861], "size": 10.0000, "_note": "RCR: Turn8, chicane exit" },
+        { "position": [2858.7285,32.2922,18.7553], "size": 10.0000, "_note": "RCR: Turn9, before highway pass" },
+        { "position": [2599.3254,41.6835,25.8842], "size": 10.0000, "_note": "RCR: Town10, Palomino Creek entrance" },
+        { "position": [2534.2686,41.8180,25.8990], "size": 10.0000, "_note": "RCR: Turn11, palomino entry" },
+        { "position": [2532.0713,107.3872,25.9079], "size": 10.0000, "_note": "RCR: Turn12, left turn into U" },
+        { "position": [2466.3708,107.8988,25.9100], "size": 10.0000, "_note": "RCR: Turn13, continue left into straight" },
+        { "position": [2462.1924,-24.2464,25.9062], "size": 10.0000, "_note": "RCR: Turn14, right hander into short straight" },
+        { "position": [2346.6882,-28.2853,25.8970], "size": 10.0000, "_note": "RCR: Turn15, lefty into roundabout entry" },
+        { "position": [2341.8486,-94.2317,25.9041], "size": 10.0000, "_note": "RCR: Turn16, right hander into roundabout straight" },
+        { "position": [2226.7686,-95.4685,25.9109], "size": 10.0000, "_note": "RCR: Turn17, roundabout righthander" },
+        { "position": [2226.9646,-31.1920,25.9075], "size": 10.0000, "_note": "RCR: Turn18, roundabout exit" },
+        { "position": [2292.7329,-26.9089,25.9072], "size": 10.0000, "_note": "RCR: Turn19, roundabout lefty exit into short straight" },
+        { "position": [2294.2263,35.9551,25.8936], "size": 10.0000, "_note": "RCR: Turn 20, second roundabout in Palomino" },
+        { "position": [2226.7139,41.5787,25.8986], "size": 10.0000, "_note": "RCR: Turn 21, second roundabout righthander entry" },
+        { "position": [2225.9675,138.0334,25.9095], "size": 10.0000, "_note": "RCR: Turn 22, second roundabout start Uturn" },
+        { "position": [2290.8882,139.4856,25.9057], "size": 10.0000, "_note": "RCR: Turn 23, second roundabout U exit" },
+        { "position": [2294.1162,93.2574,25.9098], "size": 10.0000, "_note": "RCR: Turn 24, Palomino exit chicane entry" },
+        { "position": [2344.2241,91.5545,25.9083], "size": 10.0000, "_note": "RCR: Turn 25, Palomino exit chicane exit" },
+        { "position": [2344.2222,205.3225,25.9099], "size": 10.0000, "_note": "RCR: Turn 26, Palomino creek exit left hander" },
+        { "position": [2186.3264,231.5293,14.0596], "size": 10.0000, "_note": "RCR: Palomino Creek bridge" },
+        { "position": [2059.2183,257.5430,24.7671], "size": 10.0000, "_note": "RCR: Turn 27, right hander under highway" },
+        { "position": [1991.8768,349.7505,26.5755], "size": 10.0000, "_note": "RCR: Turn 28, lefty after highway" },
+        { "position": [1877.9198,363.2951,19.5835], "size": 5.0000, "_note": "RCR: Turn 29, field chicane entry apex (SMALL!)" },
+        { "position": [1780.0568,381.6292,18.7057], "size": 5.0000, "_note": "RCR: Turn 30, field chicane middle apex (SMALL!)" },
+        { "position": [1641.3707,384.9266,19.3665], "size": 5.0000, "_note": "RCR: Turn 31, field chicane exit apex (SMALL!)" },
+        { "position": [1391.5476,438.7086,19.4461], "size": 10.0000, "_note": "RCR: Turn 32, Montomery entry" },
+        { "position": [1339.6296,361.7936,18.9783], "size": 10.0000, "_note": "RCR: Turn 33, Montomery first chicane entry" },
+        { "position": [1294.4862,375.1089,18.9642], "size": 10.0000, "_note": "RCR: Turn 34, Montomery first chicane middle" },
+        { "position": [1271.8497,337.1874,18.9727], "size": 10.0000, "_note": "RCR: Turn 35, Montomery first chicane exit" },
+        { "position": [1228.3188,352.0178,18.9708], "size": 10.0000, "_note": "RCR: Turn 36, Memorial U start" },
+        { "position": [1201.2565,291.5679,18.9767], "size": 10.0000, "_note": "RCR: Turn 37, Memorial U exit" },
+        { "position": [1241.9977,269.3279,18.9733], "size": 10.0000, "_note": "RCR: Turn 38, marvin's entry" },
+        { "position": [1218.7260,206.4596,18.9735], "size": 10.0000, "_note": "RCR: Turn 39, marvin's U start" },
+        { "position": [1260.9465,186.0729,18.9778], "size": 10.0000, "_note": "RCR: Turn 40, marvin's U end" },
+        { "position": [1315.7531,310.8750,18.9767], "size": 10.0000, "_note": "RCR: Turn 41 sprunk U start" },
+        { "position": [1359.7460,294.7905,18.9720], "size": 10.0000, "_note": "RCR: Turn 42 sprunk U end" },
+        { "position": [1335.7399,229.9062,18.9677], "size": 10.0000, "_note": "RCR: Turn 43 lefty exit" },
+        { "position": [1450.6647,179.2365,23.7047], "size": 10.0000, "_note": "RCR: Montgomery end" },
+        { "position": [1531.7612,108.3845,29.0382], "size": 10.0000, "_note": "RCR: Turn 44, lefty back towards Palomino Creek" },
+        { "position": [1620.6444,132.3895,29.5211], "size": 10.0000, "_note": "RCR: under bridge" },
+        { "position": [1768.8901,95.2950,33.3738], "size": 10.0000, "_note": "RCR: Telephone pole" },
+        { "position": [1903.4452,44.6763,34.2560], "size": 10.0000, "_note": "RCR: Turn 45, Right hander towards Dillimore" },
+        { "position": [1878.3994,-60.1777,34.4099], "size": 10.0000, "_note": "RCR: Dillimore bridge entry" },
+        { "position": [1844.5869,-183.8268,41.1926], "size": 10.0000, "_note": "RCR: Turn 46 tree crest" },
+        { "position": [1866.3131,-305.6767,37.6104], "size": 10.0000, "_note": "RCR: Turn 47 Tunnel entry" },
+        { "position": [1529.0920,-313.9340,6.3509], "size": 10.0000, "_note": "RCR: Concrete on left, tree on right" },
+        { "position": [1269.0966,-386.7477,1.9942], "size": 10.0000, "_note": "RCR: Turn 48 Dillimore S chicane start" },
+        { "position": [1248.2971,-416.4751,2.2664], "size": 10.0000, "_note": "RCR: Turn 49 Dillimore S chicane exit" },
+        { "position": [1043.9866,-450.2261,51.1222], "size": 10.0000, "_note": "RCR: Turn 50 Hill crest" },
+        { "position": [840.1674,-567.5781,15.7524], "size": 10.0000, "_note": "RCR: Turn 51 Dillimore entrance righthander" },
+        { "position": [829.1174,-533.1412,15.7504], "size": 10.0000, "_note": "RCR: Turn 52 Lefty into Dillimore" },
+        { "position": [725.6454,-530.0886,15.7384], "size": 10.0000, "_note": "RCR: Turn 53 Righty in intersection" },
+        { "position": [718.3507,-487.5598,15.7630], "size": 10.0000, "_note": "RCR: Turn 54 Lefty to outside straight" },
+        { "position": [605.4078,-486.0615,15.7610], "size": 10.0000, "_note": "RCR: Turn 55 Watson lefty" },
+        { "position": [604.3795,-527.2094,15.7499], "size": 10.0000, "_note": "RCR: Turn 55 Bike Mike's lefty" },
+        { "position": [637.5157,-532.1953,15.7467], "size": 10.0000, "_note": "RCR: Turn 56 Gasso righthander entry" },
+        { "position": [644.0059,-596.9949,15.7606], "size": 10.0000, "_note": "RCR: Turn 57 Gasso lefty exit" },
+        { "position": [679.7971,-600.9467,15.7396], "size": 10.0000, "_note": "RCR: Turn 58 Righthander out of dillimore" },
+        { "position": [681.9414,-688.3578,15.7610], "size": 10.0000, "_note": "RCR: Turn 59 Righty towards Richman" },
+        { "position": [602.3688,-698.7394,10.4679], "size": 10.0000, "_note": "RCR: Turn 60 90degree lefty to Richman" },
+        { "position": [682.4419,-977.0117,51.5094], "size": 10.0000, "_note": "RCR: Turn 61 Sharp righty into hills" },
+        { "position": [538.8185,-1017.6115,81.6552], "size": 10.0000, "_note": "RCR: Turn 62 Bouncy chicane middle" },
+        { "position": [308.4137,-1041.5642,90.4417], "size": 15.0000, "_note": "RCR: Turn 63 Bridge chicane (WIDE)" },
+        { "position": [258.9267,-1134.0828,75.7059], "size": 10.0000, "_note": "RCR: Turn 64 Slope chicane entry" },
+        { "position": [213.5813,-1142.2465,62.5403], "size": 10.0000, "_note": "RCR: Turn 65 Slope chicane middle" },
+        { "position": [161.4494,-1208.5233,46.6531], "size": 10.0000, "_note": "RCR: Turn 66 Slope chicane exit" },
+        { "position": [164.1112,-1396.8790,47.0554], "size": 10.0000, "_note": "RCR: Turn 67 Sharp left U backtowards hills" },
+        { "position": [244.8241,-1335.1987,52.0101], "size": 10.0000, "_note": "RCR: Turn 68 Uphill lefty into hills" },
+        { "position": [225.3057,-1273.2921,64.1795], "size": 10.0000, "_note": "RCR: Turn 69 Uphill righty into hills" },
+        { "position": [275.4235,-1240.0648,73.7074], "size": 10.0000, "_note": "RCR: Turn 70 Sudden righty downhill" },
+        { "position": [309.0635,-1254.2419,69.0080], "size": 10.0000, "_note": "RCR: Turn 71 Curb avoidance" },
+        { "position": [385.9380,-1218.8661,52.0022], "size": 10.0000, "_note": "RCR: Turn 72 Curb chicane entry" },
+        { "position": [402.9618,-1246.5984,51.4129], "size": 10.0000, "_note": "RCR: Turn 73 Curb chicane exit" },
+        { "position": [583.9859,-1176.9353,44.6858], "size": 10.0000, "_note": "RCR: Turn 74 Hedge chicane entry" },
+        { "position": [625.1166,-1108.1550,46.1965], "size": 10.0000, "_note": "RCR: Turn 75 Hedge chicane exit" },
+        { "position": [750.5555,-944.3608,54.7493], "size": 10.0000, "_note": "RCR: Victim bridge" },
+        { "position": [872.1887,-862.3881,77.0849], "size": 10.0000, "_note": "RCR: Bumpy hills" },
+        { "position": [1065.7244,-773.9686,106.4219], "size": 10.0000, "_note": "RCR: Palmgate bridge" },
+        { "position": [1340.1157,-699.5680,91.4557], "size": 10.0000, "_note": "RCR: Y-split righty" },
+        { "position": [1433.5380,-694.3984,87.5871], "size": 10.0000, "_note": "RCR: Turn 76 Long righthander 1" },
+        { "position": [1457.7225,-746.3676,94.4385], "size": 10.0000, "_note": "RCR: Turn 77 Long righthander into lefty" },
+        { "position": [1510.8403,-780.7603,79.1586], "size": 10.0000, "_note": "RCR: Turn 78 Sharp downhill right (watch the brakes)" },
+        { "position": [1493.2900,-865.1724,60.4049], "size": 10.0000, "_note": "RCR: Turn 79 Righthander after curbsplit" },
+        { "position": [1389.4617,-861.1949,41.9201], "size": 10.0000, "_note": "RCR: Turn 80 Lefty into Los Santos" },
+        { "position": [1361.9576,-960.4067,33.5063], "size": 10.0000, "_note": "RCR: Los Santos Entry" },
+        { "position": [1341.6598,-1131.6862,23.2292], "size": 10.0000, "_note": "RCR: Turn 81 lefty towards Glen Park" },
+        { "position": [1420.9987,-1158.3043,23.2135], "size": 10.0000, "_note": "RCR: Turn 82 Glen Park-sign chicane exit" },
+        { "position": [1635.4863,-1160.5101,23.4584], "size": 10.0000, "_note": "RCR: Highway straight in LS" },
+        { "position": [1745.6803,-1160.9412,23.1868], "size": 10.0000, "_note": "RCR: Turn 83 chicane entry close to GlenPark" },
+        { "position": [1856.8259,-1182.5780,23.2151], "size": 10.0000, "_note": "RCR: Turn 84 Glen Park entry lefty chicane" },
+        { "position": [1866.2561,-1136.8005,23.2963], "size": 10.0000, "_note": "RCR: Turn 85 Glen Park chicane righty" },
+        { "position": [1968.3779,-1136.4626,25.3624], "size": 10.0000, "_note": "RCR: Turn 86 Glen Park lefty exit towards hills" },
+        { "position": [2013.7327,-989.4568,33.8340], "size": 10.0000, "_note": "RCR: Turn 87 Uphill entry righthander" },
+        { "position": [2164.0645,-1004.3963,62.3578], "size": 10.0000, "_note": "RCR: Hills crest, straight ahead" },
+        { "position": [2324.6040,-1079.8354,49.4271], "size": 10.0000, "_note": "RCR: Turn 88 Trailer park chicane apex" },
+        { "position": [2445.4812,-1032.1182,56.7031], "size": 10.0000, "_note": "RCR: Turn 89 Trailer park chicane exit" },
+        { "position": [2562.0640,-1047.3909,68.9894], "size": 10.0000, "_note": "RCR: Turn 90 Righty downhill toward finish" },
+        { "position": [2539.0020,-1089.4047,60.8167], "size": 10.0000, "_note": "RCR: Turn 91 Righty continue downhill" },
+        { "position": [2387.7449,-1093.3048,36.3317], "size": 10.0000, "_note": "RCR: Turn 92 Continue downhill" },
+        { "position": [2320.3833,-1154.6956,26.3649], "size": 10.0000, "_note": "RCR: Finishline" }
+    ],
+
+    "objects": []
+}

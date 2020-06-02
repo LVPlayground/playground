@@ -14,13 +14,13 @@ function PlayerParser(argumentString) {
   if (result === null)
     return [argumentString, null];
 
-  let player = server.playerManager.find({ nameOrId: result[0], returnPlayer: true });
+  let player = server.playerManager.find({ nameOrId: result[1], returnPlayer: true });
   if (player === null) {
-    CommandBuilder.lastInvalidPlayerValue = result[0];
+    CommandBuilder.lastInvalidPlayerValue = result[1];
     return [argumentString, null];
   }
 
-  return [argumentString.substr(result[0].length), player];
+  return [argumentString.substr(result[1].length), player];
 }
 
 // The command builder provides a convenient interface to build commands on, together with all the
@@ -102,9 +102,14 @@ export class CommandBuilder {
         throw new Error('Individual parameters need at least a name and a type.');
 
       let optional = parameter.hasOwnProperty('optional') ? !!parameter.optional : false;
+      let defaultValue = parameter.defaultValue ?? null;
       let type = parameter.type,
           parser = null,
           error = null;
+
+      // If a default value has been supplied, then it's optional too.
+      if (parameter.hasOwnProperty('defaultValue'))
+        optional = true;
 
       // If the type of this parameter is a player, pull in our own custom parser.
       if (type == CommandBuilder.PLAYER_PARAMETER) {
@@ -114,10 +119,10 @@ export class CommandBuilder {
       }
 
       // Store the formatting rule that will be used to construct the parser.
-      format.push({ type, parser, error, optional });
+      format.push({ type, parser, error, optional, defaultValue });
 
       // Store the name and requiredness of this parameter locally for usage messages.
-      this.parameters_.push({ name: parameter.name, optional: optional });
+      this.parameters_.push({ name: parameter.name, defaultValue, optional: optional });
     });
 
     this.parameterParser_ = new StringParser(format);
@@ -336,8 +341,15 @@ export class CommandBuilder {
   // what the intended usage, or syntax of the command is.
   toString() {
     let description = this.name;
-    this.parameters_.forEach(parameter =>
-        description += ' [' + parameter.name + ']');
+
+    for (const parameter of this.parameters_) {
+      if (parameter.defaultValue !== null)
+        description += ` [${parameter.name}=${parameter.defaultValue}]`;
+      else if (parameter.optional)
+        description += ` [${parameter.name}]?`;
+      else
+        description += ` [${parameter.name}]`;
+    }
 
     return description;
   }

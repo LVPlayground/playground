@@ -8,6 +8,8 @@ import { TestBot } from 'features/nuwani/test/test_bot.js';
 import { ip2long } from 'features/nuwani_commands/ip_utilities.js';
 import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
 
+import { kPlayerKickDelayMs } from 'features/punishments/nuwani_commands.js';
+
 // The source that will be used for this series of IRC command tests.
 const kCommandSourceUsername = 'Holsje';
 const kCommandSource = 'Holsje!theone@lvp.administrator';
@@ -150,6 +152,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             command: `!ban ${lucy.name} 5 Idling on the ship`,
         });
 
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(lucy.isConnected());
         assert.equal(lucy.messages.length, 1);
         assert.equal(
@@ -246,6 +250,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The IP address 8.8.8.8 has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(evilJoe.isConnected());
         assert.equal(evilJoe.messages.length, 1);
         assert.equal(
@@ -362,6 +368,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The IP range 8.8.*.* has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         for (const player of evilJoes) {
             assert.isFalse(player.isConnected());
             assert.equal(player.messages.length, 1);
@@ -481,6 +489,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             ingameResult[0],
             'PRIVMSG #LVP.DevJS :Success: The serial 648955637 has been banned from the game.');
         
+        await server.clock.advance(kPlayerKickDelayMs);
+
         assert.isFalse(evilJoe.isConnected());
         assert.equal(evilJoe.messages.length, 1);
         assert.equal(
@@ -564,6 +574,8 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
             source: kCommandSource,
             command: `!kick ${lucy.name} Idling on the ship`,
         });
+
+        await server.clock.advance(kPlayerKickDelayMs);
 
         assert.isFalse(lucy.isConnected());
         assert.equal(lucy.messages.length, 1);
@@ -712,6 +724,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(resultsNickname[1], 'ban');
         assert.includes(resultsNickname[1], 'Testing serial information');
         assert.includes(resultsNickname[1], '2657120904');
+        assert.includes(resultsNickname[1], '1 month');
     });
 
     it('should be able to list previously issued bans', async (assert) => {
@@ -784,5 +797,86 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.includes(ambiguousUnban[0], 'no strict matching');
         assert.includes(ambiguousUnban[1], '[BB]Joe');
         assert.includes(ambiguousUnban[1], '[BB]EvilJoe');
+    });
+
+    it('should be able to deal with range bans', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        // (1) It should be able to display command usage.
+        const usage = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception',
+        });
+
+        assert.equal(usage.length, 1);
+        assert.includes(usage[0], '!rexception [list | add | remove]');
+
+        // (2) It should be able to list all ranges with exceptions.
+        const ranges = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list',
+        });
+
+        assert.equal(ranges.length, 1);
+        assert.includes(ranges[0], 'Ranges with exceptions: 127.0.*.* (2 exceptions), ');
+
+        // (3) It should be able to list all exceptions within a range.
+        const exceptions = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list 127.0.*.*',
+        });
+
+        assert.equal(exceptions.length, 1);
+        assert.includes(exceptions[0], 'Gunther (used 25 times, by Russell)');
+
+        const noExceptions = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception list 255.255.*.*',
+        });
+
+        assert.equal(noExceptions.length, 1);
+        assert.includes(noExceptions[0], 'No exceptions could be found for 255.255.*.*.');
+
+        // (4) It should complain when a range ban does not exist.
+        const unknownRange = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception add 8.8.*.* Gunther',
+        });
+
+        assert.equal(unknownRange.length, 1);
+        assert.includes(unknownRange[0], 'The exact range 8.8.*.* is not currently banned.');
+
+        // (5) It should be able to add a new range ban.
+        const addedException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception add 37.48.*.* Gunther',
+        });
+
+        assert.equal(addedException.length, 1);
+        assert.includes(addedException[0], 'An exception has been added for Gunther on');
+        assert.equal(database.addedRangeExceptions, 1);
+
+        // (6) It should be able to remove range bans.
+        const removeException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception remove 127.0.*.* TrainDriverLV',
+        });
+
+        assert.equal(removeException.length, 1);
+        assert.includes(
+            removeException[0],
+            'Success: The exception for TrainDriverLV on 127.0.*.* has been removed.');
+        
+        assert.equal(database.removedRangeExceptions, 1);
+        
+        const unknownException = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!rexception remove 37.48.87.* TrainDriverLV',
+        });
+
+        assert.equal(unknownException.length, 1);
+        assert.includes(
+            unknownException[0],
+            'Error: TrainDriverLV does not have an exception for the 37.48.87.* range.');
     });
 });

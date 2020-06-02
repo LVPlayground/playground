@@ -8,7 +8,7 @@ import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
 import { MockFinancialNativeCalls } from 'features/finance/test/mock_financial_native_calls.js';
 
-describe('FinancialCommunityContribution', (it, beforeEach) => {
+describe('FinancialCommunityContribution', (it, beforeEach, afterEach) => {
     let contribution = null;
     let gunther = null;
     let regulator = null;
@@ -18,9 +18,11 @@ describe('FinancialCommunityContribution', (it, beforeEach) => {
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         settings = server.featureManager.loadFeature('settings');
 
-        regulator = new FinancialRegulator(MockFinancialNativeCalls);
+        regulator = new FinancialRegulator(settings, MockFinancialNativeCalls);
         contribution = new FinancialCommunityContribution(regulator, () => settings);
     });
+
+    afterEach(() => regulator.dispose());
 
     it('should collect contributions depending on player status', async (assert) => {
         const guestBase = settings.getValue('financial/community_contribution_guest_base');

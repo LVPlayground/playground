@@ -4,6 +4,9 @@
 
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
+// Delay, in seconds, before a player's data will be written to the database after they disconnect.
+const kPlayerDisconnectQueryDelayMs = 1000;
+
 // The account manager keeps track of in-game players and ensures that all information necessary to
 // their account is loaded at the appropriate time, and will be securely stored when needed.
 export class AccountManager {
@@ -28,11 +31,18 @@ export class AccountManager {
     // Sets whether the |playerid| is registered, and has to identify to their account prior to
     // being able to interact with the server.
     setIsRegistered(playerid, isRegistered) {
-        const player = server.playerManager.getById(event.playerid);
-        if (player)
-            player.account.isRegistered_ = !!isRegistered;
+        const player = server.playerManager.getById(playerid);
+        const registered = !!isRegistered;
+
+        if (!player)
+            return 0;  // the given |playerid| does not point to a valid player
+
+        player.account.isRegistered_ = registered;
         
-        return 0;
+        if (!registered)
+            server.playerManager.onPlayerGuestSession(player);
+
+        return 1;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -68,8 +78,13 @@ export class AccountManager {
     // with a new nickname instead. Invoked as a Pawn event.
     onPlayerGuestLoginEvent(event) {
         const player = server.playerManager.getById(event.playerId);
-        if (player)
-            player.setNameForGuestLogin(event.guestPlayerName);
+        if (!player)
+            return;  // the |player| does not exist (anymore)
+        
+        player.account.isRegistered_ = false;
+
+        server.playerManager.onPlayerNameChange(player, /* update= */ true);
+        server.playerManager.onPlayerGuestSession(player);
     }
 
     // Called when the |player| has disconnected from the server.
@@ -77,8 +92,17 @@ export class AccountManager {
         if (!player.account.isIdentified())
             return;  // the |player| was never identified to their account
 
-        // Deliberately do not wait for the save operation to complete.
-        this.database_.saveAccountData(player.account.prepareForDatabase());
+        // When running a test, run the store immediately to get coverage over the functionality,
+        // but do not wait for the |kPlayerDisconnectQueryDelayMs| delay like we do in production.
+        if (server.isTest()) {
+            this.database_.saveAccountData(player.account.prepareForDatabase());
+            return;
+        }
+
+        // Have a second's delay before saving the player's data to the account, allowing for other
+        // parts of the game to make their final adjustments before they're gone.
+        wait(kPlayerDisconnectQueryDelayMs).then(() =>
+            this.database_.saveAccountData(player.account.prepareForDatabase()));
     }
 
     // ---------------------------------------------------------------------------------------------

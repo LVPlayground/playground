@@ -35,8 +35,6 @@
 #include Resources/Minigames/Core/WaterFight.pwn
 #endif
 
-#include Resources/Minigames/Core/HayStack/Core.pwn
-
 // Converts the type of minigame a player is playing to a MinigameType enumeration value.
 MinigameType: GetPlayerMinigameType(playerId) {
     if (IsPlayerInMapZone(playerId))
@@ -49,9 +47,6 @@ MinigameType: GetPlayerMinigameType(playerId) {
     if (waterFightIsPlayerPlaying(playerId) || waterFightIsPlayerSignedUp(playerId))
         return WaterFightMinigame;
 #endif
-
-    if (hayHasPlayerSignedUp(playerId))
-        return HayStackMinigame;
 
     if (isPlayerBrief[playerId])
         return CaptureBriefcaseMinigame;
@@ -91,10 +86,17 @@ GetPlayerMinigameName(playerId) {
         return notice;
     }
 
-    if (PlayerActivity(playerId)->isJavaScriptActivity()) {
+    if (PlayerSyncedData(playerId)->hasMinigameName()) {
+        format(notice, sizeof(notice), "%s", PlayerSyncedData(playerId)->minigameName());
+        return notice;
+    }
+
+    if (PlayerActivity(playerId)->isJavaScriptActivity()) {  // deprecated
         switch (PlayerActivity(playerId)->get()) {
             case PlayerActivityJsRace:
                 format(notice, sizeof(notice), "Racing");
+            case PlayerActivityDmZone:
+                format(notice, sizeof(notice), "Death Matching");            
             default:
                 format(notice, sizeof(notice), "Unknown");
         }
@@ -148,11 +150,6 @@ GetPlayerMinigameName(playerId) {
     }
 #endif
 
-    if (hayHasPlayerSignedUp(playerId)) {
-        notice = "HayStack";
-        goto l_Success;
-    }
-
     if (IsPlayerInMapZone(playerId)) {
         format(notice, sizeof(notice), "%s", Map_Zone[GetPlayerMapZone(playerId)][Map_Name]);
         goto l_Success;
@@ -195,13 +192,13 @@ CFightClub__GetDeathCount(playerId) { return g_FightClubStats[playerId][1]; }
 CFightClub__SetDeathCount(playerId, count) { g_FightClubStats[playerId][1] = count; }
 
 IsPlayerInMinigame(playerId) {
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 1;  // JavaScript-based minigame
+
     if (PlayerActivity(playerId)->isJavaScriptActivity())
-        return 1;
+        return 1; // deprecated
 
     if (IsPlayerInMapZone(playerId))
-        return 1;
-
-    if (hayHasPlayerSignedUp(playerId) && hayGetState() > 1)
         return 1;
 
     if (CLyse__GetPlayerState(playerId) > 1)
@@ -230,6 +227,9 @@ IsPlayerMinigameFree(playerId) {
     if (!Player(playerId)->isConnected())
         return 0;
 
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 0;  // JavaScript-based minigame
+
     if (g_RivershellPlayer[playerId])
         return 0;
 
@@ -246,9 +246,6 @@ IsPlayerMinigameFree(playerId) {
         return 0;
 
     if (CHideGame__GetPlayerState(playerId) > 0)
-        return 0;
-
-    if (hayHasPlayerSignedUp(playerId))
         return 0;
 
     return 1;

@@ -14,6 +14,7 @@ export class ZoneGang {
     members_ = null;
 
     color_ = null;
+    goal_ = null;
     name_ = null;
 
     // Gets the ID describing how this gang has been represented in the database.
@@ -24,6 +25,9 @@ export class ZoneGang {
 
     // Gets the color of this gang. Only available for active gangs.
     get color() { return this.color_; }
+
+    // Gets the goal of this gang. Only available for active gangs.
+    get goal() { return this.goal_; }
 
     // Gets the name of this gang. Only available for active gangs.
     get name() { return this.name_; }
@@ -46,6 +50,7 @@ export class ZoneGang {
             throw new Error(`Cannot initialize gang ${this.id_} with data from gang ${details.id}`);
 
         this.color_ = details.color || kDefaultGangColor;
+        this.goal_ = details.goal;
         this.name_ = details.name;
     }
 

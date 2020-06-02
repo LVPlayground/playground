@@ -1,0 +1,28 @@
+{
+    "name": "Bloodbowl 1",
+    "id": 0,
+
+    "environment": {
+        "interiorId": 15
+    },
+
+    "spawnPositions": [
+        { "position": [ -1279.7775,  994.8470, 1037.0243 ], "facingAngle":  90.0000, "vehicleModelId": 504 },
+        { "position": [ -1517.5975,  993.8068, 1037.4318 ], "facingAngle": 270.0000, "vehicleModelId": 504 },
+        { "position": [ -1410.2723,  935.5204, 1036.2429 ], "facingAngle": 268.9450, "vehicleModelId": 504 },
+        { "position": [ -1397.0000, 1058.9507, 1038.3235 ], "facingAngle": 180.0000, "vehicleModelId": 504 },
+        { "position": [ -1329.9623,  939.1003, 1036.1882 ], "facingAngle":  25.8612, "vehicleModelId": 504 },
+        { "position": [ -1501.0391,  962.1718, 1036.8732 ], "facingAngle": 312.6543, "vehicleModelId": 504 },
+        { "position": [ -1466.7170, 1052.3577, 1038.3087 ], "facingAngle": 205.8057, "vehicleModelId": 504 },
+        { "position": [ -1316.2698, 1045.6909, 1037.9373 ], "facingAngle": 139.4159, "vehicleModelId": 504 }
+    ],
+
+    "settings": {
+        "cannon": true,
+        "timeLimit": 180
+    },
+
+    "pickups": [
+        { "modelId": 1247, "type": 14, "respawnTime": 20, "position": [ -1440.9452, 964.8389, 1025.0952 ] }
+    ]
+}

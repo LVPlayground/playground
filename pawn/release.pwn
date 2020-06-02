@@ -27,9 +27,6 @@ class ReleaseSettings {
     // Should the GTA Merchant system be enabled, which uses a single NPC?
     public const CreateMerchant = 1;
 
-    // Enable commands which should only be available on the beta server?
-    public const EnableBetaCommands = 0;
-
 #else
     // ---------------------------------------------------------------------------------------------
     // Settings for beta-testing builds.
@@ -46,9 +43,6 @@ class ReleaseSettings {
 
     // Should the GTA Merchant system be enabled, which uses a single NPC?
     public const CreateMerchant = 0;
-
-    // Enable commands which should only be available on the beta server?
-    public const EnableBetaCommands = 1;
 
 #endif
 };

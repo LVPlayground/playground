@@ -5,6 +5,10 @@
 import { ZoneGang } from 'features/gang_zones/structures/zone_gang.js';
 import { ZoneMember } from 'features/gang_zones/structures/zone_member.js';
 
+// Set of gang Ids which are persistently granted a zone. The data aggregator will load all their
+// settings and details, pass on information to the calculator, but won't fake anything beyond that.
+const kPersistentGangIds = new Set([ 1 /* LVP */ ]);
+
 // Minimum number of active members required for a gang to be considered "active".
 export const kZoneDominanceActiveMemberRequirement = 5;
 
@@ -77,7 +81,7 @@ export class ZoneDataAggregator {
 
         // Determine which sub-set of the |this.activeGangs_| is considered to be an active gang.
         // This is step (2) of the zone dominance algorithm described in README.md.
-        const activeGangIds = new Set();
+        const activeGangIds = new Set([...kPersistentGangIds]);
 
         for (const zoneGang of this.activeGangs_.values()) {
             if (zoneGang.size < kZoneDominanceActiveMemberRequirement)
@@ -119,7 +123,7 @@ export class ZoneDataAggregator {
         // Consider every gang in |this.activeGangs_| for a gang zone now that initial data has been
         // gathered. That function will make the next set of determinations.
         for (const zoneGang of this.activeGangs_.values())
-            await this.reconsiderGangForZone(zoneGang);
+            this.reconsiderGangForZone(zoneGang);
 
         this.initialized_ = true;
     }
@@ -131,7 +135,9 @@ export class ZoneDataAggregator {
         if (!this.delegate_)
             return;  // the delegate is optional for testing
 
-        const isActive = zoneGang.members.size >= kZoneDominanceActiveMemberRequirement;
+        const isActive = zoneGang.members.size >= kZoneDominanceActiveMemberRequirement ||
+                         kPersistentGangIds.has(zoneGang.id);
+
         if (zoneGang.isActive()) {
             if (isActive)
                 this.delegate_.onGangUpdated(zoneGang);  // was active, still active
@@ -161,6 +167,10 @@ export class ZoneDataAggregator {
             return;  // the |gang| is not considered to be an active gang
         
         activeGang.initialize(gang);
+
+        // Force an update, as this may indicate that the gang's name, colour or slogan has changed,
+        // which are represented in behaviour of the gang zone.
+        this.scheduleZoneReconsideration(gang.id);
     }
 
     // Called when a member of the |gangId| gang has connected with the server.
@@ -187,6 +197,8 @@ export class ZoneDataAggregator {
 
         const zoneGang = new ZoneGang(gangId);
         const zoneMembers = new Map();
+
+        zoneGang.initialize(gang);
 
         // (2) They have the required number of active members. Excellent. Now clear the cached
         //     gang object and begin building a new one to avoid operating on stale data.

@@ -75,7 +75,7 @@ export class CallCommands {
             player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);
             return;
         }
-
+        
         // Bail out if the |targetPlayer| is already on the phone.
         if (!!this.callChannel.getConversationPartner(targetPlayer) ||
                 this.dialing_.has(targetPlayer)) {

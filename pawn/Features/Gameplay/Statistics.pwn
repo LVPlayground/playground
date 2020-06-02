@@ -135,13 +135,6 @@ class Statistics {
         else
             fightclubKDRatio = fightclubKills;
 
-        // Earned achievements.
-        new achievementCount;
-        for (new achievement = 0; achievement < TotalAchievements; achievement++) {
-            if (CAchieve_GetPlayerAchievement(playerId, achievement) == 1)
-                achievementCount++;
-        }
-
         new bankBalance[32];
         GetAccountBalanceJS(playerId, bankBalance);
 
@@ -157,8 +150,8 @@ class Statistics {
             fightclubDeaths, fightclubKDRatio);
 
         format(dialogMessage, sizeof(dialogMessage),
-            "%s{B4CCE8}Achievements: {FF8E02}%d / %d\r\n{B4CCE8}Collectables: {FF8E02}%d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reaction Tests: {FF8E02}%d\r\n",
-            dialogMessage, achievementCount, TotalAchievements-UnavailableTotalAchievements, PlayerSyncedData(playerId)->collectables(),
+            "%s{B4CCE8}Collectables: {FF8E02}%d\r\n{B4CCE8}Minigames won: {FF8E02}%d\r\n{B4CCE8}Exports: {FF8E02}%d\r\n{B4CCE8}Reaction Tests: {FF8E02}%d\r\n",
+            dialogMessage, PlayerSyncedData(playerId)->collectables(),
             WonMinigame[playerId], playerVehExp[playerId], PlayerInfo[playerId][reactionTestWins]);
 
         format(dialogMessage, sizeof(dialogMessage),

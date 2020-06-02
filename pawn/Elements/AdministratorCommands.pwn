@@ -303,8 +303,10 @@ TimeHelp:
     }
 
 SetHelp:
+   if (Player(playerId)->isManagement())
     SendClientMessage(playerId, Color::Information, "Usage: /set [gravity/shiprail/time/weather]");
-
+   else if (Player(playerId)->isAdministrator())
+    SendClientMessage(playerId, Color::Information, "Usage: /set [shiprail/time/weather]");
     return 1;
 }
 
@@ -861,9 +863,9 @@ PlayerHelp:
     SendClientMessage(playerId, Color::Information, "Usage: /p [player] [command]:");
 
     if (Player(playerId)->isAdministrator() == true && tempLevel[subjectId] == 2) {
-        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, (un)freeze, god,");
+        SendClientMessage(playerId, Color::Information, " armor, burn, (un)cage, cash, (un)freeze, god,");
     } else {
-        SendClientMessage(playerId, Color::Information, " achievements, armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
+        SendClientMessage(playerId, Color::Information, " armor, burn, (un)cage, cash, deathmessage, (un)freeze, (give/take)admin, god,");
     }
 
     if (Player(playerId)->isAdministrator() == true) {

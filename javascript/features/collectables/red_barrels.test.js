@@ -3,38 +3,25 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { RedBarrels } from 'features/collectables/red_barrels.js';
 
+import * as achievements from 'features/collectables/achievements.js';
 import { range } from 'base/range.js';
 
-describe('RedBarrels', (it, beforeEach, afterEach) => {
+describe('RedBarrels', (it, beforeEach) => {
     let collectables = null;
     let delegate = null;
+    let gunther = null;
 
     beforeEach(() => {
-        const feature = server.featureManager.loadFeature('collectables');
-
-        collectables = new class {
-            achievements = [];
-
-            awardAchievement(player, achievement) {
-                this.achievements.push(achievement);
-            }
-        };
-
-        delegate = new RedBarrels(collectables, feature.manager_);
-    });
-
-    afterEach(() => {
-        if (delegate)
-            delegate.dispose();
+        collectables = server.featureManager.loadFeature('collectables');
+        delegate = collectables.manager_.getDelegate(CollectableDatabase.kRedBarrel);
+        gunther = server.playerManager.getById(/* Gunther= */ 0);
     });
 
     it('should only create barrels when they have not been collected yet', assert => {
         delegate.initialize();
 
         const existingObjectCount = server.objectManager.count;
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all barrels, as if the player has not collected any yet.
         const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
@@ -64,7 +51,6 @@ describe('RedBarrels', (it, beforeEach, afterEach) => {
         delegate.initialize();
 
         const existingObjectCount = server.objectManager.count;
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all barrels, as if the player has not collected any yet.
         delegate.refreshCollectablesForPlayer(
@@ -90,7 +76,44 @@ describe('RedBarrels', (it, beforeEach, afterEach) => {
         assert.equal(server.objectManager.count, updatedObjectCount - 1);
     });
 
-    it('awards achievements when exploding a certain number of barrels', async (assert) => {
+    it('should award achievements when one of the milestones has been hit', assert => {
+        const kTotal = 100;
+        const kMilestones = new Map([
+            [  10, achievements.kAchievementRedBarrelBronze ],
+            [  40, achievements.kAchievementRedBarrelSilver ],
+            [  90, achievements.kAchievementRedBarrelGold ],
+            [ 100, achievements.kAchievementRedBarrelPlatinum ],
+        ]);
 
+        delegate.initialize();
+
+        // Create all barrels, as if the player has not collected any yet.
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
+        
+        // Now, one by one, shoot each barrel in the game. Assess that the achievement will be
+        // awarded as expected.
+        for (let i = 1; i <= delegate.getCollectableCount(); ++i) {
+            assert.setContext('barrel ' + i);
+
+            const achievement = kMilestones.get(i);
+            if (achievement)
+                assert.isFalse(collectables.hasAchievement(gunther, achievement));
+            
+            const barrel = [ ...delegate.playerBarrels_.get(gunther).keys() ].shift();
+            server.objectManager.onPlayerShootObject({
+                playerid: gunther.id,
+                objectid: barrel.id,
+            });
+
+            assert.equal(delegate.countCollectablesForPlayer(gunther).round, i);
+
+            if (achievement) {
+                assert.isTrue(collectables.hasAchievement(gunther, achievement));
+                kMilestones.delete(i);
+            }
+        }
+        
+        assert.equal(kMilestones.size, 0);
     });
 });

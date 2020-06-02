@@ -51,6 +51,8 @@ public OnSerializePlayerState(playerid, serialize, restoreOnSpawn) {
             g_involvedInJavaScriptGame[playerid] = true;
 
     } else {  // deserialize
+        g_involvedInJavaScriptGame[playerid] = false;
+
         LoadPlayerGuns(playerid);
         if (PlayerState(playerid)->currentState() == RacingPlayerState)
             PlayerState(playerid)->releaseState();

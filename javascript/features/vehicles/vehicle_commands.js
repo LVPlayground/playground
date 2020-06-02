@@ -7,7 +7,7 @@ import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import Menu from 'components/menu/menu.js';
 import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
-import { kBenefitQuickVehicleAccess } from 'features/collectables/collectable_benefits.js';
+import * as benefits from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
@@ -19,13 +19,18 @@ const MaximumModelsInArea = 50;
 const MaximumVehiclesInArea = 90;
 
 // Mapping of vehicle commands to model Ids that should be created for quick access.
-const QuickVehicleCommands = {
-    ele: 562,
-    inf: 411,
-    nrg: 522,
-    sul: 560,
-    tur: 451,
-    vor: 539
+const kQuickVehicleCommands = {
+    // kBenefitBasicSprayQuickVehicleAccess, the easy tier
+    pre: { modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Premier
+    sul: { modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Sultan
+
+    // kBenefitBasicBarrelQuickVehicleAccess, the alternative easy tier
+    ele: { modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Elegy
+    tur: { modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Turismo
+
+    // kBenefitFullQuickVehicleAccess, the higher level tier
+    inf: { modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },  // Infernus
+    nrg: { modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },  // NRG-500
 };
 
 // Responsible for providing the commands associated with vehicles. Both players and administrators
@@ -57,9 +62,9 @@ class VehicleCommands {
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
 
         // Quick vehicle commands.
-        for (const [command, modelId] of Object.entries(QuickVehicleCommands)) {
+        for (const command of Object.keys(kQuickVehicleCommands)) {
             server.commandManager.buildCommand(command)
-                .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, modelId));
+                .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 
         // Command: /v [vehicle]?
@@ -236,11 +241,15 @@ class VehicleCommands {
             }
         }
 
+        // Stop the vehicle, because it shouldn't be moving.
+        pawnInvoke('SetVehicleVelocity', 'ifff', vehicleId, 0, 0, 0);
+
         // Move them out of the vehicle first to avoid desyncs.
         player.position = player.position;
 
-        // Now move them in to the vehicle again.
-        pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0);
+        // Move them in to the vehicle again.
+        wait(750).then(() =>
+            pawnInvoke('PutPlayerInVehicle', 'iii', player.id, vehicleId, /* driver= */ 0));
 
         // They've seized the vehicle, good for them. Let them know :).
         player.sendMessage(Message.VEHICLE_SEIZED);
@@ -249,17 +258,17 @@ class VehicleCommands {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the player executes one of the quick vehicle commands, for example `/inf` and
-    // `/ele`. This will create a personal vehicle for them.
-    async onQuickVehicleCommand(modelId, player) {
-        // TODO: This should just be an alias for `/v [modelId]` when the spray tag requirement
-        // has been dropped, or at least changed into a progressive model.
+    // `/ele`. This will create a personal vehicle for them. Commands can be unlocked by collecting
+    // achievements on the server, in different tier levels.
+    async onQuickVehicleCommand(command, player) {
+        const { modelId, benefit } = kQuickVehicleCommands[command];
 
         const allowed =
             this.playground_().canAccessCommand(player, 'v') ||
-            this.collectables_().isPlayerEligibleForBenefit(player, kBenefitQuickVehicleAccess);
+            this.collectables_().isPlayerEligibleForBenefit(player, benefit);
 
         if (!allowed) {
-            player.sendMessage(Message.VEHICLE_QUICK_SPRAY_TAGS);
+            player.sendMessage(Message.VEHICLE_QUICK_COLLECTABLES);
             return;
         }
 
@@ -759,7 +768,7 @@ class VehicleCommands {
     dispose() {
         this.unregisterTrackedCommands(this.playground_());
 
-        for (const command of Object.keys(QuickVehicleCommands))
+        for (const command of Object.keys(kQuickVehicleCommands))
             server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');

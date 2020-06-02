@@ -6,6 +6,8 @@ import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 describe('ReactionTests', (it, beforeEach) => {
     /**
      * @type ReactionTests
@@ -144,6 +146,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         // Wait until we're certain that the first reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
+        await server.clock.advance(3000);  // three extra seconds
 
         assert.equal(gunther.messages.length, 1);
 
@@ -180,5 +183,57 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance((delay + jitter) * 1000);
 
         assert.equal(gunther.messages.length, 3);
+    });
+
+    it('should award achievements at certain milestones', async (assert) => {
+        const collectables = server.featureManager.loadFeature('collectables');
+
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+
+        // (1) Achievement based on speed of answering.
+        assert.isFalse(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSpeed));
+
+        {
+            await server.clock.advance((delay + jitter) * 1000);
+            await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+        }
+
+        assert.isTrue(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSpeed));
+
+        // (2) Achievements based on number of answered reaction tests.
+        const kMilestones = new Map([
+            [   10, achievements.kAchievementReactionTestBronze ],
+            [  100, achievements.kAchievementReactionTestSilver ],
+            [ 1000, achievements.kAchievementReactionTestGold ],
+        ]);
+
+        for (const [ milestone, achievement ] of kMilestones) {
+            assert.isFalse(collectables.hasAchievement(gunther, achievement));
+
+            gunther.account.reactionTests = milestone - 1;
+
+            {
+                await server.clock.advance((delay + jitter) * 1000);
+                await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+            }
+
+            assert.equal(gunther.account.reactionTests, milestone);
+            assert.isTrue(collectables.hasAchievement(gunther, achievement));
+        }
+
+        // (3) Achievement based on sequence of wins in a row.
+        assert.isFalse(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
+
+        for (let iteration = kMilestones.size; iteration <= 10; ++iteration) {
+            await server.clock.advance((delay + jitter) * 1000);
+            await gunther.issueMessage(driver.activeTest_.answer);  // instant answer
+        }
+        
+        assert.isTrue(
+            collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
     });
 });

@@ -6,92 +6,104 @@ import Feature from 'components/feature_manager/feature.js';
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 // Number of death messages that are visible on the player's screens.
-const DEATH_FEED_VISIBLE_LENGTH = 5;
+const kDeathFeedVisibleMessageCount = 5;
 
 // Player Id that cannot be connected to the server, but may not equal INVALID_PLAYER_ID.
-const UNASSIGNED_PLAYER_ID = 1337;
+const kUnassignedPlayerId = 1337;
 
 // The death feed feature powers the deaths and kills visible on the right-hand side of a player's
 // screen. It provides an API that allows the feed to be disabled for certain players.
-class DeathFeed extends Feature {
-  constructor() {
-    super();
+export default class DeathFeed extends Feature {
+    callbacks_ = null;
+    disabledPlayers_ = null;
+    recentDeaths_ = null;
 
-    // Set of player ids for whom the death feed is disabled.
-    this.disabledPlayers_ = new Set();
+    constructor() {
+        super();
 
-    // Array of the most recent additions to the death feed. Will be limited in size to the value of
-    // DEATH_FEED_VISIBLE_LENGTH. Used to restore the death feeds for players.
-    this.recentDeaths_ = [];
+        // Set of players for whom the death feed is disabled.
+        this.disabledPlayers_ = new WeakSet();
 
-    // Listen to the events required for reliably providing this feature.
-    this.callbacks_ = new ScopedCallbacks();
-    this.callbacks_.addEventListener(
-        'playerresolveddeath', DeathFeed.prototype.onPlayerDeath.bind(this));
-    this.callbacks_.addEventListener(
-        'playerdisconnect', DeathFeed.prototype.onPlayerDisconnect.bind(this));
-  }
+        // Array of the most recent additions to the death feed. Will be limited in size to the
+        // value of kDeathFeedVisibleMessageCount. Used to restore the death feeds for players.
+        this.recentDeaths_ = [];
 
-  // Returns an array with the most recent deaths.
-  get recentDeaths() { return this.recentDeaths_; }
-
-  // Disables the death feed for |player|. Five fake deaths will be send to their client to clear
-  // the current state of the death screen on their screens, wiping it clean.
-  disableForPlayer(player) {
-    this.disabledPlayers_.add(player.id);
-
-    for (let fakeDeathIndex = 0; fakeDeathIndex < DEATH_FEED_VISIBLE_LENGTH; ++fakeDeathIndex)
-      this.sendDeathMessage(player, UNASSIGNED_PLAYER_ID, Player.kInvalidId, 0);
-  }
-
-  // Enables the death feed for |player|. The five most recent deaths will be send to their client
-  // so that it accurately resembles the current state of the world again.
-  enableForPlayer(player) {
-    this.disabledPlayers_.delete(player.id);
-    this.recentDeaths_.forEach(deathInfo =>
-        this.sendDeathMessage(player, deathInfo.killee, deathInfo.killer, deathInfo.reason));
-  }
-
-  // Called when a player dies or gets killed. Will cause an update to the death feed for all online
-  // players, except those for whom the death feed has been disabled. The source of this event is
-  // the Pawn part of Las Venturas Playground, as the circumstances of the death may have to be
-  // resolved prior to being presented to players.
-  onPlayerDeath(event) {
-    this.recentDeaths_.unshift({ killee: event.playerid, killer: event.killerid, reason: event.reason });
-    this.recentDeaths_ = this.recentDeaths_.slice(0, DEATH_FEED_VISIBLE_LENGTH);
-
-    // TODO: This needs to live in a better place.
-    {
-      const player = server.playerManager.getById(event.playerid);
-      if (player && player.isSelectingObject())
-        player.cancelEdit();
+        this.callbacks_ = new ScopedCallbacks();
+        this.callbacks_.addEventListener(
+            'playerresolveddeath', DeathFeed.prototype.onPlayerDeath.bind(this));
+        this.callbacks_.addEventListener(
+            'playerdisconnect', DeathFeed.prototype.onPlayerDisconnect.bind(this));
     }
 
-    server.playerManager.forEach(player => {
-      if (this.disabledPlayers_.has(player.id))
-        return;
+    // Returns an array with the most recent deaths.
+    get recentDeaths() { return this.recentDeaths_; }
 
-      this.sendDeathMessage(player, event.playerid, event.killerid, event.reason);
-    });
-  }
+    // Disables the death feed for |player|. Five fake deaths will be send to their client to clear
+    // the current state of the death screen on their screens, wiping it clean.
+    disableForPlayer(player) {
+        this.disabledPlayers_.add(player);
 
-  // Utility function to send a death message to |player|.
-  sendDeathMessage(player, killee, killer, reason) {
-    pawnInvoke('SendDeathMessageToPlayer', 'iiii', player.id, killer, killee, reason);
-  }
+        for (let index = 0; index < kDeathFeedVisibleMessageCount; ++index)
+            this.sendDeathMessage(player, kUnassignedPlayerId, Player.kInvalidId, 0);
+    }
 
-  // Called when a player disconnects from the server. Re-enables the death feed for the player in
-  // case it was previously disabled. (So that it's not disabled for future players.)
-  onPlayerDisconnect(event) {
-    this.disabledPlayers_.delete(event.playerid);
-  }
+    // Enables the death feed for |player|. The five most recent deaths will be send to their client
+    // so that it accurately resembles the current state of the world again.
+    enableForPlayer(player) {
+        this.disabledPlayers_.delete(player);
 
-  dispose() {
-    this.disabledPlayers_ = null;
+        for (const { killee, killer, reason } of this.recentDeaths_)
+            this.sendDeathMessage(player, killee, killer, reason);
+    }
 
-    this.callbacks_.dispose();
-    this.callbacks_ = null;
-  }
-};
+    // Called when a player dies or gets killed. Will cause an update to the death feed for all
+    // players, except those for whom the death feed has been disabled. The source of this event is
+    // the Pawn part of Las Venturas Playground, as the circumstances of the death may have to be
+    // resolved prior to being presented to players.
+    onPlayerDeath(event) {
+        this.recentDeaths_.unshift({
+            killee: event.playerid,
+            killer: event.killerid,
+            reason: event.reason
+        });
 
-export default DeathFeed;
+        this.recentDeaths_ = this.recentDeaths_.slice(0, kDeathFeedVisibleMessageCount);
+
+        // TODO: This needs to live in a better place.
+        {
+            const player = server.playerManager.getById(event.playerid);
+            if (player && player.isSelectingObject())
+                player.cancelEdit();
+        }
+
+        for (const recipient of server.playerManager) {
+            if (recipient.isNonPlayerCharacter())
+                continue;  // don't waste cpu cycles on NPCs
+            
+            if (this.disabledPlayers_.has(recipient))
+                continue;  // they've opted out of death messages
+            
+            this.sendDeathMessage(recipient, event.playerid, event.killerid, event.reason);
+        }
+    }
+
+    // Utility function to send a death message to |player|.
+    sendDeathMessage(player, killee, killer, reason) {
+        pawnInvoke('SendDeathMessageToPlayer', 'iiii', player.id, killer, killee, reason);
+    }
+
+    // Called when a player disconnects from the server. Re-enables the death feed for the player in
+    // case it was previously disabled. (So that it's not disabled for future players.)
+    onPlayerDisconnect(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (player)
+            this.disabledPlayers_.delete(player);
+    }
+
+    dispose() {
+        this.disabledPlayers_ = null;
+
+        this.callbacks_.dispose();
+        this.callbacks_ = null;
+    }
+}

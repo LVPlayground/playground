@@ -10,16 +10,27 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 // -------------------------------------------------------------------------------------------------
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
-export const kAchievementSprayTagBronze = 1;
-export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
-export const kAchievementSprayTagGold = 3;
-export const kAchievementSprayTagPlatinum = 4;  // kBenefitQuickVehicleAccess
+export const kAchievementSprayTagBronze = 1;  // kBenefitBasicSprayQuickVehicleAccess
+export const kAchievementSprayTagSilver = 2;
+export const kAchievementSprayTagGold = 3;  // kBenefitBombShop
+export const kAchievementSprayTagPlatinum = 4;  // kBenefitFullQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.
-export const kAchievementRedBarrelBronze = 5;
-export const kAchievementRedBarrelSilver = 6;
+export const kAchievementRedBarrelBronze = 5;  // kBenefitBasicBarrelQuickVehicleAccess
+export const kAchievementRedBarrelSilver = 6;  // kBenefitVehicleKeysColour
 export const kAchievementRedBarrelGold = 7;
-export const kAchievementRedBarrelPlatinum = 8;
+export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
+
+// Reaction Tests quantity achievements: awarded when hitting a certain number of reaction tests.
+export const kAchievementReactionTestBronze = 9;
+export const kAchievementReactionTestSilver = 10;
+export const kAchievementReactionTestGold = 11;
+
+// Reaction Test performance achievement: awarded when winning ten reaction tests in a row.
+export const kAchievementReactionTestSequence = 12;
+
+// Reaction Test performance achievement: awarded when answering a reaction test super quickly.
+export const kAchievementReactionTestSpeed = 13;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -41,6 +52,16 @@ export const kAchievements = new Map([
       { name: 'Incendiarist', text: 'Exploded 90 Red Barrels' } ],
     [ kAchievementRedBarrelPlatinum,
       { name: `Jomeri's Syndrome`, text: 'Exploded all the Red Barrels' } ],
+    [ kAchievementReactionTestBronze,
+      { name: 'Nimble Critter', text: 'Won 10 reaction tests' } ],
+    [ kAchievementReactionTestSilver,
+      { name: 'Quick Addict', text: 'Won 100 reaction tests' } ],
+    [ kAchievementReactionTestGold,
+      { name: 'Electrolyte', text: 'Won 1000 reaction tests' } ],
+    [ kAchievementReactionTestSequence,
+      { name: 'The Streak', text: 'Won 10 reaction tests in a row' } ],
+    [ kAchievementReactionTestSpeed,
+      { name: 'keybind.cs', text: 'Won a reaction test in under two seconds' } ],
 ]);
 
 // -------------------------------------------------------------------------------------------------
@@ -52,7 +73,7 @@ export class Achievements extends CollectableBase {
     players_ = new WeakMap();
 
     constructor(collectables, manager) {
-        super();
+        super({ name: 'Achievements' });
 
         this.collectables_ = collectables;
         this.manager_ = manager;
@@ -63,10 +84,10 @@ export class Achievements extends CollectableBase {
     // Returns whether the |player| has the given |achievement|. The |round| boolean, when set, will
     // restrict the check to the player's current round of collecting achievements.
     hasAchievement(player, achievement, round = true) {
-        if (!this.players_.has(statistics))
+        if (!this.players_.has(player))
             return false;  // the data for |player| has not been loaded yet
         
-        const statistics = this.players_.get(statistics);
+        const statistics = this.players_.get(player);
 
         if (round)
             return statistics.collectedRound.has(achievement);
@@ -104,25 +125,46 @@ export class Achievements extends CollectableBase {
     // Called when the |player| has been awarded the given |achievement|, activating its effects.
     // This is only necessary for some of the achievements.
     activateAchievementEffects(player, achievement, unlocked = false) {
-        switch (achievement) {
-            case kAchievementSprayTagSilver:
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_BOMB_SHOP);
-                  
-                break;
+        if (unlocked) {
+            const kUnlockMessages = new Map([
+                [
+                    kAchievementSprayTagBronze,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/pre', '/sul')
+                ],
+                [
+                    kAchievementSprayTagGold,
+                    Message.ACHIEVEMENT_BOMB_SHOP
+                ],
+                [
+                    kAchievementSprayTagPlatinum,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/nrg', '/inf')
+                ],
+                [
+                    kAchievementRedBarrelBronze,
+                    Message.format(Message.ACHIEVEMENT_VEHICLE_SPAWN, '/ele', '/tur')
+                ],
+                [
+                    kAchievementRedBarrelSilver,
+                    Message.ACHIEVEMENT_VEHICLE_COLOR
+                ],
+                [
+                    kAchievementRedBarrelPlatinum,
+                    Message.ACHIEVEMENT_VEHICLE_JUMP
+                ],
+            ]);
 
+            const message = kUnlockMessages.get(achievement);
+            if (message)
+                player.sendMessage(message);
+        }
+
+        switch (achievement) {
             case kAchievementRedBarrelSilver:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysColourChange;
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_COLOR);
-
                 break;
               
             case kAchievementRedBarrelPlatinum:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
-                if (unlocked)
-                    player.sendMessage(Message.ACHIEVEMENT_VEHICLE_JUMP);
-
                 break;
         }
     }

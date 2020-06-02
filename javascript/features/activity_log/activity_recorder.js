@@ -64,7 +64,7 @@ export class ActivityRecorder {
 
     // Creates a session in the database for the given |player|, and returns the created session Id.
     async createPlayerSession(player) {
-        const result = server.database.query(
+        const result = await server.database.query(
             CREATE_PLAYER_SESSION_QUERY, player.name, player.ip, player.serial);
         
         return result?.insertId ?? ActivityRecorder.kInvalidSessionId;

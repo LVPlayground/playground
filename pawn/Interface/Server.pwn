@@ -12,8 +12,12 @@ native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);
 
 // Defined in //javascript/features/collectables/collectable_benefits.js
-#define PLAYER_BENEFIT_QUICK_VEHICLE_ACCESS 0
-#define PLAYER_BENEFIT_BOMB_SHOP 1
+#define PLAYER_BENEFIT_SPRAY_QUICK_VEHICLE_ACCESS 0
+#define PLAYER_BENEFIT_BARREL_QUICK_VEHICLE_ACCESS 1
+#define PLAYER_BENEFIT_FULL_QUICK_VEHICLE_ACCESS 2
+#define PLAYER_BENEFIT_BOMB_SHOP 3
+#define PLAYER_BENEFIT_VEHICLE_KEYS_COLOUR 4
+#define PLAYER_BENEFIT_VEHICLE_KEYS_JUMP 5
 
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
@@ -36,6 +40,8 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define VEHICLE_KEYS_FLIP 8
 #define VEHICLE_KEYS_JUMP 16
 #define VEHICLE_KEYS_NOS 32
+#define VEHICLE_KEYS_BLINKER_RIGHT 64
+#define VEHICLE_KEYS_BLINKER_LEFT 128
 
 native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();

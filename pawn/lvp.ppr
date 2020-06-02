@@ -3,6 +3,8 @@
   <FileList>
     <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
+    <DiskObject>\Driver\Abuse\</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
     <DiskObject>\Driver\ThirdParty\</DiskObject>
     <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
@@ -144,7 +146,6 @@
     <DiskObject>\Features\External\PlayerTracker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\</DiskObject>
-    <DiskObject>\Features\Gameplay\Achievements.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
@@ -201,7 +202,6 @@
     <DiskObject>\Interface\Data\AccountDataRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\ModLoginRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\PasswordVerificationRequest.pwn</DiskObject>
-    <DiskObject>\Interface\Data\PlayerAchievementRequest.pwn</DiskObject>
     <DiskObject>\Interface\Data\PlayerRegisteredRequest.pwn</DiskObject>
     <DiskObject>\Interface\defines.pwn</DiskObject>
     <DiskObject>\Interface\Dialog.pwn</DiskObject>
@@ -346,8 +346,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\Abuse\</DiskObject>
-    <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

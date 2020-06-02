@@ -19,6 +19,7 @@
   "ACHIEVEMENT_BOMB_SHOP": "{00E676}* You can now use the Vehicle Bomb Shop in Las Venturas!",
   "ACHIEVEMENT_VEHICLE_COLOR": "{00E676}* You can now change your vehicle's colour by clicking on numpad 4!",
   "ACHIEVEMENT_VEHICLE_JUMP": "{00E676}* You can now jump in your vehicle outside of Las Venturas by using the horn!",
+  "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}/%s{00E676} and {388E3C}/%s{00E676} commands to spawn vehicles!",
 
   "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
   "ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has made an announcement: %s",
@@ -40,6 +41,9 @@
   "BANK_BALANCE": "{2196F3}* Your current account balance is {BBDEFB}%${2196F3}. Your bank is willing to store up to {BBDEFB}%${2196F3}.",
   "BANK_STORED": "{2196F3}* You have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
   "BANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
+
+  "COLLECTABLE_INSTRUCTIONS_RED_BARRELS": "A hundred {FF5252}Red Barrels{A9C4E4} have been left all over Las Venturas,\r\ncausing havoc and endangering all players on the server. We\r\nneed your help in finding and exploding them!",
+  "COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS": "A hundred {B2FF59}Spray Tags{A9C4E4} have been left all over Las Venturas,\r\nby gangs we haven't heard of for years. Would you kindly\r\nhelp us out by tagging them as your own?",
 
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",
@@ -73,7 +77,7 @@
   "COMMUNICATION_DIAL_REJECTED": "{DC143C}[Phone]{FFFFFF} * You have rejected the phone call from %s.",
   "COMMUNICATION_DIAL_REJECTED_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s has rejected your phone call.",
   "COMMUNICATION_DIAL_REQUEST": "{DC143C}[Phone]{FFFFFF} * %s is calling you. Respond by using either {DC143C}/answer{FFFFFF} or {DC143C}/reject{FFFFFF}.",
-  "COMMUNICATION_DIAL_SELF": "{DC143C}[Phone]{FFFFFF} * You cannot call yourself, silly billy.",
+  "COMMUNICATION_DIAL_SELF": "{DC143C}[Phone]{FFFFFF} * You cannot call yourself over the phone, silly billy.",
   "COMMUNICATION_DIAL_WAITING": "{DC143C}[Phone]{FFFFFF} * You are currently dialing %s...",
   "COMMUNICATION_FILTER_BLOCKED": "@error Your message has been blocked because of a forbidden word.",
   "COMMUNICATION_IRCPM_ADMIN": "{FF9900}* PM: %s (Id:%d) to %s (IRC):{FFFFFF} %s",
@@ -504,8 +508,8 @@
   "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
   "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
   "VEHICLE_QUICK_ALREADY_DRIVING": "@error Sorry, but you're already driving a vehicle!",
+  "VEHICLE_QUICK_COLLECTABLES": "@error Keep tagging Spray Tags and shooting Red Barrels to enable this command!",
   "VEHICLE_QUICK_MAIN_WORLD": "@error Sorry, but you need to be outside in the main world to use this command!",
-  "VEHICLE_QUICK_SPRAY_TAGS": "@error Sorry, you need to collect all spray tags to use this command!",
   "VEHICLE_RESET": "@success The vehicle layout has been reset.",
   "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
   "VEHICLE_SAVE_TOO_BUSY": "@error Sorry, this area is too busy! There already are %d vehicles (max: %d) and %d models (max: %d).",

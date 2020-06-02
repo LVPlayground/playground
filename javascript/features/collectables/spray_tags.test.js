@@ -3,40 +3,27 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { SprayTags,
-         kSprayTagTaggedModelId,
-         kSprayTagUntaggedModelId } from 'features/collectables/spray_tags.js';
 
+import { kSprayTagTaggedModelId, kSprayTagUntaggedModelId } from 'features/collectables/spray_tags.js';
+
+import * as achievements from 'features/collectables/achievements.js';
 import { range } from 'base/range.js';
 
-describe('SprayTags', (it, beforeEach, afterEach) => {
+describe('SprayTags', (it, beforeEach) => {
     let collectables = null;
     let delegate = null;
+    let gunther = null;
 
     beforeEach(() => {
-        const feature = server.featureManager.loadFeature('collectables');
-
-        collectables = new class {
-            achievements = [];
-
-            awardAchievement(player, achievement) {
-                this.achievements.push(achievement);
-            }
-        };
-
-        delegate = new SprayTags(collectables, feature.manager_);
-    });
-
-    afterEach(() => {
-        if (delegate)
-            delegate.dispose();
+        collectables = server.featureManager.loadFeature('collectables');
+        delegate = collectables.manager_.getDelegate(CollectableDatabase.kSprayTag);
+        gunther = server.playerManager.getById(/* Gunther= */ 0);
     });
 
     it('should create the right tag depending on whether they have been collected', assert => {
         delegate.initialize();
 
         const existingObjectCount = server.objectManager.count;
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all spray tags, as if the player has not collected any yet.
         const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
@@ -75,7 +62,6 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         delegate.initialize();
 
         const existingObjectCount = server.objectManager.count;
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         // Create all spray tags, as if the player has not collected any yet.
         delegate.refreshCollectablesForPlayer(
@@ -110,7 +96,44 @@ describe('SprayTags', (it, beforeEach, afterEach) => {
         assert.equal(server.objectManager.count, updatedObjectCount);
     });
 
-    it('awards achievements when exploding a certain number of barrels', async (assert) => {
+    it('awards achievements when exploding a certain number of spray tags', async (assert) => {
+        const kTotal = 100;
+        const kMilestones = new Map([
+            [  10, achievements.kAchievementSprayTagBronze ],
+            [  40, achievements.kAchievementSprayTagSilver ],
+            [  90, achievements.kAchievementSprayTagGold ],
+            [ 100, achievements.kAchievementSprayTagPlatinum ],
+        ]);
 
+        delegate.initialize();
+
+        // Create all spray tags, as if the player has not collected any yet.
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
+        
+        // Now, one by one, tag each of the spray tags in the game. This should, progressively,
+        // have |gunther| collect all of the achievements.
+        for (let i = 1; i <= delegate.getCollectableCount(); ++i) {
+            assert.setContext('tag ' + i);
+
+            const achievement = kMilestones.get(i);
+            if (achievement)
+                assert.isFalse(collectables.hasAchievement(gunther, achievement));
+            
+            const sprayTag = [ ...delegate.playerTags_.get(gunther).keys() ].shift();
+            gunther.position = sprayTag.position.translateTo2D(3, 90);
+            gunther.rotation = 270;
+
+            delegate.processSprayTagForPlayer(gunther.id);
+
+            assert.equal(delegate.countCollectablesForPlayer(gunther).round, i);
+
+            if (achievement) {
+                assert.isTrue(collectables.hasAchievement(gunther, achievement));
+                kMilestones.delete(i);
+            }
+        }
+        
+        assert.equal(kMilestones.size, 0);
     });
 });

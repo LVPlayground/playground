@@ -140,7 +140,8 @@ class GangManager {
                     nickname: member.username,
                     player: gangPlayers[member.userId] || null,
                     role: member.role,
-                    userId: member.userId
+                    userId: member.userId,
+                    lastSeen: member.lastSeen,
                 };
 
                 // Add them to the single big array when not grouping by role.

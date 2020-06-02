@@ -934,7 +934,12 @@ CHideGame__CreateMenus()
 CHideGame__onStartCommand( iPlayerID, params[] )
 {
     if (iHideGameState == HS_STATE_NONE)
-    {
+    {   if(GetPlayerSpecialAction(iPlayerID) != SPECIAL_ACTION_NONE || IsPlayerInAnyVehicle(iPlayerID) || GetPlayerVirtualWorld(iPlayerID) !=0) //Using these conditions temporarily to avoid abuse of /has 
+        {
+            ShowBoxForPlayer(iPlayerID, "To prevent /has abuse, you should exit your vehicle and make sure you're not involved in any minigames or other worldly activities.");
+            return 1;
+        }
+
         new seekerId = iPlayerID;
 
         // Administrators can choose another player to be the seeker.

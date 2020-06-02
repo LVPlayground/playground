@@ -39,7 +39,7 @@ export class CollectableManager {
         this.delegates_ = new Map([
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
-            [ CollectableDatabase.kAchievement, new Achievements(this) ],
+            [ CollectableDatabase.kAchievement, new Achievements(collectables, this) ],
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);

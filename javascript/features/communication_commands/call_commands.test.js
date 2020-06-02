@@ -133,5 +133,11 @@ describe('CallCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 11);
         assert.equal(
             gunther.messages[10], Message.format(Message.COMMUNICATION_DIAL_HANGUP_UNKNOWN));
+
+        // (8) It shouldn't possible to call oneself.
+        assert.isTrue(await gunther.issueCommand('/call Gunther'));
+        assert.equal(gunther.messages.length, 12);
+        assert.equal(
+            gunther.messages[11], Message.format(Message.COMMUNICATION_DIAL_SELF));      
     });
 });

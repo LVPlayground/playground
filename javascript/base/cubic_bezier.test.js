@@ -4,8 +4,6 @@
 
 import { CubicBezier } from 'base/cubic_bezier.js';
 
-import { bezier } from 'base/ref.js';
-
 describe('CubicBezier', it => {
     it('is strict about invalid input', assert => {
         assert.throws(() => new CubicBezier());

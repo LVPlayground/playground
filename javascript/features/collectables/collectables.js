@@ -38,7 +38,7 @@ export default class Collectables extends Feature {
 
         // The commands are the player's interfaces towards being able to control their collectables
         // and achievements, as well as seeing other player's statistics.
-        this.commands_ = new CollectableCommands(this.manager_);
+        this.commands_ = new CollectableCommands(this.manager_, settings);
 
         // Enable Pawn code to determine whether a particular player is eligible to receive a given
         // benefit. The Pawn code is responsible for issuing an error when they're not.

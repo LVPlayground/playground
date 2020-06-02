@@ -4,17 +4,30 @@
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CubicBezier } from 'base/cubic_bezier.js';
 import Menu from 'components/menu/menu.js';
 
 import alert from 'components/dialogs/alert.js';
+import { getAreaNameForPosition } from 'components/gameplay/area_names.js';
+
+// 
+export const kPriceChunkSize = 175;
 
 // Implements the commands related to collectables, both for the local player, as well as for the
 // ability to see the achievements owned by other players online on the server.
 export class CollectableCommands {
     manager_ = null;
+    settings_ = null;
 
-    constructor(manager) {
+    // Cubic Bézier curve for calculating the price of hints, based on items remaining.
+    hintPriceBezier_ = null;
+
+    constructor(manager, settings) {
         this.manager_ = manager;
+        this.settings_ = settings;
+
+        // Collectable hint prices: https://cubic-bezier.com/#.57,.05,.56,.95
+        this.hintPriceBezier_ = new CubicBezier(.57, .05, .56, .95);
 
         // /achievements [player]?
         server.commandManager.buildCommand('achievements')
@@ -26,6 +39,8 @@ export class CollectableCommands {
             .build(CollectableCommands.prototype.onCollectablesCommand.bind(this));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // /achievements [player]?
     //
     // Displays the achievements achieved by either the player executing this command, or by any
@@ -36,6 +51,8 @@ export class CollectableCommands {
 
 
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // /collectables
     //
@@ -104,6 +121,10 @@ export class CollectableCommands {
     async handleCollectableSeries(player, delegate, instructions) {
         const dialog = new Menu(delegate.name);
 
+        // Whether the |player| has finished collecting everything for the series.
+        const completed =
+            delegate.getCollectableCount() === delegate.countCollectablesForPlayer(player).round;
+
         // (1) Make instructions available on what the series' purpose is.
         dialog.addItem('Instructions', async () => {
             await alert(player, {
@@ -112,11 +133,49 @@ export class CollectableCommands {
             });
         });
 
-        // buy hint
-        // reset
+        // (2) If the |player| is still collecting them, offer the ability to purchase a hint.
+        if (!completed) {
+            
+        }
+
+        // (3) If the |player| has completed the series, allow them to reset it.
+        if (completed) {
+
+        }
+
+        // Purchase a hint ($...)
+        // Start over again
 
         await dialog.displayForPlayer(player);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Calculates the price for a hint based on the number of remaining collectables, as well as
+    // the distance between the player and the collectable. (Based on rough order of magnitude.)
+    calculatePriceForHint(playerPosition, collectablePosition, collectedRatio) {
+        const kMinimumPrice = this.settings_().getValue('playground/collectable_hint_price_min');
+        const kMaximumPrice = this.settings_().getValue('playground/collectable_hint_price_max');
+
+        // The base price of the hint, based on the |collectedRatio| among the Bézier curve used
+        // for calculating the price. Won't be a nice, round value.
+        const basePrice =
+            kMinimumPrice + (kMaximumPrice - kMinimumPrice) *
+                this.hintPriceBezier_.calculate(collectedRatio);
+
+        // If the |playerPosition| and |collectablePosition| are sufficiently far away from each
+        // other, we offer discounts because the answer will be inaccurate. This means players can
+        // "guess" where a collectable is without paying: this is deliberate, because it's clever.
+        const distance = playerPosition.distanceTo(collectablePosition);
+        const distanceChunks = Math.floor(distance / kPriceChunkSize);  // [0, 34]
+
+        const multiplier = 1 - distanceChunks * .0075;
+
+        // Return the base price with the calculated multiplier based on distance.
+        return basePrice * multiplier;
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('collectables');

@@ -8,21 +8,24 @@ import { CubicBezier } from 'base/cubic_bezier.js';
 import Menu from 'components/menu/menu.js';
 
 import alert from 'components/dialogs/alert.js';
+import { format } from 'base/string_formatter.js';
 import { getAreaNameForPosition } from 'components/gameplay/area_names.js';
 
-// 
+// Size of a chunk in regards to the collectable hint distance calculations.
 export const kPriceChunkSize = 175;
 
 // Implements the commands related to collectables, both for the local player, as well as for the
 // ability to see the achievements owned by other players online on the server.
 export class CollectableCommands {
+    finance_ = null;
     manager_ = null;
     settings_ = null;
 
     // Cubic Bézier curve for calculating the price of hints, based on items remaining.
     hintPriceBezier_ = null;
 
-    constructor(manager, settings) {
+    constructor(manager, finance, settings) {
+        this.finance_ = finance;
         this.manager_ = manager;
         this.settings_ = settings;
 
@@ -122,8 +125,8 @@ export class CollectableCommands {
         const dialog = new Menu(delegate.name);
 
         // Whether the |player| has finished collecting everything for the series.
-        const completed =
-            delegate.getCollectableCount() === delegate.countCollectablesForPlayer(player).round;
+        const ratio = 
+            delegate.countCollectablesForPlayer(player).round / delegate.getCollectableCount();
 
         // (1) Make instructions available on what the series' purpose is.
         dialog.addItem('Instructions', async () => {
@@ -134,12 +137,51 @@ export class CollectableCommands {
         });
 
         // (2) If the |player| is still collecting them, offer the ability to purchase a hint.
-        if (!completed) {
+        if (ratio < 1) {
+            const collectablePosition = this.findClosestCollectablePosition(player, delegate);
+            const price = this.calculatePriceForHint(player.position, collectablePosition, ratio);
+
+            const formattedPrice = format('%$', price);
+            const colour = this.finance_().getPlayerCash(player) < price ? '{F4511E}' : '{43A047}';
             
+            // The menu item includes the price of the hint, coloured based on whether the |player|
+            // is currently carrying enough money to pay for it or not.
+            dialog.addItem(`Purchase a hint (${colour}${formattedPrice}{FFFFFF})...`, async () => {
+                if (this.finance_().getPlayerCash(player) < price) {
+                    return alert(player, {
+                        title: delegate.name,
+                        message: `You need ${format('%$', price)} to pay for the hint!`,
+                    });
+                }
+
+                // Take the cash from them, then start compiling the hint's message.
+                this.finance_().takePlayerCash(player, price);
+
+                const playerPosition = player.position;
+
+                const direction = this.determineDirection(playerPosition, collectablePosition);
+                const distance =
+                    Math.max(1, Math.round(playerPosition.distanceTo(collectablePosition) / 50))
+                        * 50;
+                
+                const areaName = getAreaNameForPosition(collectablePosition);
+                const message = `There is a ${delegate.singularName} about ${distance} meters to` +
+                                `\nthe ${direction} in ${areaName}... Happy hunting!`;
+                
+                // Display the |message| to the player as an alert, and then send it to them again
+                // in the chat box so that they have the opportunity to read it again.
+                await alert(player, {
+                    title: delegate.name,
+                    message
+                });
+                
+                player.sendMessage(
+                    Message.COLLECTABLE_HINT, delegate.singularName, distance, direction, areaName);
+            });
         }
 
         // (3) If the |player| has completed the series, allow them to reset it.
-        if (completed) {
+        if (ratio === 1) {
 
         }
 
@@ -173,6 +215,41 @@ export class CollectableCommands {
 
         // Return the base price with the calculated multiplier based on distance.
         return basePrice * multiplier;
+    }
+
+    // Determines a rough direction. This is a bit cheeky - we only consider { north, east, south,
+    // west }, and pick the direction with the biggest derivation.
+    determineDirection(playerPosition, collectablePosition) {
+        const diffX = playerPosition.x - collectablePosition.x;
+        const diffY = playerPosition.y - collectablePosition.y;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            return diffX > 0 ? 'west'
+                             : 'east';
+        } else {
+            return diffY > 0 ? 'south'
+                             : 'north';
+        }
+    }
+
+    // Finds the collectable that's closest to the |player| given the |delegate|, which they haven't
+    // collected just yet. Returns that collectable, or NULL when none could be found.
+    findClosestCollectablePosition(player, delegate) {
+        let closestCollectable = null;
+        let closestDistance = Number.MAX_SAFE_INTEGER;
+
+        const playerDistance = player.position;
+
+        for (const { position } of delegate.getCollectables().values()) {
+            const distance = playerDistance.squaredDistanceTo(position);
+            if (distance >= closestDistance)
+                continue;
+            
+            closestCollectable = position;
+            closestDistance = distance;
+        }
+
+        return closestCollectable;
     }
 
     // ---------------------------------------------------------------------------------------------

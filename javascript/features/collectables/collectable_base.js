@@ -8,14 +8,17 @@ import ScopedEntities from 'entities/scoped_entities.js';
 // available data for a particular player, for example when they log in.
 export class CollectableBase {
     mapIconType_ = null;
+    name_ = null;
+    singularName_ = null;
 
     collectableItems_ = null;
     entities_ = null;
     icons_ = null;
 
-    constructor({ mapIconType = null, name = null } = {}) {
+    constructor({ mapIconType = null, name = null, singularName = null } = {}) {
         this.mapIconType_ = mapIconType;
         this.name_ = name;
+        this.singularName_ = singularName;
 
         this.collectableItems_ = new Map();
         this.entities_ = new ScopedEntities({ interiorId: 0, virtualWorld: 0 });
@@ -27,6 +30,9 @@ export class CollectableBase {
 
     // Gets the name of this collectable series, for display in user interfaces.
     get name() { return this.name_; }
+
+    // Gets the singular name of a collectable within this series.
+    get singularName() { return this.singularName_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Access to each of the collectables

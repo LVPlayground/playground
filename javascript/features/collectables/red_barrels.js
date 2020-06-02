@@ -32,7 +32,7 @@ export class RedBarrels extends CollectableBase {
     playerStatistics_ = new Map();
 
     constructor(collectables, manager) {
-        super({ mapIconType: 20 /* Fire */, name: 'Red Barrels' });
+        super({ mapIconType: 20 /* Fire */, name: 'Red Barrels', singularName: 'Red Barrel' });
 
         this.collectables_ = collectables;
         this.manager_ = manager;

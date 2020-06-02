@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Vector } from 'base/vector.js';
+
 describe('CollectableCommands', (it, beforeEach) => {
     let commands = null;
     let gunther = null;
@@ -57,6 +59,34 @@ describe('CollectableCommands', (it, beforeEach) => {
         assert.includes(gunther.lastDialog, 'Spray Tags');
     });
 
+    it('should enable players to purchase a hint for the closest collectable', async (assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+
+        assert.equal(finance.getPlayerCash(gunther), 0);
+
+        // (1) The player doesn't have enough money.
+        gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Purchase a hint */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+    
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.includes(gunther.lastDialog, 'to pay for');
+        assert.equal(gunther.messages.length, 0);
+
+        finance.givePlayerCash(gunther, 25000000);
+
+        // (2) The player is able to purchase the hint successfully.
+        gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Purchase a hint */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+    
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.doesNotInclude(gunther.lastDialog, 'to pay for');
+        assert.equal(gunther.messages.length, 1);
+
+        assert.isBelow(finance.getPlayerCash(gunther), 25000000);
+    });
+
     it('is able to calculate the price of a hint based on conditionals', assert => {
         const settings = server.featureManager.loadFeature('settings');
 
@@ -92,5 +122,11 @@ describe('CollectableCommands', (it, beforeEach) => {
                 commands.calculatePriceForHint(gunther.position, islandPosition, ratio),
                 islandPrice, 1);
         }
+
+        // Appendix: it can calculate directions too.
+        assert.equal(commands.determineDirection(gunther.position, new Vector(0, 50, 0)), 'north');
+        assert.equal(commands.determineDirection(gunther.position, new Vector(50, 0, 0)), 'east');
+        assert.equal(commands.determineDirection(gunther.position, new Vector(0, -50, 0)), 'south');
+        assert.equal(commands.determineDirection(gunther.position, new Vector(-50, 0, 0)), 'west');
     });
 });

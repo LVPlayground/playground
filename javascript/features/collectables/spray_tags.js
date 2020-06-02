@@ -33,7 +33,11 @@ export class SprayTags extends CollectableBase {
     playerTags_ = new Map();
 
     constructor(collectables, manager) {
-        super({ mapIconType: 63 /* Pay 'n' Spray */, name: 'Spray Tags' });
+        super({
+            mapIconType: 63 /* Pay 'n' Spray */,
+            name: 'Spray Tags',
+            singularName: 'Spray Tag'
+        });
 
         this.collectables_ = collectables;
         this.manager_ = manager;

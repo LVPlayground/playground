@@ -29,6 +29,9 @@ export default class Collectables extends Feature {
     constructor() {
         super();
 
+        // Allows us to take money from the player for collectable location hints.
+        const finance = this.defineDependency('finance');
+
         // Certain behaviour of the Collectables feature is configurable as settings.
         const settings = this.defineDependency('settings');
 
@@ -38,7 +41,7 @@ export default class Collectables extends Feature {
 
         // The commands are the player's interfaces towards being able to control their collectables
         // and achievements, as well as seeing other player's statistics.
-        this.commands_ = new CollectableCommands(this.manager_, settings);
+        this.commands_ = new CollectableCommands(this.manager_, finance, settings);
 
         // Enable Pawn code to determine whether a particular player is eligible to receive a given
         // benefit. The Pawn code is responsible for issuing an error when they're not.

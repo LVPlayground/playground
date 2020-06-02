@@ -42,6 +42,7 @@
   "BANK_STORED": "{2196F3}* You have deposited {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
   "BANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. Your new account balance is {BBDEFB}%${2196F3}.",
 
+  "COLLECTABLE_HINT": "{C6FF00}* The %s is about %s meters to the %s, in %s.",
   "COLLECTABLE_INSTRUCTIONS_RED_BARRELS": "A hundred {FF5252}Red Barrels{A9C4E4} have been left all over Las Venturas,\r\ncausing havoc and endangering all players on the server. We\r\nneed your help in finding and exploding them!",
   "COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS": "A hundred {B2FF59}Spray Tags{A9C4E4} have been left all over Las Venturas,\r\nby gangs we haven't heard of for years. Would you kindly\r\nhelp us out by tagging them as your own?",
 

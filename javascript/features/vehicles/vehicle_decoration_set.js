@@ -33,6 +33,8 @@ export class VehicleDecorationSet {
     }
 
     get modelId() { return this.vehicleModelId_; }
+    get enterMessage() { return this.enterMessage_; }
+    get announceMessage() { return this.announceMessage_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -69,7 +71,7 @@ export class VehicleDecorationSet {
         // Create all the objects that are part of this decoration set.
         for (const { modelId, position, rotation } of this.objects_) {
             const object = entities.createObject({ modelId, position, rotation });
-            pawnInvoke('AttachObjectToVehicle', 'iiffffff', object.id, vehicleId, position.x,
+            pawnInvoke('AttachDynamicObjectToVehicle', 'iiffffff', object.id, vehicleId, position.x,
                 position.y, position.z, rotation.x, rotation.y, rotation.z)
         }
     }
@@ -94,7 +96,7 @@ export class VehicleDecorationSet {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        for (const entities of this.vehicleObjects_.values()) {
+        for (let entities of this.vehicleObjects_.values()) {
             if (entities !== null) {
                 entities.dispose();
                 entities = null;

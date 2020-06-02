@@ -2,7 +2,7 @@
     "modelId": 411,
     "enterMessage": "The car is feeling horny today.",
     "objects": [
-        {"modelId": 19314, "position": [ 2147483648, 1075188884, 3197066247 ], "rotation": [ 90, 90, 0 ]},
-        {"modelId": 19314, "position": [ 0, 1046562667, 0 ], "rotation": [ 0, 90, 0 ]}
+        {"modelId": 19314, "position": [ 0, 0, 0.7 ], "rotation": [ 90, 90, 0 ]},
+        {"modelId": 19314, "position": [ 0, 2.9, -0.2 ], "rotation": [ 0, 90, 0 ]}
     ]
 }

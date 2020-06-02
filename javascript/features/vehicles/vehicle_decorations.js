@@ -122,7 +122,8 @@ export class VehicleDecorations {
         for(const decoration of vehicleDecorations.decorations) {
             decoration.disable(vehicleDecorations.vehicle.id);
         }
-        vehicleDecoration.remove(player);
+
+        this.playerVehicleDecorations_.delete(player);
     }
 
     // Cleanup the objects upon disconnecting.
@@ -135,7 +136,8 @@ export class VehicleDecorations {
         for(const decoration of vehicleDecorations.decorations) {
             decoration.disable(vehicleDecorations.vehicle.id);
         }
-        vehicleDecoration.remove(player);
+
+        this.playerVehicleDecorations_.delete(player);
     }
 
     dispose() {

@@ -891,6 +891,8 @@ class GangCommands {
         player.sendMessage(
             Message.COMMAND_USAGE,
             '/gang [create/invite/join/kick/leave/members/settings/transactions]');
+
+        player.sendMessage(Message.COMMAND_USAGE, '/gbank, /gwithdraw and /gbalance');
     }
 
     // Called when the player uses the `/gangs [player]` command. It will display information about

@@ -17,6 +17,20 @@
       "",
       "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
+    
+    "Changing your password, nickname or aliases": [
+        "Account Management & Information",
+        "",
+        "You are able to change your own password and nickname by using the \"/account\" command. In",
+        "addition, VIPs have the ability to create aliases for their account through this command as well.",
+        "",
+        "If you would like to reset your statistics, or merge multiple accounts together, please create",
+        "a topic in the \"Help Requests\" section on https://forum.sa-mp.nl/ where a Management member will",
+        "assist you. Such changes cannot be reverted!",
+        "",
+        "For other requests, please contact an administrator directly for help -- see /help on how to do that."
+    ],
+
     "Earning Money": [
       "- Invest in properties - see /properties",
       "- Export vehicles - see /export",

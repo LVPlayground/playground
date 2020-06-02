@@ -10,12 +10,14 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 
 // The keys that have to be pressed by the player to activate certain vehicle key effects. These
 // have been carried over from the SAS gamemode by leaty, Lithirm and Kase.
-#define VEHICLE_KEYS_BINDING_BOOST      KEY_ACTION
-#define VEHICLE_KEYS_BINDING_COLOUR     KEY_ANALOG_LEFT
-#define VEHICLE_KEYS_BINDING_FIX        KEY_SUBMISSION
-#define VEHICLE_KEYS_BINDING_FLIP       KEY_ANALOG_RIGHT
-#define VEHICLE_KEYS_BINDING_JUMP       KEY_CROUCH
-#define VEHICLE_KEYS_BINDING_NOS        KEY_FIRE
+#define VEHICLE_KEYS_BINDING_BOOST          KEY_ACTION
+#define VEHICLE_KEYS_BINDING_COLOUR         KEY_ANALOG_LEFT
+#define VEHICLE_KEYS_BINDING_FIX            KEY_SUBMISSION
+#define VEHICLE_KEYS_BINDING_FLIP           KEY_ANALOG_RIGHT
+#define VEHICLE_KEYS_BINDING_JUMP           KEY_CROUCH
+#define VEHICLE_KEYS_BINDING_NOS            KEY_FIRE
+#define VEHICLE_KEYS_BINDING_BLINKER_RIGHT  KEY_LOOK_RIGHT
+#define VEHICLE_KEYS_BINDING_BLINKER_LEFT   KEY_LOOK_LEFT
 
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
@@ -30,6 +32,9 @@ new g_sprayTagStartTime[MAX_PLAYERS];
 
 // Time at which the player last used the boost Vehicle Keys feature.
 new g_vehicleKeysLastBoost[MAX_PLAYERS];
+
+// The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
+new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
 
 // Returns whether the given |modelId| is a remote controllable vehicle.
 IsModelRemoteControlVehicle(modelId) {
@@ -70,6 +75,13 @@ public OnPlayerConnect(playerid) {
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
+}
+
+public OnPlayerDisconnect(playerid, reason) {
+    StopBlinking(playerid);
+
+    // Proceed with legacy processing.
+    return PlayerEvents(playerid)->onPlayerDisconnect(reason);
 }
 
 // Returns whether vehicle keys are available to the |playerid|, based on their current state.
@@ -224,10 +236,83 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if (VehicleModel(modelId)->isNitroInjectionAvailable())
                 AddVehicleComponent(vehicleId, 1010);
         }
+
+        new const bool: pressedBlinkerRight =
+            PRESSED(VEHICLE_KEYS_BINDING_BLINKER_RIGHT) && vehicleKeys & VEHICLE_KEYS_BLINKER_RIGHT;
+        new const bool: pressedBlinkerLeft = 
+            PRESSED(VEHICLE_KEYS_BINDING_BLINKER_LEFT) && vehicleKeys & VEHICLE_KEYS_BLINKER_LEFT;
+
+        if(pressedBlinkerRight || pressedBlinkerLeft) {
+            new const bool: blinkingOnRight = IsValidDynamicObject(g_blinkerObjects[playerid][0]) == 1;
+            new const bool: blinkingOnLeft = IsValidDynamicObject(g_blinkerObjects[playerid][2]) == 1;
+
+            new const bool: rightBlinker = pressedBlinkerRight ? !blinkingOnRight : blinkingOnRight;
+            new const bool: leftBlinker = pressedBlinkerLeft ? !blinkingOnLeft : blinkingOnLeft;
+
+            SetBlinker(playerid, vehicleId, leftBlinker, rightBlinker);
+        }
     }
 
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
     return 1;
+}
+
+// Enable the |left| and or |right| blinkers for |playerid| in |vehicleId|
+SetBlinker(playerid, vehicleId, bool:left, bool:right) {
+    new const blinkerModel = 19294;
+    new const modelId = GetVehicleModel(vehicleId);
+
+    if(!VehicleModel(modelId)->isNitroInjectionAvailable()) {
+        return;
+    }
+
+    new Float:sizeX, Float:sizeY, Float:sizeZ;
+    GetVehicleModelInfo(modelId, VEHICLE_MODEL_INFO_SIZE, sizeX, sizeY, sizeZ);
+
+    if (right) {
+        if (!IsValidDynamicObject(g_blinkerObjects[playerid][0])) {
+            g_blinkerObjects[playerid][0] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][0], vehicleId, sizeX/2.23, sizeY/2.23, 
+                0.1, 0, 0, 0);
+
+            g_blinkerObjects[playerid][1] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][1], vehicleId, sizeX/2.23, -sizeY/2.23, 
+                0.1, 0, 0, 0);
+        }
+    } else {
+        DestroyDynamicBlinkerObject(playerid, 0);
+        DestroyDynamicBlinkerObject(playerid, 1);
+    }
+
+    if (left) {
+        if (!IsValidDynamicObject(g_blinkerObjects[playerid][2])) {
+            g_blinkerObjects[playerid][2] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][2], vehicleId, -sizeX/2.23, sizeY/2.23, 
+                0.1, 0, 0, 0);
+
+            g_blinkerObjects[playerid][3] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][3], vehicleId, -sizeX/2.23, -sizeY/2.23, 
+                0.1, 0, 0, 0);
+        }
+    } else {
+        DestroyDynamicBlinkerObject(playerid, 2);
+        DestroyDynamicBlinkerObject(playerid, 3);
+    }
+}
+
+// This resets the whole blinking status and removes the objects.
+StopBlinking(playerid) {
+    DestroyDynamicBlinkerObject(playerid, 0);
+    DestroyDynamicBlinkerObject(playerid, 1);
+    DestroyDynamicBlinkerObject(playerid, 2);
+    DestroyDynamicBlinkerObject(playerid, 3);
+}
+
+// Remove object if there is an object at the |index| for the |playerid|
+DestroyDynamicBlinkerObject(playerid, index) {
+    if (IsValidDynamicObject(g_blinkerObjects[playerid][index])) {
+        DestroyDynamicObject(g_blinkerObjects[playerid][index]);
+    }    
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
@@ -251,6 +336,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         g_ninjaJackCurrentVehicleId[playerid] = GetPlayerVehicleID(playerid);
     } else {
         g_ninjaJackCurrentVehicleId[playerid] = INVALID_VEHICLE_ID;
+        StopBlinking(playerid);
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);

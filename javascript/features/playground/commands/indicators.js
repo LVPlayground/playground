@@ -21,8 +21,8 @@ export default class IndicatorsCommand extends Command {
         const subject = target || player;
 
         if (subject.syncedData.vehicleKeys & Vehicle.kVehicleKeysBlinkerRight) {
-            subject.syncedData.vehicleKeys &= Vehicle.kVehicleKeysBlinkerRight;
-            subject.syncedData.vehicleKeys &= Vehicle.kVehicleKeysBlinkerLeft;
+            subject.syncedData.vehicleKeys &= ~ Vehicle.kVehicleKeysBlinkerRight;
+            subject.syncedData.vehicleKeys &= ~ Vehicle.kVehicleKeysBlinkerLeft;
             
             player.sendMessage(Message.COMMAND_SUCCESS, subject.name + ' can\'t use the blinkers anymore.');
             return;

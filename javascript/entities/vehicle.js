@@ -15,7 +15,7 @@ class Vehicle {
     static kVehicleKeysJump = 16;
     static kVehicleKeysNos = 32;
     static kVehicleKeysBlinkerRight = 64;
-    static kVehicleKeysBlinkerLeft = 256;
+    static kVehicleKeysBlinkerLeft = 128;
 
     constructor(manager, options) {
         this.manager_ = manager;

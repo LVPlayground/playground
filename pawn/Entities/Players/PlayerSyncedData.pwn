@@ -114,7 +114,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
             case VEHICLE_KEYS: {
                 m_vehicleKeys = intValue;
-                if(m_vehicleKeys | VEHICLE_KEYS_BLINKER_RIGHT) {
+                if((m_vehicleKeys & VEHICLE_KEYS_BLINKER_RIGHT) == 0) {
                     // Blinking enable/disable always goes together.
                     // If right is disable blinking is disabled thus stop the blinking.
                     StopBlinking(playerId);

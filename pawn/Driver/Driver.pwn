@@ -46,29 +46,6 @@ IsModelRemoteControlVehicle(modelId) {
     return false;
 }
 
-// Returns whether the given |modelId| is a boat.
-IsModelBoat(modelId) {
-    if(modelId == 460 || modelId == 476 || modelId == 511 || modelId == 512 || modelId == 513 ||
-        modelId == 519 || modelId == 520 || modelId == 553 || modelId == 577 || modelId == 592 ||
-        modelId == 593) {
-
-        return true;
-    }
-
-    return false;
-}
-
-// Returns whether the given |modelId| is a plane.
-IsModelPlane(modelId) {
-    if (modelId == 430 || modelId == 446 || modelId == 452 || modelId == 453 || modelId == 454 ||
-        modelId == 472 || modelId == 473 || modelId == 484 || modelId == 493 || modelId == 595) {
-
-        return true;
-    }
-
-    return false;
-}
-
 // Gets the ID of the player who is currently driving the given |vehicleId|.
 GetVehicleDriverID(vehicleId) {
     for (new playerId = 0; playerId < GetPlayerPoolSize(); ++playerId) {
@@ -260,23 +237,20 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 AddVehicleComponent(vehicleId, 1010);
         }
 
-        new bool: rightBlinker = g_blinkerObjects[playerid][0] != 0;
-        new bool: leftBlinker = g_blinkerObjects[playerid][2] != 0;
-        // Vehicle keys (q): blinker left
-        if (PRESSED(VEHICLE_KEYS_BINDING_BLINKER_RIGHT) && 
-            (vehicleKeys & VEHICLE_KEYS_BLINKER_RIGHT)) {
+        new const bool: pressedBlinkerRight =
+            PRESSED(VEHICLE_KEYS_BINDING_BLINKER_RIGHT) && vehicleKeys & VEHICLE_KEYS_BLINKER_RIGHT;
+        new const bool: pressedBlinkerLeft = 
+            PRESSED(VEHICLE_KEYS_BINDING_BLINKER_LEFT) && vehicleKeys & VEHICLE_KEYS_BLINKER_LEFT;
 
-            rightBlinker = !rightBlinker;
+        if(pressedBlinkerRight || pressedBlinkerLeft) {
+            new const bool: blinkingOnRight = g_blinkerObjects[playerid][0] != 0;
+            new const bool: blinkingOnLeft = g_blinkerObjects[playerid][2] != 0;
+
+            new const bool: rightBlinker = pressedBlinkerRight ? !blinkingOnRight : blinkingOnRight;
+            new const bool: leftBlinker = pressedBlinkerLeft ? !blinkingOnLeft : blinkingOnLeft;
+
+            SetBinker(playerid, vehicleId, leftBlinker, rightBlinker);
         }
-
-        // Vehicle keys (e): blinker right
-        if (PRESSED(VEHICLE_KEYS_BINDING_BLINKER_LEFT) && 
-            (vehicleKeys & VEHICLE_KEYS_BLINKER_LEFT)) {
-
-            leftBlinker = !leftBlinker;
-        }
-
-        SetBlinker(playerid, vehicleId, leftBlinker, rightBlinker);
     }
 
     LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys);
@@ -288,7 +262,7 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
     new const blinkerModel = 19294;
     new const modelId = GetVehicleModel(vehicleId);
 
-    if(IsModelBoat(modelId) || IsModelPlane(modelId)) {
+    if(VehicleModel(modelId)->isNitroInjectionAvailable()) {
         return;
     }
 
@@ -297,48 +271,48 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
 
     if (right) {
         if (g_blinkerObjects[playerid][0] == 0) {
-            g_blinkerObjects[playerid][0] = CreateObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
+            g_blinkerObjects[playerid][0] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
             AttachObjectToVehicle(g_blinkerObjects[playerid][0], vehicleId, sizeX/2.23, sizeY/2.23, 
                 0.1, 0, 0, 0);
 
-            g_blinkerObjects[playerid][1] = CreateObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
+            g_blinkerObjects[playerid][1] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
             AttachObjectToVehicle(g_blinkerObjects[playerid][1], vehicleId, sizeX/2.23, -sizeY/2.23, 
                 0.1, 0, 0, 0);
         }
     } else {
-        DestroyBlinkerObject(playerid, 0);
-        DestroyBlinkerObject(playerid, 1);
+        DestroyDynamicBlinkerObject(playerid, 0);
+        DestroyDynamicBlinkerObject(playerid, 1);
     }
 
     if (left) {
         if (g_blinkerObjects[playerid][2] == 0) {
-            g_blinkerObjects[playerid][2] = CreateObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
+            g_blinkerObjects[playerid][2] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
             AttachObjectToVehicle(g_blinkerObjects[playerid][2], vehicleId, -sizeX/2.23, sizeY/2.23, 
                 0.1, 0, 0, 0);
 
-            g_blinkerObjects[playerid][3] = CreateObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
+            g_blinkerObjects[playerid][3] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0, 0);
             AttachObjectToVehicle(g_blinkerObjects[playerid][3], vehicleId, -sizeX/2.23, -sizeY/2.23, 
                 0.1, 0, 0, 0);
         }
     } else {
-        DestroyBlinkerObject(playerid, 2);
-        DestroyBlinkerObject(playerid, 3);
+        DestroyDynamicBlinkerObject(playerid, 2);
+        DestroyDynamicBlinkerObject(playerid, 3);
     }
 }
 
 // This resets the whole blinking status and removes the objects.
 forward StopBlinking(playerid);
 public StopBlinking(playerid) {
-    DestroyBlinkerObject(playerid, 0);
-    DestroyBlinkerObject(playerid, 1);
-    DestroyBlinkerObject(playerid, 2);
-    DestroyBlinkerObject(playerid, 3);
+    DestroyDynamicBlinkerObject(playerid, 0);
+    DestroyDynamicBlinkerObject(playerid, 1);
+    DestroyDynamicBlinkerObject(playerid, 2);
+    DestroyDynamicBlinkerObject(playerid, 3);
 }
 
 // Remove object if there is an object at the |index| for the |playerid|
-DestroyBlinkerObject(playerid, index) {
+DestroyDynamicBlinkerObject(playerid, index) {
     if (g_blinkerObjects[playerid][index] > 0) {
-        DestroyObject(g_blinkerObjects[playerid][index]);
+        DestroyDynamicObject(g_blinkerObjects[playerid][index]);
         g_blinkerObjects[playerid][index] = 0;
     }    
 }

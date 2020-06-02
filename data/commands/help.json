@@ -56,9 +56,10 @@
       "Players with 100 spray tags are able to spawn an Infernus (/inf), NRG-500 (/nrg), Elegy (/ele), Sultan (/sul), Turismo (/tur) or Vortex (/vor)"
     ],
     "Banking": [
-      "Go to the LV Main bank (/taxi 10 on foot or /tow 10 in a vehicle).",
-      "Walk into the red marker inside the building and type",
-      "'/account' to get started."
+      "-Deposit your money - /bank [amount/all]",
+      "-Withdraw money - /withdraw [amount/all]",
+      "-Bank balance - /balance",
+      "-Borrow money - /borrow [amount]"
     ]
   }
 }

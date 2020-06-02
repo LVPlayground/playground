@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Rect } from 'base/rect.js';
+
 // List of known locations in the world of San Andreas, sorted in ascending order on |minX|.
 const kLocations = [
     { area: new Rect(-2997.47, -2892.97, -1213.91, -1115.58), minZ: -242.99, maxZ: 900.0, name: "Whetstone" },

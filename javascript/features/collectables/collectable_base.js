@@ -13,8 +13,9 @@ export class CollectableBase {
     entities_ = null;
     icons_ = null;
 
-    constructor({ mapIconType = null } = {}) {
+    constructor({ mapIconType = null, name = null } = {}) {
         this.mapIconType_ = mapIconType;
+        this.name_ = name;
 
         this.collectableItems_ = new Map();
         this.entities_ = new ScopedEntities({ interiorId: 0, virtualWorld: 0 });
@@ -23,6 +24,9 @@ export class CollectableBase {
 
     // Gets the entities using which objects, tags and other things can be created.
     get entities() { return this.entities_; }
+
+    // Gets the name of this collectable series, for display in user interfaces.
+    get name() { return this.name_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Access to each of the collectables

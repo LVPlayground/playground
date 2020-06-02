@@ -38,4 +38,20 @@ describe('CollectableCommands', (it, beforeEach) => {
             ]
         });
     });
+
+    it('should enable players to read the instructions for a series', async (assert) => {
+        gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Instructions */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.includes(gunther.lastDialog, 'Red Barrels');
+
+        gunther.respondToDialog({ listitem: 2 /* Spray Tags */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Instructions */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.includes(gunther.lastDialog, 'Spray Tags');
+    });
 });

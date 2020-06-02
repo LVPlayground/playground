@@ -73,7 +73,7 @@ export class Achievements extends CollectableBase {
     players_ = new WeakMap();
 
     constructor(collectables, manager) {
-        super();
+        super({ name: 'Achievements' });
 
         this.collectables_ = collectables;
         this.manager_ = manager;

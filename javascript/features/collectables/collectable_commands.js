@@ -6,6 +6,8 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 import CommandBuilder from 'components/command_manager/command_builder.js';
 import Menu from 'components/menu/menu.js';
 
+import alert from 'components/dialogs/alert.js';
+
 // Implements the commands related to collectables, both for the local player, as well as for the
 // ability to see the achievements owned by other players online on the server.
 export class CollectableCommands {
@@ -46,12 +48,30 @@ export class CollectableCommands {
         ]);
 
         const series = new Map([
-            [ 'Achievements', this.manager_.getDelegate(CollectableDatabase.kAchievement) ],
-            [ '{FF5252}Red Barrels', this.manager_.getDelegate(CollectableDatabase.kRedBarrel) ],
-            [ '{B2FF59}Spray Tags', this.manager_.getDelegate(CollectableDatabase.kSprayTag) ],
+            [
+                'Achievements',
+                {
+                    delegate: this.manager_.getDelegate(CollectableDatabase.kAchievement),
+                    instructions: null,
+                }
+            ],
+            [
+                '{FF5252}Red Barrels',
+                {
+                    delegate: this.manager_.getDelegate(CollectableDatabase.kRedBarrel),
+                    instructions: Message.COLLECTABLE_INSTRUCTIONS_RED_BARRELS,
+                }
+            ],
+            [
+                '{B2FF59}Spray Tags',
+                {
+                    delegate: this.manager_.getDelegate(CollectableDatabase.kSprayTag),
+                    instructions: Message.COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS,
+                }
+            ],
         ]);
 
-        for (const [ label, delegate ] of series) {
+        for (const [ label, { delegate, instructions } ] of series) {
             const total = delegate.getCollectableCount();
             const collected = delegate.countCollectablesForPlayer(player).round;
             
@@ -63,12 +83,39 @@ export class CollectableCommands {
             else
                 progress = `${collected} / ${total}`;
 
-            // TODO: Display the |player|'s collection round if it's >1 
+            // TODO: Display the |player|'s collection round if it's >1
 
-            dialog.addItem(label, progress);
+            let listener = null;
+            if (label.includes('Achievements')) {
+                listener = CollectableCommands.prototype.onAchievementsCommand.bind(this, player);
+            } else {
+                listener = CollectableCommands.prototype.handleCollectableSeries.bind(
+                    this, player, delegate, instructions);
+            }
+
+            dialog.addItem(label, progress, listener);
         }
 
-        return dialog.displayForPlayer(player);
+        await dialog.displayForPlayer(player);
+    }
+
+    // Handles display of a menu with the specific series owned by |delegate| for the player. The
+    // options available to the |player| will heavily depend on their progress thus far.
+    async handleCollectableSeries(player, delegate, instructions) {
+        const dialog = new Menu(delegate.name);
+
+        // (1) Make instructions available on what the series' purpose is.
+        dialog.addItem('Instructions', async () => {
+            await alert(player, {
+                title: delegate.name,
+                message: instructions
+            });
+        });
+
+        // buy hint
+        // reset
+
+        await dialog.displayForPlayer(player);
     }
 
     dispose() {

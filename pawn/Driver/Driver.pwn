@@ -243,8 +243,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             PRESSED(VEHICLE_KEYS_BINDING_BLINKER_LEFT) && vehicleKeys & VEHICLE_KEYS_BLINKER_LEFT;
 
         if(pressedBlinkerRight || pressedBlinkerLeft) {
-            new const bool: blinkingOnRight = g_blinkerObjects[playerid][0] != DynamicObject: INVALID_OBJECT_ID;
-            new const bool: blinkingOnLeft = g_blinkerObjects[playerid][2] != DynamicObject: INVALID_OBJECT_ID;
+            new const bool: blinkingOnRight = IsValidDynamicObject(g_blinkerObjects[playerid][0]) == 1;
+            new const bool: blinkingOnLeft = IsValidDynamicObject(g_blinkerObjects[playerid][2]) == 1;
 
             new const bool: rightBlinker = pressedBlinkerRight ? !blinkingOnRight : blinkingOnRight;
             new const bool: leftBlinker = pressedBlinkerLeft ? !blinkingOnLeft : blinkingOnLeft;
@@ -262,7 +262,7 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
     new const blinkerModel = 19294;
     new const modelId = GetVehicleModel(vehicleId);
 
-    if(VehicleModel(modelId)->isNitroInjectionAvailable()) {
+    if(!VehicleModel(modelId)->isNitroInjectionAvailable()) {
         return;
     }
 
@@ -270,7 +270,7 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
     GetVehicleModelInfo(modelId, VEHICLE_MODEL_INFO_SIZE, sizeX, sizeY, sizeZ);
 
     if (right) {
-        if (g_blinkerObjects[playerid][0] == DynamicObject: INVALID_OBJECT_ID) {
+        if (!IsValidDynamicObject(g_blinkerObjects[playerid][0])) {
             g_blinkerObjects[playerid][0] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
             AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][0], vehicleId, sizeX/2.23, sizeY/2.23, 
                 0.1, 0, 0, 0);
@@ -285,7 +285,7 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
     }
 
     if (left) {
-        if (g_blinkerObjects[playerid][2] == DynamicObject: INVALID_OBJECT_ID) {
+        if (!IsValidDynamicObject(g_blinkerObjects[playerid][2])) {
             g_blinkerObjects[playerid][2] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
             AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][2], vehicleId, -sizeX/2.23, sizeY/2.23, 
                 0.1, 0, 0, 0);
@@ -310,9 +310,8 @@ StopBlinking(playerid) {
 
 // Remove object if there is an object at the |index| for the |playerid|
 DestroyDynamicBlinkerObject(playerid, index) {
-    if (g_blinkerObjects[playerid][index] > DynamicObject: INVALID_OBJECT_ID) {
+    if (IsValidDynamicObject(g_blinkerObjects[playerid][index])) {
         DestroyDynamicObject(g_blinkerObjects[playerid][index]);
-        g_blinkerObjects[playerid][index] = DynamicObject: INVALID_OBJECT_ID;
     }    
 }
 

@@ -6,7 +6,7 @@ import Vehicles from 'features/vehicles/vehicles.js';
 import { kVehicleDecorations } from 'features/vehicles/vehicle_decorations.js';
 import { Vector } from 'base/vector.js';
 
-describe('VehicleDecorations', it => {    
+describe('VehicleDecorations', it => {
     const POSITION = new Vector(6000, 6000, 6000);
 
     // Settings required to create a Hydra with the VehicleManager.
@@ -24,7 +24,7 @@ describe('VehicleDecorations', it => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = POSITION;
         gunther.vehicleSeat = Vehicle.SEAT_DRIVER;
-        
+
         server.featureManager.registerFeaturesForTests({
             vehicles: Vehicles
         });
@@ -36,7 +36,7 @@ describe('VehicleDecorations', it => {
         // Enable all decoration sets, to exercise all of the used code paths.
         for (const { setting } of kVehicleDecorations)
             settings.setValue(setting, true);
-        
+
         var vehicle = new Vehicle(server.manager_, DFT);
         vehicles.decorations_.onPlayerEnterVehicle(gunther, vehicle);
 
@@ -45,7 +45,7 @@ describe('VehicleDecorations', it => {
         // Disable all decoration sets, which will bring the count back to zero.
         for (const { setting } of kVehicleDecorations)
             settings.setValue(setting, false);
-        
+
         assert.equal(server.objectManager.count, objects);
     });
 });

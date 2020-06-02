@@ -87,27 +87,27 @@ export class VehicleDecorations {
             return;
         }
 
-        const decorations =  [...this.enabledSettings_.values()]
+        const decorations = [...this.enabledSettings_.values()]
             .filter(v => v.modelId === vehicle.model.id);
 
         if (decorations.length === 0) {
             return;
         }
 
-        for(const decoration of decorations) {
+        for (const decoration of decorations) {
             decoration.enable(vehicle.id);
         }
 
         //decoration.enable(vehicle.id);
         this.playerVehicleDecorations_.set(player, { vehicle: vehicle, decorations: decorations });
-        
+
         // For the text draw only limit it to the first.
         const decoration = decorations[0];
-        if(decoration.enterMessage !== null && decoration.enterMessage !== undefined) {
+        if (decoration.enterMessage !== null && decoration.enterMessage !== undefined) {
             player.gameText(decoration.enterMessage, 3000, 4);
         }
 
-        if(decoration.announceMessage !== null && decoration.announceMessage !== undefined) {
+        if (decoration.announceMessage !== null && decoration.announceMessage !== undefined) {
             this.announce_().announceToPlayers(decoration.announceMessage);
         }
     }
@@ -119,7 +119,7 @@ export class VehicleDecorations {
             return;
         }
 
-        for(const decoration of vehicleDecorations.decorations) {
+        for (const decoration of vehicleDecorations.decorations) {
             decoration.disable(vehicleDecorations.vehicle.id);
         }
 
@@ -133,7 +133,7 @@ export class VehicleDecorations {
             return;
         }
 
-        for(const decoration of vehicleDecorations.decorations) {
+        for (const decoration of vehicleDecorations.decorations) {
             decoration.disable(vehicleDecorations.vehicle.id);
         }
 

@@ -21,6 +21,17 @@ export const kAchievementRedBarrelSilver = 6;  // kBenefitVehicleKeysColour
 export const kAchievementRedBarrelGold = 7;
 export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
 
+// Reaction Tests quantity achievements: awarded when hitting a certain number of reaction tests.
+export const kAchievementReactionTestBronze = 9;
+export const kAchievementReactionTestSilver = 10;
+export const kAchievementReactionTestGold = 11;
+
+// Reaction Test performance achievement: awarded when winning ten reaction tests in a row.
+export const kAchievementReactionTestSequence = 12;
+
+// Reaction Test performance achievement: awarded when answering a reaction test super quickly.
+export const kAchievementReactionTestSpeed = 13;
+
 // -------------------------------------------------------------------------------------------------
 
 // Textual descriptions of the achievements that can be awarded by the game.
@@ -41,6 +52,16 @@ export const kAchievements = new Map([
       { name: 'Incendiarist', text: 'Exploded 90 Red Barrels' } ],
     [ kAchievementRedBarrelPlatinum,
       { name: `Jomeri's Syndrome`, text: 'Exploded all the Red Barrels' } ],
+    [ kAchievementReactionTestBronze,
+      { name: 'Nimble Critter', text: 'Won 10 reaction tests' } ],
+    [ kAchievementReactionTestSilver,
+      { name: 'Quick Addict', text: 'Won 100 reaction tests' } ],
+    [ kAchievementReactionTestGold,
+      { name: 'Electrolyte', text: 'Won 1000 reaction tests' } ],
+    [ kAchievementReactionTestSequence,
+      { name: 'The Streak', text: 'Won 10 reaction tests in a row' } ],
+    [ kAchievementReactionTestSpeed,
+      { name: 'keybind.cs', text: 'Won a reaction test in under two seconds' } ],
 ]);
 
 // -------------------------------------------------------------------------------------------------

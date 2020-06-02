@@ -15,13 +15,10 @@ class Announce extends Feature {
         // send their own IRC messages should depend on Nuwani individually.
         const nuwani = this.defineDependency('nuwani');
 
-        // The announce feature reads out the settings to know wha to announce to IRC.
-        const settings = this.defineDependency('settings');
-
         // The announce feature reads the player.settings supplement.
         this.defineDependency('player_settings');
         
-        this.manager_ = new AnnounceManager(nuwani, settings);
+        this.manager_ = new AnnounceManager(nuwani);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -33,11 +33,6 @@ class Settings extends Feature {
         for (const setting of SettingList)
             this.settings_.set(setting.identifier, setting);
 
-        // Import player specific settings to also work server wide.
-        for (const setting of PlayerSettingList) {
-            this.settings_.set(setting.identifier, setting.clone());
-        }
-
         // Load the existing persistent values from the database, and apply them to the local state.
         Promise.resolve(this.database_.loadSettings()).then(settings => {
             for (const [identifier, value] of settings) {

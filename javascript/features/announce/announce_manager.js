@@ -20,11 +20,9 @@ const ReportTag = 'notice-report';
 // and the messages will be dispatched to the appropriate audience.
 class AnnounceManager {
     nuwani_ = null;
-    settings_ = null;
 
-    constructor(nuwani, settings) {
+    constructor(nuwani) {
         this.nuwani_ = nuwani;
-        this.settings_ = settings;
     }
 
     // Announces that the |name| has started. Players can join by typing |command|.

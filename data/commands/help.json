@@ -17,6 +17,28 @@
       "",
       "To contact an admin, use @ before your message. E.g: @how do I...?"
     ],
+    "Account Management": [
+
+      "Account Related Guide & Information",
+      "",
+      "Now LVP has /account where you can manage your account features ingame which enables you to,",
+      "",
+      "Change your nickname with period of 14 days",
+      "Change your password",
+      "Manage aliases-VIP feature",
+      "Note:A maximum of 2 aliases can be created",
+      "     An alias can be added once every 7 days",
+      "",
+      "Resetting your account statistics or merging your own accounts",
+      "If you wish to reset your statistics to 0 or merge your own accounts,",
+      "You may post a request in the Help Requests board, and a management member will assist you.",
+      "These changes will not be reversed, so be sure to make up your mind before you decide to proceed.",
+      "",
+      "For any other queries, feel free to post a topic in the Help Requests board or contact crew members.",
+
+      "Have fun on Las Venturas Playground!"
+      
+    ],
     "Earning Money": [
       "- Invest in properties - see /properties",
       "- Export vehicles - see /export",

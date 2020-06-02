@@ -16,11 +16,11 @@ describe('RedBarrels', (it, beforeEach) => {
         collectables = server.featureManager.loadFeature('collectables');
         delegate = collectables.manager_.getDelegate(CollectableDatabase.kRedBarrel);
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+
+        delegate.initialize();
     });
 
     it('should only create barrels when they have not been collected yet', assert => {
-        delegate.initialize();
-
         const existingObjectCount = server.objectManager.count;
 
         // Create all barrels, as if the player has not collected any yet.
@@ -48,8 +48,6 @@ describe('RedBarrels', (it, beforeEach) => {
     });
 
     it('should remove barrels when they have been shot', assert => {
-        delegate.initialize();
-
         const existingObjectCount = server.objectManager.count;
 
         // Create all barrels, as if the player has not collected any yet.
@@ -85,8 +83,6 @@ describe('RedBarrels', (it, beforeEach) => {
             [ 100, achievements.kAchievementRedBarrelPlatinum ],
         ]);
 
-        delegate.initialize();
-
         // Create all barrels, as if the player has not collected any yet.
         delegate.refreshCollectablesForPlayer(
             gunther, CollectableDatabase.createDefaultCollectableStatistics());
@@ -115,5 +111,29 @@ describe('RedBarrels', (it, beforeEach) => {
         }
         
         assert.equal(kMilestones.size, 0);
+    });
+
+    it('should be possible to start new rounds for Red Barrels', assert => {
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 0);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
+
+        // (1) Blow up one red barrel for |gunther|.
+        const barrel = [ ...delegate.playerBarrels_.get(gunther).keys() ].shift();
+        server.objectManager.onPlayerShootObject({
+            playerid: gunther.id,
+            objectid: barrel.id,
+        });
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 1);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 1);
+
+        // (2) Start a new round for |gunther|.
+        delegate.startCollectableRoundForPlayer(gunther);
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 1);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
     });
 });

@@ -8,6 +8,7 @@ import { CubicBezier } from 'base/cubic_bezier.js';
 import Menu from 'components/menu/menu.js';
 
 import alert from 'components/dialogs/alert.js';
+import confirm from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
 import { getAreaNameForPosition } from 'components/gameplay/area_names.js';
 
@@ -17,17 +18,21 @@ export const kPriceChunkSize = 175;
 // Implements the commands related to collectables, both for the local player, as well as for the
 // ability to see the achievements owned by other players online on the server.
 export class CollectableCommands {
+    announce_ = null;
     finance_ = null;
-    manager_ = null;
     settings_ = null;
+
+    manager_ = null;
 
     // Cubic Bézier curve for calculating the price of hints, based on items remaining.
     hintPriceBezier_ = null;
 
-    constructor(manager, finance, settings) {
+    constructor(manager, announce, finance, settings) {
+        this.announce_ = announce;
         this.finance_ = finance;
-        this.manager_ = manager;
         this.settings_ = settings;
+
+        this.manager_ = manager;
 
         // Collectable hint prices: https://cubic-bezier.com/#.57,.05,.56,.95
         this.hintPriceBezier_ = new CubicBezier(.57, .05, .56, .95);
@@ -128,6 +133,10 @@ export class CollectableCommands {
         const ratio = 
             delegate.countCollectablesForPlayer(player).round / delegate.getCollectableCount();
 
+        // Whether completion of a collectable is required before they can be reset.
+        const requireCompletion =
+            this.settings_().getValue('playground/collectable_reset_require_complete');
+
         // (1) Make instructions available on what the series' purpose is.
         dialog.addItem('Instructions', async () => {
             await alert(player, {
@@ -180,13 +189,36 @@ export class CollectableCommands {
             });
         }
 
-        // (3) If the |player| has completed the series, allow them to reset it.
-        if (ratio === 1) {
+        // (3) If the |player| has completed the series, allow them to reset it. It will ask for
+        // confirmation, after which a new round will be started for the player.
+        if ((requireCompletion && ratio === 1) || (!requireCompletion && ratio > 0)) {
+            dialog.addItem('Start over again...', async () => {
+                const confirmation = await confirm(player, {
+                    title: delegate.name,
+                    message: `Are you sure that you want to collect all the ${delegate.name}\n` +
+                             `again? You will keep all the awarded benefits.`
+                });
 
+                if (!confirmation)
+                    return;  // the |player| changed their mind
+                
+                // Start the new round for the |player|...
+                delegate.startCollectableRoundForPlayer(player);
+
+                // Announce it to administrators, since this is significant.
+                this.announce_().announceToAdministrators(
+                    Message.COLLECTABLE_RESET_ADMIN, player.name, player.id, delegate.name);
+                
+                // Announce it to the |player|, so that they know this has happened as well.
+                await alert(player, {
+                    title: delegate.name,
+                    message: `All your ${delegate.name} have been reset! Enjoy collecting\n` +
+                             `them again, and remember that your awarded benefits still exist!`
+                });
+            });
         }
 
-        // Purchase a hint ($...)
-        // Start over again
+        // Statistics?
 
         await dialog.displayForPlayer(player);
     }

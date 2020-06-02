@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { Vector } from 'base/vector.js';
 
 describe('CollectableCommands', (it, beforeEach) => {
@@ -85,6 +86,40 @@ describe('CollectableCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
 
         assert.isBelow(finance.getPlayerCash(gunther), 25000000);
+    });
+
+    it('should enable players to reset collectables of a particular type', async (assert) => {
+        const delegate = manager.getDelegate(CollectableDatabase.kRedBarrel);
+        const current = delegate.countCollectablesForPlayer(gunther).round;
+
+        assert.isBelow(current, delegate.getCollectableCount());
+        
+        // Blow up all the red barrels in existence for the |player|, to make sure that they've got
+        // a perfect ratio, which unlocks the reset option in this menu dialog.
+        for (let barrel = current; barrel < delegate.getCollectableCount(); ++barrel) {
+            const barrel = [ ...delegate.playerBarrels_.get(gunther).keys() ].shift();
+            server.objectManager.onPlayerShootObject({
+                playerid: gunther.id,
+                objectid: barrel.id,
+            });
+        }
+
+        assert.equal(
+            delegate.countCollectablesForPlayer(gunther).total, delegate.getCollectableCount());
+        assert.equal(
+            delegate.countCollectablesForPlayer(gunther).round, delegate.getCollectableCount());
+
+        // Now reset all the Red Barrels for poor old Gunther.
+        gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Reset the Red Barrels */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+        
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+
+        assert.equal(
+            delegate.countCollectablesForPlayer(gunther).total, delegate.getCollectableCount());
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
     });
 
     it('is able to calculate the price of a hint based on conditionals', assert => {

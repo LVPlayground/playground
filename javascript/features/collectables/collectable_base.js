@@ -75,6 +75,12 @@ export class CollectableBase {
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, statistics) {}
 
+    // Called when the |player| wants to start a new round for these collectables. Their state
+    // should thus be reset to that of a new player, without losing benefits.
+    startCollectableRoundForPlayer(player) {
+        throw new Error(`${this.name_} do not support multiple rounds.`);
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Default behaviour
     // ---------------------------------------------------------------------------------------------

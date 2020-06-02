@@ -45,6 +45,7 @@
   "COLLECTABLE_HINT": "{C6FF00}* The %s is about %s meters to the %s, in %s.",
   "COLLECTABLE_INSTRUCTIONS_RED_BARRELS": "A hundred {FF5252}Red Barrels{A9C4E4} have been left all over Las Venturas,\r\ncausing havoc and endangering all players on the server. We\r\nneed your help in finding and exploding them!",
   "COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS": "A hundred {B2FF59}Spray Tags{A9C4E4} have been left all over Las Venturas,\r\nby gangs we haven't heard of for years. Would you kindly\r\nhelp us out by tagging them as your own?",
+  "COLLECTABLE_RESET_ADMIN": "%s (Id:%d) has reset their %s collectables.",
 
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS": "@error Sorry, this command is only available to %s.",
   "COMMAND_ERROR_INSUFFICIENT_RIGHTS_BETA": "@error Sorry, you must have a registered account in order to use this command.",

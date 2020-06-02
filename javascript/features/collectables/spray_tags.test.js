@@ -18,11 +18,11 @@ describe('SprayTags', (it, beforeEach) => {
         collectables = server.featureManager.loadFeature('collectables');
         delegate = collectables.manager_.getDelegate(CollectableDatabase.kSprayTag);
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+
+        delegate.initialize();
     });
 
     it('should create the right tag depending on whether they have been collected', assert => {
-        delegate.initialize();
-
         const existingObjectCount = server.objectManager.count;
 
         // Create all spray tags, as if the player has not collected any yet.
@@ -59,8 +59,6 @@ describe('SprayTags', (it, beforeEach) => {
     });
 
     it('should replace spray tags after they have been sprayed', assert => {
-        delegate.initialize();
-
         const existingObjectCount = server.objectManager.count;
 
         // Create all spray tags, as if the player has not collected any yet.
@@ -105,8 +103,6 @@ describe('SprayTags', (it, beforeEach) => {
             [ 100, achievements.kAchievementSprayTagPlatinum ],
         ]);
 
-        delegate.initialize();
-
         // Create all spray tags, as if the player has not collected any yet.
         delegate.refreshCollectablesForPlayer(
             gunther, CollectableDatabase.createDefaultCollectableStatistics());
@@ -135,5 +131,29 @@ describe('SprayTags', (it, beforeEach) => {
         }
         
         assert.equal(kMilestones.size, 0);
+    });
+
+    it('should be possible to start new rounds for Spray Tags', assert => {
+        delegate.refreshCollectablesForPlayer(
+            gunther, CollectableDatabase.createDefaultCollectableStatistics());
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 0);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
+
+        // (1) Tag one Spray Tag for |gunther|.
+        const sprayTag = [ ...delegate.playerTags_.get(gunther).keys() ].shift();
+        gunther.position = sprayTag.position.translateTo2D(3, 90);
+        gunther.rotation = 270;
+
+        delegate.processSprayTagForPlayer(gunther.id);
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 1);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 1);
+
+        // (2) Start a new round for |gunther|.
+        delegate.startCollectableRoundForPlayer(gunther);
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 1);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
     });
 });

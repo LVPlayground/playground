@@ -31,6 +31,9 @@ Electrolyte       | Win 1,000 reaction tests       |
 The Streak        | Win 10 reaction tests in a row |
 keybind.cs        | Win a reaction test in <2s     |
 
+Beginning another round of earning the achievements _will not_ reset the benefits. Once granted, you
+will keep them indefinitely.
+
 ## Series: Red Barrels
 Red Barrels have appeared all around San Andreas, and we need _your_ help in removing them to
 avoid any incidents. This is a minigame where players have to find all the explosive barrels

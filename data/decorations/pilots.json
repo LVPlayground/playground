@@ -7,7 +7,9 @@
             "rotation": 180.2741,
             "appearance": {
                 "vehicle": {
-                    "modelId": 577
+                    "modelId": 577,
+                    "primaryColor": 8,
+                    "secondaryColor": 7
                 }
             }
         },
@@ -18,7 +20,9 @@
             "rotation": 89.6533,
             "appearance": {
                 "vehicle": {
-                    "modelId": 577
+                    "modelId": 577,
+                    "primaryColor": 8,
+                    "secondaryColor": 6
                 }
             }
         },
@@ -29,7 +33,9 @@
             "rotation": 314.4915,
             "appearance": {
                 "vehicle": {
-                    "modelId": 577
+                    "modelId": 577,
+                    "primaryColor": 8,
+                    "secondaryColor": 3
                 }
             }
         }

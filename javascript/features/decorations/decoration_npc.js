@@ -67,6 +67,11 @@ export class DecorationNpc {
         
         const token = this.token_;
 
+        if (this.vehicle_) {
+            this.vehicle_.dispose();
+            this.vehicle_ = null;
+        }
+
         if (!server.isTest())
             console.log(`[npc] ${npc.name} disconnected. Waiting for reconnect.`);
 

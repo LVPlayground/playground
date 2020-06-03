@@ -127,6 +127,8 @@ export class DecorationNpc {
         return this.entities_.createTextLabel({
             text: this.labelInfo_.text,
             color: this.labelInfo_.color,
+            position: new Vector(0, 0, 0.5),
+
             testLineOfSight: true,
             drawDistance: 100,
 

@@ -1097,6 +1097,7 @@ MinigameHelp:
         if(iPlayerWeaponID < 1 || iPlayerWeaponID > 46)
         {
             SendClientMessage(playerid, Color::Red, "* This weapon doesn't exist!");
+            return 1;
         }
 
         if(bPlayerWeaponStored[playerid])

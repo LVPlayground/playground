@@ -13,6 +13,7 @@ const kDecorationDirectory = 'data/decorations/';
 export const kDecorations = new Set([
     { filename: 'christmas_decorations.json', setting: 'decorations/christmas_decorations' },
     { filename: 'los_santos_winter.json', setting: 'decorations/los_santos_winter' },
+    { filename: 'pilots.json', setting: 'decorations/pilots' },
     { filename: 'san_ferro_road_works.json', setting: 'decorations/san_ferro_road_works' },
     { filename: 'vip_room.json', setting: 'decorations/vip_room' },
 ]);

@@ -13,11 +13,12 @@ class Npc {
 
     // Creates a new NPC. Do NOT use this constructor directly, instead get the NpcManager from the
     // global Server object and create your non-playing characters through there.
-    constructor(manager, name, pawnScript) {
+    constructor(manager, name, pawnScript, events) {
         this.manager_ = manager;
 
         this.name_ = name;
         this.pawnScript_ = pawnScript;
+        this.events_ = events;
 
         this.player_ = null;
 
@@ -105,6 +106,9 @@ class Npc {
         this.player_ = player;
         this.state_ = Npc.kStateConnected;
 
+        if (this.events_)
+            this.events_.onNpcConnected(this);
+
         if (this.disconnectOnConnection_) {
             this.disconnect();
             return;
@@ -127,6 +131,9 @@ class Npc {
         this.state_ = Npc.kStateDisposed;
 
         this.disconnectOnConnection_ = false;
+
+        if (this.events_)
+            this.events_.onNpcDisconnected(this);
 
         this.disconnectedPromiseResolver_();
         this.disconnectedPromiseResolver_ = null;

@@ -32,9 +32,9 @@ class NpcManager {
     // The given |pawnScript| has to be the script's name in the server/npcmodes/ directory, without
     // the file extension (.amx). For example, given a script called "gunther.pwn", the compiled
     // version would be called "gunther.amx", and the `pawnScript` given should be "gunther".
-    createNpc({ name, pawnScript } = {}) {
+    createNpc({ name, pawnScript, events = null } = {}) {
         const npcName = this.ensureUniqueNpcName(name);
-        const npc = new this.npcConstructor_(this, npcName, pawnScript);
+        const npc = new this.npcConstructor_(this, npcName, pawnScript, events);
 
         this.npcs_.set(npcName, npc);
 

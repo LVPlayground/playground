@@ -19,7 +19,7 @@ class ReleaseSettings {
     public const CreateTrainDrivers = 1;
 
     // Should the Plane Pilot service be started, which employs three NPCs?
-    public const CreatePlanePilots = 1;
+    public const CreatePlanePilots = 0;
 
     // Should Gunther, our ship hero, be created to watch bad players? He's an employed NPC.
     public const CreateGunther = 1;

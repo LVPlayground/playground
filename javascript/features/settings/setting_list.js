@@ -49,6 +49,7 @@ export default [
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
+    new Setting('decorations', 'pilots', Setting.TYPE_BOOLEAN, false, 'Should the pilots by flying around San Andreas?'),
     new Setting('decorations', 'san_ferro_road_works', Setting.TYPE_BOOLEAN, false, 'Enable road works near the San Fierro bridge?'),
     new Setting('decorations', 'vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
     new Setting('decorations', 'dft_400', Setting.TYPE_BOOLEAN, true, 'Should the DFT be a party car?'),

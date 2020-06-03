@@ -1,0 +1,22 @@
+{
+    "npcs": [
+        {
+            "name": "PilotLV",
+            "script": "at400_lv",
+            "position": [ 1477.4631, 1647.4589, 10.7281 ],
+            "rotation": 180.2741
+        },
+        {
+            "name": "PilotLS",
+            "script": "at400_ls",
+            "position": [ 2014.6605, -2493.9668, 13.4887 ],
+            "rotation": 89.6533
+        },
+        {
+            "name": "PilotSF",
+            "script": "at400_sf",
+            "position": [ -1513.0963, -21.4589, 14.0641 ],
+            "rotation": 314.4915
+        }
+    ]
+}

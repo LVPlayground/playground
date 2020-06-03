@@ -22,6 +22,8 @@ class PlayerManager {
         this.callbacks_.addEventListener(
             'playerconnect', PlayerManager.prototype.onPlayerConnect.bind(this));
         this.callbacks_.addEventListener(
+            'playerspawn', PlayerManager.prototype.onPlayerSpawn.bind(this));
+        this.callbacks_.addEventListener(
             'playerstatechange', PlayerManager.prototype.onPlayerStateChange.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', PlayerManager.prototype.onPlayerDisconnect.bind(this));
@@ -240,6 +242,16 @@ class PlayerManager {
         }
 
         player.onObjectSelected(object);
+    }
+
+    // Called when a player spawns into the world, either because they've just connected, died or
+    // were killed by another player.
+    onPlayerSpawn(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // invalid |event| as the player does not exist
+        
+        this.notifyObservers('onPlayerSpawn', player);
     }
 
     // Called when a player's state changes. Handles players entering and leaving vehicles, and

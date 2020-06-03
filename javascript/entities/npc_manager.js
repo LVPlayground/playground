@@ -69,6 +69,19 @@ class NpcManager {
         npc.didConnect(player);
     }
 
+    // Called when the |player| has spawned. If they're a non-player character, their event handler
+    // might want to know about it to handle the spawn.
+    onPlayerSpawn(player) {
+        if (!player.isNonPlayerCharacter())
+            return;  // |player| is not a non-player character
+        
+        const npc = this.npcs_.get(player.name);
+        if (!npc || npc.player !== player || !npc.events)
+            return;  // |player| is not an owned NPC, or it doesn't have events.
+        
+        npc.events.onNpcSpawn(npc);
+    }
+
     // Called when the |player| has changed their name. Because we key NPCs by their name, it's
     // important to synchronize in case the |player| is an NPC.
     onPlayerNameChange(player) {

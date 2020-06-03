@@ -62,6 +62,9 @@ class Npc {
     // Gets the Pawn script that this NPC is due to run.
     get pawnScript() { return this.pawnScript_; }
 
+    // Gets the object that wants to receive events about this NPC.
+    get events() { return this.events_; }
+
     // Returns whether the NPC is still in progress of being connected.
     isConnecting() { return this.state_ === Npc.kStateConnecting; }
 
@@ -146,6 +149,7 @@ class Npc {
             throw new Error('Only fully disconnected NPCs may be disposed of.');
 
         this.manager_.didDisposeNpc(this);
+        this.events_ = null;
     }
 }
 

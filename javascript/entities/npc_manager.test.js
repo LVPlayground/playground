@@ -165,4 +165,37 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
 
         // The test not timing out certifies that the map in NpcManager was updated.
     });
+
+    it('should deliver a series of events to NPCs', async (assert) => {
+        const events = [];
+
+        const npc = npcManager.createNpc({
+            name: 'Joe',
+            pawnScript: 'joe',
+            events: new class {
+                onNpcConnected(npc) { events.push('onNpcConnected'); }
+                onNpcSpawn(npc) { events.push('onNpcSpawn'); }
+                onNpcDisconnected(npc) { events.push('onNpcDisconnected'); }
+            }
+        });
+
+        assert.equal(events.length, 0);
+
+        await npc.ready;
+
+        assert.equal(events.length, 1);
+        assert.includes(events, 'onNpcConnected');
+
+        dispatchEvent('playerspawn', { playerid: npc.player.id });
+
+        assert.equal(events.length, 2);
+        assert.includes(events, 'onNpcSpawn');
+
+        npc.disconnect();
+
+        await npc.disconnected;
+
+        assert.equal(events.length, 3);
+        assert.includes(events, 'onNpcDisconnected');
+    });
 });

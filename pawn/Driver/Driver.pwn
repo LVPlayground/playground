@@ -222,11 +222,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
         // Vehicle keys (5): jump
         if (HOLDING(VEHICLE_KEYS_BINDING_JUMP) && (vehicleKeys & VEHICLE_KEYS_JUMP)) {
-            new const Float: vehicleJump = 0.3;
-            new Float: velocity[3];
+            new Float: position[3];
 
-            GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
-            SetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2] + vehicleJump);
+            GetVehiclePos(vehicleId, position[0], position[1], position[2]);
+
+            // Only allow vehicle jumping outside of the City of Las Venturas, to not disturb DMers.
+            if (position[0] < 869.461 || position[0] >= 2997.06 ||
+                    position[1] < 596.349 || position[1] >= 2993.87) {
+                new const Float: vehicleJump = 0.3;
+                new Float: velocity[3];
+
+                GetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2]);
+                SetVehicleVelocity(vehicleId, velocity[0], velocity[1], velocity[2] + vehicleJump);
+            }
         }
 
         // Vehicle keys (6): nitro

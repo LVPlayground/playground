@@ -2,6 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Vector } from 'base/vector.js';
+
+import { random } from 'base/random.js';
+
 // How many seconds should we wait before reconnecting a non-player character?
 export const kReconnectionDelaySec = 30;
 
@@ -14,6 +18,7 @@ export class DecorationNpc {
     entities_ = null;
     npc_ = null;
     token_ = null;
+    vehicle_ = null;
 
     constructor(information) {
         this.information_ = information;
@@ -35,9 +40,23 @@ export class DecorationNpc {
         this.token_ = Symbol('unique NPC token');
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Called when the |npc| has connected to the server.
     onNpcConnected(npc) {
-        // TODO: Create entities associated with the NPC, e.g. a vehicle to drive around in.
+        if (!this.entities_)
+            return;  // |this| NPC has been disabled, so is no longer needed
+
+        this.vehicle_ = this.createVehicle();
+    }
+
+    // Called when the |npc| spawns in the world. We'll want them to move to the right Virtual
+    // World and put them in a vehicle - if any.
+    onNpcSpawn(npc) {
+        npc.player.virtualWorld = 0;
+
+        if (this.vehicle_)
+            npc.player.enterVehicle(this.vehicle_);
     }
 
     // Called when the |npc| has disconnected from the server. If we're still enabled, then a new
@@ -66,10 +85,39 @@ export class DecorationNpc {
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Creates a vehicle for the NPC to drive in, based on the configuration. If the configuration
+    // is missing or invalid, NULL will be returned instead.
+    createVehicle() {
+        if (!this.information_.hasOwnProperty('appearance'))
+            return null;  // no appearance has been defined
+        
+        if (!this.information_.appearance.hasOwnProperty('vehicle'))
+            return null;  // no vehicle appearance has been defined
+
+        const settings = this.information_.appearance.vehicle;
+
+        if (!settings.hasOwnProperty('modelId') || typeof settings.modelId !== 'number')
+            throw new Error(`Invalid vehicle model given for NPC ${this.information_.name}.`);
+        
+        return this.entities_.createVehicle({
+            modelId: settings.modelId,
+            position: new Vector(...this.information_.position),
+            rotation: this.information_.rotation,
+            primaryColor: settings.primaryColor ?? random(124),
+            secondaryColor: settings.secondaryColor ?? random(124),
+            numberPlate: this.information_.name,
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Disables the NPC. The created entities will be deleted automatically hereafter, but there
     // might be additional state that has to be cleaned up.
     disable() {
         this.entities_ = null;
         this.npc_ = null;
+        this.vehicle_ = null;
     }
 }

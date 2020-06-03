@@ -64,4 +64,33 @@ describe('DecorationNpc', it => {
         assert.equal(server.npcManager.count, 0);
         assert.isNull(decoration.npc_);
     });
+
+    it('is able to make vehicles for the NPCs', async (assert) => {
+        const entities = new ScopedEntities();
+        const decoration = new DecorationNpc({
+            name: 'GuntherBot',
+            script: 'gunther',
+            position: [ 0, 0, 0 ],
+            rotation: 0,
+            appearance: {
+                vehicle: {
+                    modelId: 411,
+                }
+            }
+        });
+
+        decoration.enable(entities);
+
+        const npc = decoration.npc_;
+        await npc.ready;
+
+        assert.isNull(npc.player.vehicle);
+
+        dispatchEvent('playerspawn', {
+            playerid: npc.player.id,
+        })
+
+        assert.isNotNull(npc.player.vehicle);
+        assert.equal(npc.player.vehicle.modelId, 411);
+    });
 });

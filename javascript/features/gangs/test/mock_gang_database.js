@@ -89,7 +89,7 @@ class MockGangDatabase {
                     role: Gang.ROLE_LEADER,
                     userId: 42,
                     username: 'Gunther',
-                    lastSeen: new Date()
+                    lastSeen: new Date(Date.now() - 250)
                 },
                 {
                     role: Gang.ROLE_MEMBER,

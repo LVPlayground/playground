@@ -56,6 +56,7 @@ class Npc {
 
     // Gets the nickname assigned to this NPC.
     get name() { return this.name_; }
+    set name(value) { this.name_ = value; }
 
     // Gets the Pawn script that this NPC is due to run.
     get pawnScript() { return this.pawnScript_; }

@@ -140,4 +140,29 @@ describe('NpcManager', (it, beforeEach, afterEach) => {
 
         assert.equal(npcManager.count, 0);
     });
+
+    it('should deal with name changes for NPCs', async (assert) => {
+        const npc = npcManager.createNpc({ name: 'Joe', pawnScript: 'joe' });
+
+        assert.equal(npcManager.count, 1);
+        assert.isNull(npc.player);
+
+        await npc.ready;
+
+        assert.isNotNull(npc.player);
+        assert.equal(npc.name, npc.player.name);
+        assert.equal(npc.name, 'Joe');
+
+        npc.player.name = '[BB]Joe';
+
+        assert.notEqual(npc.name, npc.player.name);
+        assert.equal(npc.name, 'Joe');
+
+        playerManager.onPlayerNameChange(npc.player);
+
+        assert.equal(npc.name, npc.player.name);
+        assert.equal(npc.name, '[BB]Joe');
+
+        // The test not timing out certifies that the map in NpcManager was updated.
+    });
 });

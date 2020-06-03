@@ -69,6 +69,24 @@ class NpcManager {
         npc.didConnect(player);
     }
 
+    // Called when the |player| has changed their name. Because we key NPCs by their name, it's
+    // important to synchronize in case the |player| is an NPC.
+    onPlayerNameChange(player) {
+        if (!player.isNonPlayerCharacter())
+            return;  // the |player| is not an NPC
+
+        for (const npc of this.npcs_.values()) {
+            if (npc.player !== player)
+                continue;  // this |npc| describes another player
+
+            this.npcs_.delete(npc.name);
+            npc.name = player.name;
+
+            this.npcs_.set(npc.name, npc);
+            break;
+        }
+    }
+
     // Called when the |player| has disconnected from the server. This might be an NPC, in which
     // case we have to update their connectivity state.
     onPlayerDisconnect(player) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import Color from 'base/color.js';
 import { Vector } from 'base/vector.js';
 
 import { random } from 'base/random.js';
@@ -16,12 +17,24 @@ export class DecorationNpc {
     information_ = null;
 
     entities_ = null;
+    labelInfo_ = null;
+    label_ = null;
     npc_ = null;
+    skin_ = null;
     token_ = null;
     vehicle_ = null;
 
     constructor(information) {
         this.information_ = information;
+
+        if (information.hasOwnProperty('appearance')) {
+            if (information.appearance.hasOwnProperty('label')) {
+                this.labelInfo_ = {
+                    color: Color.fromHex(information.appearance.label.color ?? 'FFFFFF'),
+                    text: information.appearance.label.text ?? 'Hello!',
+                };
+            }
+        }
     }
 
     // Enables the NPC, creating entities off the |entities| set. This creates the NPC itself, keeps
@@ -47,6 +60,7 @@ export class DecorationNpc {
         if (!this.entities_)
             return;  // |this| NPC has been disabled, so is no longer needed
 
+        this.skin_ = this.information_.skin ?? 211 /* female clothing store staff */;
         this.vehicle_ = this.createVehicle();
     }
 
@@ -54,6 +68,16 @@ export class DecorationNpc {
     // World and put them in a vehicle - if any.
     onNpcSpawn(npc) {
         npc.player.virtualWorld = 0;
+
+        if (this.labelInfo_) {
+            if (this.label_)
+                this.label_.dispose();
+            
+            this.label_ = this.createLabel(npc.player);
+        }
+
+        if (this.skin_)
+            npc.player.skin = this.skin_;
 
         if (this.vehicle_)
             npc.player.enterVehicle(this.vehicle_);
@@ -66,6 +90,11 @@ export class DecorationNpc {
             return;  // |this| NPC has been disabled, so is no longer needed
         
         const token = this.token_;
+
+        if (this.label_) {
+            this.label_.dispose();
+            this.label_ = null;
+        }
 
         if (this.vehicle_) {
             this.vehicle_.dispose();
@@ -91,6 +120,21 @@ export class DecorationNpc {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Creates the text label for this NPC and attaches it to the |player|. This will be done each
+    // time the NPC spawns, with a fresh new label.
+    createLabel(player) {
+        return this.entities_.createTextLabel({
+            text: this.labelInfo_.text,
+            color: this.labelInfo_.color,
+            testLineOfSight: true,
+            drawDistance: 100,
+
+            // Attach the label to either the NPC or, preferably their vehicle, if there is one.
+            attachedPlayer: this.vehicle_ ? null : player,
+            attachedVehicle: this.vehicle_ ? this.vehicle_ : null,
+        });
+    }
 
     // Creates a vehicle for the NPC to drive in, based on the configuration. If the configuration
     // is missing or invalid, NULL will be returned instead.
@@ -122,6 +166,7 @@ export class DecorationNpc {
     // might be additional state that has to be cleaned up.
     disable() {
         this.entities_ = null;
+        this.label_ = null;
         this.npc_ = null;
         this.vehicle_ = null;
     }

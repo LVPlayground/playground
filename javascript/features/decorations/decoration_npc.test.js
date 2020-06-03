@@ -73,11 +73,16 @@ describe('DecorationNpc', it => {
             position: [ 0, 0, 0 ],
             rotation: 0,
             appearance: {
+                label: {
+                    text: 'I am flying!!`1',
+                },
                 vehicle: {
                     modelId: 411,
                 }
             }
         });
+
+        assert.equal(server.textLabelManager.count, 0);
 
         decoration.enable(entities);
 
@@ -92,5 +97,8 @@ describe('DecorationNpc', it => {
 
         assert.isNotNull(npc.player.vehicle);
         assert.equal(npc.player.vehicle.modelId, 411);
+        assert.equal(npc.player.skin, 211);
+
+        assert.equal(server.textLabelManager.count, 1);
     });
 });

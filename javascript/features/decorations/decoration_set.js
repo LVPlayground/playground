@@ -35,10 +35,10 @@ export class DecorationSet {
                 throw new Error('Each NPC must have its powering Pawn script defined.');
             
             if (!npc.hasOwnProperty('position') || !Array.isArray(npc.position))
-                throw new Error('Each NPC must have a spawning position set.');
+                npc.position = [ 0, 0, 0 ];
             
             if (!npc.hasOwnProperty('rotation') || typeof npc.rotation !== 'number')
-                throw new Error('Each NPC must have a spawning rotation set.');
+                npc.rotation = 0;
 
             this.npcs_.add(new DecorationNpc(npc));
         }

@@ -15,7 +15,8 @@ export default class TextLabelManager {
     // Creates a new text label with the given options.
     createTextLabel({ text, color = Color.WHITE, position, interiors = null, interiorId = -1,
                       virtualWorlds = null, virtualWorld = -1, players = null, playerId = -1,
-                      testLineOfSight = false, drawDistance = 150 } = {}) {
+                      testLineOfSight = false, drawDistance = 150,
+                      attachedPlayer = null, attachedVehicle = null } = {}) {
         const textLabel = new this.textLabelConstructor_(this);
         
         // Initializes the |textLabel| with all the configuration passed to the manager.
@@ -24,8 +25,8 @@ export default class TextLabelManager {
             color,
             position,
 
-            attachedPlayerId: Player.kInvalidId,
-            attachedVehicleId: Vehicle.kInvalidId,
+            attachedPlayerId: attachedPlayer ? attachedPlayer.id : Player.kInvalidId,
+            attachedVehicleId: attachedVehicle ? attachedVehicle.id : Vehicle.kInvalidId,
 
             testLineOfSight,
 

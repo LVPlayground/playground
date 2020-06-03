@@ -22,7 +22,7 @@ class ReleaseSettings {
     public const CreatePlanePilots = 0;
 
     // Should Gunther, our ship hero, be created to watch bad players? He's an employed NPC.
-    public const CreateGunther = 1;
+    public const CreateGunther = 0;
 
     // Should the GTA Merchant system be enabled, which uses a single NPC?
     public const CreateMerchant = 1;

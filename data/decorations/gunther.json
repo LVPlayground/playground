@@ -1,0 +1,16 @@
+{
+    "npcs": [
+        {
+            "name": "Gunther",
+            "script": "lvpship",
+            "skin": 217,
+
+            "appearance": {
+                "label": {
+                    "color": "DC143C",
+                    "text": "THE SHIP IS A PEACEZONE!\nShooting is not allowed here."
+                }
+            }
+        }
+    ]
+}

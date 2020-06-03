@@ -7,6 +7,8 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 import { CubicBezier } from 'base/cubic_bezier.js';
 import Menu from 'components/menu/menu.js';
 
+import { kAchievements } from 'features/collectables/achievements.js';
+
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
@@ -54,10 +56,24 @@ export class CollectableCommands {
     // Displays the achievements achieved by either the player executing this command, or by any
     // other player online on the server. Distinguishes between the current collection round and
     // all achievements earned ever.
-    onAchievementsCommand(currentPlayer, targetPlayer) {
+    async onAchievementsCommand(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
+        const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
 
+        const dialog = new Menu('Achievements', [
+            'Name',
+            'Description',
 
+        ], { pageSize: 25 });
+
+        for (const [ achievement, { name, text } ] of kAchievements) {
+            const achieved = achievements.hasAchievement(player, achievement, /* round= */ false);
+            const colour = achieved ? '{FFFF00}' : '{CCCCCC}';
+
+            dialog.addItem(colour + name, colour + text);
+        }
+
+        await dialog.displayForPlayer(currentPlayer);
     }
 
     // ---------------------------------------------------------------------------------------------

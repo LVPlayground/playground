@@ -44,6 +44,21 @@ describe('CollectableCommands', (it, beforeEach) => {
         });
     });
 
+    it('should be able to display the achievements of a player', async (assert) => {
+        // (1) Executing the /achievements command.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/achievements'));
+        const directResult = gunther.getLastDialogAsTable();
+
+        // (2) Getting there through the /collectables command.
+        gunther.respondToDialog({ listitem: 0 /* Achievements */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+        
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.deepEqual(gunther.getLastDialogAsTable(), directResult);
+    });
+
     it('should enable players to read the instructions for a series', async (assert) => {
         gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Instructions */ })).then(

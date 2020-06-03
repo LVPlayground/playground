@@ -51,6 +51,9 @@ export default [
     new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
     new Setting('decorations', 'san_ferro_road_works', Setting.TYPE_BOOLEAN, false, 'Enable road works near the San Fierro bridge?'),
     new Setting('decorations', 'vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
+    new Setting('decorations', 'dft_400', Setting.TYPE_BOOLEAN, true, 'Should the DFT be a party car?'),
+    new Setting('decorations', 'horny_infernus', Setting.TYPE_BOOLEAN, true, 'The infernus will become horny!'),
+    new Setting('decorations', 'dildo_sultan', Setting.TYPE_BOOLEAN, true, 'Sultans will be weaponized with a dildo.'),
 
     /** Financial related settings */
     new Setting('financial', 'community_contribution_cycle_sec', Setting.TYPE_NUMBER, 300, 'How often should contributions be collected (seconds)?'),

@@ -6,6 +6,7 @@ import Feature from 'components/feature_manager/feature.js';
 import VehicleCommands from 'features/vehicles/vehicle_commands.js';
 import VehicleManager from 'features/vehicles/vehicle_manager.js';
 import VehicleNatives from 'features/vehicles/vehicle_natives.js';
+import { VehicleDecorations } from 'features/vehicles/vehicle_decorations.js';
 
 // The Vehicles feature is responsible for the features one might find around San Andreas. It allows
 // all players to create vehicles on demand, administrators to store and modify them persistently.
@@ -29,6 +30,9 @@ class Vehicles extends Feature {
         // Used to create and destroy the vehicles available on Las Venturas Playground.
         const streamer = this.defineDependency('streamer');
 
+        // Used for decorations
+        const settings = this.defineDependency('settings');
+
         this.manager_ = new VehicleManager(streamer);
         this.manager_.loadVehicles();
 
@@ -36,6 +40,8 @@ class Vehicles extends Feature {
 
         this.commands_ = new VehicleCommands(
             this.manager_, abuse, announce, collectables, playground);
+
+        this.decorations_ = new VehicleDecorations(settings, announce);
     }
 
     dispose() {
@@ -47,6 +53,9 @@ class Vehicles extends Feature {
 
         this.manager_.dispose();
         this.manager_ = null;
+        
+        this.decorations_.dispose();
+        this.decorations_ = null;
     }
 }
 

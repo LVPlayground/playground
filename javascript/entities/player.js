@@ -348,6 +348,14 @@ export class Player extends Supplementable {
         pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, escapedMessage);
     }
 
+    gameText(message, time, style) {
+        if(time === undefined || time === null || time <= 0) {
+            return;
+        }
+
+        pawnInvoke('GameTextForPlayer', 'isii', this.id, message, time, style);
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Audio
     // ---------------------------------------------------------------------------------------------

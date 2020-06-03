@@ -1,0 +1,7 @@
+{
+    "modelId": 560,
+    "enterMessage": "Go ram it into somebody!",
+    "objects": [
+        {"modelId": 19086, "position": [ 0, 2.3, 0.1 ], "rotation": [ 0, 0, 90 ]}
+    ]
+}

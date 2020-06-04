@@ -4,15 +4,26 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
+import { kMessagePrefixes } from 'base/message.js';
+
 // Implementation of a series of commands meant for communication between the IRC server and in-game
 // players. This ranges from regular messaging that's available for everyone, to specific messages
 // intended for specific players or levels.
 export class NuwaniCommands {
     commandManager_ = null;
 
-    constructor(commandManager, announce, nuwani) {
+    announce_ = null;
+    communication_ = null;
+    nuwani_ = null;
+
+    // Map of |nickname| => |NuwaniPlayer| instance for message filtering purposes.
+    nuwaniPlayerContext_ = new Map();
+    nuwaniPlayers_ = new Map();
+
+    constructor(commandManager, announce, communication, nuwani) {
         this.commandManager_ = commandManager;
         this.announce_ = announce;
+        this.communication_ = communication;
         this.nuwani_ = nuwani;
 
         // !admin [message]
@@ -59,7 +70,46 @@ export class NuwaniCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onVipMessageCommand.bind(this));
     }
+
+    // ---------------------------------------------------------------------------------------------
     
+    // Utility function to filter messages prior to sending them out to people on the server. These
+    // routines were designed and are optimised for in-game players, so we pretend to be one.
+    processForDistribution(context, message) {
+        const contextMap = this.nuwaniPlayerContext_;
+        const nickname = context.nickname;
+
+        // Ensure that a fake NuwaniPlayer exists for the given |nickname|, which enables us to
+        // communicate with them in the same way we'd normally communicate with players.
+        if (!this.nuwaniPlayers_.has(nickname)) {
+            this.nuwaniPlayers_.set(nickname, new class {
+                account = { mutedUntil: null };
+
+                sendMessage(message) {
+                    contextMap.get(nickname).respond(
+                        String(message).replace(kMessagePrefixes.error, '4Error: '));
+                }
+            });
+        }
+
+        // Store the |context| so that it can be properly applied in sharing errors, process the
+        // message, and then clear the context again so that we're not holding on to it.
+        let processedMessage = null;
+        {
+            this.nuwaniPlayerContext_.set(nickname, context);
+
+            processedMessage =
+                this.communication_().processForDistribution(
+                    this.nuwaniPlayers_.get(nickname), message);
+                
+            this.nuwaniPlayerContext_.delete(nickname);
+        }
+
+        return processedMessage;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // !admin [message]
     //
     // Sends a message to the in-game administrator chat, reaching all in-game crew.
@@ -77,15 +127,19 @@ export class NuwaniCommands {
                 throw new Error('Unexpected level to label: ' + context.level);
         }
 
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
         const formattedMessage =
-            Message.format(Message.IRC_ADMIN_MESSAGE, prefix, context.nickname, message);
+            Message.format(Message.IRC_ADMIN_MESSAGE, prefix, context.nickname, processedMessage);
         
         server.playerManager.forEach(player => {
             if (player.isAdministrator())
                 player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('chat-admin-irc', context.nickname, message);
+        this.nuwani_().echo('chat-admin-irc', context.nickname, processedMessage);
     }
 
     // !announce [message]
@@ -93,9 +147,13 @@ export class NuwaniCommands {
     // Sends a formal announcement to all in-game players. Command is restricted to administrators.
     // No players will be excluded, regardless of activity.
     onAnnounceCommand(context, message) {
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
         const formattedMessages = [
             Message.IRC_ANNOUNCE_DIVIDER,
-            Message.format(Message.IRC_ANNOUNCE_MESSAGE, message),
+            Message.format(Message.IRC_ANNOUNCE_MESSAGE, processedMessage),
             Message.IRC_ANNOUNCE_DIVIDER,
         ];
 
@@ -105,7 +163,7 @@ export class NuwaniCommands {
         });
 
         this.announce_().announceToAdministrators(Message.IRC_ANNOUNCE_ADMIN, context.nickname);
-        this.nuwani_().echo('notice-announce', message);
+        this.nuwani_().echo('notice-announce', processedMessage);
 
         context.respond('3Success: The announcement has been published.');
     }
@@ -137,14 +195,19 @@ export class NuwaniCommands {
         if (!context.inEchoChannel())
             return;  // only available in the echo channel
 
-        const formattedMessage = Message.format(Message.IRC_MESSAGE, context.nickname, message);
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
+        const formattedMessage =
+            Message.format(Message.IRC_MESSAGE, context.nickname, processedMessage);
 
         server.playerManager.forEach(player => {
             if (VirtualWorld.isMainWorld(player.virtualWorld))
                 player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('chat-from-irc', context.nickname, message);
+        this.nuwani_().echo('chat-from-irc', context.nickname, processedMessage);
     }
 
     // !pm [player] [message]
@@ -152,12 +215,17 @@ export class NuwaniCommands {
     // Sends a private message that only the |player| and in-game crew can read. May be sent from
     // any channel, as the contents don't necessarily have to be public.
     onPrivageMessageCommand(context, player, message) {
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
         player.sendMessage(
-            Message.format(Message.COMMUNICATION_PM_IRC_RECEIVER, context.nickname, message));
+            Message.format(
+                Message.COMMUNICATION_PM_IRC_RECEIVER, context.nickname, processedMessage));
         
         const adminAnnouncement =
             Message.format(Message.COMMUNICATION_IRC_PM_ADMIN, context.nickname, player.name,
-                           player.id, message);
+                           player.id, processedMessage);
 
         server.playerManager.forEach(player => {
             if (player.isAdministrator())
@@ -165,7 +233,7 @@ export class NuwaniCommands {
         });
         
         this.nuwani_().echo(
-            'chat-private-irc', context.nickname, player.name, player.id, message);
+            'chat-private-irc', context.nickname, player.name, player.id, processedMessage);
         
         context.respond(`3Success: Your message has been sent to ${player.name}`);
         dispatchEvent('ircmessage', {
@@ -178,11 +246,17 @@ export class NuwaniCommands {
     //
     // Sends a highlighted message to all in-game players. Command is restricted to administrators.
     onSayCommand(context, message) {
-        const formattedMessage = Message.format(Message.IRC_SAY_MESSAGE, context.nickname, message);
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
+        const formattedMessage =
+            Message.format(Message.IRC_SAY_MESSAGE, context.nickname, processedMessage);
+
         server.playerManager.forEach(player =>
             player.sendMessage(formattedMessage));
 
-        this.nuwani_().echo('notice-say', context.nickname, message);
+        this.nuwani_().echo('notice-say', context.nickname, processedMessage);
 
         context.respond('3Success: The message has been published.');
     }
@@ -195,15 +269,22 @@ export class NuwaniCommands {
         if (!context.inEchoChannel())
             return;  // only available in the echo channel
 
-        const formattedMessage = Message.format(Message.IRC_VIP_MESSAGE, context.nickname, message);
+        const processedMessage = this.processForDistribution(context, message);
+        if (!processedMessage)
+            return;
+
+        const formattedMessage =
+            Message.format(Message.IRC_VIP_MESSAGE, context.nickname, processedMessage);
 
         server.playerManager.forEach(player => {
             if (player.isVip())
                 player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('chat-vip-irc', context.nickname, message);
+        this.nuwani_().echo('chat-vip-irc', context.nickname, processedMessage);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.commandManager_.removeCommand('vip');

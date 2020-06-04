@@ -112,7 +112,8 @@ export default class CommunicationCommands extends Feature {
     // Initializes the IRC commands that are related to communication.
     initializeIrcCommands() {
         const commandManager = this.nuwani_().commandManager;
-        this.nuwaniCommands_ = new NuwaniCommands(commandManager, this.announce_, this.nuwani_);
+        this.nuwaniCommands_ =
+            new NuwaniCommands(commandManager, this.announce_, this.communication_, this.nuwani_);
     }
 
     // The Gunther cycle will spin for the lifetime of this object, displaying a `/show` message at

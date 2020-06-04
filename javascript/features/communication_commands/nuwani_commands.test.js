@@ -244,4 +244,37 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.equal(nuwani.messagesForTesting[0].tag, 'chat-vip-irc');
     });
+
+    it('has the ability to integrate with communication message filtering', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'v');
+
+        // (1) Integration with the spam filter.
+        let spamming = false;
+
+        for (let i = 0; i < 5; ++i) {
+            const result = await issueCommand(bot, commandManager, {
+                source: kCommandSource,
+                command: '!vip I wish this amazing feature was available',
+            });
+
+            if (!result.length)
+                continue;
+
+            assert.includes(result[0], 'blocked by our spam filter');
+
+            spamming = true;
+            break;
+        }
+
+        assert.isTrue(spamming);
+
+        // (2) Integration with the message filter.
+        const result = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!vip You should /quit!',
+        });
+
+        assert.equal(result.length, 1);
+        assert.includes(result[0], 'includes a forbidden word');
+    });
 });

@@ -9,7 +9,7 @@ const kMessageDataFile = 'data/messages.json';
 
 // Known message prefixes. These are substitutions for the most common contents of messages, for
 // example usage information or errors. In the message syntax, they are prepended by an at-sign.
-const MESSAGE_PREFIXES = {
+export const kMessagePrefixes = {
     error: '{DC143C}Error{FFFFFF}: ',
     info: '',  // TODO: Do we need a particular prefix?
     success: '{33AA33}Success{FFFFFF}: ',
@@ -107,10 +107,10 @@ class Message {
             return message;
 
         return message.replace(/^@([^\s]+)\s*/, (_, prefixName) => {
-            if (!MESSAGE_PREFIXES.hasOwnProperty(prefixName))
+            if (!kMessagePrefixes.hasOwnProperty(prefixName))
                 throw new Error('The message named "' + identifier + '" uses an invalid prefix: @' + prefixName);
 
-            return MESSAGE_PREFIXES[prefixName];
+            return kMessagePrefixes[prefixName];
         });
     }
 

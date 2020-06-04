@@ -215,6 +215,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to change their password', async (assert) => {
+        settings.setValue('account/password_admin_joke', false);
+
         assert.isTrue(database.canUpdatePasswords());
         
         await gunther.identify({ userId: 42 });

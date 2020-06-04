@@ -11,6 +11,7 @@ import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { formatDate } from 'base/time.js';
 import { format } from 'base/string_formatter.js';
+import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.
 const kRegistrationFile = 'data/commands/register.json';
@@ -289,8 +290,35 @@ export class AccountCommands {
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+        if (this.settings_().getValue('account/password_admin_joke')) {
+            let fakePassword = null;
+            switch (random(4)) {
+                case 0:
+                    fakePassword = player.name.toLowerCase().replace(/[^a-zA-Z]/g, '');
+                    for (const [ before, after ] of [ ['a', 4], ['e', 3], ['i', 1], ['o', 0] ])
+                        fakePassword = fakePassword.replaceAll(before, after);
+
+                    break;
+                case 1:
+                    fakePassword =
+                        player.name.toLowerCase().replace(/[^a-zA-Z]/g, '') +
+                            (random(1000, 9999).toString());
+                    break;
+                case 2:
+                    fakePassword = '1' + player.name.toLowerCase().replace(/[^a-zA-Z]/g, '') + '1';
+                    break;
+                case 3:
+                    fakePassword = ['deagle', 'sawnoff', 'gtasa', 'lvpsux', 'password'][random(5)];
+                    fakePassword += random(100, 999).toString();
+                    break;
+            }
+
+            this.announce_().announceToAdministrators(
+                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED2, player.name, player.id, fakePassword);
+        } else {
+            this.announce_().announceToAdministrators(
+                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+        }
 
         return alert(player, {
             title: 'Account management',

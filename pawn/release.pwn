@@ -18,12 +18,6 @@ class ReleaseSettings {
     // Should the Train Driver service be started, which employs three NPCs?
     public const CreateTrainDrivers = 1;
 
-    // Should the Plane Pilot service be started, which employs three NPCs?
-    public const CreatePlanePilots = 0;
-
-    // Should Gunther, our ship hero, be created to watch bad players? He's an employed NPC.
-    public const CreateGunther = 0;
-
     // Should the GTA Merchant system be enabled, which uses a single NPC?
     public const CreateMerchant = 1;
 
@@ -34,12 +28,6 @@ class ReleaseSettings {
 
     // Should the Train Driver service be started, which employs three NPCs?
     public const CreateTrainDrivers = 0;
-
-    // Should the Plane Pilot service be started, which employs three NPCs?
-    public const CreatePlanePilots = 0;
-
-    // Should Gunther, our ship hero, be created to watch bad players? He's an employed NPC.
-    public const CreateGunther = 1;
 
     // Should the GTA Merchant system be enabled, which uses a single NPC?
     public const CreateMerchant = 0;

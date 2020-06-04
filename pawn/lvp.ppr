@@ -132,8 +132,6 @@
     <DiskObject>\Features\Environment.pwn</DiskObject>
     <DiskObject>\Features\Environment\</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
-    <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Services\PlanePilot.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\ServiceController.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\ServiceSettings.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\TrainController.pwn</DiskObject>

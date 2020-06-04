@@ -405,13 +405,8 @@ public OnPlayerRequestClass(playerid, classid) {
         return 0;
 
     Player(playerid)->verifyNonPlayerCharacter();
-    if (Player(playerid)->isNonPlayerCharacter()) {
-        new npcId = NPCManager->idForPlayer(playerid);
-        if (npcId != Player::InvalidId)
-            return _: NonPlayerCharacter(npcId)->onNonPlayerCharacterRequestClass();
-
+    if (Player(playerid)->isNonPlayerCharacter())
         return 1;
-    }
 
     return _: SpawnManager(playerid)->onRequestClass(classid);
 }
@@ -427,13 +422,8 @@ public OnPlayerRequestSpawn(playerid) {
     if (Player(playerid)->isConnected() == false)
         return 0;
 
-    if (Player(playerid)->isNonPlayerCharacter()) {
-        new npcId = NPCManager->idForPlayer(playerid);
-        if (npcId != Player::InvalidId)
-            return _: NonPlayerCharacter(npcId)->onNonPlayerCharacterRequestSpawn();
-
+    if (Player(playerid)->isNonPlayerCharacter())
         return 1;
-    }
 
     return _: SpawnManager(playerid)->onRequestSpawn();
 }

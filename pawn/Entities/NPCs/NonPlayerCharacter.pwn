@@ -72,28 +72,6 @@ class NonPlayerCharacter <npcId (MaximumNonPlayerCharacterCount)> {
     }
 
     /**
-     * Invoked when this non-player character requests a certain class. In most cases we'll just
-     * want to return 1 here, but in case there are NPCs with special requirements we can override
-     * that by invoking the OnNpcRequestClass switch list.
-     *
-     * @return integer Is the NPC able to spawn with this class, or should it be blocked?
-     */
-    public bool: onNonPlayerCharacterRequestClass() {
-        return Annotation::ExpandSwitch<OnNpcRequestClass>(m_featureId, m_featureReference, m_playerId) != 0;
-    }
-
-    /**
-     * Invoked when this non-player character is requesting to spawn in Las Venturas Playground. We
-     * may have to set up additional settings about the bot here, which is why we'll broadcast the
-     * OnNpcRequestSpawn switch list. Otherwise we'll simply allow it.
-     *
-     * @return integer Can the NPC be spawned into the world, or should it be blocked?
-     */
-    public bool: onNonPlayerCharacterRequestSpawn() {
-        return Annotation::ExpandSwitch<OnNpcRequestSpawn>(m_featureId, m_featureReference, m_playerId) != 0;
-    }
-
-    /**
      * Invoked when this non-player character is about to be spawned in the world. The normal code
      * for setting up their position won't be called, so it's important to initialize them as part
      * of this method. It will broadcast the OnNpcSpawn() switch list.
@@ -138,9 +116,6 @@ class NonPlayerCharacter <npcId (MaximumNonPlayerCharacterCount)> {
      * that the NPC will be seen as being available and won't be owned by and feature in LVP.
      */
     public announceFailedConnectionAndReset() {
-        // Announce that the non player character has been failed to connect to the server.
-        Annotation::ExpandSwitch<OnNpcConnectFailed>(m_featureId, m_featureReference, m_playerId);
-
         m_status = AvailableNpcStatus;
         m_featureId = InvalidFeatureId;
     }
@@ -197,23 +172,8 @@ class NonPlayerCharacter <npcId (MaximumNonPlayerCharacterCount)> {
 
 // Temporary class to implement the callbacks until they have enough users.
 class TemporaryNpcCallbacks {
-    @switch(OnNpcRequestClass, -1)
-    public onNpcRequestClass(referenceId, playerId) {
-        #pragma unused referenceId, playerId
-    }
-
-    @switch(OnNpcRequestSpawn, -1)
-    public onNpcRequestSpawn(referenceId, playerId) {
-        #pragma unused referenceId, playerId
-    }
-
     @switch(OnNpcConnect, -1)
     public onNpcConnect(referenceId, playerId) {
-        #pragma unused referenceId, playerId
-    }
-
-    @switch(OnNpcConnectFailed, -1)
-    public onNpcConnectFailed(referenceId, playerId) {
         #pragma unused referenceId, playerId
     }
 

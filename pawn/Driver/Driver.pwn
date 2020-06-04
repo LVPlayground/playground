@@ -374,6 +374,10 @@ public OnPlayerDeath(playerid, killerid, reason) {
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
 #if Feature::EnableServerSideWeaponConfig == 0
     DetectAbuseOnWeaponShot(playerid, hittype, hitid);
+
+    if (PlayerSyncedData(playerid)->skipDamage())
+        return 0;
+
 #endif
     return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }

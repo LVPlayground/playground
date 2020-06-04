@@ -11,6 +11,7 @@ enum PlayerSyncedDataProperty {
     ISOLATED = 1,
     MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
+    SKIP_DAMAGE = 5,
     VEHICLE_KEYS = 4,
 };
 
@@ -25,6 +26,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     new bool: m_isolated;
     new m_minigameName[32];
     new m_preferredRadioChannel[64];
+    new bool: m_skipDamage;
     new m_vehicleKeys;
 
     public reset() {
@@ -32,6 +34,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
         m_isolated = false;
         m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
+        m_skipDamage = false;
         m_vehicleKeys = 0;
     }
 
@@ -83,6 +86,12 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
     // ---------------------------------------------------------------------------------------------
 
+    public inline bool: skipDamage() {
+        return m_skipDamage;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     public sync(PlayerSyncedDataProperty: property) {
         switch (property) {
             // Integral properties.
@@ -111,6 +120,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
             case PREFERRED_RADIO_CHANNEL:
                 format(m_preferredRadioChannel, sizeof(m_preferredRadioChannel), "%s", stringValue);
+
+            case SKIP_DAMAGE:
+                m_skipDamage = !!intValue;
 
             case VEHICLE_KEYS: {
                 m_vehicleKeys = intValue;

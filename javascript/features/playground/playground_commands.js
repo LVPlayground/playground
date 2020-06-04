@@ -80,6 +80,7 @@ class PlaygroundCommands {
             'features/playground/commands/player_settings.js',
             'features/playground/commands/isolate.js',
             'features/playground/commands/rampcar.js',
+            'features/playground/commands/skipdamage.js',
             'features/playground/commands/slow.js',
         ];
 

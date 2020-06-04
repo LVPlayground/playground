@@ -408,6 +408,7 @@
   "LVP_RELOAD_MESSAGES_SUCCESS": "@success %d messages have been reloaded (was: %d messages)",
   "LVP_RELOAD_NOT_ELIGIBLE": "@error The {FF8282}%s{FFFFFF} feature is not eligible for live reloading.",
   "LVP_RELOAD_RELOADED": "@success The %s feature has been reloaded.",
+  "LVP_SKIP_DAMAGE_UPDATED": "@success %s will %s be subject to skip damage effects.",
   "LVP_SETTING_INVALID_NUMBER": "Whuh? {FFA500}%s{A9C4E4} is not a number, you silly billy!",
   "LVP_SETTING_INVALID_STRING": "Whuh? Your value needs to be between [1, 255] characters!",
   "LVP_SETTING_TOGGLED": "The {FFA500}%s{A9C4E4} setting has been %s.",

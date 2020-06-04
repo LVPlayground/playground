@@ -10,8 +10,10 @@
   "ACCOUNT_ADMIN_ALIAS_CREATED": "%s (Id:%d) has added %s as an alias for their account.",
   "ACCOUNT_ADMIN_ALIAS_DELETED": "%s (Id:%d) has deleted %s as an alias for their account.",
   "ACCOUNT_ADMIN_CREATED": "%s (Id:%d) has registered an account in their name.",
+  "ACCOUNT_ADMIN_LEVEL_CHANGED": "%s (Id:%d) has changed their level to %s.",
   "ACCOUNT_ADMIN_NICKNAME_CHANGED": "%s (Id:%d) has changed their nickname to %s.",
   "ACCOUNT_ADMIN_PASSWORD_CHANGED": "%s (Id:%d) has changed their password.",
+  "ACCOUNT_ADMIN_VIP_CHANGED": "%s (Id:%d) has changed their VIP status to %s.",
   "ACCOUNT_NOT_AVAILABLE": "@error All account management options have been disabled.",
   "ACCOUNT_NOT_REGISTERED": "@error %s is not a registered account. Create yours on https://sa-mp.nl/!",
 

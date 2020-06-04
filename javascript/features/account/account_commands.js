@@ -595,6 +595,9 @@ export class AccountCommands {
                     message: 'The level has been changed. They will now be force disconnected.'
                 });
 
+                this.announce_().announceToAdministrators(
+                    Message.ACCOUNT_ADMIN_LEVEL_CHANGED, player.name, player.id, targetLevel);
+
                 wait(1000).then(() => player.kick());
             };
 
@@ -622,6 +625,10 @@ export class AccountCommands {
                     title: 'Account management for ' + player.name,
                     message: 'The VIP status has been changed. They will now be force disconnected.'
                 });
+
+                this.announce_().announceToAdministrators(
+                    Message.ACCOUNT_ADMIN_VIP_CHANGED, player.name, player.id,
+                    targetSetting ? 'enabled' : 'disabled');
 
                 wait(1000).then(() => player.kick());
             };

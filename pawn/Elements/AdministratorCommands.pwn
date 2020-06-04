@@ -159,7 +159,7 @@ lvp_fetch(playerId, params[]) {
 lvp_t(playerId, params[]) {
     new locationId = Command->integerParameter(params, 0);
     if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 16) {
-        SendClientMessage(playerId, Color::Information, "Usage: /t [0-15]. See /locations.");
+        SendClientMessage(playerId, Color::Information, "Usage: /t [0-16]. See /locations.");
         return 1;
     }
 
@@ -191,7 +191,7 @@ lvp_t(playerId, params[]) {
         locations[locationId][2] = balloonPosition[2]+1.5;
     }
 
-    new locationName[21][32] = {
+    new locationName[17][32] = {
         "The Ship",
         "Las Venturas Police Department",
         "Las Venturas Airport",

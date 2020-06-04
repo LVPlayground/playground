@@ -57,7 +57,7 @@ new taxiLocationName[NumberOfTaxiLocations][32] =
     "LV Fight Club",
     "Bayside Marina",
     "San Fierro Pier", 
-    "Los Santos Beach",
+    "Los Santos Beach"
     
 };
 

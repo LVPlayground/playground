@@ -301,6 +301,33 @@ const INTERIOR_LIST = [
             duration: 2500
         }
     }
+    {   
+        // House Id: 14 - PRIVATE INTERIOR
+        name: 'Mad Doggs Mansion',
+        selectable: false,
+        value: 1,
+
+        interior: 5,
+        exits: [ { position: [ 1260.6453, -785.2949, 1091.9063 ], rotation: 266.5846 } ],
+
+        features: {
+            health: [ 1279.7493, -810.5056, 1085.6328 ],
+            armour: [ 1279.9301, -813.2347, 1085.6328 ],
+            safe: [ 1263.9841, -787.3984, 1091.9063 ]
+        },
+
+        preview: {
+            position: [ [ 1264.8002, -787.5640, 1091.9063 ], [ 1274.2072, -771.9368, 1091.9063 ] ],
+            target: [ [ 1265.9929, -793.1546, 1084.0078 ], [ 1250.0294, -780.8049, 1084.1321 ] ],
+            duration: 2500
+        }
+    }
+
+
+
+
+
+
 ];
 
 // Compiles the interior list for a given economy and location, to make sure accurate prices can be

@@ -158,12 +158,12 @@ lvp_fetch(playerId, params[]) {
 
 lvp_t(playerId, params[]) {
     new locationId = Command->integerParameter(params, 0);
-    if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 20) {
-        SendClientMessage(playerId, Color::Information, "Usage: /t [0-20]. See /locations.");
+    if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 16) {
+        SendClientMessage(playerId, Color::Information, "Usage: /t [0-15]. See /locations.");
         return 1;
     }
 
-    new Float: locations[21][3] = {
+    new Float: locations[17][3] = {
         {2016.5950,1545.0306,10.8308},
         {2284.6868,2453.1343,10.8203},
         {1648.0355,1607.7329,10.8203},
@@ -177,17 +177,13 @@ lvp_t(playerId, params[]) {
         {2419.7612,1124.1425,10.8203},
         {2851.3525,1290.5934,11.3906},
         {2105.8870,2190.4172,14.4965},
-        {-2275.8701,2356.4390,4.4737}, 
-        {-2670.7251,569.1967,14.0329}, 
-        {-1714.3550,1331.4526,6.6107}, 
-        {2473.8181,-1656.8525,12.9063}, 
-        {1292.7031,-2058.7244,58.0838},  
+        {-2275.8701,2356.4390,4.4737},  
+        {-1714.3550,1331.4526,6.6107},   
         {833.4330,-1785.5731,13.3151}, 
-        {794.1126,-1146.6193,23.3672}, 
         {0.0,0.0,0.0}
     };
 
-    if (locationId == 20) {
+    if (locationId == 16) {
         new Float: balloonPosition[3];
         GetDynamicObjectPos(iHotAirBalloonObjectID, balloonPosition[0], balloonPosition[1], balloonPosition[2]);
         locations[locationId][0] = balloonPosition[0];
@@ -210,12 +206,8 @@ lvp_t(playerId, params[]) {
         "LV Train Station",
         "LV FightClub",
         "Bayside Marina",
-        "San Fierro Hospital",
-        "San Fierro Pier", 
-        "CJ's Hood",
-        "Los Santos Observatory", 
+        "San Fierro Pier",
         "Los Santos Beach",
-        "Los Santos Golf Club",
         "Balloon"
     };
 

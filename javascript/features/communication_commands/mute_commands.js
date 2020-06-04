@@ -6,10 +6,15 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 
 import { relativeTime } from 'base/time.js';
 
+// How frequently, in milliseconds, should the mute manager do a full check?
+const kMuteMonitorIntervalMs = 1000;
+
 // Encapsulates a series of commands to do with the ability to mute other players.
 export class MuteCommands {
     announce_ = null;
     communication_ = null;
+    disposed_ = false;
+    muted_ = new Set();
 
     // Gets the MuteManager from the Communication feature, which we service.
     get muteManager() { return this.communication_().muteManager_; }
@@ -42,7 +47,48 @@ export class MuteCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(MuteCommands.prototype.onUnmuteCommand.bind(this));
+        
+        // Start the mute monitor, to inform players and admins about expiring mutes.
+        if (!server.isTest())
+            this.muteMonitor();
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Executes the mute monitor, which keeps an eye out on existing mutes and sends announcements
+    // when they've finished. It runs about a task per second. Not explicitly running in tests.
+    async muteMonitor() {
+        do {
+            const currentMonotonicTime = server.clock.monotonicallyIncreasingTime();
+            for (const player of server.playerManager) {
+                const playerMuted = this.muteManager.isMuted(player, currentMonotonicTime);
+
+                // If the player is muted, but not known to our |muted| set, add them. If the
+                // opposite is true, when they've been unmuted - let them know that too.
+                if (playerMuted && !this.muted_.has(player))
+                    this.muted_.add(player);
+                else if (!playerMuted && this.muted_.has(player)) {
+                    player.sendMessage(Message.MUTE_UNMUTED_AUTO);
+
+                    this.announce_().announceToAdministrators(
+                        Message.MUTE_ADMIN_UNMUTED_AUTO, player.name, player.id);
+                }
+            }
+
+            // Remove players from the |muted_| set who have disconnected since, to avoid holding a
+            // reference to them. All other players will have been handled in the loop above.
+            for (const player of this.muted_) {
+                if (!player.isConnected())
+                    this.muted_.delete(player);
+            }
+
+            // Wait for the defined interval, and then just try again.
+            await wait(kMuteMonitorIntervalMs);
+
+        } while (!this.disposed_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // /mute [player] [duration=3]
     //
@@ -148,6 +194,9 @@ export class MuteCommands {
 
         this.muteManager.unmutePlayer(targetPlayer);
 
+        // Avoid sending the automated notification as well.
+        this.muted_.delete(targetPlayer);
+
         this.announce_().announceToAdministrators(
             Message.MUTE_ADMIN_UNMUTED, player.name, player.id, targetPlayer.name, targetPlayer.id);
 
@@ -155,7 +204,14 @@ export class MuteCommands {
         player.sendMessage(Message.MUTE_UNMUTED, targetPlayer.name, targetPlayer.id);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
+        this.disposed_ = true;
+
+        this.muted_.clear();
+        this.muted_ = null;
+
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('showreport');
         server.commandManager.removeCommand('muted');

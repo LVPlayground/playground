@@ -412,6 +412,7 @@
 
   "MUTE_ADMIN_MUTED": "%s (Id:%d) has muted %s (Id:%d) for %s.",
   "MUTE_ADMIN_UNMUTED": "%s (Id:%d) has unmuted %s (Id:%d).",
+  "MUTE_ADMIN_UNMUTED_AUTO": "%s (Id:%d) has been unmuted.",
   "MUTE_MUTED": "@success %s (Id:%d) has been muted for %s.",
   "MUTE_MUTED_NOBODY": "@error Nobody on the server is muted right now.",
   "MUTE_MUTED_LIST": "* {DC143C}%s{FFFFFF} (Id:%d) will be muted for another %s.",
@@ -423,6 +424,7 @@
   "MUTE_SHOW_REPORT_MESSAGE_2": "Report cheaters using /report [suspected id/name] [cheat/reason]",
   "MUTE_UNMUTE_NOT_MUTED": "@error %s (Id:%d) is not currently muted.",
   "MUTE_UNMUTED": "@success %s (Id:%d) has been unmuted.",
+  "MUTE_UNMUTED_AUTO": "{DC143C}*** You have been unmuted.",
   "MUTE_UNMUTED_TARGET": "{DC143C}*** You have been unmuted by %s (Id:%d).",
 
   "NUWANI_ADMIN_INCREASE_BOT": "%s (Id:%d) has requested an increase in IRC bots.",

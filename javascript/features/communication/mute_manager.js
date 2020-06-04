@@ -39,6 +39,11 @@ export class MuteManager {
         player.account.mutedUntil = server.clock.monotonicallyIncreasingTime() + 1000 * seconds;
     }
 
+    // Returns whether the |player| is muted given the |currentMonotonicTime|.
+    isMuted(player, currentMonotonicTime) {
+        return player.account.mutedUntil && player.account.mutedUntil > currentMonotonicTime;
+    }
+
     // Removes any mutes that the |player| is currently subject to.
     unmutePlayer(player) {
         player.account.mutedUntil = 0;

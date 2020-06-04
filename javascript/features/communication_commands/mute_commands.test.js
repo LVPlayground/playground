@@ -2,17 +2,20 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { MuteCommands } from 'features/communication_commands/mute_commands.js';
+
 describe('MuteCommands', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
 
+    let muteCommands = null;
     let muteManager = null;
 
     beforeEach(async() => {
-        server.featureManager.loadFeature('communication_commands');
-
+        const feature = server.featureManager.loadFeature('communication_commands');
         const communication = server.featureManager.loadFeature('communication');
 
+        muteCommands = feature.commands_.filter(instance => instance instanceof MuteCommands)[0];
         muteManager = communication.muteManager_;
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
@@ -142,5 +145,25 @@ describe('MuteCommands', (it, beforeEach) => {
         assert.equal(
             russell.messages[2],
             Message.format(Message.MUTE_SHOW_REPORT_ALREADY_MUTED, gunther.name, gunther.id));
+    });
+
+    it('monitors mutes and sends announcements when they end', async (assert) => {
+        const monitorPromise = muteCommands.muteMonitor();
+
+        assert.isTrue(await russell.issueCommand('/mute Gunther 5'));
+        assert.closeTo(muteManager.getPlayerRemainingMuteTime(gunther), 300, 5);
+
+        assert.equal(gunther.messages.length, 1);
+
+        await server.clock.advance(150 * 1000);
+        await server.clock.advance(150 * 1000);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.format(Message.MUTE_UNMUTED_AUTO));
+
+        muteCommands.disposed_ = true;  // stops the monitor
+
+        await server.clock.advance(10 * 1000);
+        await monitorPromise;
     });
 });

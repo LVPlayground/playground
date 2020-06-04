@@ -12,8 +12,8 @@ import { NuwaniCommands } from 'features/communication_commands/nuwani_commands.
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
 const kGuntherMessages = [
-    'beg', 'discord', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt',
-    'weapons'
+    'beg', 'derby', 'discord', 'dm', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 
+    'rules', 'stunt', 'weapons'
 ];
 
 // In which file are messages for the `/show` command stored?

@@ -1236,7 +1236,7 @@ MyHelp:
     } else if (Player(playerid)->isAdministrator())
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/resetspawnweapons/teleport/weather/time]");
     else if (Player(playerid)->isVip())
-        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/teleport/weather/time]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/look/teleport/weather/time]");
 
     return 1;
 }

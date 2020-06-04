@@ -11,7 +11,7 @@ import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
 const kGuntherMessages = [
-    'beg', 'discord', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt',
+    'beg', 'discord', 'dm', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 'rules', 'stunt',
     'weapons'
 ];
 

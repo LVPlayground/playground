@@ -35,8 +35,7 @@ describe('InteriorList', it => {
             'Normal House (3)',
             'Pleasure Dome',
             'Hotel Reception',
-            'RC Playground',
-            'Mad Doggs Mansion'
+            'RC Playground'
         ];
 
         //

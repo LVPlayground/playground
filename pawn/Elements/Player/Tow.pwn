@@ -15,7 +15,7 @@
 
 #define         TOW_FARE                50000           // Tow's set fare.
 #define         TOW_MINUTES_WAIT        3               // The number of minutes the player should wait between tows.
-#define         NumberOfTowLocations    13              // Number of tow(?) locations.
+#define         NumberOfTowLocations    16            // Number of tow(?) locations.
 
 #define         DIALOG_TOW_COMMAND      8473            // Tow's dialog command (random number, change if in conflict)
 
@@ -39,7 +39,11 @@ new Float:towLocations[NumberOfTowLocations][] =
     {1890.2701,     -2627.1948,     13.2740,        0.2716}, // LS Airport
     {2422.0320,     1113.8469,      10.4708,        0.3177}, // LV Main bank
     {2765.3484,     1281.4395,      10.4771,        269.4123}, // LV Train Station
-    {2118.9729,     2179.2515,      10.5671,        0.0375} // LV FightClub
+    {2118.9729,     2179.2515,      10.5671,        0.0375}, // LV FightClub
+    {-2275.8701,    2356.4390,      4.4737,         53.0138}, // Bayside Marina
+    {-1714.3550,    1331.4526,      6.6107,         221.5452}, // San Fierro Pier 
+    {833.4330,      -1785.5731,     13.3151,        273.3867} // Los Santos Beach
+
 };
 
 // Here we have the tow locations' names.
@@ -57,7 +61,11 @@ new towNames[NumberOfTowLocations][] =
     "Los Santos airport",
     "Main bank",
     "Train station",
-    "LV FightClub"
+    "LV FightClub",
+    "Bayside Marina",
+    "San Fierro Pier", 
+    "Los Santos Beach"
+   
 };
 
 /**
@@ -116,7 +124,7 @@ lvp_tow(playerid, params[])
 
     if (Command->parameterCount(params) < 1)
     {
-        new list[256];
+        new list[512];
         for(new i = 0; i < NumberOfTowLocations; ++i)
             format(list, sizeof(list), "%s%d. %s\r\n", list, i, towNames[i]);
 

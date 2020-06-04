@@ -158,12 +158,12 @@ lvp_fetch(playerId, params[]) {
 
 lvp_t(playerId, params[]) {
     new locationId = Command->integerParameter(params, 0);
-    if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 13) {
-        SendClientMessage(playerId, Color::Information, "Usage: /t [0-13]. See /locations.");
+    if (Command->parameterCount(params) == 0 || locationId < 0 || locationId > 16) {
+        SendClientMessage(playerId, Color::Information, "Usage: /t [0-16]. See /locations.");
         return 1;
     }
 
-    new Float: locations[14][3] = {
+    new Float: locations[17][3] = {
         {2016.5950,1545.0306,10.8308},
         {2284.6868,2453.1343,10.8203},
         {1648.0355,1607.7329,10.8203},
@@ -177,10 +177,13 @@ lvp_t(playerId, params[]) {
         {2419.7612,1124.1425,10.8203},
         {2851.3525,1290.5934,11.3906},
         {2105.8870,2190.4172,14.4965},
+        {-2275.8701,2356.4390,4.4737},  
+        {-1714.3550,1331.4526,6.6107},   
+        {833.4330,-1785.5731,13.3151}, 
         {0.0,0.0,0.0}
     };
 
-    if (locationId == 13) {
+    if (locationId == 16) {
         new Float: balloonPosition[3];
         GetDynamicObjectPos(iHotAirBalloonObjectID, balloonPosition[0], balloonPosition[1], balloonPosition[2]);
         locations[locationId][0] = balloonPosition[0];
@@ -188,7 +191,7 @@ lvp_t(playerId, params[]) {
         locations[locationId][2] = balloonPosition[2]+1.5;
     }
 
-    new locationName[14][32] = {
+    new locationName[17][32] = {
         "The Ship",
         "Las Venturas Police Department",
         "Las Venturas Airport",
@@ -202,6 +205,9 @@ lvp_t(playerId, params[]) {
         "LV Main bank",
         "LV Train Station",
         "LV FightClub",
+        "Bayside Marina",
+        "San Fierro Pier",
+        "Los Santos Beach",
         "Balloon"
     };
 
@@ -813,7 +819,7 @@ GodHelp:
         ColorManager->storeExistingPlayerCustomColor(subjectId);
         ColorManager->setPlayerCustomColor(subjectId, Color::AdministratorColor);
 
-        SendClientMessage(subjectId, Color::Success, "You have been granted administrator rights.");
+        SendClientMessage(subjectId, Color::Success, "You have been granted temporary rights.");
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is now temp. admin.",
             Player(subjectId)->nicknameString(), subjectId);

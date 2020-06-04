@@ -8,7 +8,7 @@ import CommandBuilder from 'components/command_manager/command_builder.js';
 // Command: /boost [player] [factor]
 class BoostCommand extends Command {
     get name() { return 'boost'; }
-    get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
     build(commandBuilder) {
         commandBuilder

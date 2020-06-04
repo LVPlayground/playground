@@ -19,7 +19,7 @@ class FancyCommand extends Command {
     }
 
     get name() { return 'fancy'; }
-    get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
     build(commandBuilder) {
         commandBuilder

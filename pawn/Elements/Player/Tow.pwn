@@ -15,7 +15,7 @@
 
 #define         TOW_FARE                50000           // Tow's set fare.
 #define         TOW_MINUTES_WAIT        3               // The number of minutes the player should wait between tows.
-#define         NumberOfTowLocations    20              // Number of tow(?) locations.
+#define         NumberOfTowLocations    16            // Number of tow(?) locations.
 
 #define         DIALOG_TOW_COMMAND      8473            // Tow's dialog command (random number, change if in conflict)
 
@@ -41,12 +41,8 @@ new Float:towLocations[NumberOfTowLocations][] =
     {2765.3484,     1281.4395,      10.4771,        269.4123}, // LV Train Station
     {2118.9729,     2179.2515,      10.5671,        0.0375}, // LV FightClub
     {-2275.8701,    2356.4390,      4.4737,         53.0138}, // Bayside Marina
-    {-2670.7251,    569.1967,       14.0329,        87.5286}, // San Fierro Hospital
     {-1714.3550,    1331.4526,      6.6107,         221.5452}, // San Fierro Pier 
-    {2473.8181,     -1656.8525,     12.9063,        86.7252}, // CJ's Hood
-    {1292.7031,     -2058.7244,     58.0838,        270.4782}, // Los Santos Observatory 
-    {833.4330,      -1785.5731,     13.3151,        273.3867}, // Los Santos Beach
-    {794.1126,      -1146.6193,     23.3672,        178.3385} // Los Santos Golf Club
+    {833.4330,      -1785.5731,     13.3151,        273.3867} // Los Santos Beach
 
 };
 
@@ -67,12 +63,9 @@ new towNames[NumberOfTowLocations][] =
     "Train station",
     "LV FightClub",
     "Bayside Marina",
-    "San Fierro Hospital",
     "San Fierro Pier", 
-    "CJ's Hood",
-    "Los Santos Observatory", 
-    "Los Santos Beach",
-    "Los Santos Golf Club"
+    "Los Santos Beach"
+   
 };
 
 /**

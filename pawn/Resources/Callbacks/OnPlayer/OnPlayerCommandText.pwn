@@ -955,11 +955,14 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         SendClientMessage(playerid, COLOR_ORANGE, "0: Pirate Ship    1: Police Station    2: LV Airport");
         SendClientMessage(playerid, COLOR_ORANGE, "3: Mount Chiliad  4: Ammu-Nation  5: Area 69");
         SendClientMessage(playerid, COLOR_ORANGE, "6: Airstrip       7: Basejumping       8: San Fierro Airport");
-        SendClientMessage(playerid, COLOR_ORANGE, "9: Los Santos Airport 10: LV Main Bank 11: LV Train Station");
+        SendClientMessage(playerid, COLOR_ORANGE, "9: Los Santos Airport   10: LV Main Bank 11: LV Train Station");
+        SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club       13: Bayside Marina 14: San Fierro Hospital");
+        SendClientMessage(playerid, COLOR_ORANGE, "15: San Fierro Pier     16: CJ's Hood"); 
+        SendClientMessage(playerid, COLOR_ORANGE, "17: Los Santos Observatory    18: Los Santos Beach");
         if (Player(playerid)->isAdministrator())
-            SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club 13: Balloon (/t only)");
+            SendClientMessage(playerid, COLOR_ORANGE, "19: Los Santos Golf Club 20: Balloon (/t only)");
         else
-            SendClientMessage(playerid, COLOR_ORANGE, "12: LV Fight Club");
+            SendClientMessage(playerid, COLOR_ORANGE, "19: Los Santos Golf Club");
         return 1;
     }
 

@@ -15,7 +15,7 @@
 *                                                                               *
 ********************************************************************************/
 
-#define NumberOfTaxiLocations 20
+#define NumberOfTaxiLocations 16
 
 // define the taxi locations
 new Float:taxiLocations[NumberOfTaxiLocations][3] =
@@ -34,12 +34,9 @@ new Float:taxiLocations[NumberOfTaxiLocations][3] =
     {2851.3525,1290.5934,11.3906}, // LV Train Station
     {2105.8870,2190.4172,14.4965}, // LV Fight Club
     {-2293.3342,2231.3376,4.5533}, // Bayside Marina
-    {-2649.5925,628.1685,14.0127}, // San Fierro Hospital
     {-1639.6251,1415.5597,6.7616}, // San Fierro Pier 
-    {2495.4763,-1686.6444,13.0868}, // CJ's Hood
-    {1205.7316,-2037.4581,68.5808}, // Los Santos Observatory 
-    {831.4679,-2061.3491,12.4407}, // Los Santos Beach
-    {699.9567,-1217.4635,16.6727} // Los Santos Golf Club
+    {831.4679,-2061.3491,12.4407} // Los Santos Beach
+    
 
 };
 
@@ -59,12 +56,9 @@ new taxiLocationName[NumberOfTaxiLocations][32] =
     "LV Train Station",
     "LV Fight Club",
     "Bayside Marina",
-    "San Fierro Hospital",
     "San Fierro Pier", 
-    "CJ's Hood",
-    "Los Santos Observatory", 
     "Los Santos Beach",
-    "Los Santos Golf Club"
+    
 };
 
 new bool:isTaxiActive[MAX_PLAYERS]

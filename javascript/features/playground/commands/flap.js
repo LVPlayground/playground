@@ -12,7 +12,7 @@ export default class FlapCommand extends Command {
     flapping_ = new WeakSet();
 
     get name() { return 'flap'; }
-    get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
     build(commandBuilder) {
         commandBuilder

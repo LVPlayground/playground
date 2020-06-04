@@ -876,7 +876,7 @@ PlayerHelp:
 
     if (Player(playerId)->isAdministrator() == true) {
         SendClientMessage(playerId, Color::Information, " handofgod, health, hide, kill, maptp, nuke, weapon, weaponinfo, properties,");
-        SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport, vallow");
+        SendClientMessage(playerId, Color::Information, " removeweapon, resetspawnweapons, resetweapons, skin, spawnweapons, teleport");
     }
 
     return 1;

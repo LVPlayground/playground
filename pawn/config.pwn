@@ -7,8 +7,8 @@
  * incrementing this version. Significant changes justify a new Major release, use your gut feel.
  */
 class Version {
-    public const Major = 46;
-    public const Minor = 1;
+    public const Major = 47;
+    public const Minor = 0;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
@@ -34,7 +34,7 @@ class Feature {
     //
     // https://github.com/oscar-broman/samp-weapon-config
     //
-    public const EnableServerSideWeaponConfig = 0;
+    public const EnableServerSideWeaponConfig = 1;
 
     /** **************************************************************************************** **/
 };

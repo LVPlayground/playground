@@ -8,6 +8,7 @@ import { DirectCommunicationCommands } from 'features/communication_commands/dir
 import Feature from 'components/feature_manager/feature.js';
 import { IgnoreCommands } from 'features/communication_commands/ignore_commands.js';
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
+import { NuwaniCommands } from 'features/communication_commands/nuwani_commands.js';
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
 const kGuntherMessages = [
@@ -29,6 +30,7 @@ export default class CommunicationCommands extends Feature {
 
     commands_ = null;
     disposed_ = false;
+    nuwaniCommands_ = null;
 
     showMessages_ = null;
 
@@ -46,6 +48,7 @@ export default class CommunicationCommands extends Feature {
 
         // Used to send non-channel communication to people watching through Nuwani.
         this.nuwani_ = this.defineDependency('nuwani');
+        this.nuwani_.addReloadObserver(this, () => this.initializeIrcCommands());
 
         // Used to make the required level for certain commands configurable.
         const playground = this.defineDependency('playground');
@@ -65,6 +68,8 @@ export default class CommunicationCommands extends Feature {
             new IgnoreCommands(this.communication_),
             new MuteCommands(this.announce_, this.communication_),
         ];
+
+        this.initializeIrcCommands();
 
         // /announce [message]
         server.commandManager.buildCommand('announce')
@@ -102,6 +107,12 @@ export default class CommunicationCommands extends Feature {
         // command with his credentials with a number of predefined commands.
         if (!server.isTest())
             this.runTheGuntherCycle();
+    }
+
+    // Initializes the IRC commands that are related to communication.
+    initializeIrcCommands() {
+        const commandManager = this.nuwani_().commandManager;
+        this.nuwaniCommands_ = new NuwaniCommands(commandManager, this.announce_, this.nuwani_);
     }
 
     // The Gunther cycle will spin for the lifetime of this object, displaying a `/show` message at
@@ -280,5 +291,11 @@ export default class CommunicationCommands extends Feature {
         server.commandManager.removeCommand('me');
         server.commandManager.removeCommand('clear');
         server.commandManager.removeCommand('announce');
+
+        this.nuwaniCommands_.dispose();
+        this.nuwaniCommands_ = null;
+
+        this.nuwani_.removeReloadObserver(this);
+        this.nuwani_ = null;
     }
 }

@@ -7,7 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 // Implementation of a series of commands meant for communication between the IRC server and in-game
 // players. This ranges from regular messaging that's available for everyone, to specific messages
 // intended for specific players or levels.
-export class CommunicationCommands {
+export class NuwaniCommands {
     commandManager_ = null;
 
     constructor(commandManager, announce, nuwani) {
@@ -19,45 +19,45 @@ export class CommunicationCommands {
         this.commandManager_.buildCommand('admin')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(CommunicationCommands.prototype.onAdminCommand.bind(this));
+            .build(NuwaniCommands.prototype.onAdminCommand.bind(this));
 
         // !announce [message]
         this.commandManager_.buildCommand('announce')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
+            .build(NuwaniCommands.prototype.onAnnounceCommand.bind(this));
 
         // !discord
         this.commandManager_.buildCommand('discord')
-            .build(CommunicationCommands.prototype.onDiscordCommand.bind(this));
+            .build(NuwaniCommands.prototype.onDiscordCommand.bind(this));
         
         // !help
         this.commandManager_.buildCommand('help')
-            .build(CommunicationCommands.prototype.onHelpCommand.bind(this));
+            .build(NuwaniCommands.prototype.onHelpCommand.bind(this));
 
         // !msg [message]
         this.commandManager_.buildCommand('msg')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(CommunicationCommands.prototype.onMessageCommand.bind(this));
+            .build(NuwaniCommands.prototype.onMessageCommand.bind(this));
 
         // !pm [player] [message]
         this.commandManager_.buildCommand('pm')
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
-            .build(CommunicationCommands.prototype.onPrivageMessageCommand.bind(this));
+            .build(NuwaniCommands.prototype.onPrivageMessageCommand.bind(this));
 
         // !say [message]
         this.commandManager_.buildCommand('say')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(CommunicationCommands.prototype.onSayCommand.bind(this));
+            .build(NuwaniCommands.prototype.onSayCommand.bind(this));
 
         // !vip [message]
         this.commandManager_.buildCommand('vip')
             .restrict(context => context.isVip())
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
-            .build(CommunicationCommands.prototype.onVipMessageCommand.bind(this));
+            .build(NuwaniCommands.prototype.onVipMessageCommand.bind(this));
     }
     
     // !admin [message]

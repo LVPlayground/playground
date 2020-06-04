@@ -4,7 +4,6 @@
 
 import Feature from 'components/feature_manager/feature.js';
 
-import { CommunicationCommands } from 'features/nuwani_commands/communication_commands.js';
 import { NuwaniCommand } from 'features/nuwani_commands/nuwani_command.js';
 import { PlayerCommands } from 'features/nuwani_commands/player_commands.js';
 
@@ -13,7 +12,6 @@ import { PlayerCommands } from 'features/nuwani_commands/player_commands.js';
 export class NuwaniCommands extends Feature {
     announce_ = null;
     nuwani_ = null;
-    playground_ = null;
 
     commands_ = null;
     nuwaniCommand_ = null;
@@ -43,7 +41,6 @@ export class NuwaniCommands extends Feature {
         const commandManager = this.nuwani_().commandManager;
 
         this.commands_ = [
-            new CommunicationCommands(commandManager, this.announce_, this.nuwani_),
             new PlayerCommands(commandManager),
         ];
     }
@@ -53,9 +50,6 @@ export class NuwaniCommands extends Feature {
             instance.dispose();
         
         this.commands_ = null;
-
-        this.nuwaniCommand_.dispose();
-        this.nuwaniCommand_ = null;
 
         this.nuwani_.removeReloadObserver(this);
         this.nuwani_ = null;

@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommunicationCommands } from 'features/nuwani_commands/communication_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
@@ -11,30 +10,25 @@ import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
 const kCommandSourceUsername = '[BB]Ricky92';
 const kCommandSource = '[BB]Ricky92!ricky@lvp.administrator';
 
-describe('CommunicationCommands', (it, beforeEach, afterEach) => {
+describe('NuwaniCommands', (it, beforeEach, afterEach) => {
     let bot = null;
     let commandManager = null;
-    let commands = null;
     let gunther = null;
     let nuwani = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        server.featureManager.loadFeature('communication_commands');
 
         bot = new TestBot();
         nuwani = server.featureManager.loadFeature('nuwani');
     
         commandManager = nuwani.commandManager;
-        commands = new CommunicationCommands(commandManager, () => announce, () => nuwani);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     it('should be able to send a message to all in-game administrators', async (assert) => {
         const noAccessResult = await issueCommand(bot, commandManager, {

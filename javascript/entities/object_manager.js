@@ -55,6 +55,14 @@ class ObjectManager {
             priority: 0,
         });
 
+        // This is an edge-case where Pawn might have deleted a JavaScript object by accident. We
+        // need to track this, but it shouldn't lead to exceptions as the cause isn't always clear.
+        if (this.objects_.has(object.id)) {
+            this.objects_.get(object.id).dispose();
+
+            console.log(new Error(`Duplicated Object ID found: ${object.id}.`));            
+        }
+
         this.objects_.set(object.id, object);
         return object;
     }

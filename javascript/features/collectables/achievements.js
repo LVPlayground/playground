@@ -70,7 +70,6 @@ export const kAchievements = new Map([
 // on the map, but fit in with other collectables reasonably well otherwise.
 export class Achievements extends CollectableBase {
     manager_ = null;
-    players_ = new WeakMap();
 
     constructor(collectables, manager) {
         super({ name: 'Achievements' });
@@ -84,10 +83,10 @@ export class Achievements extends CollectableBase {
     // Returns whether the |player| has the given |achievement|. The |round| boolean, when set, will
     // restrict the check to the player's current round of collecting achievements.
     hasAchievement(player, achievement, round = true) {
-        if (!this.players_.has(player))
+        if (!this.hasPlayerStatistics(player))
             return false;  // the data for |player| has not been loaded yet
         
-        const statistics = this.players_.get(player);
+        const statistics = this.getPlayerStatistics(player);
 
         if (round)
             return statistics.collectedRound.has(achievement);
@@ -97,10 +96,10 @@ export class Achievements extends CollectableBase {
 
     // Awards the |player| the given |achievement|. Should no-op when they've already got it.
     awardAchievement(player, achievement) {
-        if (!this.players_.has(player))
+        if (!this.hasPlayerStatistics(player))
             return;  // the data for |player| has not been loaded yet
           
-        const statistics = this.players_.get(player);
+        const statistics = this.getPlayerStatistics(player);
         if (statistics.collectedRound.has(achievement))
             return;  // the |player| already obtained the given |achievement|
 
@@ -190,21 +189,10 @@ export class Achievements extends CollectableBase {
     // Gets the number of achievements that exist on the server.
     getCollectableCount() { return kAchievements.size; }
 
-    // Clears all the collectables for the given |player|, generally because they've left the server
-    // or, for some other reason, should not participate in the game anymore.
-    clearCollectablesForPlayer(player) {
-        this.players_.delete(player);
-    }
-
-    // Counts the number of collectables that the player has collected already. Returns a structure
-    // in the format of { total, round }, both of which are numbers.
-    countCollectablesForPlayer(player) {
-        const statistics = this.players_.get(player);
-
-        return {
-            total: statistics?.collected.size ?? 0,
-            round: statistics?.collectedRound.size ?? 0,
-        };
+    // Starts a new round of collectables for the given |player|. This is not supported for
+    // achievements, since it's not clear where they player should start again.
+    startCollectableRoundForPlayer(player) {
+        throw new Error(`Achievements do not support multiple rounds.`);
     }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
@@ -212,21 +200,17 @@ export class Achievements extends CollectableBase {
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, statistics) {
         const existingAchievements = new Set();
-        if (this.players_.has(player)) {
-            const achievements = this.players_.get(player);
+        if (this.hasPlayerStatistics(player)) {
+            const achievements = this.getPlayerStatistics(player);
             for (const achievement of achievements.collected)
                 existingAchievements.add(achievement);
         }
 
-        this.players_.set(player, statistics);
+        this.setPlayerStatistics(player, statistics);
 
         for (const achievement of statistics.collected) {
             if (!existingAchievements.has(achievement))
                 this.activateAchievementEffects(player, achievement);
         }
     }
-
-    // ---------------------------------------------------------------------------------------------
-
-    dispose() {}
 }

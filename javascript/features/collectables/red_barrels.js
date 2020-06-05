@@ -29,7 +29,6 @@ export class RedBarrels extends CollectableBase {
 
     // Maps with per-player information on the created barrel objects, and progress statistics.
     playerBarrels_ = new Map();
-    playerStatistics_ = new Map();
 
     constructor(collectables, manager) {
         super({ mapIconType: 20 /* Fire */, name: 'Red Barrels', singularName: 'Red Barrel' });
@@ -63,20 +62,11 @@ export class RedBarrels extends CollectableBase {
         }
     }
 
-    // Counts the number of collectables that the player has collected already. Returns a structure
-    // in the format of { total, round }, both of which are numbers.
-    countCollectablesForPlayer(player) {
-        const statistics = this.playerStatistics_.get(player);
-
-        return {
-            total: statistics?.collected.size ?? 0,
-            round: statistics?.collectedRound.size ?? 0,
-        };
-    }
-
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
+        super.clearCollectablesForPlayer(player);
+
         if (!this.playerBarrels_.has(player))
             return;  // the |player| already collected all the red barrels
         
@@ -85,7 +75,6 @@ export class RedBarrels extends CollectableBase {
             barrel.dispose();
         
         this.playerBarrels_.delete(player);
-        this.playerStatistics_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -98,7 +87,7 @@ export class RedBarrels extends CollectableBase {
         if (this.playerBarrels_.has(player))
             this.clearCollectablesForPlayer(player);
         
-        this.playerStatistics_.set(player, statistics);
+        this.setPlayerStatistics(player, statistics);
 
         const barrels = new Map();
         for (const [ barrelId, { area, position, rotation } ] of this.getCollectables()) {
@@ -121,30 +110,17 @@ export class RedBarrels extends CollectableBase {
 
         this.playerBarrels_.set(player, barrels);
     }
-
-    // Called when the |player| wants to start a new round for these collectables. Their state
-    // should thus be reset to that of a new player, without losing benefits.
-    startCollectableRoundForPlayer(player) {
-        const statistics = this.playerStatistics_.get(player);
-        if (!statistics)
-            throw new Error(`There are no statistics known for ${player.name}.`);
-        
-        statistics.collectedRound = new Set();
-        statistics.round++;
-
-        this.refreshCollectablesForPlayer(player, statistics);
-    }
     
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has shot the given |object|. If this is one of their barrels, we'll
     // consider them as having scored a point.
     onPlayerShootObject(player, object) {
-        if (!this.playerBarrels_.has(player) || !this.playerStatistics_.has(player))
+        if (!this.playerBarrels_.has(player) || !this.hasPlayerStatistics(player))
             return;  // the |player| does not have any barrels
         
         const barrels = this.playerBarrels_.get(player);
-        const statistics = this.playerStatistics_.get(player);
+        const statistics = this.getPlayerStatistics(player);
 
         if (!barrels.has(object))
             return;  // it's not one of our barrels that the player shot

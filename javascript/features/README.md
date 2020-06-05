@@ -35,6 +35,7 @@ The following features have been implemented in JavaScript.
   - **[Player favours](player_favours/)**: Various smaller features implemented specifically for
     the benefit of certain players.
   - **[Playground](playground/)**: Features created for the identity of Las Venturas Playground.
+  - **[PlayerCommands](player_commands/)**: Feature containing the JS player (/my) commands.
   - **[PlayerSettings](player_settings/)**: This allows to add (persistent) settings for the player.
   - **[Report](report/)**: Give the ability to players to report other players when they use illegal
     stuff.

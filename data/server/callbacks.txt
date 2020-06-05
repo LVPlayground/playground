@@ -16,6 +16,7 @@ forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
 forward OnGiveWeapon(playerId, weaponId, ammo);
 forward OnResetPlayerWeapons(playerId);
 forward OnRemovePlayerWeapon(playerId, weaponId);
+forward OnPlayerCommand(playerid, cmdtext[]);
 
 # Streamer callbacks
 [Deferred] forward OnDynamicObjectMoved(objectid);

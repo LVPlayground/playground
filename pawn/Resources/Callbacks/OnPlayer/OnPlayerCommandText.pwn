@@ -34,6 +34,12 @@ bool: IsCommandAvailableForLimitedFunctionality(command[]) {
     return false;
 }
 
+forward OnPlayerCommand(playerid, cmdtext[]);
+public OnPlayerCommand(playerid, cmdtext[]) {
+    lvp_command(My, 2, PlayerLevel);
+    return 1;
+}
+
 // All commands entered by players will end up in this callback.
 public OnPlayerCommandText(playerid, cmdtext[]) {
     if (strlen(cmdtext) == 1)
@@ -482,7 +488,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(stats,          5, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
-    lvp_command(My,             2, PlayerLevel);
     lvp_command(Robbery,        7, PlayerLevel);
 #if Feature::DisableFights == 0
     lvp_command(Wwtw,           4, PlayerLevel);

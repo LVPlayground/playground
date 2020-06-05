@@ -193,6 +193,17 @@ export class Achievements extends CollectableBase {
         this.players_.delete(player);
     }
 
+    // Counts the number of collectables that the player has collected already. Returns a structure
+    // in the format of { total, round }, both of which are numbers.
+    countCollectablesForPlayer(player) {
+        const statistics = this.players_.get(player);
+
+        return {
+            total: statistics?.collected.size ?? 0,
+            round: statistics?.collectedRound.size ?? 0,
+        };
+    }
+
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.

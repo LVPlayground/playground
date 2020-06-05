@@ -193,7 +193,7 @@ class PlayerManager {
         if (!player)
             return;  // the event has been received for an invalid player
         
-        player.messagelevel = event.messagelevel;
+        player.messageLevel = event.messagelevel;
     }
 
     // Called when the |player|'s nickname has changed into something else. Optionally, if the

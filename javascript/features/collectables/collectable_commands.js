@@ -287,8 +287,12 @@ export class CollectableCommands {
         let closestDistance = Number.MAX_SAFE_INTEGER;
 
         const playerDistance = player.position;
+        const playerStatistics = delegate.getPlayerStatistics(player);
 
-        for (const { position } of delegate.getCollectables().values()) {
+        for (const [ id, { position } ] of delegate.getCollectables()) {
+            if (playerStatistics && playerStatistics.collectedRound.has(id))
+                continue;  // they've already collected this entry
+
             const distance = playerDistance.squaredDistanceTo(position);
             if (distance >= closestDistance)
                 continue;

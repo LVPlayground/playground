@@ -38,7 +38,7 @@ describe('CollectableCommands', (it, beforeEach) => {
                 ],
                 [
                     '{B2FF59}Spray Tags',
-                    '2 / 100',
+                    '2 / 100 {80ff00}(round 2)',
                 ],
             ]
         });

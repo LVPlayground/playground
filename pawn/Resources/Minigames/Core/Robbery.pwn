@@ -455,8 +455,14 @@ CRobbery__DestroyAll()
     CRobbery__UpdateTDs();
 
 
-    if(IsValidDynamicObject(vaultObject)) DestroyDynamicObject(vaultObject);
-    DestroyDynamicObject(doorObject);
+    if(IsValidDynamicObject(vaultObject)) { 
+        DestroyDynamicObject(vaultObject);
+        vaultObject = DynamicObject: INVALID_OBJECT_ID;
+    }
+    if(IsValidDynamicObject(doorObject)) { 
+        DestroyDynamicObject(doorObject);
+        doorObject = DynamicObject: INVALID_OBJECT_ID;
+    }
 
     for (new i = 0; i <= PlayerManager->highestPlayerId(); i++) {
         if(CRobbery__GetPlayerStatus(i) == ROBSTATUS_PLAYING) {

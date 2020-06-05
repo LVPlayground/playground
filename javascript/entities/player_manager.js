@@ -358,8 +358,14 @@ class PlayerManager {
                 prototype = Object.getPrototypeOf(prototype);
 
             // If such a prototype has been found, call the |eventName| on it.
-            if (prototype)
+            if (!prototype)
+                continue;
+            
+            try {
                 prototype[eventName].call(observer, ...args);
+            } catch (exception) {
+                console.log(exception);
+            }
         }
     }
 

@@ -33,9 +33,6 @@ OnPlayerLameKill(playerId, killerId) {
         MyDrivebys[killerId]++;
     }
 
-    // Handle achievements.
-    CAchieve__OnPlayerLameKill(killerId, (MyDrivebys[killerId] + MyHeliKills[killerId]));
-
     Drivebyer[playerId] = killerId;
 
     // Inform the world about this wonderful event.
@@ -137,9 +134,6 @@ LegacyPlayerDeath(playerid, killerid, reason) {
     // A hidden RCON admin killing players will be shown as a regular /kill.
     if (killerid != Player::InvalidId && IsPlayerAdmin(killerid) && PlayerInfo[killerid][playerIsHidden])
         killerid = Player::InvalidId;
-
-    // Handle achievements.
-    CAchieve__OnPlayerDeath(playerid, killerid);
 
     // ---- VALID KILLER CASES ---------------------------------------------------------------------
 

@@ -490,7 +490,6 @@ CBomb__EngineCheck(playerid,vehicleid,i)
             }
 
             ShowBoxForPlayer(VehicleBomb[vehicleid][armer], str);
-            CAchieve__DetonateBomb(playerid);
             return 1;
         }
     }

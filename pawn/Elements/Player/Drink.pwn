@@ -230,7 +230,6 @@ CDrink__DrinkBottle(playerid)
     if(drinkid < 8)
     {
         playerAlcohol[playerid] = playerAlcohol[playerid] + alcohol;
-        CAchieve__Drink(playerid, playerAlcohol[playerid]);
 
         new name[24];
         GetPlayerName(playerid, name, 24);

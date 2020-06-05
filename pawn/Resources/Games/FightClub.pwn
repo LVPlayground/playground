@@ -617,8 +617,6 @@ CFightClub__OnDeath(playerid, killerid)
         if(killerid == Player::InvalidId)
             return 0;
 
-        CAchieve__FightClub(killerid, CFightClub__GetKillCount(killerid));
-
         if(Matches[matchid][rounds] < 1) // If no more rounds, EndMatch
         {
             Matches[matchid][status] = FC_STATUS_NONE; // Prevent StartMatch on OnSpawn

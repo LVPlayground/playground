@@ -141,13 +141,6 @@ class DeprecatedTimerRuntime {
 
     @list(MinuteTimer)
     public onMinuteTimerTick() {
-        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-            if (Player(playerId)->isConnected() == false)
-                continue;
-
-            CAchieve__CheckIngameHours(playerId);
-        }
-
         TaxUpdate();
 
         if (++m_threeMinuteTicker == 3) {

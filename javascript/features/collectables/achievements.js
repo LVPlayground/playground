@@ -187,6 +187,9 @@ export class Achievements extends CollectableBase {
     // CollectableBase implementation:
     // ---------------------------------------------------------------------------------------------
 
+    // Gets the number of achievements that exist on the server.
+    getCollectableCount() { return kAchievements.size; }
+
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {

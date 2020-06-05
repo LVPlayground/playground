@@ -75,6 +75,9 @@ export class CollectableManager {
         let count = 0;
 
         for (const [ type, delegate ] of this.delegates_) {
+            if (type === CollectableDatabase.kAchievement && filterType !== type)
+                continue;  // ignore achievements by default
+
             if (filterType === null || filterType === type)
                 count += delegate.countCollectablesForPlayer(player).total;
         }

@@ -164,7 +164,7 @@ export class SprayTags extends CollectableBase {
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
-            let remaining = kTotalSprayTags - this.countCollectablesForPlayer(player) - 1;
+            let remaining = kTotalSprayTags - this.countCollectablesForPlayer(player).round - 1;
             let message = null;
 
             // Compose an appropriate message to show to the player now that they've tagged a
@@ -190,7 +190,7 @@ export class SprayTags extends CollectableBase {
 
             this.awardAchievementWhenApplicable(player);
             this.manager_.markCollectableAsCollected(
-                player, CollectableDatabase.kSprayTag, statistics.rounds, sprayTagId);
+                player, CollectableDatabase.kSprayTag, statistics.round, sprayTagId);
 
             // Delete the |tag|, since the player will no longer be needing it. Instead, we create
             // a new tag in the same position with the |kSprayTagTaggedModelId|.

@@ -10,6 +10,9 @@ import { URLSearchParams } from 'components/networking/url_search_params.js';
 import { formDataToArrayBuffer } from 'components/networking/form_data.js';
 import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
 
+// Valid values for the `redirect` parameter as part of the RequestInit.
+const kValidRedirect = ['follow', 'error', 'manual'];
+
 // Implementation of the Request class from the Fetch API:
 // https://fetch.spec.whatwg.org/#request-class
 //
@@ -27,7 +30,7 @@ export class Request extends Body {
     // Unsupported: mode
     // Unsupported: credentials
     // Unsupported: cache
-    // Unsupported: redirect
+    #redirect_ = null;
     // Unsupported: integrity
     // Unsupported: keepalive
     // Unsupported: isReloadNavigation
@@ -62,7 +65,11 @@ export class Request extends Body {
         this.#url_ = input;
         this.#headers_ = new Headers(init.headers ?? null);
 
+        if (init.redirect && !kValidRedirect.includes(init.redirect))
+            throw new Error(`Invalid redirect value given: ${init.redirect}.`);
+
         this.#referrer_ = init.referrer ?? 'https://play.sa-mp.nl/';
+        this.#redirect_ = init.redirect ?? 'follow';
 
         if (contentType !== null)
             this.#headers_.set('Content-Type', contentType);
@@ -79,4 +86,7 @@ export class Request extends Body {
 
     // Gets the referrer URL of the source of this request.
     get referrer() { return this.#referrer_; }
+
+    // Gets whether this request should follow redirects.
+    get redirect() { return this.#redirect_; }
 }

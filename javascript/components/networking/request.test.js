@@ -16,6 +16,7 @@ describe('Request', it => {
         assert.instanceOf(defaultRequest.headers, Headers);
         assert.equal(Array.from(defaultRequest.headers).length, 0);
         assert.equal(defaultRequest.referrer, 'https://play.sa-mp.nl/');
+        assert.equal(defaultRequest.redirect, 'follow');
 
         const customRequest = new Request('https://sa-mp.nl/', {
             method: 'POST',
@@ -24,6 +25,7 @@ describe('Request', it => {
                 [ 'Content-Length', 12 ],
             ],
             referrer: 'https://sa-mp.nl/',
+            redirect: 'error',
         });
 
         assert.equal(customRequest.method, 'POST');
@@ -31,6 +33,7 @@ describe('Request', it => {
         assert.instanceOf(customRequest.headers, Headers);
         assert.equal(Array.from(customRequest.headers).length, 2);
         assert.equal(customRequest.referrer, 'https://sa-mp.nl/');
+        assert.equal(customRequest.redirect, 'error');
     });
 
     it('is able to initialize request data based on BodyInit', async (assert) => {

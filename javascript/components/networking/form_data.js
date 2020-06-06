@@ -2,6 +2,16 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// TODO
+export function arrayBufferToFormData(arrayBuffer) {
+    return new FormData();
+}
+
+// TODO
+export function formDataToArrayBuffer(formData) {
+    return new ArrayBuffer();
+}
+
 // Implements the FormData Web interface. Note that, unlike `Headers`, names are case sensitive.
 // https://developer.mozilla.org/en-US/docs/Web/API/FormData/FormData
 export class FormData {

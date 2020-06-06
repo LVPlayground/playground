@@ -20,7 +20,12 @@ fetch('https://sa-mp.nl/', {
 This component provides implementations for the following parts of the standard:
 
   * [Body](body.js)
+  * [FormData](form_data.js)
   * [Headers](headers.js)
+  * [Request](request.js)
+
+Further, [utf-8.js](utf-8.js) contains encoders and decoders between strings and UTF-8 array buffers
+gratefully using the [utf.js](https://github.com/DesWurstes/utf.js) library.
 
 Non-compliance with any part of the standard is considered a bug, although we may decide to not
 implement certain pieces of functionality that aren't applicable for our usage.

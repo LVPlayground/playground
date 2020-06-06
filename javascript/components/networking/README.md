@@ -4,7 +4,8 @@ WHATWG Fetch standard where appropriate:
 
 https://fetch.spec.whatwg.org/#fetch-api
 
-The entry point for all these APIs is the `fetch` function, which can be used as follows:
+The entry point for all these APIs is the `fetch` function, defined in [fetch.js](fetch.js), which
+can be used as follows:
 
 ```javascript
 fetch('https://sa-mp.nl/', {
@@ -23,6 +24,7 @@ This component provides implementations for the following parts of the standard:
   * [FormData](form_data.js)
   * [Headers](headers.js)
   * [Request](request.js)
+  * [Response](response.js)
   * [URLSearchParams](url_search_params.js)
 
 Further, [utf-8.js](utf-8.js) contains encoders and decoders between strings and UTF-8 array buffers

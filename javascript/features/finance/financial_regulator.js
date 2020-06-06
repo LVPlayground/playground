@@ -124,6 +124,8 @@ export class FinancialRegulator {
         if (isAdjustment)
             return;  // silent adjustment, all done here
 
+        player.score = amount;
+
         MoneyIndicator.showForPlayer(player, difference);
 
         this.nativeCalls_.givePlayerMoney(player, difference);

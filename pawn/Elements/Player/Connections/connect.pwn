@@ -29,7 +29,6 @@ OnPlayerLVPConnect(playerid) {
 
     CDrink__Connect(playerid);
     CCrush__Connect(playerid);
-    CAchieve__OnPlayerConnect(playerid);
     InitializeMapZoneTextDrawsForPlayer(playerid);
     DisablePlayerCheckpoint(playerid);
     CDerby__InitPlayerData( playerid );

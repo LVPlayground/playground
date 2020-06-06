@@ -25,9 +25,6 @@
  *     @switch(OnNpcConnect, FeatureId)
  *     public onRussellBotConnected(playerId, reference) { }
  *
- *     @switch(OnNpcConnectFailed, FeatureId)
- *     public onRussellBotConnectionFailed(playerId, reference) { }
- *
  *     @switch(OnNpcDisconnect, FeatureId)
  *     public onRussellBotDisconnected(playerId, reference) { }
  * };

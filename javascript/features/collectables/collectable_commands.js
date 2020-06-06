@@ -43,7 +43,7 @@ export class CollectableCommands {
         server.commandManager.buildCommand('achievements')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
             .build(CollectableCommands.prototype.onAchievementsCommand.bind(this));
-        
+
         // /collectables
         server.commandManager.buildCommand('collectables')
             .build(CollectableCommands.prototype.onCollectablesCommand.bind(this));
@@ -114,7 +114,9 @@ export class CollectableCommands {
 
         for (const [ label, { delegate, instructions } ] of series) {
             const total = delegate.getCollectableCount();
-            const collected = delegate.countCollectablesForPlayer(player).round;
+            const statistics = delegate.getPlayerStatistics(player);
+
+            const collected = statistics.collectedRound.size;
             
             let progress = '';
             if (!collected)
@@ -124,7 +126,8 @@ export class CollectableCommands {
             else
                 progress = `${collected} / ${total}`;
 
-            // TODO: Display the |player|'s collection round if it's >1
+            if (statistics.round > 1)
+                progress += ` {80ff00}(round ${statistics.round})`;
 
             let listener = null;
             if (label.includes('Achievements')) {
@@ -287,8 +290,12 @@ export class CollectableCommands {
         let closestDistance = Number.MAX_SAFE_INTEGER;
 
         const playerDistance = player.position;
+        const playerStatistics = delegate.getPlayerStatistics(player);
 
-        for (const { position } of delegate.getCollectables().values()) {
+        for (const [ id, { position } ] of delegate.getCollectables()) {
+            if (playerStatistics && playerStatistics.collectedRound.has(id))
+                continue;  // they've already collected this entry
+
             const distance = playerDistance.squaredDistanceTo(position);
             if (distance >= closestDistance)
                 continue;

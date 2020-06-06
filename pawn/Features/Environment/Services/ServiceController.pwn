@@ -24,18 +24,6 @@ class ServiceController {
         TrainDriver(TrainDriverLosSantos)->initialize("TrainDriverLS", "train_ls", -1942.7950, 168.4164, 27.0006);
         TrainDriver(TrainDriverSanFierro)->initialize("TrainDriverSF", "train_sf", 1700.7551, -1953.6531, 14.8756);
 #endif
-
-        // Initialize the plane pilots.
-#if ReleaseSettings::CreatePlanePilots == 1
-        PlanePilot(PlanePilotLasVenturas)->initialize("PilotLV", "at400_lv", 1477.4631, 1647.4589, 10.7281, 180.2741);
-        PlanePilot(PlanePilotLosSantos)->initialize("PilotLS", "at400_ls", 2014.6605, -2493.9668, 13.4887, 89.6533);
-        PlanePilot(PlanePilotSanFierro)->initialize("PilotSF", "at400_sf", -1513.0963, -21.4589, 14.0641, 314.4915);
-#endif
-
-        // Initialize Gunther, if he's wanted.
-#if ReleaseSettings::CreateGunther == 1
-        Gunther->initialize();
-#endif
     }
 
     /**
@@ -46,12 +34,6 @@ class ServiceController {
     public resetServices() {
 #if ReleaseSettings::CreateTrainDrivers == 1
         NPCManager->requestDisconnectForFeature(TrainDriver::TrainDriverHandlerId);
-#endif
-#if ReleaseSettings::CreatePlanePilots == 1
-        NPCManager->requestDisconnectForFeature(PlanePilot::PlanePilotHandlerId);
-#endif
-#if ReleaseSettings::CreateGunther == 1
-        NPCManager->requestDisconnectForFeature(Gunther::GuntherHandlerId);
 #endif
 
         // Now that all bots have disconnected, we simply re-invoke the constructor again which will
@@ -74,7 +56,7 @@ class ServiceController {
 
         ShowPlayerDialog(playerId, ServiceController::WarningDialogId, DIALOG_STYLE_MSGBOX, "Las Venturas Playground",
             "Warning: Fixing NPCs will force them to reconnect to the\n" ...
-            "server and may respawn any players interacting with them.\n\n" ...
+            "server. THIS DOES NOT INCLUDE GUNTHER AND PLANE PILOTS ANYMORE.\n\n" ...
             "Are you sure you wish to reconnect the Non Playing Characters?",
             "Yes", "Cancel");
 

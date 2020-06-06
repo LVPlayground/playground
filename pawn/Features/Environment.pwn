@@ -8,8 +8,6 @@
  * to fly players around San Andreas. The ServiceController is in charge of them.
  */
 #include "Features/Environment/Services/ServiceSettings.pwn"
-#include "Features/Environment/Services/Gunther.pwn"
-#include "Features/Environment/Services/PlanePilot.pwn"
 #include "Features/Environment/Services/TrainDriver.pwn"
 #include "Features/Environment/Services/ServiceController.pwn"
 

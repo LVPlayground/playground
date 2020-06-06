@@ -234,4 +234,10 @@ export class MockAccountDatabase extends AccountDatabase {
 
     // Overridden.
     async createAccount(username, password) {}
+
+    // Overridden.
+    async setUserLevel(userId, level) {}
+
+    // Overridden.
+    async setUserVip(userId, vip) {}
 }

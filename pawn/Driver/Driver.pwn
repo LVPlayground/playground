@@ -251,8 +251,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             PRESSED(VEHICLE_KEYS_BINDING_BLINKER_LEFT) && vehicleKeys & VEHICLE_KEYS_BLINKER_LEFT;
 
         if(pressedBlinkerRight || pressedBlinkerLeft) {
-            new const bool: blinkingOnRight = IsValidDynamicObject(g_blinkerObjects[playerid][0]) == 1;
-            new const bool: blinkingOnLeft = IsValidDynamicObject(g_blinkerObjects[playerid][2]) == 1;
+            new const bool: blinkingOnRight = !!IsValidDynamicObject(g_blinkerObjects[playerid][0]);
+            new const bool: blinkingOnLeft = !!IsValidDynamicObject(g_blinkerObjects[playerid][2]);
 
             new const bool: rightBlinker = pressedBlinkerRight ? !blinkingOnRight : blinkingOnRight;
             new const bool: leftBlinker = pressedBlinkerLeft ? !blinkingOnLeft : blinkingOnLeft;
@@ -310,17 +310,18 @@ SetBlinker(playerid, vehicleId, bool:left, bool:right) {
 
 // This resets the whole blinking status and removes the objects.
 StopBlinking(playerid) {
-    DestroyDynamicBlinkerObject(playerid, 0);
-    DestroyDynamicBlinkerObject(playerid, 1);
-    DestroyDynamicBlinkerObject(playerid, 2);
-    DestroyDynamicBlinkerObject(playerid, 3);
+    for (new index = 0; index < 4; ++index)
+        DestroyDynamicBlinkerObject(playerid, index);
 }
 
 // Remove object if there is an object at the |index| for the |playerid|
 DestroyDynamicBlinkerObject(playerid, index) {
-    if (IsValidDynamicObject(g_blinkerObjects[playerid][index])) {
-        DestroyDynamicObject(g_blinkerObjects[playerid][index]);
-    }    
+    if (g_blinkerObjects[playerid][index] == DynamicObject: INVALID_STREAMER_ID)
+        return;
+
+    DestroyDynamicObject(g_blinkerObjects[playerid][index]);
+
+    g_blinkerObjects[playerid][index] = DynamicObject: INVALID_STREAMER_ID;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
@@ -374,6 +375,10 @@ public OnPlayerDeath(playerid, killerid, reason) {
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
 #if Feature::EnableServerSideWeaponConfig == 0
     DetectAbuseOnWeaponShot(playerid, hittype, hitid);
+
+    if (PlayerSyncedData(playerid)->skipDamage())
+        return 0;
+
 #endif
     return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }

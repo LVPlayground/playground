@@ -231,7 +231,6 @@ CExport__OnEnterCheckpoint( playerid )
                 GiveRegulatedMoney(playerid, VehicleExportReward, floatround(fHealth));
                 format( string, sizeof( string ), "You have already exported %d vehicles!", playerVehExp[ playerid ] );
                 SendClientMessage( playerid, COLOR_ORANGE, string );
-                CAchieve__Export(playerid, playerVehExp[playerid]);
 
                 Instrumentation->recordActivity(VehicleExportActivity, playerVehicleModel);
 

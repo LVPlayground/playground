@@ -29,7 +29,6 @@ export class SprayTags extends CollectableBase {
     manager_ = null;
 
     // Maps with per-player information on progress statistics and the created tag objects.
-    playerStatistics_ = new Map();
     playerTags_ = new Map();
 
     constructor(collectables, manager) {
@@ -65,19 +64,11 @@ export class SprayTags extends CollectableBase {
         }
     }
 
-    // Counts the number of collectables that the player has collected already. Returns a structure
-    // in the format of { total, round }, both of which are numbers.
-    countCollectablesForPlayer(player) {
-        const statistics = this.playerStatistics_.get(player);
-        return {
-            total: statistics?.collected.size ?? 0,
-            round: statistics?.collectedRound.size ?? 0,
-        };
-    }
-
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
+        super.clearCollectablesForPlayer(player);
+
         if (!this.playerTags_.has(player))
             return;  // the |player| hasn't had their state initialized
         
@@ -86,7 +77,6 @@ export class SprayTags extends CollectableBase {
             tag.dispose();
         
         this.playerTags_.delete(player);
-        this.playerStatistics_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -99,7 +89,7 @@ export class SprayTags extends CollectableBase {
         if (this.playerTags_.has(player))
             this.clearCollectablesForPlayer(player);
         
-        this.playerStatistics_.set(player, statistics);
+        this.setPlayerStatistics(player, statistics);
 
         const tags = new Map();
         for (const [ sprayTagId, { position, rotation } ] of this.getCollectables()) {
@@ -121,19 +111,6 @@ export class SprayTags extends CollectableBase {
         this.playerTags_.set(player, tags);
     }
 
-    // Called when the |player| wants to start a new round for these collectables. Their state
-    // should thus be reset to that of a new player, without losing benefits.
-    startCollectableRoundForPlayer(player) {
-        const statistics = this.playerStatistics_.get(player);
-        if (!statistics)
-            throw new Error(`There are no statistics known for ${player.name}.`);
-        
-        statistics.collectedRound = new Set();
-        statistics.round++;
-
-        this.refreshCollectablesForPlayer(player, statistics);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     // Called when a spray tag has to be processed for the given |playerid|. When they're close
@@ -143,7 +120,7 @@ export class SprayTags extends CollectableBase {
         if (!player)
             return;  // the |player| is not connected to the server, an invalid event
 
-        if (!this.playerTags_.has(player) || !this.playerStatistics_.has(player))
+        if (!this.playerTags_.has(player) || !this.hasPlayerStatistics(player))
             return;  // the |player| hasn't had their state initialized
         
         const kTotalSprayTags = this.getCollectableCount();
@@ -151,7 +128,7 @@ export class SprayTags extends CollectableBase {
         const playerPosition = player.position;
         const playerRotation = player.rotation;
         
-        const statistics = this.playerStatistics_.get(player);
+        const statistics = this.getPlayerStatistics(player);
 
         const target = playerPosition.translateTo2D(kSprayTargetDistance, playerRotation);
         const tags = this.playerTags_.get(player);
@@ -164,7 +141,7 @@ export class SprayTags extends CollectableBase {
             if (position.distanceTo(target) > kSprayTargetMaximumDistance)
                 continue;  // this |tag| is too far away
             
-            let remaining = kTotalSprayTags - this.countCollectablesForPlayer(player) - 1;
+            let remaining = kTotalSprayTags - this.countCollectablesForPlayer(player).round - 1;
             let message = null;
 
             // Compose an appropriate message to show to the player now that they've tagged a
@@ -190,7 +167,7 @@ export class SprayTags extends CollectableBase {
 
             this.awardAchievementWhenApplicable(player);
             this.manager_.markCollectableAsCollected(
-                player, CollectableDatabase.kSprayTag, statistics.rounds, sprayTagId);
+                player, CollectableDatabase.kSprayTag, statistics.round, sprayTagId);
 
             // Delete the |tag|, since the player will no longer be needing it. Instead, we create
             // a new tag in the same position with the |kSprayTagTaggedModelId|.

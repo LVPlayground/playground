@@ -126,14 +126,9 @@
     <DiskObject>\Features\Deathmatch\Weapons\</DiskObject>
     <DiskObject>\Features\Deathmatch\Weapons\SpawnWeaponCommands.pwn</DiskObject>
     <DiskObject>\Features\Deathmatch\Weapons\SpawnWeaponManager.pwn</DiskObject>
-    <DiskObject>\Features\Debug.pwn</DiskObject>
-    <DiskObject>\Features\Debug\</DiskObject>
-    <DiskObject>\Features\Debug\BetaCommands.pwn</DiskObject>
     <DiskObject>\Features\Environment.pwn</DiskObject>
     <DiskObject>\Features\Environment\</DiskObject>
     <DiskObject>\Features\Environment\Services\</DiskObject>
-    <DiskObject>\Features\Environment\Services\Gunther.pwn</DiskObject>
-    <DiskObject>\Features\Environment\Services\PlanePilot.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\ServiceController.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\ServiceSettings.pwn</DiskObject>
     <DiskObject>\Features\Environment\Services\TrainController.pwn</DiskObject>

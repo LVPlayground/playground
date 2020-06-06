@@ -68,6 +68,8 @@ export class MuteCommands {
                 if (playerMuted && !this.muted_.has(player))
                     this.muted_.add(player);
                 else if (!playerMuted && this.muted_.has(player)) {
+                    this.muted_.delete(player);
+
                     player.sendMessage(Message.MUTE_UNMUTED_AUTO);
 
                     this.announce_().announceToAdministrators(

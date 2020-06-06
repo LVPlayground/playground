@@ -11,6 +11,7 @@ import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 import { formatDate } from 'base/time.js';
 import { format } from 'base/string_formatter.js';
+import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.
 const kRegistrationFile = 'data/commands/register.json';
@@ -74,6 +75,9 @@ export class AccountCommands {
             information: this.getSettingValue('info_visibility'),
             record: this.getSettingValue('record_visibility'),
             sessions: this.getSettingValue('session_visibility'),
+
+            // Special case: Beta-server features for amending otherwise immutable settings.
+            beta: this.settings_().getValue('playground/enable_beta_features'),
         };
 
         const dialog = new Menu('Account management');
@@ -125,6 +129,14 @@ export class AccountCommands {
             dialog.addItem(
                 'View recent sessions',
                 AccountCommands.prototype.displaySessions.bind(this, currentPlayer, targetPlayer));
+        }
+
+        // Enables the |player| to change their own settings, otherwise restricted to Management
+        // members. They can give themselves VIP rights, and change their own level.
+        if (features.beta) {
+            dialog.addItem(
+                '{90CAF9}[Beta] Manage your account',
+                AccountCommands.prototype.displayManage.bind(this, currentPlayer, targetPlayer));
         }
 
         if (!dialog.hasItems()) {
@@ -278,8 +290,35 @@ export class AccountCommands {
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+        if (this.settings_().getValue('account/password_admin_joke')) {
+            let fakePassword = null;
+            switch (random(4)) {
+                case 0:
+                    fakePassword = player.name.toLowerCase().replace(/[^a-zA-Z]/g, '');
+                    for (const [ before, after ] of [ ['a', 4], ['e', 3], ['i', 1], ['o', 0] ])
+                        fakePassword = fakePassword.replaceAll(before, after);
+
+                    break;
+                case 1:
+                    fakePassword =
+                        player.name.toLowerCase().replace(/[^a-zA-Z]/g, '') +
+                            (random(1000, 9999).toString());
+                    break;
+                case 2:
+                    fakePassword = '1' + player.name.toLowerCase().replace(/[^a-zA-Z]/g, '') + '1';
+                    break;
+                case 3:
+                    fakePassword = ['deagle', 'sawnoff', 'gtasa', 'lvpsux', 'password'][random(5)];
+                    fakePassword += random(100, 999).toString();
+                    break;
+            }
+
+            this.announce_().announceToAdministrators(
+                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED2, player.name, player.id, fakePassword);
+        } else {
+            this.announce_().announceToAdministrators(
+                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+        }
 
         return alert(player, {
             title: 'Account management',
@@ -549,6 +588,86 @@ export class AccountCommands {
 
             display.addItem(date, session.nickname, duration, session.ip);
         }
+
+        await display.displayForPlayer(currentPlayer);
+    }
+
+    // Displays a menu that allows players to manage their own account. This feature is only enabled
+    // when the Beta functionality has been set for this server.
+    async displayManage(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+
+        const summary = await this.database_.getPlayerSummaryInfo(player.name);
+        if (!summary)
+            return;  // something is fishy
+
+        const display = new Menu('Account management for ' + player.name, [
+            'Setting',
+            'Value',
+        ]);
+
+        // Enables the |player| to change their own level. They will be force disconnected after
+        // making changes, to make sure it propagates appropriately.
+        display.addItem('Level', summary.level, async () => {
+            const updateLevel = async (targetLevel) => {
+                if (targetLevel === summary.level) {
+                    return await alert(currentPlayer, {
+                        title: 'Account management for ' + player.name,
+                        message: `${player.name}'s level already is ${targetLevel}.`
+                    });
+                }
+
+                await this.database_.setUserLevel(summary.user_id, targetLevel);
+                await alert(currentPlayer, {
+                    title: 'Account management for ' + player.name,
+                    message: 'The level has been changed. They will now be force disconnected.'
+                });
+
+                this.announce_().announceToAdministrators(
+                    Message.ACCOUNT_ADMIN_LEVEL_CHANGED, player.name, player.id, targetLevel);
+
+                wait(1000).then(() => player.kick());
+            };
+
+            const options = new Menu('Account management for ' + player.name);
+
+            for (const level of ['Player', 'Administrator', 'Management'])
+                options.addItem(level, updateLevel.bind(null, level))
+            
+            await options.displayForPlayer(currentPlayer);
+        });
+    
+        // Enables the |player| to give themselves VIP rights, or take them away. They will be
+        // force disconnected after making changes, to make sure it propagates appropriately.
+        display.addItem('VIP', summary.is_vip ? 'Yes' : 'No', async () => {
+            const updateVip = async (targetSetting) => {
+                if (targetSetting === !!summary.is_vip) {
+                    return await alert(currentPlayer, {
+                        title: 'Account management for ' + player.name,
+                        message: `${player.name}'s VIP status remains unchanged.`
+                    });
+                }
+
+                await this.database_.setUserVip(summary.user_id, targetSetting);
+                await alert(currentPlayer, {
+                    title: 'Account management for ' + player.name,
+                    message: 'The VIP status has been changed. They will now be force disconnected.'
+                });
+
+                this.announce_().announceToAdministrators(
+                    Message.ACCOUNT_ADMIN_VIP_CHANGED, player.name, player.id,
+                    targetSetting ? 'enabled' : 'disabled');
+
+                wait(1000).then(() => player.kick());
+            };
+
+            const options = new Menu('Account management for ' + player.name);
+
+            options.addItem('Regular player', updateVip.bind(null, false));
+            options.addItem('VIP player', updateVip.bind(null, true));
+            
+            await options.displayForPlayer(currentPlayer);
+        });
 
         await display.displayForPlayer(currentPlayer);
     }

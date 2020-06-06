@@ -10,8 +10,11 @@
   "ACCOUNT_ADMIN_ALIAS_CREATED": "%s (Id:%d) has added %s as an alias for their account.",
   "ACCOUNT_ADMIN_ALIAS_DELETED": "%s (Id:%d) has deleted %s as an alias for their account.",
   "ACCOUNT_ADMIN_CREATED": "%s (Id:%d) has registered an account in their name.",
+  "ACCOUNT_ADMIN_LEVEL_CHANGED": "%s (Id:%d) has changed their level to %s.",
   "ACCOUNT_ADMIN_NICKNAME_CHANGED": "%s (Id:%d) has changed their nickname to %s.",
   "ACCOUNT_ADMIN_PASSWORD_CHANGED": "%s (Id:%d) has changed their password.",
+  "ACCOUNT_ADMIN_PASSWORD_CHANGED2": "%s (Id:%d) has changed their password to \"%s\".",
+  "ACCOUNT_ADMIN_VIP_CHANGED": "%s (Id:%d) has changed their VIP status to %s.",
   "ACCOUNT_NOT_AVAILABLE": "@error All account management options have been disabled.",
   "ACCOUNT_NOT_REGISTERED": "@error %s is not a registered account. Create yours on https://sa-mp.nl/!",
 
@@ -19,7 +22,7 @@
   "ACHIEVEMENT_BOMB_SHOP": "{00E676}* You can now use the Vehicle Bomb Shop in Las Venturas!",
   "ACHIEVEMENT_VEHICLE_COLOR": "{00E676}* You can now change your vehicle's colour by clicking on numpad 4!",
   "ACHIEVEMENT_VEHICLE_JUMP": "{00E676}* You can now jump in your vehicle outside of Las Venturas by using the horn!",
-  "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}/%s{00E676} and {388E3C}/%s{00E676} commands to spawn vehicles!",
+  "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}%s{00E676} and {388E3C}%s{00E676} commands to spawn vehicles!",
 
   "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
   "ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has made an announcement: %s",
@@ -405,6 +408,7 @@
   "LVP_RELOAD_MESSAGES_SUCCESS": "@success %d messages have been reloaded (was: %d messages)",
   "LVP_RELOAD_NOT_ELIGIBLE": "@error The {FF8282}%s{FFFFFF} feature is not eligible for live reloading.",
   "LVP_RELOAD_RELOADED": "@success The %s feature has been reloaded.",
+  "LVP_SKIP_DAMAGE_UPDATED": "@success %s will %s be subject to skip damage effects.",
   "LVP_SETTING_INVALID_NUMBER": "Whuh? {FFA500}%s{A9C4E4} is not a number, you silly billy!",
   "LVP_SETTING_INVALID_STRING": "Whuh? Your value needs to be between [1, 255] characters!",
   "LVP_SETTING_TOGGLED": "The {FFA500}%s{A9C4E4} setting has been %s.",

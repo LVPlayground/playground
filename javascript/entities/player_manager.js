@@ -193,7 +193,7 @@ class PlayerManager {
         if (!player)
             return;  // the event has been received for an invalid player
         
-        player.messagelevel = event.messagelevel;
+        player.messageLevel = event.messagelevel;
     }
 
     // Called when the |player|'s nickname has changed into something else. Optionally, if the
@@ -358,8 +358,14 @@ class PlayerManager {
                 prototype = Object.getPrototypeOf(prototype);
 
             // If such a prototype has been found, call the |eventName| on it.
-            if (prototype)
+            if (!prototype)
+                continue;
+            
+            try {
                 prototype[eventName].call(observer, ...args);
+            } catch (exception) {
+                console.log(exception);
+            }
         }
     }
 

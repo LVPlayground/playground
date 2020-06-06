@@ -215,6 +215,8 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     });
 
     it('should enable players to change their password', async (assert) => {
+        settings.setValue('account/password_admin_joke', false);
+
         assert.isTrue(database.canUpdatePasswords());
         
         await gunther.identify({ userId: 42 });
@@ -586,6 +588,43 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         assert.includes(
             russell.messages[0],
             Message.format(Message.ACCOUNT_ADMIN_CREATED, gunther.name, gunther.id));
+    });
+
+    it('should enable players on the beta server to change their account', async (assert) => {
+        settings.setValue('playground/enable_beta_features', true);
+
+        gunther.name = 'Ricky92';  // Gunther has special behaviour
+
+        await gunther.identify({ userId: 42, vip: 1 });      
+        await russell.identify({ userId: 42, vip: 1 });  
+
+        // (1) Enable Gunther to change themselves to become an administrator.
+        gunther.respondToDialog({ listitem: 6 /* Manage account info */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Change level */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Administrator */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Acknowledge */ }));
+
+        assert.isTrue(await gunther.issueCommand('/account'));
+        assert.includes(gunther.lastDialog, 'level has been changed');
+        assert.isTrue(gunther.isConnected());
+
+        await server.clock.advance(1000);
+
+        assert.isFalse(gunther.isConnected());
+
+        // (2) Enable Russell to revoke their own VIP rights.
+        russell.respondToDialog({ listitem: 6 /* Manage account info */ }).then(
+            () => russell.respondToDialog({ listitem: 1 /* Change VIP */ })).then(
+            () => russell.respondToDialog({ listitem: 0 /* Regular Player */ })).then(
+            () => russell.respondToDialog({ response: 0 /* Acknowledge */ }));
+
+        assert.isTrue(await russell.issueCommand('/account'));
+        assert.includes(russell.lastDialog, 'VIP status has been changed');
+        assert.isTrue(russell.isConnected());
+
+        await server.clock.advance(1000);
+
+        assert.isFalse(russell.isConnected());
     });
 
     it('should be able to display the recent sessions of a player', async (assert) => {

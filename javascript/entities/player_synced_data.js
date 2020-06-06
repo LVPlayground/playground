@@ -12,6 +12,7 @@ class PlayerSyncedData {
         this.isolated_ = false;
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
+        this.skipDamage_ = false;
         this.vehicleKeys_ = 0;
     }
 
@@ -48,6 +49,17 @@ class PlayerSyncedData {
 
         this.minigameName_ = value;
         this.sync(PlayerSyncedData.MINIGAME_NAME, value);
+    }
+
+    // Gets or sets whether this player should skip damage. That means that they won't be able to
+    // inflict any damage on any other players, all their shots will be muted.
+    get skipDamage() { return this.skipDamage_; }
+    set skipDamage(value) {
+        if (typeof value !== 'boolean')
+            throw new Error('The `skipDamage` property must be a boolean.');
+
+        this.skipDamage_ = value;
+        this.sync(PlayerSyncedData.SKIP_DAMAGE, value);
     }
 
     // Gets or sets the vehicle keys, which control which vehicle shortcuts are available to the
@@ -90,6 +102,7 @@ class PlayerSyncedData {
                 break;
 
             case PlayerSyncedData.ISOLATED:
+            case PlayerSyncedData.SKIP_DAMAGE:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            value ? 1 : 0, 0.0 /* invalid float */, '' /* empty string */);
                 break;
@@ -128,11 +141,12 @@ class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-// Next ID: 5
+// Next ID: 6
 PlayerSyncedData.COLLECTABLES = 3;
 PlayerSyncedData.ISOLATED = 1;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
+PlayerSyncedData.SKIP_DAMAGE = 5;
 PlayerSyncedData.VEHICLE_KEYS = 4;
 
 

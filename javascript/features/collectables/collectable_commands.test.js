@@ -30,7 +30,7 @@ describe('CollectableCommands', (it, beforeEach) => {
             rows: [
                 [
                     'Achievements',
-                    '{CCCCCC}not started',
+                    '2 / 13',
                 ],
                 [
                     '{FF5252}Red Barrels',
@@ -38,7 +38,7 @@ describe('CollectableCommands', (it, beforeEach) => {
                 ],
                 [
                     '{B2FF59}Spray Tags',
-                    '2 / 100',
+                    '2 / 100 {80ff00}(round 2)',
                 ],
             ]
         });

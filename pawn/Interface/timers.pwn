@@ -105,8 +105,6 @@ class DeprecatedTimerRuntime {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
                 continue;
 
-            SetPlayerScore(playerId, GetPlayerMoney(playerId));
-
             if (iPlayerRampTime [playerId] > 0)
             {
                 if (Time->currentTime() - iPlayerRampTime [playerId] > 2)
@@ -141,13 +139,6 @@ class DeprecatedTimerRuntime {
 
     @list(MinuteTimer)
     public onMinuteTimerTick() {
-        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-            if (Player(playerId)->isConnected() == false)
-                continue;
-
-            CAchieve__CheckIngameHours(playerId);
-        }
-
         TaxUpdate();
 
         if (++m_threeMinuteTicker == 3) {

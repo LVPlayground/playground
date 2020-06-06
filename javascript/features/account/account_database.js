@@ -254,6 +254,25 @@ const CREATE_MUTABLE_ACCOUNT_QUERY = `
     VALUES
         (?)`;
 
+// Query to change permanently the level of a particular player, keyed by user Id.
+const PLAYER_BETA_SET_LEVEL = `
+    UPDATE
+        users
+    SET
+        users.level = ?
+    WHERE
+        users.user_id = ?`;
+
+// Query to change whether a particular player, keyed by user Id, has VIP rights.
+const PLAYER_BETA_SET_VIP = `
+    UPDATE
+        users
+    SET
+        users.is_vip = ?
+    WHERE
+        users.user_id = ?`;
+    
+    
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
 
@@ -808,5 +827,15 @@ export class AccountDatabase {
             server.database.query(CREATE_MUTABLE_ACCOUNT_QUERY, results.insertId),
             server.database.query(CREATE_NICKNAME_ACCOUNT_QUERY, results.insertId, username),    
         ]);
+    }
+
+    // Changes the level of the |userId| to the given |level|.
+    async setUserLevel(userId, level) {
+        await server.database.query(PLAYER_BETA_SET_LEVEL, level, userId);
+    }
+
+    // Changes whether the |userId| has VIP rights or not.
+    async setUserVip(userId, vip) {
+        await server.database.query(PLAYER_BETA_SET_VIP, (!!vip) ? 1 : 0, userId);
     }
 }

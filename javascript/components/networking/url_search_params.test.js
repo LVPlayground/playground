@@ -105,4 +105,28 @@ describe('URLSearchParams', it => {
         assert.equal(unsortedParams.toString(), 'b=1&a=2&d=3&c=4');
         assert.equal(sortedParams.toString(), 'a=2&b=1&c=4&d=3');
     });
+
+    it('is able to encode and decode the parameter values', assert => {
+        const complexParams = new URLSearchParams();
+
+        complexParams.set('cömplex', 'las ventuars playground');
+        complexParams.set('t&est=1', '[object Object]');
+
+        const serialized = complexParams.toString();
+
+        assert.strictEqual(
+            serialized, 'c%C3%B6mplex=las+ventuars+playground&t%26est%3D1=%5Bobject+Object%5D');
+
+        const recoveredParams = new URLSearchParams(serialized);
+
+        assert.isTrue(recoveredParams.has('cömplex'));
+        assert.equal(recoveredParams.get('cömplex'), 'las ventuars playground');
+
+        assert.isTrue(recoveredParams.has('t&est=1'));
+        assert.equal(recoveredParams.get('t&est=1'), '[object Object]');
+
+        const reserialized = recoveredParams.toString();
+        
+        assert.strictEqual(serialized, reserialized);
+    });
 });

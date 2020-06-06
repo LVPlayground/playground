@@ -22,7 +22,7 @@ export class Request extends Body {
     #headers_ = null;
 
     // Unsupported: destination
-    // Unsupported: referrer
+    #referrer_ = null;
     // Unsupported: referrerPolicy
     // Unsupported: mode
     // Unsupported: credentials
@@ -62,6 +62,8 @@ export class Request extends Body {
         this.#url_ = input;
         this.#headers_ = new Headers(init.headers ?? null);
 
+        this.#referrer_ = init.referrer ?? 'https://play.sa-mp.nl/';
+
         if (contentType !== null)
             this.#headers_.set('Content-Type', contentType);
     }
@@ -74,4 +76,7 @@ export class Request extends Body {
 
     // Gets the headers, as a Headers instance, that will apply to this request.
     get headers() { return this.#headers_; }
+
+    // Gets the referrer URL of the source of this request.
+    get referrer() { return this.#referrer_; }
 }

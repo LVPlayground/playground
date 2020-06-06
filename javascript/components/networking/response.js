@@ -26,8 +26,7 @@ export class Response extends Body {
     #headers_ = null;
 
     constructor(bodyInit = null, init = {}) {
-        // TODO: |bodyInit|
-        super();
+        super(bodyInit);
 
         this.#url_ = init.url ?? undefined;
         this.#redirected_ = init.redirected ?? false;

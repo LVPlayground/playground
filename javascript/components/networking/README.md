@@ -27,6 +27,7 @@ This component provides implementations for the following parts of the standard:
   * [Response](response.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Response))
   * [URLSearchParams](url_search_params.js)
     ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams))
+  * [URL](url.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/URL))
 
 Further, [utf-8.js](utf-8.js) contains encoders and decoders between strings and UTF-8 array buffers
 gratefully using the [utf.js](https://github.com/DesWurstes/utf.js) library.

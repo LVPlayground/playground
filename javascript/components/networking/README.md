@@ -19,7 +19,11 @@ fetch('https://sa-mp.nl/', {
 
 This component provides implementations for the following parts of the standard:
 
+  * [Body](body.js)
   * [Headers](headers.js)
 
 Non-compliance with any part of the standard is considered a bug, although we may decide to not
 implement certain pieces of functionality that aren't applicable for our usage.
+
+## TODO
+  * Serialize/deserialize `FormData`

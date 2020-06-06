@@ -9,7 +9,10 @@ export function arrayBufferToFormData(arrayBuffer) {
 
 // TODO
 export function formDataToArrayBuffer(formData) {
-    return new ArrayBuffer();
+    return {
+        boundary: 'x',
+        data: new ArrayBuffer(),
+    };
 }
 
 // Implements the FormData Web interface. Note that, unlike `Headers`, names are case sensitive.

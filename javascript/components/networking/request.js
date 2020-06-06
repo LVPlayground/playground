@@ -45,7 +45,9 @@ export class Request extends Body {
         } else if (init.body instanceof ArrayBuffer || ArrayBuffer.isView(init.body)) {
             super(init.body);  // body based on an array buffer
         } else if (init.body instanceof FormData) {
-            super(formDataToArrayBuffer(init.body));  // body based on FormData
+            const encoded = formDataToArrayBuffer(init.body);
+            super(formDataToArrayBuffer(encoded.data));  // body based on FormData
+            contentType = 'multipart/form-data; boundary=' + encoded.boundary;
         } else if (init.body instanceof URLSearchParams) {
             super(stringToUtf8Buffer(init.body.toString()));  // body based on URLSearchParams
             contentType = 'application/x-www-form-urlencoded;charset=UTF-8';

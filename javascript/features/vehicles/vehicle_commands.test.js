@@ -661,8 +661,8 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should be able to tell the density of vehicles around the administrator', async(assert) => {
-        // Only administrators can compute the density level around them.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        // Only Management can compute the density level around them.
+        gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Create three vehicles of two different models around the player's position.
         for (const modelId of [520, 520, 411]) {
@@ -829,8 +829,8 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should be able to reset the vehicle layout on the server', async(assert) => {
-        // Only administrators can reset vehicles on the server.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        // Only Management can reset vehicles on the server.
+        gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(createVehicleForPlayer(gunther));
         assert.isNotNull(gunther.vehicle);

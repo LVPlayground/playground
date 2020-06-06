@@ -15,7 +15,7 @@ export class Body {
         if (!data) {
             this.#body_ = new ArrayBuffer();
         } else {
-            if (typeof data === 'ArrayBuffer')
+            if (data instanceof ArrayBuffer)
                 this.#body_ = data;
             else if (ArrayBuffer.isView(data))
                 this.#body_ = data.buffer;

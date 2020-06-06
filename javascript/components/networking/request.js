@@ -1,0 +1,67 @@
+// Copyright 2020 Las Venturas Playground. All rights reserved.
+// Use of this source code is governed by the MIT license, a copy of which can
+// be found in the LICENSE file.
+
+import { Body } from 'components/networking/body.js';
+import { FormData } from 'components/networking/form_data.js';
+import { Headers } from 'components/networking/headers.js';
+import { URLSearchParams } from 'components/networking/url_search_params.js';
+
+import { formDataToArrayBuffer } from 'components/networking/form_data.js';
+import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
+
+// Implementation of the Request class from the Fetch API:
+// https://fetch.spec.whatwg.org/#request-class
+//
+// Many of the properties supported by the Request class are intended for use in browsers, which do
+// not cleanly map to use in alternative environments like ours. Therefore a series of properties
+// will continue to be unsupported, whereas we will implement what makes sense.
+export class Request extends Body {
+    #method_ = null;
+    #url_ = null;
+    #headers_ = null;
+
+    // Unsupported: destination
+    // Unsupported: referrer
+    // Unsupported: referrerPolicy
+    // Unsupported: mode
+    // Unsupported: credentials
+    // Unsupported: cache
+    // Unsupported: redirect
+    // Unsupported: integrity
+    // Unsupported: keepalive
+    // Unsupported: isReloadNavigation
+    // Unsupported: isHistoryNavigation
+    // Unsupported: signal
+
+    constructor(input, init = {}) {
+        if (typeof input !== 'string')
+            throw new Error(`Sorry, only URL strings are supported as |input| for now.`);
+
+        if (typeof init.body === 'undefined' || init.body === null)
+            super();  // empty body
+        else if (init.body instanceof ArrayBuffer || ArrayBuffer.isView(init.body))
+            super(init.body);  // body based on an array buffer
+        else if (init.body instanceof FormData)
+            super(formDataToArrayBuffer(init.body));  // body based on FormData
+        else if (init.body instanceof URLSearchParams)
+            super(stringToUtf8Buffer(init.body.toString()));  // body based on URLSearchParams
+        else if (typeof init.body === 'string')
+            super(stringToUtf8Buffer(init.body));  // body based in textual data
+        else
+            throw new Error(`Unrecognised body information given: ${init.body}`);
+
+        this.#method_ = init.method ?? 'GET';
+        this.#url_ = input;
+        this.#headers_ = new Headers(init.headers ?? null);
+    }
+
+    // Gets the method that will be used for this request ('GET', 'POST', etc...)
+    get method() { return this.#method_; }
+
+    // Gets the URL that will be used for this request.
+    get url() { return this.#url_; }
+
+    // Gets the headers, as a Headers instance, that will apply to this request.
+    get headers() { return this.#headers_; }
+}

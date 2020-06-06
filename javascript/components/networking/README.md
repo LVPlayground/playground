@@ -20,12 +20,13 @@ fetch('https://sa-mp.nl/', {
 
 This component provides implementations for the following parts of the standard:
 
-  * [Body](body.js)
-  * [FormData](form_data.js)
-  * [Headers](headers.js)
-  * [Request](request.js)
-  * [Response](response.js)
+  * [Body](body.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Body))
+  * [FormData](form_data.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/FormData))
+  * [Headers](headers.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Headers))
+  * [Request](request.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Request))
+  * [Response](response.js) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Response))
   * [URLSearchParams](url_search_params.js)
+    ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams))
 
 Further, [utf-8.js](utf-8.js) contains encoders and decoders between strings and UTF-8 array buffers
 gratefully using the [utf.js](https://github.com/DesWurstes/utf.js) library.

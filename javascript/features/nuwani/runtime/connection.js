@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
-import { stringToUtf8Buffer, utf8BufferToString } from 'features/nuwani/runtime/encoding.js';
+import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
 // Number of seconds to wait before considering a connection as having failed.
 const kConnectionTimeoutSec = 10;

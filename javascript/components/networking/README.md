@@ -30,7 +30,3 @@ gratefully using the [utf.js](https://github.com/DesWurstes/utf.js) library.
 
 Non-compliance with any part of the standard is considered a bug, although we may decide to not
 implement certain pieces of functionality that aren't applicable for our usage.
-
-## TODO
-  * Serialize/deserialize `FormData`
-  * Escape values in `URLSearchParams` stringifier

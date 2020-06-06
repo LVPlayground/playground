@@ -47,6 +47,13 @@ describe('Request', it => {
         assert.equal((await arrayBufferViewRequest.text()), 'Hello');
 
         // (3) FormData data.
+        const data = new FormData();
+        data.append('foo', 'bar');
+        data.append('baz', 'qux');
+        data.appendFile('upload', 'data.txt', 'this is lvppppp', 'text/plain');
+
+        const dataRequest = new Request('https://sa-mp.nl/', { body: data });
+        assert.equal((await dataRequest.text()).length, 373);
 
         // (4) URLSearchParams data.
         const params = new URLSearchParams([

@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { arrayBufferToFormData } from 'components/networking/form_data.js';
 import { utf8BufferToString } from 'components/networking/utf-8.js';
 
 // Implementation of the Body mixin of the Fetch API. We don't support mixins in our environment,
@@ -39,7 +38,7 @@ export class Body {
 
     async blob() { throw new Error(`Blobs are not supported in LVP code.`); }
 
-    async formData() { return arrayBufferToFormData(this.#body_); }
+    async formData() { throw new Error(`FormData deserialization is not supported in LVP code.`); }
 
     async json() { return JSON.parse(await this.text()); }
 

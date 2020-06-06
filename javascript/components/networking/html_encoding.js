@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { random } from 'base/random.js';
 import { range } from 'base/range.js';
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
@@ -76,4 +77,28 @@ export function encode(value) {
     }
 
     return utf8BufferToString(new Uint8Array(output));
+}
+
+// Quotes the given |string|, meaning that new lines, carriage returns and quotes will be escaped.
+export function quote(value) {
+    return value.replaceAll('\n', '%0A')
+                .replaceAll('\r', '%0D')
+                .replaceAll('"', '%22');
+}
+
+// Generates a boundary for multi-part form mime encoding.
+export function generateBoundary() {
+    const kAcceptedCharacters = [
+        ...range(0x30, 0x39), 0x39,  // numbers
+        ...range(0x41, 0x5A), 0x5A,  // uppercase characters
+        ...range(0x61, 0x7A), 0x7A,  // lowercase characters
+    ];
+
+    const kLength = 16;
+
+    let boundary = '----lvpFormBoundary';
+    for (let char = 0; char < kLength; ++char)
+        boundary += String.fromCharCode(kAcceptedCharacters[random(kAcceptedCharacters.length)]);
+
+    return boundary;
 }

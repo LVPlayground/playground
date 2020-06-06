@@ -12,7 +12,6 @@ describe('Body', it => {
         const emptyBody = new Body();
 
         assert.equal((await emptyBody.arrayBuffer()).byteLength, 0);
-        assert.instanceOf(await emptyBody.formData(), FormData);
         assert.equal((await emptyBody.text()).length, 0);
 
         const jsonBody = new Body(stringToUtf8Buffer('[ "Hello!" ]'));

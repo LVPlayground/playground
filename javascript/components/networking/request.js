@@ -46,7 +46,7 @@ export class Request extends Body {
             super(init.body);  // body based on an array buffer
         } else if (init.body instanceof FormData) {
             const encoded = formDataToArrayBuffer(init.body);
-            super(formDataToArrayBuffer(encoded.data));  // body based on FormData
+            super(encoded.data);  // body based on FormData
             contentType = 'multipart/form-data; boundary=' + encoded.boundary;
         } else if (init.body instanceof URLSearchParams) {
             super(stringToUtf8Buffer(init.body.toString()));  // body based on URLSearchParams

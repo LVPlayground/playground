@@ -23,6 +23,7 @@ This component provides implementations for the following parts of the standard:
   * [FormData](form_data.js)
   * [Headers](headers.js)
   * [Request](request.js)
+  * [URLSearchParams](url_search_params.js)
 
 Further, [utf-8.js](utf-8.js) contains encoders and decoders between strings and UTF-8 array buffers
 gratefully using the [utf.js](https://github.com/DesWurstes/utf.js) library.
@@ -32,3 +33,4 @@ implement certain pieces of functionality that aren't applicable for our usage.
 
 ## TODO
   * Serialize/deserialize `FormData`
+  * Escape values in `URLSearchParams` stringifier

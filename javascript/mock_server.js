@@ -44,6 +44,7 @@ import Gangs from 'features/gangs/gangs.js';
 import Haystack from 'features/haystack/haystack.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
@@ -95,6 +96,7 @@ class MockServer {
             gangs: Gangs,
             haystack: Haystack,
             nuwani: MockNuwani,
+            player_commands: PlayerCommands,
             player_settings: PlayerSettings,
             playground: MockPlayground,
             punishments: Punishments,

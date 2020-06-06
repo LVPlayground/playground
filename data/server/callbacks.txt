@@ -17,6 +17,8 @@ forward OnGiveWeapon(playerId, weaponId, ammo);
 forward OnResetPlayerWeapons(playerId);
 forward OnRemovePlayerWeapon(playerId, weaponId);
 forward OnPlayerCommand(playerid, cmdtext[]);
+forward OnGiveSpawnArmour(playerId);
+forward OnGiveSpawnWeapon(playerId, weaponId, multiplier);
 
 # Streamer callbacks
 [Deferred] forward OnDynamicObjectMoved(objectid);

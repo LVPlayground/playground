@@ -4,9 +4,10 @@
 
 // The playerCommand can be used by using /my [playerCommand] [params]
 export class PlayerCommand {
-    constructor(announce, nuwani) {
+    constructor(abuse, announce, finance) {
+        this.abuse_ = abuse;
         this.announce_ = announce;
-        this.nuwani_ = nuwani;
+        this.finance_ = finance;
     }
 
     // Gets the name of the current command. Must be implemented by the command.

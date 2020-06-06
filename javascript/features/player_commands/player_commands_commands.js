@@ -10,19 +10,22 @@ const COMMAND_BASE_PATH = 'features/player_commands/commands'
 
 // This registers all player commands handled in JavaScript
 export class PlayerCommandsCommands {
-    constructor() {
+    constructor(abuse, announce, finance) {
+        this.abuse_ = abuse;
+        this.announce_ = announce;
+        this.finance_ = finance;
     }
 
-    async buildCommands() {        
+    async buildCommands() {
         const commandBuilder = server.commandManager.buildCommand('my')
             .restrict(Player.LEVEL_PLAYER)
-            .parameters([ { name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true } ]);
+            .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
         await this.loadSubCommands(commandBuilder);
         commandBuilder.build(PlayerCommandsCommands.prototype.onMyCommand.bind(this));
     }
 
     async loadSubCommands(parentCommand) {
-        glob(COMMAND_DATA_DIRECTORY, '.*\.js').forEach(
+        glob(COMMAND_DATA_DIRECTORY, '^((?!test).)*\.js$').forEach(
             async file => await this.registerSubCommand(parentCommand, (COMMAND_BASE_PATH + '/' + file)));
     }
 
@@ -30,14 +33,13 @@ export class PlayerCommandsCommands {
         const CommandImplementation = (await import(fileLocation)).default;
         if (!CommandImplementation instanceof PlayerCommand)
             throw new Error(fileLocation + ' does not contain a player command.');
-            
-        const command = new CommandImplementation();
+
+        const command = new CommandImplementation(this.abuse_, this.announce_, this.finance_);
 
         command.build(parentCommand.sub(command.name));
     }
 
     onMyCommand(player, parameters) {
-        console.log(parameters);
         wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/my ' + parameters ?? ''));
     }
 

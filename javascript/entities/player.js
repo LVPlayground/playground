@@ -186,6 +186,14 @@ export class Player extends Supplementable {
     // Section: Weapons
     // ---------------------------------------------------------------------------------------------
 
+    giveSpawnWeapon(weaponId, multiplier) {
+        wait(0).then(() => pawnInvoke('OnGiveSpawnWeapon', 'iii', this.#id_, weaponId, multiplier))
+    }
+
+    giveSpawnArmour() {
+        wait(0).then(() => pawnInvoke('OnGiveSpawnArmour', 'i', this.#id_))
+    }
+
     // Give a player a certain weapon with ammo.
     giveWeapon(weaponId, ammo) {
         wait(0).then(() => pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo));

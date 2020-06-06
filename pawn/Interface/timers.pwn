@@ -105,8 +105,6 @@ class DeprecatedTimerRuntime {
             if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
                 continue;
 
-            SetPlayerScore(playerId, GetPlayerMoney(playerId));
-
             if (iPlayerRampTime [playerId] > 0)
             {
                 if (Time->currentTime() - iPlayerRampTime [playerId] > 2)

@@ -38,22 +38,30 @@ export class Request extends Body {
         if (typeof input !== 'string')
             throw new Error(`Sorry, only URL strings are supported as |input| for now.`);
 
-        if (typeof init.body === 'undefined' || init.body === null)
+        let contentType = null;
+
+        if (typeof init.body === 'undefined' || init.body === null) {
             super();  // empty body
-        else if (init.body instanceof ArrayBuffer || ArrayBuffer.isView(init.body))
+        } else if (init.body instanceof ArrayBuffer || ArrayBuffer.isView(init.body)) {
             super(init.body);  // body based on an array buffer
-        else if (init.body instanceof FormData)
+        } else if (init.body instanceof FormData) {
             super(formDataToArrayBuffer(init.body));  // body based on FormData
-        else if (init.body instanceof URLSearchParams)
+        } else if (init.body instanceof URLSearchParams) {
             super(stringToUtf8Buffer(init.body.toString()));  // body based on URLSearchParams
-        else if (typeof init.body === 'string')
+            contentType = 'application/x-www-form-urlencoded;charset=UTF-8';
+        } else if (typeof init.body === 'string') {
             super(stringToUtf8Buffer(init.body));  // body based in textual data
-        else
+            contentType = 'text/plain;charset=UTF-8';
+        } else {
             throw new Error(`Unrecognised body information given: ${init.body}`);
+        }
 
         this.#method_ = init.method ?? 'GET';
         this.#url_ = input;
         this.#headers_ = new Headers(init.headers ?? null);
+
+        if (contentType !== null)
+            this.#headers_.set('Content-Type', contentType);
     }
 
     // Gets the method that will be used for this request ('GET', 'POST', etc...)

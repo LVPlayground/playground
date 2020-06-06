@@ -48,7 +48,6 @@ describe('Request', it => {
 
         // (3) FormData data.
 
-
         // (4) URLSearchParams data.
         const params = new URLSearchParams([
             [ 'las', '1'  ],
@@ -60,10 +59,16 @@ describe('Request', it => {
         assert.equal((await paramsRequest.text()).length, 34);
         assert.equal((await paramsRequest.text()), 'las=1&venturas=city&playground=yay');
 
+        assert.equal(
+            paramsRequest.headers.get('Content-Type'),
+            'application/x-www-form-urlencoded;charset=UTF-8')
+
         // (5) String data.
         const stringRequest = new Request('https://sa-mp.nl/', { body: '🤦' });
         assert.equal((await stringRequest.text()).length, 2);
         assert.equal((await stringRequest.text()), '🤦');
+
+        assert.equal(stringRequest.headers.get('Content-Type'), 'text/plain;charset=UTF-8')
 
         // (6) Invalid data.
         assert.throws(() => new Request('https://sa-mp.nl/', { body: 3.1415 }));

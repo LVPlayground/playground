@@ -7,6 +7,7 @@ native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
 
 #include "Driver/Abuse/WeaponShotDetection.pwn"
+#include "Driver/Drift/DriftHelpers.pwn"
 
 // The keys that have to be pressed by the player to activate certain vehicle key effects. These
 // have been carried over from the SAS gamemode by leaty, Lithirm and Kase.

@@ -87,6 +87,10 @@ export function createRequestBuffer(request, url) {
     if (!request.headers.has('Connection'))
         requestData += 'Connection: close\r\n';
 
+    // LVP behaviour: set a `Content-Length` header when a body has been given.
+    if (!request.headers.has('Content-Length') && request.body.byteLength)
+        requestData += `Content-Length: ${request.body.byteLength}\r\n`;
+
     for (const [ name, value ] of request.headers)
         requestData += `${name}: ${value}\r\n`;
     

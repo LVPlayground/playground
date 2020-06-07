@@ -47,6 +47,7 @@ describe('fetch', (it, beforeEach, afterEach) => {
             assert.strictEqual(bufferText, `POST /update.php HTTP/1.1\r\n` +
                                            `Host: sa-mp.nl\r\n` +
                                            `Connection: close\r\n` +
+                                           `Content-Length: 12\r\n` +
                                            `Content-Type: text/plain;charset=UTF-8\r\n\r\n` +
                                            `Version 3.14`);
         }

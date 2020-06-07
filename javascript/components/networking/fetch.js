@@ -127,7 +127,7 @@ async function issueNetworkRequest(requestBuffer, url) {
 
         // (2) Concatenate all the receive buffers in a single, larger buffer.
         for (const data of received) {
-            receiveBuffer.set(data, currentSize);
+            receiveBuffer.set(new Uint8Array(data), currentSize);
             currentSize += data.byteLength;
         }
 
@@ -190,7 +190,7 @@ export function createResponse(responseBuffer, url, redirected) {
 // expected to end with a \r\n, which will not be included in the output. This method also extracts
 // the HTTP response status code, which must be the first line of the |headerBuffer|.
 function createHeaders(headerBuffer) {
-    const headerLines = utf8BufferToString(headerBuffer).split('\r\n');
+    const headerLines = utf8BufferToString(headerBuffer).trimStart().split('\r\n');
     if (!headerLines.length)
         return { status: 0, headers: [] };
 
@@ -201,7 +201,7 @@ function createHeaders(headerBuffer) {
 
     // (1) Extract the HTTP status code out of |statusText|
     const match = statusText.match(/^HTTP\/\d+\.\d+\s+([\d]+)\s+.*$/i);
-    if (match.length == 2)
+    if (match && match.length == 2)
         status = parseInt(match[1], 10);
     else
         console.log('[fetch][warning] Invalid status text: "' + statusText + '"; ignored');

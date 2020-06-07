@@ -24,24 +24,52 @@ const responseMapForTests = new Map();
 // supported and any bugs therein should be considered a bug to fix.
 export async function fetch(input, init = {}) {
     const request = new Request(input, init);
+
+    let url = new URL(request.url);
+    if (!url.hostname || !url.port)
+        throw new Error(`The ${request.url} does not represent a valid URL with a host and port.`);
+
+    for (let redirect = 0; redirect < kMaximumRedirects; ++redirect) {
+        const response = await fetchIndividualRequest(request, url, redirect !== 0);
+        if (response.type === 'error' || !isRedirectStatus(response.status))
+            return response;
+        
+        // Respect configuration of the `redirect` property on the Request object.
+        if (request.redirect === 'manual')
+            return response;
+        if (request.redirect === 'error')
+            return Response.error();
+
+        // We need the `Location` header to understand where to go.
+        if (!response.headers.has('Location')) {
+            console.log('[fetch][warning] Missing Location header on redirect to: ' + url);
+            return response;
+        }
+        
+        // TODO: The URL class can't yet resolve relative URLs. If you hit this exception, then it's
+        // a great moment to file a bug on GitHub to request this to be done.
+        if (!response.headers.get('Location').startsWith('http'))
+            throw new Error(`Support for URL(url, base) has not been implemented yet.`);
+
+        url = new URL(response.headers.get('Location'));
+    }
+
+    // We've hit |kMaximumRedirects| or more redirects when this is hit. Bail out.
+    return Response.error({ url: url.href, redirected: true });
 }
 
 // Fetches the |request| and returns a populated |response| object. Redirects will not be honored
 // either, that's the job of the actual `fetch()` method.
-export async function fetchIndividualRequest(request) {
-    const url = new URL(request.url);
-    if (!url.hostname || !url.port)
-        throw new Error(`The ${request.url} does not represent a valid URL with a host and port.`);
-
+async function fetchIndividualRequest(request, url, redirected) {
     const requestBuffer = createRequestBuffer(request, url);
-    if (responseMapForTests.has(request.url))
-        return responseMapForTests.get(request.url);
+    if (responseMapForTests.has(url.href))
+        return responseMapForTests.get(url.href);
 
     const responseBuffer = await issueNetworkRequest(requestBuffer, url);
     if (!responseBuffer)
-        return Response.error();
+        return Response.error({ url: url.href, redirected });
 
-    return createResponse(responseBuffer);
+    return createResponse(responseBuffer, redirected);
 }
 
 // Creates a request buffer containing a full, valid HTTP/1.1 header, combined with the |request|,
@@ -129,7 +157,7 @@ async function issueNetworkRequest(requestBuffer, url) {
 
 // Creates the Response object for the given |responseBuffer|, which has been received from the
 // |url| that must be an instance of the URL class.
-export function createResponse(responseBuffer, url) {
+export function createResponse(responseBuffer, url, redirected) {
     let headerBuffer = null;
     let bodyBuffer = null;
 
@@ -154,8 +182,7 @@ export function createResponse(responseBuffer, url) {
 
     return new Response(bodyBuffer, {
         url: url.href,
-        redirected: false,
-        status, headers,
+        redirected, status, headers,
     });
 }
 
@@ -194,6 +221,11 @@ function createHeaders(headerBuffer) {
     }
 
     return { status, headers };
+}
+
+// Returns whether the given |status| indicates that a redirect has to take place.
+function isRedirectStatus(status) {
+    return status >= 300 && status < 400;
 }
 
 // Fixes the |response| when fetches to a given |url| are being made. When the given |url| is NULL,

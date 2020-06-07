@@ -3,9 +3,11 @@
 // be found in the LICENSE file.
 
 import { Request } from 'components/networking/request.js';
+import { Response } from 'components/networking/response.js';
 import { URL } from 'components/networking/url.js';
 
-import { fetch, fetchIndividualRequest } from 'components/networking/fetch.js';
+import { fetch } from 'components/networking/fetch.js';
+
 import { createRequestBuffer, createResponse } from 'components/networking/fetch.js';
 import { setResponseForTesting } from 'components/networking/fetch.js';
 
@@ -83,5 +85,31 @@ describe('fetch', (it, beforeEach, afterEach) => {
         assert.deepEqual((await response.json()), {
             version: 3.14,
         });
+    });
+
+    it('should be able to follow redirects', async (assert) => {
+        // (1) Regular redirects.
+        setResponseForTesting('https://sa-mp.nl/a', Response.redirect('https://sa-mp.nl/b'));
+        setResponseForTesting('https://sa-mp.nl/b', new Response(null, {
+            url: 'https://sa-mp.nl/b',
+            redirected: true,
+            status: 200,
+        }));
+
+        const response = await fetch('https://sa-mp.nl/a');
+        
+        assert.isTrue(response.ok);
+        assert.isTrue(response.redirected);
+        assert.equal(response.status, 200);
+        assert.equal(response.url, 'https://sa-mp.nl/b');
+
+        // (2) Redirect chains.
+        setResponseForTesting('https://sa-mp.nl/a', Response.redirect('https://sa-mp.nl/b'));
+        setResponseForTesting('https://sa-mp.nl/b', Response.redirect('https://sa-mp.nl/a'));
+
+        const errorResponse = await fetch('https://sa-mp.nl/a');
+
+        assert.isFalse(errorResponse.ok);
+        assert.isTrue(errorResponse.redirected);
     });
 });

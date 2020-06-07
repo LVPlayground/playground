@@ -11,7 +11,7 @@ import { kHttpStatusCodes } from 'components/networking/http_status_codes.js';
 // https://fetch.spec.whatwg.org/#response-class
 export class Response extends Body {
     // Creates a Response object that represents an error.
-    static error() { return new Response(); }
+    static error(init = {}) { return new Response(null, init); }
 
     // Creates a Response object that represents a Redirect.
     static redirect(url, status = 302) {

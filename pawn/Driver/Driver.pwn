@@ -177,7 +177,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         // Vehicle keys (1): speed boost
         if (HOLDING(VEHICLE_KEYS_BINDING_BOOST) && (vehicleKeys & VEHICLE_KEYS_BOOST)) {
             new const boostLimitMs = 1250;
-            new const Float: boost = 2;
+            new const Float: boost = 1.5;
 
             new Float: velocity[3];
 

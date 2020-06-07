@@ -2,6 +2,7 @@
 Provides Las Venturas Playground with networking capabilities. In principle, we prefer to follow the
 WHATWG Fetch standard where appropriate:
 
+https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
 https://fetch.spec.whatwg.org/#fetch-api
 
 The entry point for all these APIs is the `fetch` function, defined in [fetch.js](fetch.js), which

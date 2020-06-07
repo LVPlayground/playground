@@ -254,7 +254,6 @@
     <DiskObject>\Resources\Callbacks\Others\OnGameModeInit.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnRconLoginAttempt.pwn</DiskObject>
     <DiskObject>\Resources\Games\</DiskObject>
-    <DiskObject>\Resources\Games\Achievements.pwn</DiskObject>
     <DiskObject>\Resources\Games\Bag_of_Cash.pwn</DiskObject>
     <DiskObject>\Resources\Games\Bonuses.pwn</DiskObject>
     <DiskObject>\Resources\Games\Chase.pwn</DiskObject>

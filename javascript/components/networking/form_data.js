@@ -28,8 +28,7 @@ export function formDataToArrayBuffer(formData) {
         }
 
         data += `\r\n\r\n`;
-        data += typeof value === 'string' ? encode(value)
-                                          : encode(value.content);
+        data += typeof value === 'string' ? value : value.content;
         data += `\r\n`;
     }
 

@@ -24,10 +24,7 @@ export class Body {
     }
 
     // Body.body accessor
-    get body() {
-        throw new Error(`Please use one of the following methods instead: arrayBuffer(), ` +
-                        `blob(), formData(), json() or text().`);
-    }
+    get body() { return this.#body_; }
 
     // Body.bodyUsed accessor
     // Note that we allow a body to be consumed multiple times because streams are not supported, so

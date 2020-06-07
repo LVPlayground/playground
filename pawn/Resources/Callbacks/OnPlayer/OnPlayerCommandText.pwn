@@ -37,6 +37,7 @@ bool: IsCommandAvailableForLimitedFunctionality(command[]) {
 forward OnPlayerCommand(playerid, cmdtext[]);
 public OnPlayerCommand(playerid, cmdtext[]) {
     lvp_command(My, 2, PlayerLevel);
+    lvp_command(p, 1, AdministratorLevel);
     return 1;
 }
 

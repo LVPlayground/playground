@@ -20,22 +20,35 @@ export default class SpawnWeapons extends PlayerCommand {
             .build(SpawnWeapons.prototype.onSpawnWeaponsCommand.bind(this));
     }
 
+    buildAdmin(commandBuilder) {
+        commandBuilder
+            .parameters([{ name: 'subject', type: CommandBuilder.PLAYER_PARAMETER, optional: false },
+            { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: false },
+            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER, optional: false }])
+            .build(SpawnWeapons.prototype.giveSpawnWeapon.bind(this));
+    }
+
     // Let the player buy spawn weapons
     onSpawnWeaponsCommand(player, weapon, multiplier) {
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
-
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS, teleportStatus.reason);
-            return;
-        }
-
         this.giveSpawnWeapon(player, player, weapon, multiplier);
     }
 
     // Gve the |subject| his |weapon| with |multiplier| * ammunations (from config).
     // If |player| is not |subject| an admin gives the weapon. Costs are not applied.
-    giveSpawnWeapon(player, subject, weapon, multiplier) {
+    giveSpawnWeapon(player, subject, weapon, multiplier) {        
+        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+
+        // Bail out if the |player| might abuse it.
+        if (!teleportStatus.allowed) {
+            if(player.id === subject.id) {
+                player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT, teleportStatus.reason);
+            } else {
+                player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET, subject.name ,teleportStatus.reason);
+                
+            }
+            return;
+        }
+
         if (!WeaponData.hasSpawnWeapon(weapon)) {
             player.sendMessage(Message.PLAYER_COMMANDS_INVALID_SPAWN_WEAPON, weapon);
             return;

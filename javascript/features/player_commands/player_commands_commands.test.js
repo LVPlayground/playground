@@ -21,8 +21,24 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/my spawnweapons 1337 1'));
     });
 
+    it('should register p spawnweapons command', async assert => {
+        assert.isTrue(await gunther.issueCommand('/p 0 spawnweapons 1337 1'));
+    });
+
     it('should pawninvoke unknown my command', async assert => {
         assert.isTrue(await gunther.issueCommand('/my somerandom test command'));
+    });
+
+    it('should show usage if JS command', async assert => {
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        assert.isTrue(await gunther.issueCommand('/p 12 spawnweapons'));
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(gunther.messages[0], 'Sorry, use /p spawnweapons [id] instead of /p [id] spawnweapons for JS managed commands.');
+    });
+
+    it('should pawninvoke unknown p command', async assert => {
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        assert.isTrue(await gunther.issueCommand('/p somerandom test command'));
     });
 
 });

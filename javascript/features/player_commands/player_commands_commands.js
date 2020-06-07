@@ -14,22 +14,30 @@ export class PlayerCommandsCommands {
         this.abuse_ = abuse;
         this.announce_ = announce;
         this.finance_ = finance;
+
+        this.commandNames_ = [];
     }
 
     async buildCommands() {
         const commandBuilder = server.commandManager.buildCommand('my')
             .restrict(Player.LEVEL_PLAYER)
             .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
-        await this.loadSubCommands(commandBuilder);
+
+        const adminCommandBuilder = server.commandManager.buildCommand('p')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
+
+        await this.loadSubCommands(commandBuilder, adminCommandBuilder);
         commandBuilder.build(PlayerCommandsCommands.prototype.onMyCommand.bind(this));
+        adminCommandBuilder.build(PlayerCommandsCommands.prototype.onAdminCommand.bind(this));
     }
 
-    async loadSubCommands(parentCommand) {
+    async loadSubCommands(parentCommand, parentAdminCommand) {
         glob(COMMAND_DATA_DIRECTORY, '^((?!test).)*\.js$').forEach(
-            async file => await this.registerSubCommand(parentCommand, (COMMAND_BASE_PATH + '/' + file)));
+            async file => await this.registerSubCommand(parentCommand, parentAdminCommand, (COMMAND_BASE_PATH + '/' + file)));
     }
 
-    async registerSubCommand(parentCommand, fileLocation) {
+    async registerSubCommand(parentCommand, parentAdminCommand, fileLocation) {
         const CommandImplementation = (await import(fileLocation)).default;
         if (!CommandImplementation instanceof PlayerCommand)
             throw new Error(fileLocation + ' does not contain a player command.');
@@ -37,14 +45,27 @@ export class PlayerCommandsCommands {
         const command = new CommandImplementation(this.abuse_, this.announce_, this.finance_);
 
         command.build(parentCommand.sub(command.name));
+        command.buildAdmin(parentAdminCommand.sub(command.name));
+        this.commandNames_.push(command.name);
     }
 
     onMyCommand(player, parameters) {
         wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/my ' + parameters ?? ''));
     }
 
+    onAdminCommand(player, parameters) {
+        const paramsArray = parameters.split(' ');
+        if (paramsArray.length >= 2 && this.commandNames_.includes(paramsArray[1])) {
+            player.sendMessage(Message.PLAYER_COMMANDS_INVALID_COMMAND, paramsArray[1], paramsArray[1]);
+            return;
+        }
+
+        wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/p ' + parameters ?? ''));
+    }
+
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
         server.commandManager.removeCommand('my');
+        server.commandManager.removeCommand('p');
     }
 }

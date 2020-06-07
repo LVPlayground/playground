@@ -20,5 +20,8 @@ export class PlayerCommand {
         throw new Error('Command::build() must be implemented by the command: /' + this.name);
     }
 
+    // Build the admin version o the command based on |commandBuilder|
+    buildAdmin(commandBuilder) { }
+
     dispose() {}
 }

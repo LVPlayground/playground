@@ -6,6 +6,7 @@ import { Request } from 'components/networking/request.js';
 import { Response } from 'components/networking/response.js';
 import { URL } from 'components/networking/url.js';
 
+import { handleChunkedTransferEncoding } from 'components/networking/html_encoding.js';
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
 // Timeout for the connection, in seconds.
@@ -180,6 +181,26 @@ export function createResponse(responseBuffer, url, redirected) {
 
     const { status, headers } = createHeaders(headerBuffer);
 
+    // Find the `Transfer-Encoding` header, if it has been set, and handle it transparently before
+    // the content reaches the |Response| object.
+    for (const [ name, value ] of headers) {
+        if (name.toLowerCase() !== 'transfer-encoding')
+            continue;  // this is a different header
+        
+        const encodings = value.split(',');
+        for (const encoding of encodings) {
+            switch (encoding.trim()) {
+                case 'chunked':
+                    bodyBuffer = handleChunkedTransferEncoding(bodyBuffer);
+                    break;
+                default:
+                    console.log('[fetch][warning] Unknown transfer encoding: ' + encoding.trim());
+                    break;
+            }
+        }
+    }
+
+    // Now, finally, 
     return new Response(bodyBuffer, {
         url: url.href,
         redirected, status, headers,

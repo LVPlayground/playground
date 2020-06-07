@@ -102,3 +102,66 @@ export function generateBoundary() {
 
     return boundary;
 }
+
+// Implements support for `Transfer-Encoding: chunked`, which some servers use when the exact size
+// of the output is not yet known when it started building the content.
+export function handleChunkedTransferEncoding(responseBuffer) {
+    const kAcceptedLengthCharacters = new Set([
+        ...range(0x30, 0x39), 0x39, // 0-9
+        ...range(0x41, 0x46), 0x46, // A-F
+        ...range(0x61, 0x66), 0x66, // a-f 
+    ]);
+
+    let chunkLength = 0;
+    let chunks = [];
+
+    // Identify all the chunks in the |responseBuffer|, and split them up in the |chunks| array.
+    // Each chunk has a four byte overhead: a \r\n after the size, and one before the next one. The
+    // final chunk has a size of zero.
+    for (let index = 0; index < responseBuffer.length; ++index) {
+        let decimals = '';
+        let decimal = index;
+        
+        for (; decimal < responseBuffer.length; ++decimal) {
+            if (responseBuffer[decimal] === /* \r */ 0x0D)
+                break;
+
+            if (!kAcceptedLengthCharacters.has(responseBuffer[decimal])) {
+                console.log('[fetch][warning] Invalid chunk in Transfer-Encoding: chunked data.');
+                return responseBuffer;
+            }
+
+            decimals += String.fromCharCode(responseBuffer[decimal]);
+        }
+
+        const length = parseInt(decimals, 16);
+
+        // (2) If the |length| is zero, then this is the final chunk. Bail out.
+        if (!length)
+            break;
+        
+        // (3) Otherwise, consume |length| bytes (minus overhead) and add it to |chunks|.
+        chunks.push(responseBuffer.subarray(decimal + 2, decimal + 2 + length));
+        chunkLength += length;
+
+        // (4) Forward |index| to the beginning of the next chunk, again, ignoring overhead.
+        index += (decimal - index) + 1 + length + 2;
+    }
+
+    if (!chunks && responseBuffer.length) {
+        console.log('[fetch][warning] Invalid chunk data given for Transfer-Encoding: chunked.');
+        return responseBuffer;
+    }
+
+    // Finally, append all |chunks| to a new decoded buffer, and return that to the caller, as the
+    // chunking in the HTTP response has now been joined together into a single blob.
+    const decodedBuffer = new Uint8Array(chunkLength);
+
+    let currentLength = 0;
+    for (const chunk of chunks) {
+        decodedBuffer.set(chunk, currentLength);
+        currentLength += chunk.length;
+    }
+
+    return decodedBuffer;
+}

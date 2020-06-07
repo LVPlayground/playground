@@ -87,6 +87,23 @@ describe('fetch', (it, beforeEach, afterEach) => {
         });
     });
 
+    it('should be able to deal with chunked responses', async (assert) => {
+        const url = new URL('https://sa-mp.nl/version.json');
+        const kResponse = `HTTP/1.1 200 OK\r\n` +
+                          `Transfer-Encoding: chunked\r\n` +
+                          `\r\n` +
+                          `c\r\n` +
+                          `{ "version":\r\n` +
+                          `7\r\n` +
+                          ` 3.14 }\r\n` +
+                          `0\r\n`;
+        
+        const responseBuffer = stringToUtf8Buffer(kResponse);
+        const response = createResponse(responseBuffer, url);
+
+        assert.equal((await response.text()), '{ "version": 3.14 }');
+    });
+
     it('should be able to follow redirects', async (assert) => {
         // (1) Regular redirects.
         setResponseForTesting('https://sa-mp.nl/a', Response.redirect('https://sa-mp.nl/b'));

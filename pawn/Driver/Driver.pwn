@@ -401,5 +401,8 @@ public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, model
 public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
-public OnPlayerUpdate(playerid) { return 1; }
+public OnPlayerUpdate(playerid) {
+    ProcessDriftUpdateForPlayer(playerid);
+    return 1;
+}
 #endif

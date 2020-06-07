@@ -90,7 +90,6 @@ export default [
 
     /** Playground related settings */
     new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
-    new Setting('playground', 'enable_drift_features', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),
     new Setting('playground', 'collectable_hint_price_min', Setting.TYPE_NUMBER, 25000, 'Minimum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_hint_price_max', Setting.TYPE_NUMBER, 5000000, 'Maximum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),
@@ -110,4 +109,10 @@ export default [
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),
     new Setting('radio', 'restricted_to_vehicles', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be restricted to players in vehicles?'),
+
+    /** Vehicle related settings */
+    new Setting('vehicles', 'drifting_enabled', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),
+    new Setting('vehicles', 'drifting_max_angle', Setting.TYPE_NUMBER, 82.5, 'Maximum drifting angle to award points for, to ignore spins.'),
+    new Setting('vehicles', 'drifting_min_angle', Setting.TYPE_NUMBER, 14, 'Minimum drifting angle to award points for.'),
+    new Setting('vehicles', 'drifting_min_speed', Setting.TYPE_NUMBER, 50, 'Minimum speed in km/h before awarding points for a drift.'),
 ];

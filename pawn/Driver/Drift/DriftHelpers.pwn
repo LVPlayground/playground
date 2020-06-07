@@ -103,6 +103,12 @@ ProcessDriftUpdateForPlayer(playerId) {
     GetVehiclePrincipalAxes(vehicleId, pitch, roll, yaw);
     GetVehicleDriftValues(vehicleId, backwards, driftAngle, driftSpeed);
 
-    printf("[%d] P:[%.f4] R:[%.4f] Y:[%.f4] A:[%.4f] S:[%.f4] B:[%d]",
-        playerId, pitch, roll, yaw, driftAngle, driftSpeed, backwards ? 1 : 0);
+    // Flag to determine whether the |playerId| is currently drifting. It's fine to briefly slip out
+    // of a drift whilst drifting, e.g. when throwing over one's steering wheel.
+    new const bool: isDrifting =
+        driftSpeed >= g_driftingMinSpeed &&
+        driftAngle >= g_driftingMinAngle && driftAngle <= g_driftingMaxAngle;
+
+    printf("[%d] P:[%.f4] R:[%.4f] Y:[%.f4] A:[%.4f] S:[%.f4] B:[%d] D:[%d]",
+        playerId, pitch, roll, yaw, driftAngle, driftSpeed, backwards ? 1 : 0, isDrifting ? 1 : 0);
 }

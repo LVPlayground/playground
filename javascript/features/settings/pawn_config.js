@@ -6,9 +6,12 @@ import Setting from 'entities/setting.js';
 
 // List of PawnConfig settings with their unique values and settings. Must be synced with Pawn. The
 // settings can be in any category, of any type, as long as the identifier is a valid one.
-// Next ID: 2
+// Next ID: 5
 const kSynchronizedSettings = new Map([
-    [ 'playground/enable_drift_features', { id: 1 } ]
+    [ 'vehicles/drifting_enabled', { id: 1 } ],
+    [ 'vehicles/drifting_max_angle', { id: 2 } ],
+    [ 'vehicles/drifting_min_angle', { id: 3 } ],
+    [ 'vehicles/drifting_min_speed', { id: 4 } ],
 ]);
 
 // Analogous to the PawnConfig class in Pawn, but on the sending side. Observes settings in the

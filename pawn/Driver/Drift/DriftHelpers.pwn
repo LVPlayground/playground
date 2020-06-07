@@ -4,6 +4,10 @@
 
 #define M_PI 3.141592653
 
+// Every how many updates should the drift status for a player be calculated? Given an |incar_rate|
+// of 40 in "server.cfg", this roughly equates every ((1000/40)*|value|)ms, currently ~150ms
+#define DRIFT_UPDATE_INTERVAL 6
+
 new g_playerDriftUpdateCounter[MAX_PLAYERS];
 
 // Calculates the vehicle's principal axes based on it's rotation quaternion, which allows us to
@@ -87,7 +91,7 @@ ProcessDriftUpdateForPlayer(playerId) {
     if (!vehicleId)
         return;  // the |playerId| is not currently in a vehicle
 
-    if ((++g_playerDriftUpdateCounter[playerId] % 10) != 0)
+    if ((++g_playerDriftUpdateCounter[playerId] % DRIFT_UPDATE_INTERVAL) != 0)
         return;  // this tick will be ignored to decrease server load
 
     g_playerDriftUpdateCounter[playerId] = 0;

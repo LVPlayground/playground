@@ -6,7 +6,7 @@ import { Request } from 'components/networking/request.js';
 import { Response } from 'components/networking/response.js';
 import { URL } from 'components/networking/url.js';
 
-import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
+import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
 // Timeout for the connection, in seconds.
 const kConnectionTimeoutSec = 5;
@@ -41,9 +41,7 @@ export async function fetchIndividualRequest(request) {
     if (!responseBuffer)
         return Response.error();
 
-    
-
-    console.log(responseBuffer.byteLength);
+    return createResponse(responseBuffer);
 }
 
 // Creates a request buffer containing a full, valid HTTP/1.1 header, combined with the |request|,
@@ -127,6 +125,75 @@ async function issueNetworkRequest(requestBuffer, url) {
     await socket.write(requestBuffer);
 
     return promise;
+}
+
+// Creates the Response object for the given |responseBuffer|, which has been received from the
+// |url| that must be an instance of the URL class.
+export function createResponse(responseBuffer, url) {
+    let headerBuffer = null;
+    let bodyBuffer = null;
+
+    // (1) Find the first double \r\n, which separates the headers from the message body. We split
+    // the |responseBuffer| in two as we handle them differently.
+    for (let index = 0; index < responseBuffer.length - 3; ++index) {
+        if (responseBuffer[index] != 0x0D || responseBuffer[index + 1] != 0x0A)
+            continue;  // not looking at a new line
+        if (responseBuffer[index + 2] != 0x0D || responseBuffer[index + 3] != 0x0A)
+            continue;  // not looking at a double new line
+        
+        headerBuffer = responseBuffer.slice(0, index + 1);
+        bodyBuffer = responseBuffer.slice(index + 4);
+        break;
+    }
+
+    // If the split were not found, then the response only contains headers. It could be a redirect.
+    if (headerBuffer === null)
+        headerBuffer = responseBuffer;
+
+    const { status, headers } = createHeaders(headerBuffer);
+
+    return new Response(bodyBuffer, {
+        url: url.href,
+        redirected: false,
+        status, headers,
+    });
+}
+
+// Creates a Header array ([[ name, value ], ... ]) out of the given |headerBuffer|. Each header is
+// expected to end with a \r\n, which will not be included in the output. This method also extracts
+// the HTTP response status code, which must be the first line of the |headerBuffer|.
+function createHeaders(headerBuffer) {
+    const headerLines = utf8BufferToString(headerBuffer).split('\r\n');
+    if (!headerLines.length)
+        return { status: 0, headers: [] };
+
+    const statusText = headerLines.shift();
+
+    let status = 0;
+    let headers = [];
+
+    // (1) Extract the HTTP status code out of |statusText|
+    const match = statusText.match(/^HTTP\/\d+\.\d+\s+([\d]+)\s+.*$/i);
+    if (match.length == 2)
+        status = parseInt(match[1], 10);
+    else
+        console.log('[fetch][warning] Invalid status text: "' + statusText + '"; ignored');
+
+    // (2) Extract the HTTP headers out of the |headerLines|
+    for (const line of headerLines) {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex === -1) {
+            console.log('[fetch][warning] Invalid header: "' + line + '"; ignored');
+            continue;
+        }
+
+        headers.push([
+            line.substring(0, colonIndex).trim(),
+            line.substring(colonIndex + 1).trim(),
+        ]);
+    }
+
+    return { status, headers };
 }
 
 // Fixes the |response| when fetches to a given |url| are being made. When the given |url| is NULL,

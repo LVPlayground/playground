@@ -3,10 +3,10 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
+import { PawnConfig } from 'features/settings/pawn_config.js';
 import Setting from 'entities/setting.js';
 import SettingList from 'features/settings/setting_list.js';
 import SettingsDatabase from 'features/settings/settings_database.js';
-import PlayerSettingList from 'entities/player_setting_list.js';
 
 import MockSettingsDatabase from 'features/settings/test/mock_settings_database.js';
 
@@ -28,6 +28,9 @@ class Settings extends Feature {
 
         // Map of setting identifiers to a map of instances to listeners.
         this.observers_ = new Map();
+
+        // The PawnConfig instance, which magically synchronizes any setting with Pawn.
+        this.pawnConfig_ = new PawnConfig();
 
         // Import the settings from the |SettingList| in to the local state.
         for (const setting of SettingList)
@@ -133,6 +136,9 @@ class Settings extends Feature {
             default:
                 throw new Error(`Unknown type(${setting.type}) for the setting ${identifier}.`);
         }
+
+        // Inform the PawnConfig class about updates to any settings.
+        this.pawnConfig_.onSettingUpdated(setting, value);
 
         // Inform observers for the |identifier| about the value change.
         const observers = this.observers_.get(identifier);

@@ -343,6 +343,7 @@
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
     <DiskObject>\Driver\Drift\</DiskObject>
     <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
+    <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

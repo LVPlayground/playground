@@ -6,6 +6,7 @@
 native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
 
+#include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
 #include "Driver/Drift/DriftHelpers.pwn"
 
@@ -402,7 +403,9 @@ public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:object
 
 #if Feature::EnableServerSideWeaponConfig == 0
 public OnPlayerUpdate(playerid) {
-    ProcessDriftUpdateForPlayer(playerid);
+    if (g_driftingEnabled)
+        ProcessDriftUpdateForPlayer(playerid);
+
     return 1;
 }
 #endif

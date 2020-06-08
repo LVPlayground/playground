@@ -54,6 +54,10 @@ export default class Streamer extends Feature {
         return this.registry_.createVehicle(vehicleInfo);
     }
 
+    // Requests the streamer plane to be optimised. Technically, this will re-insert all vehicles in
+    // the RTree which allows for them to be better balanaced.
+    optimise() { this.streamer_.optimise(); }
+
     // Deletes the given |vehicle| from the server, which must be a StreamableVehicle instance.
     // Ephemeral vehicles may be
     deleteVehicle(vehicle) {
@@ -61,6 +65,20 @@ export default class Streamer extends Feature {
             throw new Error(`The vehicle must be given as a StreamableVehicle instance.`);
         
         this.registry_.deleteVehicle(vehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Public API intended for testing purposes of the Streamer feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Streams all created vehicles, triggering creation and disposal of the real vehicles based on
+    // the positions of the given |players|, which must be an iterable of Player instances.
+    async streamForTesting(players) {
+        if (!server.isTest())
+            throw new Error(`The streamForTesting() method is only available during tests.`);
+
+        this.streamer_.setPlayersForTesting(players);
+        this.selectionManager_.updateSelection(new Set([ ...await this.streamer_.stream() ]));
     }
 
     // ---------------------------------------------------------------------------------------------

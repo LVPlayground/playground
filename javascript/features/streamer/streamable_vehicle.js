@@ -30,4 +30,8 @@ export class StreamableVehicle {
     get siren() { return this.info_.siren; }
 
     get respawnDelay() { return this.info_.respawnDelay; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object StreamableVehicle(${this.modelId}, position: ${this.position})]`; }
 }

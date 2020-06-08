@@ -3,16 +3,19 @@
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
-
+import { MockVehicleStreamer } from 'features/streamer/test/mock_vehicle_streamer.js';
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
 import { VehicleRegistry } from 'features/streamer/vehicle_registry.js';
+import { VehicleSelectionManager } from 'features/streamer/vehicle_selection_manager.js';
 import { VehicleStreamer } from 'features/streamer/vehicle_streamer.js';
 
 // Enhances Las Venturas Playground with the ability to exceed the default vehicle limits. All
 // vehicles part of freeroam, houses and similar features should be created through the streamer.
 export default class Streamer extends Feature {
     registry_ = null;
+    selectionManager_ = null;
+    streamer_ = null;
 
     constructor() {
         super();
@@ -22,10 +25,19 @@ export default class Streamer extends Feature {
 
         // The streamer wraps the PlaygroundJS-provided streaming plane, and makes sure that its
         // information continues to be up-to-date.
-        this.streamer_ = new VehicleStreamer(settings);
+        this.streamer_ = server.isTest() ? new MockVehicleStreamer(settings)
+                                         : new VehicleStreamer(settings);
 
         // Keeps track of which streamable vehicles have been created on the server.
         this.registry_ = new VehicleRegistry(this.streamer_);
+
+        // Responsible for taking information from the vehicle streamer, and ensuring that those
+        // vehicles are created on the server. The meaty bit of our streamer.
+        this.selectionManager_ = new VehicleSelectionManager(
+            this.registry_, settings, this.streamer_);
+        
+        if (!server.isTest())
+            this.selectionManager_.select();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -56,5 +68,11 @@ export default class Streamer extends Feature {
     dispose() {
         this.registry_.dispose();
         this.registry_ = null;
+
+        this.streamer_.dispose();
+        this.streamer_ = null;
+
+        this.selectionManager_.dispose();
+        this.selectionManager_ = null;
     }
 }

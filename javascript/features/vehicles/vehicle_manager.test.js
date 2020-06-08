@@ -54,6 +54,17 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(server.vehicleManager.count, originalVehicleCount);
     });
 
+    it('should recreate vehicles when the streamer reloads', async assert => {
+        const originalStreamerSize = streamer.sizeForTesting;
+
+        assert.isTrue(server.featureManager.isEligibleForLiveReload('streamer'));
+        assert.isTrue(await server.featureManager.liveReload('streamer'));
+
+        const newStreamer = server.featureManager.loadFeature('streamer');
+        assert.notStrictEqual(newStreamer, streamer);
+        assert.equal(newStreamer.sizeForTesting, originalStreamerSize);
+    });
+
     return;  // disabled!
 
     it('should automatically stream created vehicles in', assert => {
@@ -197,115 +208,6 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
     });
 
-    it('should be able to pin and unpin managed vehicles in the streamer', assert => {
-        const vehicle = manager.createVehicle(kHydra);
-
-        assert.isTrue(vehicle.isConnected());
-        assert.isTrue(manager.isManagedVehicle(vehicle));
-
-        const storedVehicle = Array.from(manager.vehicles).pop();
-        assert.equal(storedVehicle.modelId, vehicle.modelId);
-
-        assert.isFalse(manager.streamer.isPinned(storedVehicle));
-
-        manager.pinVehicle(vehicle);
-
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-
-        manager.unpinVehicle(vehicle);
-
-        assert.isFalse(manager.streamer.isPinned(storedVehicle));
-    });
-
-    it('should apply vehicle access settings when creating them', async(assert) => {
-        await gunther.identify({ userId: 5198 });
-
-        const vehicle = manager.createVehicle(kHydra);
-        assert.isTrue(vehicle.isConnected());
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-        assert.isNotNull(databaseVehicle);
-
-        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
-        assert.equal(databaseVehicle.accessValue, 0);
-
-        // Update the values directly. They should carry over when storing the vehicle.
-        databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER;
-        databaseVehicle.accessValue = gunther.account.userId;
-
-        const updatedVehicle = await manager.storeVehicle(vehicle);
-
-        const updatedDatabaseVehicle = manager.getManagedDatabaseVehicle(updatedVehicle);
-        assert.isNotNull(updatedDatabaseVehicle);
-
-        // Make sure that the values were carried over appropriately.
-        assert.equal(updatedDatabaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER);
-        assert.equal(updatedDatabaseVehicle.accessValue, gunther.account.userId);
-
-        // Make sure that the given rights were applied in the VehicleAccessManager.
-        assert.isTrue(
-            manager.access.isLocked(updatedDatabaseVehicle, VehicleAccessManager.LOCK_PLAYER));
-    });
-
-    it('should be able to update vehicle access settings', async(assert) => {
-        const vehicle = manager.createVehicle(kHydra);
-        assert.isTrue(vehicle.isConnected());
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-        assert.isNotNull(databaseVehicle);
-
-        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
-        assert.equal(databaseVehicle.accessValue, 0);
-
-        await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP, 0);
-
-        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP);
-        assert.equal(databaseVehicle.accessValue, 0);
-
-        // Make sure that the given rights were applied in the VehicleAccessManager.
-        assert.isTrue(
-            manager.access.isLocked(databaseVehicle, VehicleAccessManager.ACCESS_TYPE_PLAYER_VIP));
-    });
-
-    it('should reset vehicle access settings when they respawn', async(assert) => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        await gunther.identify({ userId: 8432 });
-        await russell.identify({ userId: 1451 });
-
-        const vehicle = manager.createVehicle(kHydra);
-        assert.isTrue(vehicle.isConnected());
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-        assert.isNotNull(databaseVehicle);
-
-        await manager.updateVehicleAccess(
-            vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, gunther.account.userId);
-
-        // Make sure that the given rights were applied in the VehicleAccessManager.
-        assert.isTrue(manager.access.isLocked(databaseVehicle, VehicleAccessManager.LOCK_PLAYER));
-
-        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
-        assert.isFalse(manager.access.canAccessVehicle(russell, databaseVehicle));
-
-        // Pretend as if Russell is locking the vehicle. Normally this wouldn't be possible, unless
-        // Russell was an administrator and used the `/v enter` command.
-        manager.access.restrictToPlayer(databaseVehicle, russell.account.userId);
-
-        assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
-        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
-
-        // Now make sure that the |databaseVehicle| respawns, which should reset the original access
-        // rights, overriding the ephemeral changes.
-        vehicle.death();
-
-        await server.clock.advance(180 * 1000);  // 3 minutes, the respawn duration
-        await Promise.resolve();  // flush the streamer
-
-        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
-        assert.isFalse(manager.access.canAccessVehicle(russell, databaseVehicle));
-    });
-
     it('should limit ephemeral vehicles to a single one for players', assert => {
         assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
 
@@ -338,104 +240,5 @@ describe('VehicleManager', (it, beforeEach) => {
 
         // The Infernus should now have been destroyed.
         assert.isFalse(firstVehicle.isConnected());
-    });
-
-    it('should limit the ephemeral vehicles to five for administrators', assert => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-        russell.level = Player.LEVEL_PLAYER;
-
-        assert.equal(manager.getVehicleLimitForPlayer(gunther), 5);
-        assert.equal(manager.getVehicleLimitForPlayer(russell), 1);
-
-        const vehicles = [];
-        for (let i = 0; i < manager.getVehicleLimitForPlayer(gunther); ++i) {
-            vehicles.push(manager.createVehicle({
-                player: gunther,
-
-                modelId: 411 /* Infernus */,
-                position: gunther.position,
-                rotation: 90,
-                interiorId: gunther.interiorId,
-                virtualWorld: gunther.virtualWorld
-            }));
-        }
-
-        // Create a vehicle for |russell| that should be left alone.
-        const russellVehicle = manager.createVehicle({
-            player: russell,
-
-            modelId: 520 /* Hydra */,
-            position: russell.position,
-            rotation: 270,
-            interiorId: russell.interiorId,
-            virtualWorld: russell.virtualWorld
-
-        });
-
-        vehicles.forEach(vehicle =>
-            assert.isTrue(vehicle.isConnected()));
-
-        assert.isTrue(russellVehicle.isConnected());
-
-        // Make |gunther| enter the oldest vehicle, so that it'll be ignored for pruning.
-        gunther.enterVehicle(vehicles[0], Vehicle.SEAT_DRIVER);
-
-        const newVehicle = manager.createVehicle({
-            player: gunther,
-
-            modelId: 520 /* Hydra */,
-            position: gunther.position,
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
-
-        assert.isTrue(vehicles[0].isConnected());
-        assert.equal(gunther.vehicle, vehicles[0]);
-
-        // The second vehicle should have been removed.
-        assert.isFalse(vehicles[1].isConnected());
-
-        // Russell's vehicle should've been left alone.
-        assert.isTrue(russellVehicle.isConnected());
-    });
-
-    it('should delete ephemeral vehicles on respawn', async(assert) => {
-        const vehicle = manager.createVehicle({
-            player: gunther,
-
-            modelId: 411 /* Infernus */,
-            position: gunther.position,
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
-
-        assert.isNotNull(vehicle);
-        assert.isTrue(vehicle.isConnected());
-
-        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
-        assert.equal(gunther.vehicle, vehicle);
-
-        gunther.leaveVehicle(vehicle);
-        assert.isNull(gunther.vehicle);
-
-        await server.clock.advance(180 * 1000);  // 3 minutes, the respawn duration
-        await Promise.resolve();  // flush the streamer
-
-        assert.isFalse(vehicle.isConnected());
-    });
-
-    it('should recreate vehicles when the streamer reloads', async assert => {
-        const originalStreamerSize = vehicleStreamer.size;
-
-        assert.isTrue(server.featureManager.isEligibleForLiveReload('streamer'));
-        assert.isTrue(await server.featureManager.liveReload('streamer'));
-
-        const streamer = server.featureManager.loadFeature('streamer');
-        assert.notEqual(streamer.getVehicleStreamer(), vehicleStreamer);
-        assert.equal(streamer.getVehicleStreamer().size, originalStreamerSize);
     });
 });

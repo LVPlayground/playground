@@ -53,11 +53,15 @@ export default class Streamer extends Feature {
     // Creates a new streamable vehicle on the server. The |vehicle| must thus follow the syntax of
     // the StreamableVehicleInfo object. An instance of StreamableVehicle will be returned. Vehicles
     // without a `respawnDelay` setting will be considered ephemeral.
-    createVehicle(vehicleInfo) {
+    createVehicle(vehicleInfo, immediate = false) {
         if (!isInstance(vehicleInfo, 'StreamableVehicleInfo'))
             throw new Error(`The vehicle info must be given as a StreamableVehicleInfo instance.`);
         
-        return this.registry_.createVehicle(vehicleInfo);
+        const streamableVehicle = this.registry_.createVehicle(vehicleInfo);
+        if (immediate)
+            this.selectionManager_.requestCreateVehicle(streamableVehicle);
+
+        return streamableVehicle;
     }
 
     // Requests the streamer plane to be optimised. Technically, this will re-insert all vehicles in

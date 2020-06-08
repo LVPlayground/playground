@@ -101,6 +101,15 @@ export class VehicleSelectionManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the given |streamableVehicle| should be created on the server immediately. This
+    // will register as if the vehicle's latest use time is right now.
+    requestCreateVehicle(streamableVehicle) {
+        if (!this.vehicles_.has(streamableVehicle))
+            this.createVehicle(streamableVehicle);
+        
+        // TODO: Mark the vehicle as having been used right now.
+    }
+
     // Called when the given |streamableVehicle| is being removed from the server. Will remove any
     // live vehicles tied to it from the server as well.
     requestDeleteVehicle(streamableVehicle) {

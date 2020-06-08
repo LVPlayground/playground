@@ -65,6 +65,9 @@ export default class Streamer extends Feature {
             throw new Error(`The vehicle must be given as a StreamableVehicle instance.`);
         
         this.registry_.deleteVehicle(vehicle);
+
+        // Request deletion of any live representations of this vehicle as well.
+        this.selectionManager_.requestDeleteVehicle(vehicle);
     }
 
     // ---------------------------------------------------------------------------------------------

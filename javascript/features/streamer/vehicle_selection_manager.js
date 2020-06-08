@@ -101,6 +101,15 @@ export class VehicleSelectionManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the given |streamableVehicle| is being removed from the server. Will remove any
+    // live vehicles tied to it from the server as well.
+    requestDeleteVehicle(streamableVehicle) {
+        if (this.vehicles_.has(streamableVehicle))
+            this.deleteVehicle(streamableVehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.disposed_ = true;
 

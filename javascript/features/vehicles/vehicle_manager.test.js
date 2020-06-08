@@ -51,8 +51,6 @@ describe('VehicleManager', (it, beforeEach) => {
         manager.dispose();
         manager.dispose = () => true;
 
-        await streamer.streamForTesting([ gunther ]);
-
         assert.equal(server.vehicleManager.count, originalVehicleCount);
     });
 

@@ -69,7 +69,7 @@ class VehicleCommands {
 
         // Command: /v [vehicle]?
         //          /v [enter/help/optimise/reset]
-        //          /v [player]? [access/color/delete/health/respawn/save]
+        //          /v [player]? [access/delete/health/respawn/save]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('enter')
@@ -91,13 +91,6 @@ class VehicleCommands {
                     .parameters([ { name: 'level', type: CommandBuilder.WORD_PARAMETER,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleAccessCommand.bind(this))
-                .sub('color')
-                    .restrict(Player.LEVEL_ADMINISTRATOR)
-                    .parameters([ { name: 'primary', type: CommandBuilder.NUMBER_PARAMETER,
-                                    optional: true },
-                                  { name: 'secondary', type: CommandBuilder.NUMBER_PARAMETER,
-                                    optional: true }])
-                    .build(VehicleCommands.prototype.onVehicleColorCommand.bind(this))
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
@@ -446,43 +439,6 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_ACCESS_CHANGED, vehicle.model.name);
     }
 
-    // Called when the |player| executes `/v color` or `/v [player] color`, which means they wish
-    // to either see or change the primary and secondary color of the vehicle.
-    onVehicleColorCommand(player, subject, primary, secondary) {
-        const vehicle = subject.vehicle;
-
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!this.manager_.isManagedVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
-            return;
-        }
-
-        if (primary === undefined && secondary === undefined) {
-            player.sendMessage(Message.VEHICLE_COLOR_CURRENT, vehicle.primaryColor, vehicle.secondaryColor);
-            return;
-        }
-
-        if (primary < 0 || primary > 255) {
-            player.sendMessage(Message.VEHICLE_COLOR_USAGE);
-            return;
-        } else {
-            if (secondary === undefined) {
-                vehicle.primaryColor = primary;
-                player.sendMessage(Message.VEHICLE_COLOR_UPDATED, primary, vehicle.secondaryColor);
-                return;
-            }
-
-            if (secondary < 0 || secondary > 255) {
-                player.sendMessage(Message.VEHICLE_COLOR_USAGE);
-                return;
-            }
-        }
-
-        player.sendMessage(Message.VEHICLE_COLOR_UPDATED, primary, secondary);
-
-        vehicle.setColors(primary, secondary);
-    }
-
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
@@ -589,7 +545,7 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'color', 'health', 'respawn'];
+        const vehicleOptions = ['access', 'health', 'respawn'];
 
         if (!player.isTemporaryAdministrator())
             vehicleOptions.push('delete', 'save');

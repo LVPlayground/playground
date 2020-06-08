@@ -7,13 +7,11 @@ import HouseVehicle from 'features/houses/house_vehicle.js';
 import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 
 describe('HouseVehicleController', (it, beforeEach, afterEach) => {
-    return;  // disabled!
-
     let controller = null;
+    let streamer = null;
 
     beforeEach(() => {
-        server.featureManager.loadFeature('streamer');
-
+        streamer = server.featureManager.loadFeature('streamer');
         controller = new HouseVehicleController(
             server.featureManager.createDependencyWrapperForFeature('streamer'));
     });
@@ -46,7 +44,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     }
 
     it('should be able to create vehicles for any location', assert => {
-        const serverVehicleCount = server.vehicleManager.count;
+        const streamerVehicleSize = streamer.sizeForTesting;
 
         assert.equal(controller.count, 0);
 
@@ -54,17 +52,17 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
             controller.createVehicle(location, createRandomVehicle());
 
         assert.equal(controller.count, 10);
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize + 10);
 
         // The controller should clean up after itself.
         controller.dispose();
         controller = null;
 
-        assert.equal(server.vehicleManager.count, serverVehicleCount);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize);
     });
 
     it('should be able to remove individual vehicles', assert => {
-        const serverVehicleCount = server.vehicleManager.count;
+        const streamerVehicleSize = streamer.sizeForTesting;
         const vehicle = createRandomVehicle();
 
         assert.equal(controller.count, 0);
@@ -74,17 +72,17 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
             controller.createVehicle(location, createRandomVehicle());
 
         assert.equal(controller.count, 11);
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 11);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize + 11);
 
         controller.removeVehicle(location, vehicle);
 
         assert.equal(controller.count, 10);
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize + 10);
     });
 
     it('should be able to remove vehicles for a location', assert => {
         const secondLocation = Object.create({});
-        const serverVehicleCount = server.vehicleManager.count;
+        const streamerVehicleSize = streamer.sizeForTesting;
 
         assert.equal(controller.count, 0);
 
@@ -95,12 +93,12 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
             controller.createVehicle(secondLocation, createRandomVehicle());
 
         assert.equal(controller.count, 20);
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 20);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize + 20);
 
         controller.removeVehiclesForLocation(secondLocation);
 
         assert.equal(controller.count, 10);
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 10);
+        assert.equal(streamer.sizeForTesting, streamerVehicleSize + 10);
     });
 
     it('should reattach vehicles when the streamer reloads', async assert => {
@@ -110,13 +108,15 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
             controller.createVehicle(location, createRandomVehicle());
 
         assert.equal(controller.count, 10);
-        assert.equal(controller.streamer.size, 10);
+        assert.equal(streamer.sizeForTesting, 10);
 
-        const oldStreamer = controller.streamer;
+        const oldStreamer = streamer;
 
         assert.isTrue(await server.featureManager.liveReload('streamer'));
 
-        assert.notEqual(controller.streamer, oldStreamer);
-        assert.equal(controller.streamer.size, 10);
+        const newStreamer = server.featureManager.loadFeature('streamer');
+
+        assert.notStrictEqual(newStreamer, oldStreamer);
+        assert.equal(newStreamer.sizeForTesting, 10);
     });
 });

@@ -10,6 +10,12 @@ import { VehicleRegistry } from 'features/streamer/vehicle_registry.js';
 import { VehicleSelectionManager } from 'features/streamer/vehicle_selection_manager.js';
 import { VehicleStreamer } from 'features/streamer/vehicle_streamer.js';
 
+// Determines whether the given |object| is a of the given |name|. Used because the Streamer feature
+// is eligible for live reload, which means that there might be alternative objects around.
+function isInstance(object, name) {
+    return typeof object === 'object' && object.constructor && object.constructor.name === name;
+}
+
 // Enhances Las Venturas Playground with the ability to exceed the default vehicle limits. All
 // vehicles part of freeroam, houses and similar features should be created through the streamer.
 export default class Streamer extends Feature {
@@ -48,7 +54,7 @@ export default class Streamer extends Feature {
     // the StreamableVehicleInfo object. An instance of StreamableVehicle will be returned. Vehicles
     // without a `respawnDelay` setting will be considered ephemeral.
     createVehicle(vehicleInfo) {
-        if (!(vehicleInfo instanceof StreamableVehicleInfo))
+        if (!isInstance(vehicleInfo, 'StreamableVehicleInfo'))
             throw new Error(`The vehicle info must be given as a StreamableVehicleInfo instance.`);
         
         return this.registry_.createVehicle(vehicleInfo);
@@ -61,7 +67,7 @@ export default class Streamer extends Feature {
     // Deletes the given |vehicle| from the server, which must be a StreamableVehicle instance.
     // Ephemeral vehicles may be
     deleteVehicle(vehicle) {
-        if (!(vehicle instanceof StreamableVehicle))
+        if (!isInstance(vehicle, 'StreamableVehicle'))
             throw new Error(`The vehicle must be given as a StreamableVehicle instance.`);
         
         this.registry_.deleteVehicle(vehicle);
@@ -73,6 +79,9 @@ export default class Streamer extends Feature {
     // ---------------------------------------------------------------------------------------------
     // Public API intended for testing purposes of the Streamer feature
     // ---------------------------------------------------------------------------------------------
+
+    // Gets the number of vehicles that exist on the streamer. Should only be used for testing.
+    get sizeForTesting() { return this.streamer_.size; }
 
     // Streams all created vehicles, triggering creation and disposal of the real vehicles based on
     // the positions of the given |players|, which must be an iterable of Player instances.

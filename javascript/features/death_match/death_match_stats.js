@@ -12,21 +12,21 @@ export class DeathMatchStats {
         this.bulletsMissed_ = 0;
     }
 
-    get kills() { return kills_; }
-    get deaths() { return deaths_; }
-    get kdRatio() { return Math.round(this.kills / this.deaths * 100) / 100; }
-    get damage() { return damage_; }
-    get bulletsHit() { return bulletsHit_; }
-    get bulletsMissed() { return bulletsMissed_; }
+    get kills() { return this.kills_; }
+    get deaths() { return this.deaths_; }
+    get kdRatio() { return this.deaths === 0 ? this.kills : Math.round(this.kills / this.deaths * 100) / 100; }
+    get damage() { return this.damage_; }
+    get bulletsHit() { return this.bulletsHit_; }
+    get bulletsMissed() { return this.bulletsMissed_; }
     get accuracy() {
         const bulletsShot = this.bulletsHit + this.bulletsMissed;
-        return Math.round((this.bulletsHit / bulletsShot * 100));
+        return bulletsShot === 0 ? 100 : Math.round((this.bulletsHit / bulletsShot * 100));
     }
 
-    addKill() { kills_++; }
-    addDeath() { deaths_++ }
-    addDamage(damage) { damage_ += damage; }
-    addBulletHit() { bulletsHit_++ }
+    addKill() { this.kills_++; }
+    addDeath() { this.deaths_++ }
+    addDamage(damage) { this.damage_ += damage; }
+    addBulletHit() { this.bulletsHit_++ }
     addBulletMissed() { this.bulletsMissed_++ }
 
 }

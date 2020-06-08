@@ -114,11 +114,11 @@
   "COMMUNICATION_WORLD_MESSAGE": "{%s}[%d][World: %d] %s:{FFFFFF} %s",
 
   "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /deathmatch %s.",
-  "DEATH_MATCH_DAMAGE_ACCURACY": "You've done %d damage with a %f% accuracy.",
+  "DEATH_MATCH_DAMAGE_ACCURACY": "You've done %d damage with a %d percent accuracy.",
   "DEATH_MATCH_INVALID_ZONE" : "Zone %d is not a valid zone.",
   "DEATH_MATCH_INSTRUCTION_LEAVE": "@success Use \"/deathmatch leave\" to leave the deathmatch.",
   "DEATH_MATCH_INSTRUCTION_STATS": "Use \"/deathmatch stats\" to see the stats of this session.",
-  "DEATH_MATCH_KILL_DEATH": "You've gotten %d kills and %d deaths, resulting in a KD ratio of %f.",
+  "DEATH_MATCH_KILL_DEATH": "You've gotten %d kills and %d deaths, resulting in a KD ratio of %d.",
   "DEATH_MATCH_LEAVE_KILLED": "You have been killed to avoid abuse because you %s.",
   "DEATH_MATCH_NO_STATS": "@error Sorry, we don't have any stats for you.",
   "DEATH_MATCH_STATS": "Stats for your last session:",

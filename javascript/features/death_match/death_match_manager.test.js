@@ -47,9 +47,9 @@ describe('DeathMatchManager', (it, beforeEach) => {
                 AbuseConstants.REASON_FIRED_WEAPON));
     });
 
-    it('should not allow players to go to a deathmatch if they are in another activity', async (assert) => {
+    it('should not allow players to go to a death match if they are in another activity', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.activity = PLAYER_ACTIVITY_JS_RACE;
+        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
 
         manager.goToDmZone(gunther, 1);
 
@@ -71,10 +71,8 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
     it('should not do leave command if player is not in death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
 
         gunther.identify({ userId: 42 });
-        gunther.shoot({ target: russell });
 
         assert.equal(manager.playersInDeathMatch_.size, 0);
         manager.leave(gunther);
@@ -88,19 +86,19 @@ describe('DeathMatchManager', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
         gunther.identify({ userId: 42 });
-        manager.playersInDeathMatch_.set(gunther.id, 1);
-
         gunther.shoot({ target: russell });
+        
+        manager.playersInDeathMatch_.set(gunther.id, 1);
 
         manager.leave(gunther);
 
-        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages.length, 2);
         assert.equal(manager.playersInDeathMatch_.size, 0);
     });
 
     it('should let player leave death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        const guntherStats = new new DeathMatchStats();
+        const guntherStats = new DeathMatchStats();
         guntherStats.addKill();
         guntherStats.addKill();
         guntherStats.addDeath();
@@ -116,12 +114,12 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.leave(gunther);
 
         assert.equal(manager.playersInDeathMatch_.size, 0);
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(
-            gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_KILL_DEATH, 2, 1, 2.00));
+        assert.equal(gunther.messages.length, 3);
         assert.equal(
             gunther.messages[1],
+            Message.format(Message.DEATH_MATCH_KILL_DEATH, 2, 1, 2.00));
+        assert.equal(
+            gunther.messages[2],
             Message.format(Message.DEATH_MATCH_DAMAGE_ACCURACY, 150, 50));
     });
 
@@ -131,13 +129,13 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.showStats(gunther);
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.DEATH_MATCH_STATS);
+        assert.includes(gunther.messages[0], Message.DEATH_MATCH_NO_STATS);
     });
 
     it('should not do death match spawn if player not in death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify({ userId: 42 });
+        gunther.identify();
         gunther.health = 99;
 
         manager.onPlayerSpawn({ playerid: gunther.id });
@@ -148,7 +146,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
     it('should do death match spawn if player in death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify({ userId: 42 });
+        gunther.identify();
         gunther.health = 99;
         gunther.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         manager.playersInDeathMatch_.set(gunther.id, 1);
@@ -161,7 +159,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
     it('should remove player if he disconnects', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
-        gunther.identify({ userId: 42 });
+        gunther.identify();
         manager.playersInDeathMatch_.set(gunther.id, 1);
 
         manager.onPlayerDisconnect({ playerid: gunther.id });
@@ -169,10 +167,10 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(manager.playersInDeathMatch_.has(gunther.id), false);
     });
 
-    it('should not register damage if player not in DM', assert => {
+    it('should not register damage if player not in DM', async(assert) => {
         const issuerId = 11;
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: 42 });
+        await gunther.identify();
 
         const stats = new DeathMatchStats();
         manager.playerStats_.set(issuerId, stats);
@@ -182,11 +180,11 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.damage, 0);
     });
 
-    it('should not register damage if issuer not in DM', assert => {
+    it('should not register damage if issuer not in DM', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
 
         const stats = new DeathMatchStats();
         manager.playerStats_.set(russell.id, stats);
@@ -197,11 +195,11 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.damage, 0);
     });
 
-    it('should not register damage if amount is NaN', assert => {
+    it('should not register damage if amount is NaN', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
 
         const stats = new DeathMatchStats();
         manager.playerStats_.set(russell.id, stats);
@@ -213,11 +211,11 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.damage, 0);
     });
 
-    it('should register damage if amount is a valid value', assert => {
+    it('should register damage if amount is a valid value', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
 
         const stats = new DeathMatchStats();
         manager.playerStats_.set(russell.id, stats);
@@ -229,10 +227,10 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.damage, 111);
     });
 
-    it('should not register shot if player not in DM', assert => {
+    it('should not register shot if player not in DM', async(assert) => {
         const issuerId = 11;
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: playerId });
+        await gunther.identify();
 
         const stats = new DeathMatchStats();
         manager.playerStats_.set(issuerId, stats);
@@ -243,13 +241,12 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.bulletsMissed, 0);
     });
 
-    it('should register hit if player in DM and lands a shot', assert => {
-        const issuerId = 11;
+    it('should register hit if player in DM and lands a shot', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: playerId });
+        await gunther.identify();
 
         const stats = new DeathMatchStats();
-        manager.playerStats_.set(issuerId, stats);
+        manager.playerStats_.set(gunther.id, stats);
         manager.playersInDeathMatch_.set(gunther.id, 1);
 
         manager.onPlayerWeaponShot({ playerid: gunther.id, hittype: 1 });
@@ -263,13 +260,12 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.bulletsMissed, 0);
     });
 
-    it('should register miss if player in DM and misses a shot', assert => {
-        const issuerId = 11;
+    it('should register miss if player in DM and misses a shot', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: playerId });
+        await gunther.identify();
 
         const stats = new DeathMatchStats();
-        manager.playerStats_.set(issuerId, stats);
+        manager.playerStats_.set(gunther.id, stats);
         manager.playersInDeathMatch_.set(gunther.id, 1);
 
         manager.onPlayerWeaponShot({ playerid: gunther.id, hittype: 0 });
@@ -283,11 +279,11 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(stats.bulletsMissed, 2);
     });
 
-    it('should not do anything upon death if player is not in DM', assert => {
+    it('should not do anything upon death if player is not in DM', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
         russell.health = 90;
 
         const guntherStats = new DeathMatchStats();
@@ -299,14 +295,14 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.equal(guntherStats.deaths, 0);
         assert.equal(russellStats.kills, 0);
-        assert.equal(russel.health, 90);
+        assert.equal(russell.health, 90);
     });
 
-    it('should not do anything upon death if killer is not in DM', assert => {
+    it('should not do anything upon death if killer is not in DM', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
         russell.health = 90;
 
         const guntherStats = new DeathMatchStats();
@@ -319,10 +315,10 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.equal(guntherStats.deaths, 0);
         assert.equal(russellStats.kills, 0);
-        assert.equal(russel.health, 90);
+        assert.equal(russell.health, 90);
     });
 
-    it('should award KD and health upon kill in DM', assert => {
+    it('should award KD and health upon kill in DM', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         await gunther.identify({ userId: 42 });
@@ -337,19 +333,19 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther.id, 1);
         manager.playersInDeathMatch_.set(russell.id, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, kllerid: russell.id });
+        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
 
         assert.equal(guntherStats.deaths, 1);
         assert.equal(russellStats.kills, 1);
-        assert.equal(russel.health, 100);
-        assert.equal(russel.armour, 90);
+        assert.equal(russell.health, 100);
+        assert.equal(russell.armour, 90);
     });
 
-    it('should award KD and health upon kill in DM with a limit to 100 hp and armour', assert => {
+    it('should award KD and health upon kill in DM with a limit to 100 hp and armour', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
-        await gunther.identify({ userId: 42 });
-        await russell.identify({ userId: 11 });
+        await gunther.identify();
+        await russell.identify();
         russell.health = 90;
         russell.armour = 40; // He regenerated armour from properties or such
 
@@ -360,11 +356,11 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther.id, 1);
         manager.playersInDeathMatch_.set(russell.id, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, kllerid: russell.id });
+        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
 
         assert.equal(guntherStats.deaths, 1);
         assert.equal(russellStats.kills, 1);
-        assert.equal(russel.health, 100);
-        assert.equal(russel.armour, 100);
+        assert.equal(russell.health, 100);
+        assert.equal(russell.armour, 100);
     });
 });

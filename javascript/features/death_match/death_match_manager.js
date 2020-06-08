@@ -212,7 +212,7 @@ export class DeathMatchManger {
         const health = killer.health;
         const armour = killer.armour;
         killer.health = 100;
-        killer.armour = Math.min(100 - health + armour, 100);
+        killer.armour = Math.min(armour + health, 100);
 
         killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStats.kills);
 

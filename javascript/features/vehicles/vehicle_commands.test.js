@@ -3,11 +3,11 @@
 // be found in the LICENSE file.
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
-import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
-import VehicleManager from 'features/vehicles/vehicle_manager.js';
 import Vehicles from 'features/vehicles/vehicles.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
+    return;  // disabled!
+
     let abuse = null;
     let commands = null;
     let gunther = null;
@@ -53,137 +53,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
         return player.vehicle === vehicle;
     }
-
-    it('should be able to /lock vehicles on the server', async(assert) => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-        assert.isFalse(russell.account.isRegistered());
-
-        assert.isTrue(createVehicleForPlayer(russell));
-        assert.isNotNull(russell.vehicle);
-
-        const vehicle = russell.vehicle;
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-        assert.isNotNull(databaseVehicle);
-
-        assert.isFalse(manager.access.isLocked(databaseVehicle));
-        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
-        assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
-
-        // (1) Unregistered players should not be able to use this command.
-        {
-            assert.isTrue(await russell.issueCommand('/lock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0], Message.VEHICLE_LOCK_UNREGISTERED);
-
-            russell.clearMessages();
-            await russell.identify({ userId: 8951 });
-        }
-
-        // (2) Registered players shouldn't be able to lock vehicles they're not driving.
-        {
-            russell.leaveVehicle();
-            russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
-
-            assert.isTrue(await russell.issueCommand('/lock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0], Message.VEHICLE_LOCK_PASSENGER);
-
-            russell.clearMessages();
-        }
-
-        // (3) Registered players should be able to lock the vehicle they're driving.
-        {
-            russell.leaveVehicle();
-            russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
-
-            assert.isTrue(await russell.issueCommand('/lock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0],
-                         Message.format(Message.VEHICLE_LOCKED, russell.vehicle.model.name));
-
-            assert.isTrue(manager.access.isLocked(databaseVehicle));
-            assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
-            assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
-
-            russell.clearMessages();
-        }
-
-        // (4) It should realize that it's already locked.
-        {
-            assert.isTrue(await russell.issueCommand('/lock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0],
-                         Message.format(Message.VEHICLE_LOCK_REDUNDANT, russell.vehicle.model.name))
-        }
-    });
-
-    it('should be able to /unlock vehicles on the server', async(assert) => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-        assert.isFalse(russell.account.isRegistered());
-
-        assert.isTrue(createVehicleForPlayer(russell));
-        assert.isNotNull(russell.vehicle);
-
-        const vehicle = russell.vehicle;
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-        assert.isNotNull(databaseVehicle);
-
-        // (1) Unregistered players should not be able to use this command.
-        {
-            assert.isTrue(await russell.issueCommand('/unlock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_UNREGISTERED);
-
-            russell.clearMessages();
-            await russell.identify({ userId: 8951 });
-        }
-
-        manager.access.restrictToPlayer(databaseVehicle, russell.account.userId);
-
-        assert.isTrue(manager.access.isLocked(databaseVehicle));
-        assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
-        assert.isFalse(manager.access.canAccessVehicle(gunther, databaseVehicle));
-
-        // (2) Registered players shouldn't be able to lock vehicles they're not driving.
-        {
-            russell.leaveVehicle();
-            russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
-
-            assert.isTrue(await russell.issueCommand('/unlock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0], Message.VEHICLE_UNLOCK_PASSENGER);
-
-            russell.clearMessages();
-        }
-
-        // (3) Registered players should be able to unlock the vehicle they're driving.
-        {
-            russell.leaveVehicle();
-            russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
-
-            assert.isTrue(await russell.issueCommand('/unlock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(russell.messages[0],
-                         Message.format(Message.VEHICLE_UNLOCKED, russell.vehicle.model.name));
-
-            assert.isFalse(manager.access.isLocked(databaseVehicle));
-            assert.isTrue(manager.access.canAccessVehicle(russell, databaseVehicle));
-            assert.isTrue(manager.access.canAccessVehicle(gunther, databaseVehicle));
-
-            russell.clearMessages();
-        }
-
-        // (4) It should realize that it's already unlocked.
-        {
-            assert.isTrue(await russell.issueCommand('/unlock'));
-            assert.equal(russell.messages.length, 1);
-            assert.equal(
-                russell.messages[0],
-                Message.format(Message.VEHICLE_UNLOCK_REDUNDANT, russell.vehicle.model.name));
-        }
-    });
 
     it('should enable the quick vehicle commands based on their requirements', async(assert) => {
         let finishedSprayTagCollection = false;
@@ -417,109 +286,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.modelId, 544 /* Firetruck 2 */);
     });
 
-    it('should be able to display the current access restrictions of a vehicle', async(assert) => {
-        // Only administrators can display the restrictions of a vehicle.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle);
-
-        const vehicle = gunther.vehicle;
-
-        // No restrictions.
-        {
-            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_EVERYONE, 0);
-
-            assert.isTrue(await gunther.issueCommand('/v access'));
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(
-                gunther.messages[0],
-                Message.format(Message.VEHICLE_ACCESS_UNRESTRICTED, vehicle.model.name));
-
-            gunther.clearMessages();
-        }
-
-        // Restricted to VIPs.
-        {
-            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP, 0);
-
-            assert.isTrue(await gunther.issueCommand('/v access'));
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(
-                gunther.messages[0],
-                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
-                               'VIP members'));
-
-            gunther.clearMessages();
-        }
-
-        // Restricted to administrators.
-        {
-            await manager.updateVehicleAccess(
-                vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL, Player.LEVEL_ADMINISTRATOR);
-
-            assert.isTrue(await gunther.issueCommand('/v access'));
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(
-                gunther.messages[0],
-                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
-                               'administrators'));
-
-            gunther.clearMessages();
-        }
-
-        // Restricted to a particular player.
-        {
-            await manager.updateVehicleAccess(vehicle, DatabaseVehicle.ACCESS_TYPE_PLAYER, 123456);
-
-            assert.isTrue(await gunther.issueCommand('/v access'));
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(
-                gunther.messages[0],
-                Message.format(Message.VEHICLE_ACCESS_RESTRICTED, vehicle.model.name,
-                               'a particular player'));
-
-            gunther.clearMessages();
-        }
-    });
-
-    it('should be able to restrict access to a vehicle', async(assert) => {
-        // Only administrators can change the restrictions of a vehicle.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle);
-
-        const databaseVehicle = manager.getManagedDatabaseVehicle(gunther.vehicle);
-        const vehicle = gunther.vehicle;
-
-        assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_EVERYONE);
-
-        // Restrict to VIP members
-        {
-            assert.isTrue(await gunther.issueCommand('/v access VIPs'));
-            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP);
-            assert.equal(databaseVehicle.accessValue, 0);
-        }
-
-        // Restrict to administrators
-        {
-            assert.isTrue(await gunther.issueCommand('/v access administrators'));
-            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL);
-            assert.equal(databaseVehicle.accessValue, Player.LEVEL_ADMINISTRATOR);
-        }
-
-        // Only Management can restrict vehicles to Management.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        // Restrict to Management
-        {
-            assert.isTrue(await gunther.issueCommand('/v access manAGEment'));
-            assert.equal(databaseVehicle.accessType, DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL);
-            assert.equal(databaseVehicle.accessValue, Player.LEVEL_MANAGEMENT);
-        }
-    });
-
     it('should be able to delete the vehicle the admin is driving in', async(assert) => {
         // Only administrators can delete vehicles from the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -660,30 +426,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isFalse(oldVehicle.isConnected());
     });
 
-    it('should be able to tell the density of vehicles around the administrator', async(assert) => {
-        // Only Management can compute the density level around them.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        // Create three vehicles of two different models around the player's position.
-        for (const modelId of [520, 520, 411]) {
-            await manager.createVehicle({
-                modelId: modelId,
-                position: gunther.position,
-                rotation: 90,
-                interiorId: gunther.interiorId,
-                virtualWorld: gunther.virtualWorld
-            });
-        }
-
-        assert.isTrue(await gunther.issueCommand('/v density'));
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_DENSITY, 3, 2,
-                                                         manager.streamer.streamingDistance));
-        assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_DENSITY_TOTAL,
-                                                         manager.streamer.size,
-                                                         manager.streamer.streamedSize));
-    });
-
     it('should enable administrators to enter vehicles close to them', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
@@ -710,23 +452,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isNotNull(vehicle);
 
-        // (2) It should bail out when the vehicle is restricted to a player.
-        {
-            const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
-            assert.isNotNull(databaseVehicle);
-
-            databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER;
-
-            assert.isTrue(await gunther.issueCommand('/v enter'));
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_ENTER_RESTRICTED);
-
-            databaseVehicle.accessType = DatabaseVehicle.ACCESS_TYPE_EVERYONE;
-
-            gunther.clearMessages();
-        }
-
-        // (3) It should bail out when being given an invalid seat.
+        // (2) It should bail out when being given an invalid seat.
         {
             assert.isTrue(await gunther.issueCommand('/v enter 9001'));
             assert.equal(gunther.messages.length, 1);
@@ -738,7 +464,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         // Make Russell enter the vehicle in the passenger seat.
         russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
 
-        // (4) It should bail out when trying to enter in a seat that's already occupied.
+        // (3) It should bail out when trying to enter in a seat that's already occupied.
         {
             assert.isTrue(await gunther.issueCommand('/v enter 1'));
             assert.equal(gunther.messages.length, 1);
@@ -749,7 +475,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        // (5) It should enter the vehicle when the seat is available.
+        // (4) It should enter the vehicle when the seat is available.
         {
             assert.isTrue(await gunther.issueCommand('/v enter'));
             assert.equal(gunther.messages.length, 1);
@@ -759,7 +485,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.clearMessages();
         }
 
-        // (6) It should bail out when Gunther already is in another vehicle.
+        // (5) It should bail out when Gunther already is in another vehicle.
         {
             assert.isTrue(await gunther.issueCommand('/v enter'));
             assert.equal(gunther.messages.length, 1);
@@ -785,7 +511,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(gunther.messages.length, 3);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
             assert.isFalse(gunther.messages[1].includes('optimise'));
-            assert.isFalse(gunther.messages[2].includes('unpin'));
 
             gunther.clearMessages();
         }
@@ -796,7 +521,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(gunther.messages.length, 3);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
             assert.isTrue(gunther.messages[1].includes('optimise'));
-            assert.isTrue(gunther.messages[2].includes('unpin'));
         }
     });
 
@@ -920,7 +644,7 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should enable Management to optimise the vehicle streamer', async(assert) => {
-        // Only Management members can pin and unpin vehicles on the server.
+        // Only Management members are allowed to optimise the vehicle streamer.
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         let optimised = false;
@@ -930,29 +654,6 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/v optimise'));
         assert.isTrue(optimised);
-    });
-
-    it('should enable Management to pin and unpin their vehicles', async(assert) => {
-        // Only Management members can pin and unpin vehicles on the server.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle)
-
-        const storedVehicle = manager.streamer.getStoredVehicle(gunther.vehicle);
-        assert.isNotNull(storedVehicle);
-
-        // The |storedVehicle| is pinned because |gunther| is driving it.
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
-
-        assert.isTrue(await gunther.issueCommand('/v pin'));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
-
-        assert.isTrue(await gunther.issueCommand('/v unpin'));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
     });
 
     it('should not save vehicles when the area is too busy', async(assert) => {
@@ -1022,60 +723,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         commands.dispose = () => true;
 
         assert.equal(server.commandManager.size, originalCommandCount - 10);
-    });
-
-    it('should be able to update and tell the color(s) of vehicles', async(assert) => {
-        // Only administrators can manipulate vehicle color(s) on the server.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(await gunther.issueCommand('/v color'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_NOT_DRIVING, 'Gunther'));
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle);
-
-        gunther.vehicle.primaryColor = 142;
-        gunther.vehicle.secondaryColor = 241;
-
-        assert.isTrue(await gunther.issueCommand('/v color'));
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_COLOR_CURRENT, 142, 241));
-
-        gunther.clearMessages();
-
-        assert.isTrue(await gunther.issueCommand('/v color 300'));  // must be in [0, 255]
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_USAGE));
-        assert.equal(gunther.vehicle.primaryColor, 142);
-
-        gunther.clearMessages();
-
-        assert.isTrue(await gunther.issueCommand('/v color 120'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_UPDATED, 120, 241));
-        assert.equal(gunther.vehicle.primaryColor, 120);
-
-        gunther.clearMessages();
-        gunther.vehicle.primaryColor = 142;
-
-        assert.isTrue(await gunther.issueCommand('/v color 120 300'));  // must be in [0, 255]
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_USAGE));
-        assert.equal(gunther.vehicle.primaryColor, 142);
-        assert.equal(gunther.vehicle.secondaryColor, 241);
-
-        gunther.clearMessages();
-
-        assert.isTrue(await gunther.issueCommand('/v color 120 210'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_COLOR_UPDATED, 120, 210));
-        assert.equal(gunther.vehicle.primaryColor, 120);
-        assert.equal(gunther.vehicle.secondaryColor, 210);
-
-        gunther.clearMessages();
-        gunther.vehicle.primaryColor = 142;
-        gunther.vehicle.secondaryColor = 241;
     });
 
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {

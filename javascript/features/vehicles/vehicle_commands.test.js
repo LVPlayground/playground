@@ -785,7 +785,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(gunther.messages.length, 3);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
             assert.isFalse(gunther.messages[1].includes('optimise'));
-            assert.isFalse(gunther.messages[2].includes('unpin'));
 
             gunther.clearMessages();
         }
@@ -796,7 +795,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(gunther.messages.length, 3);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
             assert.isTrue(gunther.messages[1].includes('optimise'));
-            assert.isTrue(gunther.messages[2].includes('unpin'));
         }
     });
 
@@ -920,7 +918,7 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should enable Management to optimise the vehicle streamer', async(assert) => {
-        // Only Management members can pin and unpin vehicles on the server.
+        // Only Management members are allowed to optimise the vehicle streamer.
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         let optimised = false;
@@ -930,29 +928,6 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/v optimise'));
         assert.isTrue(optimised);
-    });
-
-    it('should enable Management to pin and unpin their vehicles', async(assert) => {
-        // Only Management members can pin and unpin vehicles on the server.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle)
-
-        const storedVehicle = manager.streamer.getStoredVehicle(gunther.vehicle);
-        assert.isNotNull(storedVehicle);
-
-        // The |storedVehicle| is pinned because |gunther| is driving it.
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
-
-        assert.isTrue(await gunther.issueCommand('/v pin'));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
-
-        assert.isTrue(await gunther.issueCommand('/v unpin'));
-        assert.isTrue(manager.streamer.isPinned(storedVehicle));
-        assert.isFalse(manager.streamer.isPinned(storedVehicle, VehicleManager.MANAGEMENT_PIN));
     });
 
     it('should not save vehicles when the area is too busy', async(assert) => {

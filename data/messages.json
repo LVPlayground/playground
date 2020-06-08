@@ -514,7 +514,6 @@
   "VEHICLE_NOT_DRIVING": "@error %s is not currently in a vehicle managed by JavaScript.",
   "VEHICLE_NOT_DRIVING_SELF": "@error You need to be in a public vehicle in order to use this command.",
   "VEHICLE_OPTIMISED": "@success The vehicle streamer has been optimised.",
-  "VEHICLE_PINNED": "@success %s's %s has been pinned with the streamer.",
   "VEHICLE_QUICK_ALREADY_DRIVING": "@error Sorry, but you're already driving a vehicle!",
   "VEHICLE_QUICK_COLLECTABLES": "@error Keep tagging Spray Tags and shooting Red Barrels to enable this command!",
   "VEHICLE_QUICK_MAIN_WORLD": "@error Sorry, but you need to be outside in the main world to use this command!",
@@ -534,7 +533,6 @@
   "VEHICLE_UNLOCK_REDUNDANT": "@error No need to unlock your vehicle because it's not locked!",
   "VEHICLE_UNLOCK_UNREGISTERED": "@error Sorry, only registered players can unlock vehicles. Register now on www.sa-mp.nl!",
   "VEHICLE_UNLOCKED": "@success The %s has been unlocked!",
-  "VEHICLE_UNPINNED": "@success %s's %s has been unpinned from the streamer.",
 
   "ZONE_DECORATION_PURCHASE_ANNOUNCE": "%s (Id:%d) has purchased a %s for %$ per day.",
   "ZONE_DECORATION_PURCHASE_NO_FUNDS": "This {FFA500}%s{A9C4E4} costs {FFA500}%${A9C4E4}, but there's only {FFA500}%${A9C4E4}\r\non your gang's balance. Please deposit more money with \"/gbank\" first.",

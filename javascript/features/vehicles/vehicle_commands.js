@@ -69,7 +69,7 @@ class VehicleCommands {
 
         // Command: /v [vehicle]?
         //          /v [density/enter/help/optimise/reset]
-        //          /v [player]? [access/color/delete/health/pin/respawn/save/unpin]
+        //          /v [player]? [access/color/delete/health/respawn/save]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('density')
@@ -109,18 +109,12 @@ class VehicleCommands {
                     .parameters([ { name: 'health', type: CommandBuilder.NUMBER_PARAMETER,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleHealthCommand.bind(this))
-                .sub('pin')
-                    .restrict(Player.LEVEL_MANAGEMENT)
-                    .build(VehicleCommands.prototype.onVehiclePinCommand.bind(this))
                 .sub('respawn')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
                     .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
-                .sub('unpin')
-                    .restrict(Player.LEVEL_MANAGEMENT)
-                    .build(VehicleCommands.prototype.onVehicleUnpinCommand.bind(this))
                 .build(/* deliberate fall-through */)
             .sub(CommandBuilder.WORD_PARAMETER)
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
@@ -614,10 +608,8 @@ class VehicleCommands {
         if (!player.isTemporaryAdministrator())
             vehicleOptions.push('delete', 'save');
 
-        if (player.isManagement()) {
+        if (player.isManagement())
             globalOptions.push('optimise');
-            vehicleOptions.push('pin', 'unpin');
-        }
 
         player.sendMessage(Message.VEHICLE_HELP_GLOBAL, globalOptions.sort().join('/'));
         player.sendMessage(Message.VEHICLE_HELP_VEHICLE, vehicleOptions.sort().join('/'));
@@ -661,20 +653,6 @@ class VehicleCommands {
             streamAfterOptimiseTime, optimiseTime);
 
         player.sendMessage(Message.VEHICLE_OPTIMISED);
-    }
-
-    // Called when a Management member executes the `/v pin` or `/v [player] pin` command, which
-    // means that they wish to pin the associated vehicle with the streamer.
-    onVehiclePinCommand(player, subject) {
-        const vehicle = subject.vehicle;
-
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!this.manager_.pinVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
-            return;
-        }
-
-        player.sendMessage(Message.VEHICLE_PINNED, subject.name, vehicle.model.name);
     }
 
     // Called when the |player| requests the vehicle layout to be reset.
@@ -735,20 +713,6 @@ class VehicleCommands {
 
         player.sendMessage(
             Message.VEHICLE_SAVED, vehicle.model.name, (wasPersistent ? 'updated' : 'saved'));
-    }
-
-    // Called when a Management member executes the `/v unpin` or `/v [player] unpin` command, which
-    // means that they wish to unpin the associated vehicle with from streamer.
-    onVehicleUnpinCommand(player, subject) {
-        const vehicle = subject.vehicle;
-
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!this.manager_.unpinVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
-            return;
-        }
-
-        player.sendMessage(Message.VEHICLE_UNPINNED, subject.name, vehicle.model.name);
     }
 
     // ---------------------------------------------------------------------------------------------

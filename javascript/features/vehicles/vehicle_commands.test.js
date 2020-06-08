@@ -3,11 +3,8 @@
 // be found in the LICENSE file.
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
-import Vehicles from 'features/vehicles/vehicles.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
-    return;  // disabled!
-
     let abuse = null;
     let commands = null;
     let gunther = null;
@@ -15,27 +12,24 @@ describe('VehicleCommands', (it, beforeEach) => {
     let manager = null;
 
     beforeEach(async(assert) => {
-        gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: 42 });
-
-        server.featureManager.registerFeaturesForTests({
-            vehicles: Vehicles
-        });
-
-        const vehicles = server.featureManager.loadFeature('vehicles');
+        const feature = server.featureManager.loadFeature('vehicles');
 
         abuse = server.featureManager.loadFeature('abuse');
-
+        commands = feature.commands_;
+        gunther = server.playerManager.getById(0 /* Gunther */);
         playground = server.featureManager.loadFeature('playground');
+        manager = feature.manager_;
+
+        // Identify |gunther| to their account, and allow them to use the `/v` command.
+        await gunther.identify({ userId: 42 });
+        
         playground.access.addException('v', gunther);
 
-        commands = vehicles.commands_;
-
-        manager = vehicles.manager_;
-        manager.reportVehicleDestroyed_ = vehicleId => false;
-
-        await manager.ready;
+        // Wait until the Manager has loaded all vehicles from the database.
+        await manager.loadVehicles();
     });
+
+    return;  // disabled!
 
     // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
     function createVehicleForPlayer(player, { modelId = 411 /* Infernus */, position = null } = {}) {
@@ -179,8 +173,6 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should enable players to use the quick vehicle commands', async(assert) => {
-        assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
-
         const commands = ['pre', 'sul', 'ele', 'tur', 'inf', 'nrg'];
         let previousVehicle = null;
 

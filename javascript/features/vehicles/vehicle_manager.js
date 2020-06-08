@@ -58,9 +58,13 @@ class VehicleManager {
         this.streamer_().optimise();
     }
 
-    // Creates a vehicle with |modelId| at given location. It will be eagerly created by the
-    // streamer if any player is within streaming range of the vehicle.
-    createVehicle({ player = null, modelId, position, rotation, interiorId, virtualWorld }) {}
+    // Creates a new ephemeral vehicle for the |player|. Players are only allowed a single vehicle
+    // of their own, but administrators are allowed multiple when the setting allows for this.
+    createVehicle(player, modelId) {
+
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Returns whether the |vehicle| is one managed by the VehicleManager. This will only return
     // TRUE when the vehicle is stored by the streamer, and managed by us.
@@ -85,25 +89,6 @@ class VehicleManager {
     // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
     // will be asynchronously deleted from the database if it's persistent.
     async deleteVehicle(vehicle) {}
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Gets the maximum number of ephemeral vehicles to be created for |player|.
-    getVehicleLimitForPlayer(player) {
-        if (player.isManagement())
-            return 10;
-
-        if (player.isAdministrator())
-            return 5;
-
-        return 1;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Called when a vehicle managed by this VehicleManager is about to respawn. Deletes ephemeral
-    // vehicles from the server before their respawn is complete.
-    onVehicleDeath(vehicle, databaseVehicle) {}
 
     // ---------------------------------------------------------------------------------------------
 

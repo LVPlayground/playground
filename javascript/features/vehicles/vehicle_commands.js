@@ -3,9 +3,7 @@
 // be found in the LICENSE file.
 
 import CommandBuilder from 'components/command_manager/command_builder.js';
-import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import Menu from 'components/menu/menu.js';
-import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
 
 import * as benefits from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';

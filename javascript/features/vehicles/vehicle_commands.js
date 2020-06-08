@@ -68,13 +68,10 @@ class VehicleCommands {
         }
 
         // Command: /v [vehicle]?
-        //          /v [density/enter/help/optimise/reset]
+        //          /v [enter/help/optimise/reset]
         //          /v [player]? [access/color/delete/health/respawn/save]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
-            .sub('density')
-                .restrict(Player.LEVEL_MANAGEMENT)
-                .build(VehicleCommands.prototype.onVehicleDensityCommand.bind(this))
             .sub('enter')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
@@ -509,17 +506,6 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_DELETED, vehicle.model.name);
     }
 
-    // Called when the |player| executes `/v density`, which will show them the density of vehicles
-    // and models within streaming radius around their current position.
-    async onVehicleDensityCommand(player) {
-        const areaInfo = await this.manager_.streamer.query(player.position);
-
-        player.sendMessage(Message.VEHICLE_DENSITY, areaInfo.vehicles, areaInfo.models,
-                           this.manager_.streamer.streamingDistance);
-        player.sendMessage(Message.VEHICLE_DENSITY_TOTAL, this.manager_.streamer.size,
-                           this.manager_.streamer.streamedSize)
-    }
-
     // Called when the |player| executes `/v enter [seat]?`, which means they'd like to enter the
     // vehicle closest to them in the given seat. Only available to administrators.
     async onVehicleEnterCommand(player, seat) {
@@ -602,7 +588,7 @@ class VehicleCommands {
         if (!player.isAdministrator())
             return;
 
-        const globalOptions = ['density', 'enter', 'help', 'reset'];
+        const globalOptions = ['enter', 'help', 'reset'];
         const vehicleOptions = ['access', 'color', 'health', 'respawn'];
 
         if (!player.isTemporaryAdministrator())

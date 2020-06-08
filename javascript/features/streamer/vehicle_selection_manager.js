@@ -31,7 +31,7 @@ export class VehicleSelectionManager {
 
         // Responsible for managing vehicles that have been used by players, which should not be
         // respawned by the streamer when they go out of scope.
-        this.respawnManager_ = new VehicleRespawnManager();
+        this.respawnManager_ = new VehicleRespawnManager(settings);
 
         // Map of the vehicles that exist on the server, keyed by StreamableVehicle, valued by the
         // Vehicle entity instance that was created for the vehicle.

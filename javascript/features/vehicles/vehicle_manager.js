@@ -31,8 +31,11 @@ class VehicleManager {
             this.loadVehicles();
     }
 
-    // Gets the default respawn delay for vehicles, in seconds.
-    get defaultRespawnDelay() { return this.settings_().getValue('vehicles/respawn_delay_sec'); }
+    // Gets the default respawn delay for vehicles, in seconds. This is configurable through the
+    // "/lvp settings" command, but changes only apply to newly created vehicles.
+    get persistentVehicleRespawnDelay() {
+        return this.settings_().getValue('vehicles/respawn_persistent_delay_sec');
+    }
 
     // Gets the number of vehicles that have been created on the server.
     get size() { return this.vehicles_.size; }
@@ -45,7 +48,7 @@ class VehicleManager {
         const vehicles = await this.database_.loadVehicles();
         for (const vehicleInfo of vehicles) {
             const streamableVehicleInfo =
-                vehicleInfo.toStreamableVehicleInfo(this.defaultRespawnDelay);
+                vehicleInfo.toStreamableVehicleInfo(this.persistentVehicleRespawnDelay);
 
             // Create the |vehicleInfo| on the Streamer, and store a reference locally. This further
             // is able to tell us whether the given vehicle is live.

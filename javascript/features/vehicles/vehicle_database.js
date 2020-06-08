@@ -1,22 +1,20 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
+
+import { PersistentVehicleInfo } from 'features/vehicles/persistent_vehicle_info.js';
 
 // Query to load all created vehicles from the database.
 const LOAD_VEHICLES_QUERY = `
     SELECT
-        vehicle_id,
-        vehicle_access_type,
-        vehicle_access_value,
-        model_id,
-        position_x,
-        position_y,
-        position_z,
-        rotation,
-        primary_color,
-        secondary_color,
-        paintjob,
-        interior_id
+        vehicles.vehicle_id,
+        vehicles.model_id,
+        vehicles.position_x,
+        vehicles.position_y,
+        vehicles.position_z,
+        vehicles.rotation,
+        vehicles.primary_color,
+        vehicles.secondary_color
     FROM
         vehicles
     WHERE
@@ -77,23 +75,19 @@ class VehicleDatabase {
 
         const data = await server.database.query(LOAD_VEHICLES_QUERY);
         data.rows.forEach(info => {
-            vehicles.push({
-                databaseId: info.vehicle_id,
-
-                accessType: info.vehicle_access_type,
-                accessValue: info.vehicle_access_value,
+            const vehicleInfo = new PersistentVehicleInfo({
+                vehicleId: info.vehicle_id,
 
                 modelId: info.model_id,
+
                 position: new Vector(info.position_x, info.position_y, info.position_z),
                 rotation: info.rotation,
 
-                interiorId: info.interior_id,
-                virtualWorld: 0 /* main world */,
-
                 primaryColor: info.primary_color,
-                secondaryColor: info.secondary_color,
-                paintjob: info.paintjob
+                secondaryColor: info.secondary_color
             });
+
+            vehicles.push(vehicleInfo);
         });
 
         return vehicles;

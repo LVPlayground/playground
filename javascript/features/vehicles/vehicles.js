@@ -33,8 +33,12 @@ class Vehicles extends Feature {
         // Used for decorations
         const settings = this.defineDependency('settings');
 
-        this.manager_ = new VehicleManager(streamer);
-        this.manager_.loadVehicles();
+        // The VehicleManager is responsible for loading and keeping track of all vehicles created
+        // by this feature, which includes the ephemeral vehicles.
+        this.manager_ = new VehicleManager(settings, streamer);
+
+
+
 
         this.natives_ = new VehicleNatives(this.manager_);
 

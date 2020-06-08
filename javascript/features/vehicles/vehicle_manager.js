@@ -8,41 +8,54 @@ import VehicleDatabase from 'features/vehicles/vehicle_database.js';
 // The vehicle manager is responsible for all vehicles created as part of the Vehicles feature. This
 // is not to be confused with the global VehicleManager for the entire JavaScript gamemode.
 class VehicleManager {
-    constructor(streamer) {
+    database_ = null;
+    streamer_ = null;
+
+    vehicles_ = null;
+
+    constructor(settings, streamer) {
+        this.settings_ = settings;
         this.database_ = server.isTest() ? new MockVehicleDatabase()
                                          : new VehicleDatabase();
-
-        this.dataLoadedPromise_ = new Promise(resolver =>
-            this.dataLoadedResolver_ = resolver);
-
-        // Set of all DatabaseVehicle instances owned by this VehicleManager.
-        this.vehicles_ = new Set();
 
         this.streamer_ = streamer;
         this.streamer_.addReloadObserver(
             this, VehicleManager.prototype.onStreamerReload.bind(this));
+        
+        // Map from PersistentVehicleInfo to StreamableVehicle instances.
+        this.vehicles_ = new Map();
+
+        // Only load the vehicles when not running tests. There are tests covering this case which
+        // manually load the vehicles, which is something they want to wait for.
+        if (!server.isTest())
+            this.loadVehicles();
     }
 
-    // Gets the number of vehicles that have been created by the manager.
-    get count() { return this.vehicles_.size; }
+    // Gets the default respawn delay for vehicles, in seconds.
+    get defaultRespawnDelay() { return this.settings_().getValue('vehicles/respawn_delay_sec'); }
 
-    // Gets a promise that is to be resolved when the feature is ready.
-    get ready() { return this.dataLoadedPromise_; }
-
-    // Gets the active vehicle streamer. Should not be cached.
-    get streamer() { return this.streamer_().getVehicleStreamer(); }
-
-    // Gets an iterator with access to all DatabaseVehicle instances.
-    get vehicles() { return this.vehicles_.values(); }
+    // Gets the number of vehicles that have been created on the server.
+    get size() { return this.vehicles_.size; }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Asynchronously loads the vehicles from the database, and creates them on the server using the
-    // streamer. Will display warnings for invalid vehicle definitions.
+    // Asynchronously loads the vehicles from the database, and creates them using the streamer. The
+    // streamer will be asked to optimise the plane after this has completed.
     async loadVehicles() {
-        // Actually load the vehicles.
+        const vehicles = await this.database_.loadVehicles();
+        for (const vehicleInfo of vehicles) {
+            const streamableVehicleInfo =
+                vehicleInfo.toStreamableVehicleInfo(this.defaultRespawnDelay);
 
-        this.dataLoadedResolver_();
+            // Create the |vehicleInfo| on the Streamer, and store a reference locally. This further
+            // is able to tell us whether the given vehicle is live.
+            const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo);
+
+            this.vehicles_.set(vehicleInfo, streamableVehicle);
+        }
+
+        // Optimise the streamer, now that many mutations in the available vehicles have been made.
+        this.streamer_().optimise();
     }
 
     // Creates a vehicle with |modelId| at given location. It will be eagerly created by the
@@ -94,17 +107,24 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the streamer has been reloaded. Will recreate all our vehicles.
-    onStreamerReload(streamer) {}
+    // Called when the streamer has been reloaded. Will reload all vehicles from the database, and
+    // re-adds them to the streamer. This is quite an involved operation.
+    onStreamerReload(streamer) {
+        this.vehicles_.clear();
+        this.loadVehicles();
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.streamer_.removeReloadObserver(this);
-        this.streamer_ = null;
-
+        for (const streamableVehicle of this.vehicles_.values())
+            this.streamer_().deleteVehicle(streamableVehicle);
+        
         this.vehicles_.clear();
         this.vehicles_ = null;
+
+        this.streamer_.removeReloadObserver(this);
+        this.streamer_ = null;
 
         this.database_ = null;
     }

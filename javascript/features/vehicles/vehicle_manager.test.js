@@ -1,57 +1,49 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Vehicles from 'features/vehicles/vehicles.js';
-
 describe('VehicleManager', (it, beforeEach) => {
-    return;  // disabled!
-
     let gunther = null;
     let manager = null;
-    let vehicleStreamer = null;
+    let streamer = null;
 
     // The position at which the test vehicle should be created.
-    const POSITION = new Vector(6000, 6000, 6000);
+    const kPosition = new Vector(6000, 6000, 6000);
 
     // Settings required to create a Hydra with the VehicleManager.
-    const HYDRA = {
+    const kHydra = {
         modelId: 520 /* Hydra */,
-        position: POSITION,
+        position: kPosition,
         rotation: 90,
         interiorId: 0,
         virtualWorld: 0
     };
 
-    beforeEach(async(assert) => {
+    beforeEach(async() => {
+        const feature = server.featureManager.loadFeature('vehicles');
+
         gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.position = POSITION;
+        manager = feature.manager_;
+        streamer = server.featureManager.loadFeature('streamer');
 
-        server.featureManager.registerFeaturesForTests({
-            vehicles: Vehicles
-        });
+        await manager.loadVehicles();
 
-        const vehicles = server.featureManager.loadFeature('vehicles');
-
-        manager = vehicles.manager_;
-        manager.reportVehicleDestroyed_ = vehicleId => false;
-
-        await manager.ready;
-
-        vehicleStreamer = server.featureManager.loadFeature('streamer').getVehicleStreamer();
+        // Move |gunther| to the starting position for these tests.
+        gunther.position = kPosition;
     });
 
     it('should load vehicle data from the database by default', async(assert) => {
-        assert.isAbove(manager.count, 0);
+        assert.isAbove(manager.size, 0);
 
-        const vehicles = [...manager.vehicles];
-        assert.equal(vehicles.length, manager.count);
+        const vehicles = [ ...manager.vehicles_.values() ];
+        assert.equal(vehicles.length, manager.size);
 
         const originalVehicleCount = server.vehicleManager.count;
 
         // Stream the vehicles. The vehicle closest to |gunther| should be created.
         gunther.position = vehicles[0].position.translate({ z: 2 });
-        await vehicleStreamer.stream();
+
+        await streamer.streamForTesting([ gunther ]);
 
         assert.equal(server.vehicleManager.count, originalVehicleCount + 1);
 
@@ -59,8 +51,12 @@ describe('VehicleManager', (it, beforeEach) => {
         manager.dispose();
         manager.dispose = () => true;
 
+        await streamer.streamForTesting([ gunther ]);
+
         assert.equal(server.vehicleManager.count, originalVehicleCount);
     });
+
+    return;  // disabled!
 
     it('should automatically stream created vehicles in', assert => {
         gunther.position = new Vector(0, 0, 0);
@@ -72,8 +68,8 @@ describe('VehicleManager', (it, beforeEach) => {
             virtualWorld: 0
         }));
 
-        gunther.position = POSITION;
-        const vehicle = manager.createVehicle(HYDRA);
+        gunther.position = kPosition;
+        const vehicle = manager.createVehicle(kHydra);
 
         assert.isNotNull(vehicle);
         assert.isTrue(vehicle.isConnected());
@@ -81,14 +77,14 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(vehicle.modelId, 520 /* Hydra */);
         assert.isNull(vehicle.numberPlate);
 
-        assert.deepEqual(vehicle.position, POSITION);
+        assert.deepEqual(vehicle.position, kPosition);
         assert.equal(vehicle.rotation, 90);
         assert.equal(vehicle.interiorId, 0);
         assert.equal(vehicle.virtualWorld, 0);
     });
 
     it('should be able to tell whether it manages a vehicle', assert => {
-        const managedVehicle = manager.createVehicle(HYDRA);
+        const managedVehicle = manager.createVehicle(kHydra);
 
         assert.isTrue(managedVehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(managedVehicle));
@@ -110,7 +106,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should be able to store new vehicles in the database', async(assert) => {
-        const managedVehicle = manager.createVehicle(HYDRA);
+        const managedVehicle = manager.createVehicle(kHydra);
         assert.isNotNull(managedVehicle);
         assert.isTrue(managedVehicle.isConnected());
 
@@ -156,7 +152,7 @@ describe('VehicleManager', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
         assert.isTrue(vehicle.isConnected());
 
         gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
@@ -188,7 +184,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should be able to delete vehicles from the game', async(assert) => {
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
 
         assert.isTrue(vehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(vehicle));
@@ -204,7 +200,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should be able to pin and unpin managed vehicles in the streamer', assert => {
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
 
         assert.isTrue(vehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(vehicle));
@@ -226,7 +222,7 @@ describe('VehicleManager', (it, beforeEach) => {
     it('should apply vehicle access settings when creating them', async(assert) => {
         await gunther.identify({ userId: 5198 });
 
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
         assert.isTrue(vehicle.isConnected());
 
         const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
@@ -254,7 +250,7 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should be able to update vehicle access settings', async(assert) => {
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
         assert.isTrue(vehicle.isConnected());
 
         const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);
@@ -279,7 +275,7 @@ describe('VehicleManager', (it, beforeEach) => {
         await gunther.identify({ userId: 8432 });
         await russell.identify({ userId: 1451 });
 
-        const vehicle = manager.createVehicle(HYDRA);
+        const vehicle = manager.createVehicle(kHydra);
         assert.isTrue(vehicle.isConnected());
 
         const databaseVehicle = manager.getManagedDatabaseVehicle(vehicle);

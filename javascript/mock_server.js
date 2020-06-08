@@ -50,6 +50,7 @@ import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
+import Vehicles from 'features/vehicles/vehicles.js';
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
 // having mocked connected players. It will automatically be created before running a test, and
@@ -101,7 +102,8 @@ class MockServer {
             radio: Radio,
             reaction_tests: ReactionTests,
             settings: Settings,
-            streamer: Streamer
+            streamer: Streamer,
+            vehicles: Vehicles
         });
 
         // Connect a series of fake players to the server.

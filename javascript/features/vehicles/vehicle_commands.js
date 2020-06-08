@@ -49,14 +49,6 @@ class VehicleCommands {
 
         this.registerTrackedCommands(playground());
 
-        // Command: /lock
-        server.commandManager.buildCommand('lock')
-            .build(VehicleCommands.prototype.onLockCommand.bind(this));
-
-        // Command: /unlock
-        server.commandManager.buildCommand('unlock')
-            .build(VehicleCommands.prototype.onUnlockCommand.bind(this));
-
         // Command: /seize
         server.commandManager.buildCommand('seize')
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
@@ -69,7 +61,7 @@ class VehicleCommands {
 
         // Command: /v [vehicle]?
         //          /v [enter/help/optimise/reset]
-        //          /v [player]? [access/delete/health/respawn/save]
+        //          /v [player]? [delete/health/respawn/save]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
             .sub('enter')
@@ -86,11 +78,6 @@ class VehicleCommands {
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
-                .sub('access')
-                    .restrict(Player.LEVEL_ADMINISTRATOR)
-                    .parameters([ { name: 'level', type: CommandBuilder.WORD_PARAMETER,
-                                    optional: true } ])
-                    .build(VehicleCommands.prototype.onVehicleAccessCommand.bind(this))
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
@@ -112,83 +99,6 @@ class VehicleCommands {
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    // Called when a player executes `/lock`. This enables them to lock the vehicle they're
-    // currently driving in. Any other vehicles they've locked will be gracefully unlocked.
-    onLockCommand(player) {
-        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(player.vehicle);
-
-        // TODO: Support /lock for vehicles associated with houses.
-        // https://github.com/LVPlayground/playground/issues/343
-
-        // Bail out if the |player| is not registered, which we require for vehicle locks.
-        if (!player.account.isRegistered()) {
-            player.sendMessage(Message.VEHICLE_LOCK_UNREGISTERED);
-            return;
-        }
-
-        // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
-        if (!databaseVehicle) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
-            return;
-        }
-
-        // Bail out if the |player| is a passenger of the vehicle they're in.
-        if (player.vehicle.driver !== player) {
-            player.sendMessage(Message.VEHICLE_LOCK_PASSENGER);
-            return;
-        }
-
-        // Bail out if the vehicle is already locked for the player.
-        if (this.manager_.access.isLocked(databaseVehicle, VehicleAccessManager.LOCK_PLAYER)) {
-            player.sendMessage(Message.VEHICLE_LOCK_REDUNDANT, player.vehicle.model.name);
-            return;
-        }
-
-        // Restrict access to the |databaseVehicle| to |player|.
-        this.manager_.access.restrictToPlayer(databaseVehicle, player.account.userId);
-
-        player.sendMessage(Message.VEHICLE_LOCKED, player.vehicle.model.name);
-    }
-
-    // Called when a player executes `/unlock`. This enables them to free up a vehicle again if they
-    // decide others can access it after all.
-    onUnlockCommand(player) {
-        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(player.vehicle);
-
-        // TODO: Support /unlock for vehicles associated with houses.
-        // https://github.com/LVPlayground/playground/issues/343
-
-        // Bail out if the |player| is not registered, which we require for vehicle locks.
-        if (!player.account.isRegistered()) {
-            player.sendMessage(Message.VEHICLE_UNLOCK_UNREGISTERED);
-            return;
-        }
-
-        // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
-        if (!databaseVehicle) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
-            return;
-        }
-
-        // Bail out if the |player| is a passenger of the vehicle they're in, unless they're an
-        // administrator in which case we allow them to override it.
-        if (player.vehicle.driver !== player && !player.isAdministrator()) {
-            player.sendMessage(Message.VEHICLE_UNLOCK_PASSENGER);
-            return;
-        }
-
-        // Bail out if the |databaseVehicle| is not actually locked right now.
-        if (!this.manager_.access.isLocked(databaseVehicle)) {
-            player.sendMessage(Message.VEHICLE_UNLOCK_REDUNDANT);
-            return;
-        }
-
-        // Unlocks the |databaseVehicle| so that it can be used by anyone.
-        this.manager_.access.unlock(databaseVehicle);
-
-        player.sendMessage(Message.VEHICLE_UNLOCKED, player.vehicle.model.name);
-    }
 
     // Called when the player wants to seize the vehicle that they're in. This will move them to
     // the driver seat, which only works when that seat is available. This command uses raw Pawn
@@ -342,103 +252,6 @@ class VehicleCommands {
             player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
     }
 
-    // Called when the |player| executes `/v access` or `/v [player] access`, which means they wish
-    // to view or change the required access level of the vehicle.
-    async onVehicleAccessCommand(player, subject, level) {
-        if (level) level = level.toLowerCase();
-
-        const vehicle = subject.vehicle;
-        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(vehicle);
-
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!databaseVehicle) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
-            return;
-        }
-
-        const availableOptions = ['players', 'vips', 'administrators'];
-        if (player.isManagement())
-            availableOptions.push('management');
-
-        // Bail out if the |level| is empty, or not included in the |availableOptions|.
-        if (!availableOptions.includes(level)) {
-            let restriction = null;
-
-            switch (databaseVehicle.accessType) {
-                case DatabaseVehicle.ACCESS_TYPE_EVERYONE:
-                    break;
-                case DatabaseVehicle.ACCESS_TYPE_PLAYER:
-                    restriction = 'a particular player';
-                    break;
-                case DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL:
-                    switch (databaseVehicle.accessValue) {
-                        case Player.LEVEL_PLAYER:
-                            restriction = 'players';
-                            break;
-                        case Player.LEVEL_ADMINISTRATOR:
-                            restriction = 'administrators';
-                            break;
-                        case Player.LEVEL_MANAGEMENT:
-                            restriction = 'Management members';
-                            break;
-                    }
-                    break;
-                case DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP:
-                    restriction = 'VIP members';
-                    break;
-            }
-
-            player.sendMessage(restriction ? Message.VEHICLE_ACCESS_RESTRICTED
-                                           : Message.VEHICLE_ACCESS_UNRESTRICTED,
-                               vehicle.model.name, restriction);
-            player.sendMessage(Message.VEHICLE_ACCESS_USAGE, availableOptions.join('/'));
-            return;
-        }
-
-        let accessType = DatabaseVehicle.ACCESS_TYPE_EVERYONE;
-        let accessValue = 0;
-
-        let restriction = null;
-
-        switch (level) {
-            // Allows everybody to access the |vehicle|.
-            case 'players':
-                break;
-
-            // Allows VIP members to access the |vehicle|.
-            case 'vips':
-                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP;
-                restriction = 'VIP members';
-                break;
-
-            // Allows all administrators and Management members to access the |vehicle|.
-            case 'administrators':
-                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL;
-                accessValue = Player.LEVEL_ADMINISTRATOR;
-                restriction = 'administrators';
-                break;
-
-            // Allows all Management members to access the |vehicle|.
-            case 'management':
-                accessType = DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL;
-                accessValue = Player.LEVEL_MANAGEMENT;
-                restriction = 'Management members';
-                break;
-        }
-
-        // Update the access value with the manager. This will update the database if necessary.
-        await this.manager_.updateVehicleAccess(vehicle, accessType, accessValue);
-
-        const announcement =
-            Message.format(restriction ? Message.VEHICLE_ANNOUNCE_ACCESS
-                                       : Message.VEHICLE_ANNOUNCE_ACCESS_LIFTED,
-                           player.name, player.id, vehicle.model.name, restriction);
-
-        this.announce_().announceToAdministrators(announcement);
-
-        player.sendMessage(Message.VEHICLE_ACCESS_CHANGED, vehicle.model.name);
-    }
-
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
@@ -490,14 +303,6 @@ class VehicleCommands {
             return;
         }
 
-        // Make sure that the closest vehicle is not restricted to a particular player.
-        const databaseVehicle = this.manager_.getManagedDatabaseVehicle(areaInfo.closestVehicle);
-        if (databaseVehicle && databaseVehicle.accessType == DatabaseVehicle.ACCESS_TYPE_PLAYER &&
-                databaseVehicle.accessValue != player.account.userId) {
-            player.sendMessage(Message.VEHICLE_ENTER_RESTRICTED);
-            return;
-        }
-
         // Make sure that the |seat| the |player| wants to sit in is available.
         for (const occupant of areaInfo.closestVehicle.getOccupants()) {
             if (occupant.vehicleSeat !== seat)
@@ -545,7 +350,7 @@ class VehicleCommands {
             return;
 
         const globalOptions = ['enter', 'help', 'reset'];
-        const vehicleOptions = ['access', 'health', 'respawn'];
+        const vehicleOptions = ['health', 'respawn'];
 
         if (!player.isTemporaryAdministrator())
             vehicleOptions.push('delete', 'save');
@@ -680,9 +485,6 @@ class VehicleCommands {
         server.commandManager.removeCommand('v');
 
         server.commandManager.removeCommand('seize');
-
-        server.commandManager.removeCommand('lock');
-        server.commandManager.removeCommand('unlock');
     }
 }
 

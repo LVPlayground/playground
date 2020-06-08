@@ -479,10 +479,6 @@
   "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
   "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
 
-  "VEHICLE_ACCESS_CHANGED": "@success Access restrictions of the %s have been updated.",
-  "VEHICLE_ACCESS_RESTRICTED": "@info This %s is restricted to {FF8282}%s{FFFFFF}.",
-  "VEHICLE_ACCESS_UNRESTRICTED": "@info This %s does not have any restrictions.",
-  "VEHICLE_ACCESS_USAGE": "@usage /v [player]? access [%s]",
   "VEHICLE_ANNOUNCE_ACCESS": "%s (Id:%d) has restricted a %s to %s.",
   "VEHICLE_ANNOUNCE_ACCESS_LIFTED": "%s (Id:%d) has lifted restrictions from a %s.",
   "VEHICLE_ANNOUNCE_DELETED": "%s (Id:%d) has deleted a %s from the database.",
@@ -492,7 +488,6 @@
   "VEHICLE_DELETED": "@success The %s has been deleted.",
   "VEHICLE_ENTER_ALREADY_DRIVING": "@error You're already driving an %s - leave the vehicle first!",
   "VEHICLE_ENTER_NONE_NEAR": "@error There is no vehicle close enough near you to enter.",
-  "VEHICLE_ENTER_RESTRICTED": "@error This command may not be used for vehicles restricted to a player.",
   "VEHICLE_ENTER_SEAT_INVALID": "@error This vehicle doesn't have the vehicle you'd like to sit in!",
   "VEHICLE_ENTER_SEAT_OCCUPIED": "@error That seat in the %s is already occupied!",
   "VEHICLE_ENTERED": "@success You have been teleported in to the %s!",

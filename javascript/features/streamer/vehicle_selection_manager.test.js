@@ -51,12 +51,14 @@ describe('VehicleSelectionManager', (it, beforeEach) => {
         ];
 
         assert.equal(server.vehicleManager.count, 0);
+        assert.isNull(vehicles[0].live);
 
         const selectPromise = manager.select();
 
         await server.clock.advance(kSelectionIntervalMs);
 
         assert.equal(server.vehicleManager.count, 3);
+        assert.isNotNull(vehicles[0].live);
 
         // Move gunther to somewhere far away.
         gunther.position = new Vector(-3000, -3000, 0);
@@ -64,6 +66,7 @@ describe('VehicleSelectionManager', (it, beforeEach) => {
         await server.clock.advance(kSelectionIntervalMs);
 
         assert.equal(server.vehicleManager.count, 0);
+        assert.isNull(vehicles[0].live);
 
         // Predispose of the manager, 
         manager.disposed_ = true;
@@ -72,5 +75,15 @@ describe('VehicleSelectionManager', (it, beforeEach) => {
             server.clock.advance(kSelectionIntervalMs),
             selectPromise
         ]);
+    });
+
+    it('should automatically respawn vehicles after a certain period of time', async (assert) => {
+        // (1) Respawning ephemeral vehicles should delete them.
+        // (2) Respawning persistent vehicles should keep them.
+    });
+
+    it('should not delete vehicles when they are known to the respawn manager', async (assert) => {
+        // (1) This is the case when requesting creation of a vehicle.
+        // (2) This is the case when a vehicle has been used by a player.
     });
 });

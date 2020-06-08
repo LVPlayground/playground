@@ -6,9 +6,11 @@
 // vehicle's information, as well as details about it's current liveness on the server.
 export class StreamableVehicle {
     info_ = null;
+    live_ = null;
 
     constructor(info) {
         this.info_ = info;
+        this.live_ = null;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -16,6 +18,9 @@ export class StreamableVehicle {
 
     isEphemeral() { return this.info_.respawnDelay === null; }
     isPersistent() { return this.info_.respawnDelay !== null; }
+
+    // Gets the live Vehicle entity instance when it's been created on the server.
+    get live() { return this.live_; }
 
     // ---------------------------------------------------------------------------------------------
     // StreamableVehicleInfo accessors
@@ -30,6 +35,11 @@ export class StreamableVehicle {
     get siren() { return this.info_.siren; }
 
     get respawnDelay() { return this.info_.respawnDelay; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Mutators, should only be used by the VehicleSelectionManager
+
+    setLiveVehicle(vehicle) { this.live_ = vehicle; }
 
     // ---------------------------------------------------------------------------------------------
 

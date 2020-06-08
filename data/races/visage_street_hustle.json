@@ -1,0 +1,79 @@
+{
+    "name": "Visage street hustle",
+    "id": 39,
+
+    "time_limit": 600,
+    "laps": 1,
+
+    "environment": {
+        "weather": 0,
+        "time": [11, 13],
+        "interior": 0
+    },
+
+    "spawn_positions": [
+        {
+            "position": [2043.4010, 1932.5083, 11.7639],
+            "rotation": 174.4168,
+            "vehicle": {
+                "model": 562
+            }
+        },
+        {
+            "position": [2039.9674, 1932.8314, 11.7733],
+            "rotation": 177.2957,
+            "vehicle": {
+                "model": 562
+            }
+        },
+        {
+            "position": [2033.7079, 1932.9868, 11.8439],
+            "rotation": 175.4365,
+            "vehicle": {
+                "model": 562
+            }
+        },
+        {
+            "position": [2036.9543, 1933.0551, 11.7715],
+            "rotation": 178.2086,
+            "vehicle": {
+                "model": 562
+            }
+        }
+    ],
+
+    "settings": {
+        "disable_vehicle_damage": true,
+        "unlimited_nos": true
+    },
+
+    "checkpoints": [
+        { "position": [2071.2173, 1877.9954, 11.0687], "_note": "Visage: 1st cp" },
+        { "position": [2122.3125, 1867.6812, 10.3318], "_note": "Visage: Turn 1, northbound on strip" },
+        { "position": [2123.6616, 1910.8705, 10.3324], "_note": "Visage: 2nd cp, strip northbound (wide)" },
+        { "position": [2119.9534, 1964.3881, 10.4497], "_note": "Visage: Turn 2, back into visage" },
+        { "position": [2058.1873, 1933.2659, 11.6718], "_note": "Visage: Chicane entrance under awning" },
+        { "position": [2087.3308, 1866.4816, 10.4980], "_note": "Visage: Turn 3, righthander towards first garage" },
+        { "position": [2033.5916, 1773.8821, 10.3304], "_note": "Visage: Turn 4, continue right into garage" },
+        { "position": [1910.2803, 1749.3672, 12.3723], "_note": "Visage: Turn 5, Uey under first pillar" },
+        { "position": [2009.5364, 1736.3385, 12.4021], "_note": "Visage: Turn 6, Uey under second pillar" },
+        { "position": [1913.0585, 1754.2068, 18.5623], "_note": "Visage: Turn 7, Uey on top of first ramp" },
+        { "position": [1958.8804, 1791.6285, 18.5911], "_note": "Visage: Turn 8, Uey into chicane" },
+        { "position": [1878.3813, 1805.6025, 18.5925], "_note": "Visage: Turn 9, Uey down into garage" },
+        { "position": [1929.5096, 1804.2849, 12.3734], "_note": "Visage: Turn 10, Uey after downramp" },
+        { "position": [1884.4756, 1813.2151, 12.4018], "_note": "Visage: Turn 11, Garage exit chicane" },
+        { "position": [1860.3315, 1927.3063, 7.3070], "_note": "Visage: Second garage entrance" },
+        { "position": [1862.0765, 2000.4105, 7.2526], "_note": "Visage: Turn 12, 90deg righthander onto second roof" },
+        { "position": [1909.1825, 1994.6331, 13.4422], "_note": "Visage: Turn 13, Uey ontop of second roof" },
+        { "position": [1863.8627, 1958.1991, 13.4416], "_note": "Visage: Turn 14, Uey into second downramp" },
+        { "position": [1917.8501, 1969.5192, 7.2514], "_note": "Visage: Second garage exit chicane" },
+        { "position": [2092.7849, 1996.9880, 10.3327], "_note": "Visage: Turn 15, Right hander into start loop" },
+        { "position": [2057.1091, 1934.8054, 11.6615], "_note": "Visage: Close under start awning" },
+        { "position": [2119.8518, 1867.7510, 10.3355], "_note": "Visage: Turn 16, Lefty northbound onto strip (second time)" },
+        { "position": [2113.4834, 1967.4351, 10.3729], "_note": "Visage: Turn 17, Left back towards visage again" },
+        { "position": [2046.6794, 1950.5020, 11.5714], "_note": "Visage: Turn 18, Lefty towards finish line" },
+        { "position": [2041.5966, 1889.2959, 11.6019], "_note": "Visage: Finish line" }
+    ],
+
+    "objects": []
+}

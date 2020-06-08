@@ -40,6 +40,6 @@ export class StreamableVehicleInfo {
         this.secondaryColor = secondaryColor ?? random(128, 251);
         this.siren = siren ?? false;
 
-        this.respawnDelay = respawnDelay ?? 180;
+        this.respawnDelay = respawnDelay;
     }
 }

@@ -7,6 +7,7 @@ import Feature from 'components/feature_manager/feature.js';
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
 import { VehicleRegistry } from 'features/streamer/vehicle_registry.js';
+import { VehicleStreamer } from 'features/streamer/vehicle_streamer.js';
 
 // Enhances Las Venturas Playground with the ability to exceed the default vehicle limits. All
 // vehicles part of freeroam, houses and similar features should be created through the streamer.
@@ -16,8 +17,15 @@ export default class Streamer extends Feature {
     constructor() {
         super();
 
+        // Depends on settings to configure the properties of vehicle streaming on the server.
+        const settings = this.defineDependency('settings');
+
+        // The streamer wraps the PlaygroundJS-provided streaming plane, and makes sure that its
+        // information continues to be up-to-date.
+        this.streamer_ = new VehicleStreamer(settings);
+
         // Keeps track of which streamable vehicles have been created on the server.
-        this.registry_ = new VehicleRegistry();
+        this.registry_ = new VehicleRegistry(this.streamer_);
     }
 
     // ---------------------------------------------------------------------------------------------

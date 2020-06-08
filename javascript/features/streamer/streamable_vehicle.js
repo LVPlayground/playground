@@ -12,6 +12,12 @@ export class StreamableVehicle {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // API methods
+
+    isEphemeral() { return this.info_.respawnDelay === null; }
+    isPersistent() { return this.info_.respawnDelay !== null; }
+
+    // ---------------------------------------------------------------------------------------------
     // StreamableVehicleInfo accessors
 
     get modelId() { return this.info_.modelId; }

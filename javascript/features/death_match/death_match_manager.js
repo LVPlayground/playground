@@ -98,7 +98,7 @@ export class DeathMatchManger {
         player.sendMessage(Message.DEATH_MATCH_KILL_DEATH, playerStats.kills, playerStats.deaths,
             playerStats.kdRatio);
         player.sendMessage(Message.DEATH_MATCH_DAMAGE_ACCURACY, playerStats.damage,
-            playerStats.accuracy);
+            playerStats.accuracyPercentage);
     }
 
     // We want to spawn the player at the right location with the right settings.
@@ -132,20 +132,17 @@ export class DeathMatchManger {
     findRandomSpawnPosition(location, attempt = 0) {
         var spawnPositions = [...location.spawnPositions];
         var spawnIndex = Math.floor(Math.random() * spawnPositions.length);
-        if (attempt > 10) {
+        if (attempt > 10) 
             return spawnPositions[spawnIndex];
-        }
 
-        if (this.lastQuarterUsedLocationsQueue.includes(spawnIndex)) {
+        if (this.lastQuarterUsedLocationsQueue.includes(spawnIndex))
             return this.findRandomSpawnPosition(location, attempt++);
-        }
 
         this.lastQuarterUsedLocationsQueue.push(spawnIndex);
         if (this.lastQuarterUsedLocationsQueue.length >
             Math.floor(spawnPositions.length / 4)
-        ) {
+        )
             this.lastQuarterUsedLocationsQueue.shift();
-        }
 
         return spawnPositions[spawnIndex];
     }
@@ -162,15 +159,14 @@ export class DeathMatchManger {
         if (!issuer)
             return; // the |event| was not done by a valid player
 
-        if (!this.playersInDeathMatch_.has(issuer.id)) {
+        if (!this.playersInDeathMatch_.has(issuer.id))
             return;
-        }
 
         if (isNaN(event.amount))
             return; // the |event| does not have a valid amount of damage.
 
         const issuerStats = this.playerStats_.get(issuer.id);
-        issuerStats.addDamage(+event.amount);
+        issuerStats.damage += +event.amount;
     }
 
     onPlayerWeaponShot(event) {
@@ -183,9 +179,9 @@ export class DeathMatchManger {
 
         const playerStats = this.playerStats_.get(player.id);
         if (event.hittype === 1 || event.hittype === 2) {
-            playerStats.addBulletHit();
+            playerStats.bulletsHit++;
         } else {
-            playerStats.addBulletMissed();
+            playerStats.bulletsMissed++;
         }
     }
 
@@ -202,12 +198,11 @@ export class DeathMatchManger {
         if (!killer)
             return;
 
-        if (!this.playersInDeathMatch_.has(killer.id)) {
+        if (!this.playersInDeathMatch_.has(killer.id))
             return;
-        }
 
         const killerStats = this.playerStats_.get(killer.id);
-        killerStats.addKill();
+        killerStats.kills++;
 
         const health = killer.health;
         const armour = killer.armour;
@@ -217,7 +212,7 @@ export class DeathMatchManger {
         killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStats.kills);
 
         const playerStats = this.playerStats_.get(player.id);
-        playerStats.addDeath();
+        playerStats.deaths++;
         player.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, playerStats.deaths);
     }
 

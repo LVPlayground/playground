@@ -3,30 +3,18 @@
 // be found in the LICENSE file.
 
 export class DeathMatchStats {
-    constructor() {
-        this.kills_ = 0;
-        this.deaths_ = 0;
-        this.damage_ = 0;
+    kills = 0;
+    deaths = 0;
 
-        this.bulletsHit_ = 0;
-        this.bulletsMissed_ = 0;
-    }
+    damage = 0;
 
-    get kills() { return this.kills_; }
-    get deaths() { return this.deaths_; }
+    bulletsHit = 0;
+    bulletsMissed = 0;
+
     get kdRatio() { return this.deaths === 0 ? this.kills : Math.round(this.kills / this.deaths * 100) / 100; }
-    get damage() { return this.damage_; }
-    get bulletsHit() { return this.bulletsHit_; }
-    get bulletsMissed() { return this.bulletsMissed_; }
-    get accuracy() {
+
+    get accuracyPercentage() {
         const bulletsShot = this.bulletsHit + this.bulletsMissed;
         return bulletsShot === 0 ? 100 : Math.round((this.bulletsHit / bulletsShot * 100));
     }
-
-    addKill() { this.kills_++; }
-    addDeath() { this.deaths_++ }
-    addDamage(damage) { this.damage_ += damage; }
-    addBulletHit() { this.bulletsHit_++ }
-    addBulletMissed() { this.bulletsMissed_++ }
-
 }

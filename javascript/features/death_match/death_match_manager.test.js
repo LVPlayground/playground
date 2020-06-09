@@ -99,13 +99,13 @@ describe('DeathMatchManager', (it, beforeEach) => {
     it('should let player leave death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const guntherStats = new DeathMatchStats();
-        guntherStats.addKill();
-        guntherStats.addKill();
-        guntherStats.addDeath();
-        guntherStats.addDamage(100);
-        guntherStats.addDamage(50);
-        guntherStats.addBulletHit();
-        guntherStats.addBulletMissed();
+        guntherStats.kills++;
+        guntherStats.kills++;
+        guntherStats.deaths++;
+        guntherStats.damage += 100;
+        guntherStats.damage += 50;
+        guntherStats.bulletsHit++;
+        guntherStats.bulletsMissed++;
 
         gunther.identify({ userId: 42 });
         manager.playersInDeathMatch_.set(gunther.id, 1);

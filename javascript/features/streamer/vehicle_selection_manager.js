@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import ScopedEntities from 'entities/scoped_entities.js';
+import { VehicleEventListener } from 'features/streamer/vehicle_event_listener.js';
 import { VehicleRespawnManager } from 'features/streamer/vehicle_respawn_manager.js';
 
 import { difference } from 'base/set_extensions.js';
@@ -16,7 +17,9 @@ export class VehicleSelectionManager {
 
     disposed_ = false;
     entities_ = null;
+    events_ = null;
     respawnManager_ = null;
+    streamableVehicles_ = null;
     vehicles_ = null;
 
     constructor(registry, settings, streamer) {
@@ -33,10 +36,20 @@ export class VehicleSelectionManager {
         // respawned by the streamer when they go out of scope.
         this.respawnManager_ = new VehicleRespawnManager(settings);
 
+        // Listens to vehicle-related events on behalf of the manager, and propagates the events
+        // throughout the streamer as deemed appropriate.
+        this.events_ = new VehicleEventListener(this, this.respawnManager_);
+
+        // Map of the StreamableVehicles that have live representations, keyed by the entity.
+        this.streamableVehicles_ = new Map();
+
         // Map of the vehicles that exist on the server, keyed by StreamableVehicle, valued by the
         // Vehicle entity instance that was created for the vehicle.
         this.vehicles_ = new Map();
     }
+
+    // Gets the StreamableVehicle instance for the given |vehicle|.
+    getStreamableVehicle(vehicle) { return this.streamableVehicles_.get(vehicle); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -100,10 +113,13 @@ export class VehicleSelectionManager {
             primaryColor: streamableVehicle.primaryColor,
             secondaryColor: streamableVehicle.secondaryColor,
             siren: streamableVehicle.siren,
+
+            respawnDelay: -1,  // we handle respawns manually
         });
 
         streamableVehicle.setLiveVehicle(vehicle);
 
+        this.streamableVehicles_.set(vehicle, streamableVehicle);
         this.vehicles_.set(streamableVehicle, vehicle);
     }
 
@@ -142,6 +158,7 @@ export class VehicleSelectionManager {
 
         streamableVehicle.setLiveVehicle(null);
 
+        this.streamableVehicles_.delete(vehicle);
         this.vehicles_.delete(streamableVehicle);
     }
 
@@ -174,8 +191,14 @@ export class VehicleSelectionManager {
         this.vehicles_.clear();
         this.vehicles_ = null;
 
+        this.streamableVehicles_.clear();
+        this.streamableVehicles_ = null;
+
         this.respawnManager_.dispose();
         this.respawnManager_ = null;
+
+        this.events_.dispose();
+        this.events_ = null;
 
         this.entities_.dispose();
         this.entities_ = null;

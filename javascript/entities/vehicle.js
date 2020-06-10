@@ -134,6 +134,9 @@ export class Vehicle extends Supplementable {
         pawnInvoke('ChangeVehiclePaintjob', 'ii', this.#id_, paintjob);
     }
 
+    // Actually destroys the vehicle on the server.
+    destroyVehicleInternal() { pawnInvoke('DestroyVehicle', 'i', this.#id_); }
+
     // ---------------------------------------------------------------------------------------------
     // Appearance and behavioural information.
     // ---------------------------------------------------------------------------------------------
@@ -274,67 +277,39 @@ export class Vehicle extends Supplementable {
             this.#passengers_.delete(player);
     }
 
-
-
-
-
+    // ---------------------------------------------------------------------------------------------
+    // Utility functions that make the Vehicle easier to use.
     // ---------------------------------------------------------------------------------------------
 
-    // Respawns a vehicle back to the state and position it was created by.
-    respawn() { pawnInvoke('SetVehicleToRespawn', 'i', this.id_); }
+    respawn() { pawnInvoke('SetVehicleToRespawn', 'i', this.#id_); }
 
-    // Repairs the vehicle. This resets the visual damage state as well.
-    repair() { pawnInvoke('RepairVehicle', 'i', this.id_); }
+    repair() { pawnInvoke('RepairVehicle', 'i', this.#id_); }
 
-    // Adds |componentId| to this vehicle. No verification will be done on whether the component is
-    // valid for this vehicle. Components can be added multiple times.
     addComponent(componentId) {
-        pawnInvoke('AddVehicleComponent', 'ii', this.id_, componentId);
+        pawnInvoke('AddVehicleComponent', 'ii', this.#id_, componentId);
     }
 
-    // ---------------------------------------------------------------------------------------------
-
-    // Locks the vehicle for the |player|.
-    lockForPlayer(player) {
-        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 1 /* locked */);
-        this.locks_.add(player);
-    }
-
-    // Returns whether the vehicle is locked for |player|.
-    isLockedForPlayer(player) { return this.locks_.has(player); }
-
-    // Unlocks the vehicle for the |player|.
-    unlockForPlayer(player) {
-        if (!this.locks_.has(player))
-            return;
-
-        pawnInvoke('SetVehicleParamsForPlayer', 'iiii', this.id_, player.id, 0, 0 /* unlocked */);
-        this.locks_.delete(player);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Toggles whether the engine for this vehicle is running.
     toggleEngine(engineRunning) {
         const [engine, lights, alarm, doors, bonnet, boot, objective] =
-            pawnInvoke('GetVehicleParamsEx', 'iIIIIIII', this.id_);
+            pawnInvoke('GetVehicleParamsEx', 'iIIIIIII', this.#id_);
         
         if (!!engine === engineRunning)
             return;  // no change from the current engine status
 
-        pawnInvoke('SetVehicleParamsEx', 'iiiiiiii', this.id_, engineRunning ? 1 : 0, lights, alarm,
-                                                     doors, bonnet, boot, objective);
+        pawnInvoke(
+            'SetVehicleParamsEx', 'iiiiiiii', this.#id_, engineRunning ? 1 : 0, lights, alarm,
+                                              doors, bonnet, boot, objective);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Disposes the vehicle by removing it from the server.
     dispose() {
         this.#manager_.didDisposeVehicle(this);
         this.#manager_ = null;
 
-        pawnInvoke('DestroyVehicle', 'i', this.id_);
-        this.id_ = null;
+        this.destroyVehicleInternal();
+
+        this.id_ = Vehicle.kInvalidId;
     }
 }
 

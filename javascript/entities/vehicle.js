@@ -30,12 +30,16 @@ class Vehicle extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     #manager_ = null;
+    #id_ = null;
 
     #modelId_ = null;
+    #interiorId_ = null;
+    #virtualWorld_ = null;
 
     #primaryColor_ = null;
     #secondaryColor_ = null;
     #paintjob_ = null;
+    #numberPlate_ = null;
     #siren_ = null;
 
     #respawnDelay_ = null;
@@ -48,28 +52,65 @@ class Vehicle extends Supplementable {
 
     initialize(options) {
         this.#modelId_ = options.modelId;
+        this.#interiorId_ = options.interiorId ?? 0;
+        this.#virtualWorld_ = options.virtualWorld ?? 0;
 
         this.#primaryColor_ = options.primaryColor;
         this.#secondaryColor_ = options.secondaryColor;
-        this.#paintjob_ = options.paintjob;
         this.#siren_ = options.siren;
 
-        this.oldInitialize(options);
+        this.#respawnDelay_ = options.respawnDelay;
+
+        this.#id_ = this.createVehicleInternal(options);
+        if (this.#id_ === Vehicle.kInvalidId)
+            throw new Error(`The vehicle (${this}) could not be created on the server.`);
+
+        if (options.interiorId)
+            this.interiorId = options.interiorId;
+        
+        if (options.virtualWorld)
+            this.virtualWorld = options.virtualWorld;
+        
+        if (options.numberPlate)
+            this.numberPlate = options.numberPlate;
+        
+        if (options.paintjob)
+            this.paintjob = options.paintjob;
+    }
+
+    // Actually creates the vehicle on the server. Will return the ID of the newly created vehicle,
+    // or kInvalidVehicleId when the vehicle could not be created.
+    createVehicleInternal(options) {
+        return pawnInvoke('CreateVehicle', 'iffffiiii',
+            /* vehicletype= */ options.modelId,
+            /* x= */ options.position.x,
+            /* y= */ options.position.y,
+            /* z= */ options.position.z,
+            /* rotation= */ options.rotation,
+            /* color1= */ options.primaryColor,
+            /* color2= */ options.secondaryColor,
+            /* respawn_delay= */ options.respawnDelay,
+            /* addsiren= */ options.siren ? 1 : 0) || Vehicle.kInvalidId;
     }
 
     // Actually changes a vehicle's colours on the server.
     changeVehicleColorInternal(primaryColor, secondaryColor) {
-        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, primaryColor, secondaryColor);
+        pawnInvoke('ChangeVehicleColor', 'iii', this.#id_, primaryColor, secondaryColor);
+    }
+
+    // Actually changes a vehicle's number plate on the server.
+    changeVehicleNumberPlateInternal(numberPlate) {
+        pawnInvoke('SetVehicleNumberPlate', 'is', this.#id_, numberPlate);
     }
 
     // Actually changes a vehicle's paintjob on the server.
     changeVehiclePaintjobInternal(paintjob) {
-        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, paintjob);
+        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.#id_, paintjob);
     }
 
     // ---------------------------------------------------------------------------------------------
     
-    get id() { return this.id_; }
+    get id() { return this.#id_; }
 
     get modelId() { return this.#modelId_; }
     get model() { return VehicleModel.getById(this.#modelId_); }
@@ -86,10 +127,16 @@ class Vehicle extends Supplementable {
         this.#secondaryColor_ = value;
     }
 
-    get paintjob() { return this.paintjob_; }
+    get numberPlate() { return this.#numberPlate_; }
+    set numberPlate(value) {
+        this.changeVehicleNumberPlateInternal(value);
+        this.#numberPlate_ = value;
+    }
+
+    get paintjob() { return this.#paintjob_; }
     set paintjob(value) {
         this.changeVehiclePaintjobInternal(value);
-        this.paintjob_ = value;
+        this.#paintjob_ = value;
     }
 
     get siren() { return this.#siren_; }
@@ -100,52 +147,54 @@ class Vehicle extends Supplementable {
 
     // ---------------------------------------------------------------------------------------------
 
-    get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
+    get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.#id_); }
+    set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.#id_, value); }
+
+    get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.#id_)); }
     set position(value) {
-        pawnInfoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z);
+        pawnInfoke('SetVehiclePos', 'ifff', this.#id_, value.x, value.y, value.z);
 
         if (this.trailer_)
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
     }
 
-    get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
-    set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+    get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.#id_); }
+    set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.#id_, value); }
+
+    get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.#id_)); }
+    set velocity(velocity) {
+        pawnInvoke('SetVehicleVelocity', 'ifff', this.#id_, velocity.x, velocity.y, velocity.z);
+    }
+
+    get interiorId() { return this.#interiorId_; }
+    set interiorId(value) {
+        pawnInvoke('LinkVehicleToInterior', 'ii', this.#id_, value);
+        this.#interiorId_ = value;
+
+        if (this.trailer_) {
+            this.trailer_.interiorId = value;
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
+        }
+    }
+
+    get virtualWorld() { return this.#virtualWorld_; }
+    set virtualWorld(value) {
+        if (this.driver && this.driver.syncedData.isIsolated())
+            return;
+
+        pawnInvoke('SetVehicleVirtualWorld', 'ii', this.#id_, value);
+        this.#virtualWorld_ = value;
+
+        if (this.trailer_) {
+            this.trailer_.virtualWorld = value;
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
+        }
+    }
 
     // ---------------------------------------------------------------------------------------------
 
-    oldInitialize(options) {
-        this.driver_ = null;
-        this.passengers_ = new Set();
 
-        this.locks_ = new WeakSet();
 
-        this.numberPlate_ = options.numberPlate;
-
-        this.interiorId_ = options.interiorId || 0;
-
-        this.id_ = pawnInvoke('CreateVehicle', 'iffffiiii', options.modelId, options.position.x,
-                              options.position.y, options.position.z, options.rotation,
-                              options.primaryColor, options.secondaryColor, options.respawnDelay,
-                              options.siren ? 1 : 0);
-
-        this.trailer_ = null;
-        this.parent_ = null;
-
-        if (this.id_ == Vehicle.INVALID_ID)
-            throw new Error('Unable to create the vehicle on the SA-MP server.');
-
-        if (options.paintjob)
-            this.paintjob = options.paintjob;
-
-        if (options.numberPlate)
-            this.numberPlate = options.numberPlate;
-
-        if (options.interiorId)
-            this.interiorId = options.interiorId;
-
-        if (options.virtualWorld)
-            this.virtualWorld = options.virtualWorld;
-    }
 
     
 
@@ -170,48 +219,8 @@ class Vehicle extends Supplementable {
     }
 
 
-    // Gets or sets the interior that this vehicle has been linked to.
-    get interiorId() { return this.interiorId_; }
-    set interiorId(value) {
-        pawnInvoke('LinkVehicleToInterior', 'ii', this.id_, value);
-        this.interiorId_ = value;
 
-        if (this.trailer_) {
-            this.trailer_.interiorId = value;
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
-        }
-    }
 
-    // Gets or sets the virtual world this vehicle is tied to.
-    get virtualWorld() { return pawnInvoke('GetVehicleVirtualWorld', 'i', this.id_); }
-    set virtualWorld(value) {
-        if (this.driver && this.driver.syncedData.isIsolated())
-            return;
-
-        pawnInvoke('SetVehicleVirtualWorld', 'ii', this.id_, value);
-
-        if (this.trailer_) {
-            this.trailer_.virtualWorld = value;
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
-        }
-    }
-
-    // Gets or sets the health of this vehicle. Should generally be between 0 and 1000.
-    get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.id_); }
-    set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.id_, value); }
-
-    // Gets or sets the numberplate text of this vehicle. May be NULL.
-    get numberPlate() { return this.numberPlate_; }
-    set numberPlate(value) {
-        pawnInvoke('SetVehicleNumberPlate', 'is', this.id_, value);
-        this.numberPlate_ = value;
-    }
-
-    // Gets or sets the velocity of the vehicle. Both must be used with a 3D vector.
-    get velocity() { return new Vector(...pawnInvoke('GetVehicleVelocity', 'iFFF', this.id_)); }
-    set velocity(value) {
-        pawnInvoke('SetVehicleVelocity', 'ifff', this.id_, value.x, value.y, value.z);
-    }
 
     // ---------------------------------------------------------------------------------------------
 

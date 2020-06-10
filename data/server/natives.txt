@@ -17,6 +17,9 @@ ReportAbuse
 # native SetIsRegistered(playerid, bool: isRegistered);
 SetIsRegistered
 
+# native MarkVehicleMoved(vehicleId);
+MarkVehicleMoved
+
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
 

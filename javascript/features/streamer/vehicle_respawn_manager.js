@@ -113,6 +113,15 @@ export class VehicleRespawnManager {
         this.add(streamableVehicle, /* fixedRespawnDelayMs= */ respawnDelay);
     }
 
+    // Called when the |streamableVehicle| has moved without having a driver. We schedule it for
+    // respawn after its regular respawn delay, to get it back in its original position.
+    onVehicleMoved(streamableVehicle) {
+        if (this.has(streamableVehicle))
+            this.delete(streamableVehicle);
+        
+        this.add(streamableVehicle);
+    }
+
     // Called when the last player has left the |streamableVehicle|, and it's empty now. Re-add it
     // to the queue with the default respawn period as that now activates.
     onVehicleVacated(streamableVehicle) {

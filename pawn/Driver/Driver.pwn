@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 // Natives provided by the PlaygroundJS plugin.
+native MarkVehicleMoved(vehicleId);
 native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
 
@@ -24,6 +25,9 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
 
+// Number of milliseconds between marking a vehicle as having moved due to unoccupied sync.
+new const kUnoccupiedSyncMarkTimeMs = 60000;
+
 // Keeps track of the last vehicle they entered, and hijacked, to work around "ninja jack" kills.
 new g_ninjaJackCurrentVehicleId[MAX_PLAYERS];
 new g_ninjaJackLastAttemptTime[MAX_PLAYERS];
@@ -34,6 +38,9 @@ new g_sprayTagStartTime[MAX_PLAYERS];
 
 // Time at which the player last used the boost Vehicle Keys feature.
 new g_vehicleKeysLastBoost[MAX_PLAYERS];
+
+// Time at which a vehicle has been marked for movement following an unoccupied sync.
+new g_vehicleLastUnoccupiedSyncMark[MAX_VEHICLES];
 
 // The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
 new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
@@ -420,6 +427,26 @@ public OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
 
 public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
     ShipManager->onPlayerLeaveShip(playerid, areaid);
+}
+
+// Unoccupied but moved vehicles should be scheduled for respawn after a certain amount of time
+// passes. Only forward this to JavaScript at most once per minute per vehicle.
+public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z, Float:vel_x, Float:vel_y, Float:vel_z) {
+    new const currentTime = GetTickCount();
+    new const difference = currentTime - g_vehicleLastUnoccupiedSyncMark[vehicleid];
+
+    if (difference < kUnoccupiedSyncMarkTimeMs)
+        return 1;
+
+    g_vehicleLastUnoccupiedSyncMark[vehicleid] = currentTime;
+
+    printf("[debug] MarkVehicleMoved(%d)", vehicleid);
+
+    // Calls the MarkVehicleMoved() JavaScript native, which will mark the |vehicleid| for respawn.
+    MarkVehicleMoved(vehicleid);
+
+    return 1;
+    #pragma unused playerid, passenger_seat, new_x, new_y, new_z, vel_x, vel_y, vel_z
 }
 
 // Define so that JavaScript can intercept the events.

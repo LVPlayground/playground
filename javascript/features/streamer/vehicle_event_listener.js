@@ -14,8 +14,27 @@ export class VehicleEventListener {
         this.selectionManager_ = selectionManager;
         this.respawnManager_ = respawnManager;
 
+        provideNative(
+            'MarkVehicleMoved', 'i', VehicleEventListener.prototype.markVehicleMoved.bind(this));
+
         server.playerManager.addObserver(this);
         server.vehicleManager.addObserver(this);
+    }
+
+    // native MarkVehicleMoved(vehicleId);
+    //
+    // Marks the given |vehicleId| as having been moved by a player. This will cause the vehicle to
+    // be scheduled for respawn after the configured period of time has passed.
+    markVehicleMoved(vehicleId) {
+        const vehicle = server.vehicleManager.getById(vehicleId);
+        if (!vehicle)
+            return 0;  // the |vehicleId| does not exist on the server, oddly
+
+        const streamableVehicle = this.selectionManager_.getStreamableVehicle(vehicle);
+        if (streamableVehicle && !vehicle.driver)
+            this.respawnManager_.onVehicleMoved(streamableVehicle);
+        
+        return 0;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -43,6 +62,8 @@ export class VehicleEventListener {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        provideNative('MarkVehicleMoved', 'i', vehicleId => 0);
+
         server.vehicleManager.removeObserver(this);
         server.playerManager.removeObserver(this);
     }

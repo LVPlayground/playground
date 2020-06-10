@@ -169,4 +169,35 @@ describe('VehicleRespawnManager', (it, beforeEach) => {
         assert.equal(respawnManager.getVehiclesToRespawn().size, 1);
         assert.isFalse(respawnManager.has(streamableVehicle));
     });
+
+    it('should schedule unoccupied vehicles for respawn when they moved', async (assert) => {
+        const streamableVehicle = new StreamableVehicle(new StreamableVehicleInfo({
+            modelId: 411,  // Infernus
+
+            position: new Vector(0, 0, 0),
+            rotation: 0,
+
+            respawnDelay: 180,
+        }));
+
+        selectionManager.requestCreateVehicle(streamableVehicle);
+        assert.isNotNull(streamableVehicle.live);
+
+        // Force-created vehicles always become known to the manager.
+        assert.isTrue(respawnManager.has(streamableVehicle));
+        respawnManager.delete(streamableVehicle);
+
+        assert.isFalse(respawnManager.has(streamableVehicle));
+
+        // Fake-calls the native function that marks a vehicle as having moved.
+        selectionManager.events_.markVehicleMoved(streamableVehicle.live.id);
+
+        assert.equal(respawnManager.getVehiclesToRespawn().size, 0);
+        assert.isTrue(respawnManager.has(streamableVehicle));
+
+        await server.clock.advance(180 * 1000);  // the `respawnDelay`
+
+        assert.equal(respawnManager.getVehiclesToRespawn().size, 1);
+        assert.isFalse(respawnManager.has(streamableVehicle));
+    });
 });

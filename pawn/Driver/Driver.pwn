@@ -378,6 +378,34 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
 #if Feature::EnableServerSideWeaponConfig == 0
     DetectAbuseOnWeaponShot(playerid, hittype, hitid);
 
+    // We might want to ignore damage done by players who are passengers as the sole occupant of a
+    // vehicle. They can only be damaged with a chainsaw, making this very unfair in fights.
+    if (g_abuseIgnoreSolePassengerDamage && hittype != BULLET_HIT_TYPE_NONE) {
+        new const playerVehicleId = GetPlayerVehicleID(playerid);
+        new const playerVehicleSeat = GetPlayerVehicleSeat(playerid);
+
+        if (playerVehicleId != 0 && playerVehicleSeat != 0) {
+            new bool: foundDriver = false;
+
+            for (new otherPlayerId = 0; otherPlayerId < GetPlayerPoolSize(); ++otherPlayerId) {
+                if (otherPlayerId == playerid)
+                    continue;  // the |otherplayerId| is the |playerid|!
+
+                if (GetPlayerVehicleID(otherPlayerId) != playerVehicleId)
+                    continue;  // the |otherPlayerId| is not connected, or not in the same vehicle
+
+                if (GetPlayerVehicleSeat(otherPlayerId) != 0)
+                    continue;  // the |otherPlayerId| is not a driver either
+
+                foundDriver = true;
+                break;
+            }
+
+            if (!foundDriver)
+                return 0;
+        }
+    }
+
     if (PlayerSyncedData(playerid)->skipDamage())
         return 0;
 

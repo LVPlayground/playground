@@ -577,8 +577,8 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.notDeepEqual(gunther.vehicle.position, gunther.position);
         assert.deepEqual(vehicle.position, gunther.position);
 
-        assert.equal(gunther.vehicle.respawnCount, 0);
-        assert.equal(vehicle.respawnCount, 1);
+        assert.equal(gunther.vehicle.respawnCountForTesting, 0);
+        assert.equal(vehicle.respawnCountForTesting, 1);
     });
 
     it('should be able to respawn vehicles on the server', async(assert) => {
@@ -611,7 +611,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNull(gunther.vehicle);
         assert.isTrue(newVehicle.isConnected());
 
-        assert.equal(newVehicle.respawnCount, 1);
+        assert.equal(newVehicle.respawnCountForTesting, 1);
         assert.deepEqual(newVehicle.position, new Vector(0, 500, 1000));
     });
 

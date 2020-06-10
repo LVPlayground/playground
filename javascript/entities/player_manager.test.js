@@ -253,8 +253,6 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
     });
 
     it('should keep track of the occupants of a particular vehicle', assert => {
-        return;  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
@@ -330,8 +328,6 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
     });
 
     it('should remove a player from their vehicle when they disconnect', assert => {
-        return;  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.isNull(gunther.vehicle);

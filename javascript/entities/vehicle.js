@@ -134,6 +134,15 @@ export class Vehicle extends Supplementable {
         pawnInvoke('ChangeVehiclePaintjob', 'ii', this.#id_, paintjob);
     }
 
+    // Actually sets the Interior ID and/or virtual world for this vehicle.
+    setInteriorInternal(interiorId) {
+        pawnInvoke('LinkVehicleToInterior', 'ii', this.#id_, interiorId);
+    }
+
+    setVirtualWorldInternal(virtualWorld) {
+        pawnInvoke('SetVehicleVirtualWorld', 'ii', this.#id_, virtualWorld);
+    }
+
     // Actually destroys the vehicle on the server.
     destroyVehicleInternal() { pawnInvoke('DestroyVehicle', 'i', this.#id_); }
 
@@ -201,7 +210,7 @@ export class Vehicle extends Supplementable {
 
     get interiorId() { return this.#interiorId_; }
     set interiorId(value) {
-        pawnInvoke('LinkVehicleToInterior', 'ii', this.#id_, value);
+        this.setInteriorInternal(value);
         this.#interiorId_ = value;
 
         if (this.#trailer_) {
@@ -212,7 +221,7 @@ export class Vehicle extends Supplementable {
 
     get virtualWorld() { return this.#virtualWorld_; }
     set virtualWorld(value) {
-        pawnInvoke('SetVehicleVirtualWorld', 'ii', this.#id_, value);
+        this.setVirtualWorldInternal(value);
         this.#virtualWorld_ = value;
 
         if (this.#trailer_) {
@@ -228,7 +237,7 @@ export class Vehicle extends Supplementable {
     get trailer() { return this.#trailer_; }
     set trailer(value) {
         if (this.#trailer_ && this.#trailer_ !== value)
-            this.#trailer_.setParentInternal(value);
+            this.#trailer_.setParentInternal(null);
 
         this.attachTrailerInternal(value);
         if (value)

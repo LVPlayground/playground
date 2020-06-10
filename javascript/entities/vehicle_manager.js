@@ -208,8 +208,8 @@ class VehicleManager {
             throw new Error('The vehicle with Id #' + vehicle.id + ' is not known to the manager.');
 
         if (vehicle.trailer) {
-            vehicle.trailer.parent = null;
-            vehicle.trailer = null;
+            vehicle.trailer.setParentInternal(null);
+            vehicle.setTrailerInternal(null);
         }
 
         this.vehicles_.delete(vehicle.id);

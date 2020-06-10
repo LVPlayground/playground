@@ -145,8 +145,6 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should keep track of the trailers attached to vehicles', async(assert) => {
-        return;  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
         const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
         const trailer1 = manager.createVehicle({ modelId: 611, position: new Vector(0, 0, 0) });
         const trailer2 = manager.createVehicle({ modelId: 611, position: new Vector(0, 0, 0) });
@@ -156,19 +154,19 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isNull(trailer1.parent);
         assert.isNull(trailer2.parent);
 
-        manager.reportTrailerUpdate(vehicle, trailer1);
+        manager.reportTrailerUpdate(vehicle.id, trailer1.id);
 
         assert.strictEqual(vehicle.trailer, trailer1);
         assert.strictEqual(trailer1.parent, vehicle);
         assert.isNull(trailer2.parent);
 
-        manager.reportTrailerUpdate(vehicle, trailer2);
+        manager.reportTrailerUpdate(vehicle.id, trailer2.id);
 
         assert.strictEqual(vehicle.trailer, trailer2);
         assert.isNull(trailer1.parent);
         assert.strictEqual(trailer2.parent, vehicle);
 
-        manager.reportTrailerUpdate(vehicle, null);
+        manager.reportTrailerUpdate(vehicle.id, null);
 
         assert.isNull(vehicle.trailer);
         assert.isNull(trailer1.parent);
@@ -194,8 +192,6 @@ describe('VehicleManager', (it, beforeEach) => {
     });
 
     it('should magically carry over trailers when teleporting the vehicle', assert => {
-        return;  // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    
         const vehicle = manager.createVehicle({ modelId: 411, position: new Vector(0, 0, 0) });
         const trailer = manager.createVehicle({ modelId: 611, position: new Vector(0, 0, 0) });
 
@@ -205,10 +201,6 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(trailer.parent, vehicle);
 
         {
-            vehicle.position = new Vector(500, 600, 700);
-            assert.deepEqual(trailer.position, vehicle.position);
-        }
-        {
             vehicle.interiorId = 7;
             assert.equal(trailer.interiorId, vehicle.interiorId);
         }
@@ -216,36 +208,5 @@ describe('VehicleManager', (it, beforeEach) => {
             vehicle.virtualWorld = 100;
             assert.equal(trailer.virtualWorld, vehicle.virtualWorld);
         }
-    });
-
-    it('should reapply locks to vehicles when they stream in for a player', assert => {
-        const vehicle = manager.createVehicle({ modelId: 441, position: new Vector(200, 300, 50) });
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        let counter = 0;
-
-        // Override the |lockForPlayer| method for the |vehicle| so that we can instrument it. The
-        // parent method will still be called, so that normal functionality continues to work.
-        vehicle.lockForPlayer = (function(player) {
-            this.__proto__.lockForPlayer.call(this, player);
-            counter++;
-
-        }).bind(vehicle);
-
-        vehicle.lockForPlayer(gunther);
-        assert.isTrue(vehicle.isLockedForPlayer(gunther));
-        assert.equal(counter, 1);
-
-        vehicle.streamInForPlayer(gunther);
-        assert.isTrue(vehicle.isLockedForPlayer(gunther));
-        assert.equal(counter, 2);
-
-        vehicle.unlockForPlayer(gunther);
-        assert.isFalse(vehicle.isLockedForPlayer(gunther));
-        assert.equal(counter, 2);
-
-        vehicle.streamInForPlayer(gunther);
-        assert.isFalse(vehicle.isLockedForPlayer(gunther));
-        assert.equal(counter, 2);
     });
 });

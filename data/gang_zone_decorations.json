@@ -73,6 +73,18 @@
             "price": 2500000
         }
     ],
+    "Effects": [
+        {
+            "name": "Burning ship skull",
+            "model": 3524,
+            "price": 150000
+        },
+        {
+            "name": "UFO Space Ship",
+            "model": 18846,
+            "price": 250000
+        }
+    ],
     "Nature": [
         {
             "name": "Cow",

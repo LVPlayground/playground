@@ -10,74 +10,6 @@
  */
 class VehicleEvents <vehicleId (MAX_VEHICLES)> {
     /**
-     * This method gets invoked when a player resprays a vehicle with new colors in a modification
-     * shop. As of SA-MP 0.3x, this method does not get invoked for Pay 'n Spray shops.
-     *
-     * @param playerId Id of the player who has been modifying this vehicle.
-     * @param primaryColor The primary color which they want this vehicle to have.
-     * @param secondaryColor The secondary color which they want this vehicle to have.
-     */
-    public onVehicleRespray(playerId, primaryColor, secondaryColor) {
-        // Don't set color or give out money in the case of no colorchanges
-        new previousPrimaryColor = Vehicle(vehicleId)->primaryColor(),
-            previousSecondaryColor = Vehicle(vehicleId)->secondaryColor();
-
-        if (previousPrimaryColor == primaryColor && previousSecondaryColor == secondaryColor)
-            return false;
-
-        // Update the vehicle's color internally so we stay synchronized.
-        Vehicle(vehicleId)->setColors(primaryColor, secondaryColor);
-
-        // If any player owns the vehicle modification property, give them money.
-        PropertyEvents->onVehicleModified();
-
-        return 1;
-        #pragma unused playerId
-    }
-
-    /**
-     * Players can change the paintjobs associated with their vehicles in many mod shops. Which shop
-     * that is depends on the vehicle, but every new paint job ends up here. There's a few things we
-     * need to do in order to keep features synchronized.
-     *
-     * @param playerId Id of the player who's changed the vehicle's paintjob.
-     * @param paintjobId Id of the paintjob which the vehicle now has.
-     */
-    public onVehiclePaintjob(playerId, paintjobId) {
-        // Update the vehicle's paintjob internally so we stay synchronized.
-        Vehicle(vehicleId)->setPaintJob(paintjobId);
-
-        // If any player owns the vehicle modification property, give them money.
-        PropertyEvents->onVehicleModified();
-
-        return 1;
-        #pragma unused playerId
-    }
-
-    /**
-     * Players also have the ability to change other parts of their vehicle, for example the wheels,
-     * engine or add nitrogen. We need to do a few things in these cases as well.
-     *
-     * @param playerId Id of the player who modified their vehicle.
-     * @param componentId Id of the component which was added to the vehicle.
-     * @return boolean Whether we should allow this modification.
-     */
-    public bool: onVehicleMod(playerId, componentId) {
-        // Determine whether the applied modification is valid for this vehicle. If it's not, we
-        // have to block synchronization of this mod in order to prevent people from crashing.
-        if (VehicleModel(GetVehicleModel(vehicleId))->isValidComponent(componentId) == false)
-            return false;
-
-        // If any player owns the vehicle modification property, give them money.
-        PropertyEvents->onVehicleModified();
-
-        CCrush__Modify(vehicleId);
-
-        return true;
-        #pragma unused playerId, componentId
-    }
-
-    /**
      * Vehicles can be submerged in water or explode, both of which will trigger the onVehicleDeath()
      * event to fire. A number of features may rely on this for closing off any loose ends.
      */
@@ -190,29 +122,24 @@ class VehicleEvents <vehicleId (MAX_VEHICLES)> {
 
 // Foward the actual events to the VehicleEvents class.
 public OnVehicleRespray(playerid, vehicleid, color1, color2) {
-    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true
-        || Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid players, NPCs or invalid vehicles.
+    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true)
+        return 0; // don't handle invalid players or NPCs
 
-    VehicleEvents(vehicleid)->onVehicleRespray(playerid, color1, color2);
+    PropertyEvents->onVehicleModified();
     return 1;
 }
 
 public OnVehiclePaintjob(playerid, vehicleid, paintjobid) {
-    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true
-        || Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid players, NPCs or invalid vehicles.
+    if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true)
+        return 0; // don't handle invalid players or NPCs
 
-    VehicleEvents(vehicleid)->onVehiclePaintjob(playerid, paintjobid);
+    PropertyEvents->onVehicleModified();
     return 1;
 }
 
 public OnVehicleMod(playerid, vehicleid, componentid) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true)
         return 0; // don't handle invalid players or NPCs
-
-    if (Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid vehicles
 
     if (!IsLegalModification(vehicleid, componentid)) {
         new message[128];
@@ -227,12 +154,18 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
         return 0; // don't handle illegal modifications
     }
 
-    return _: VehicleEvents(vehicleid)->onVehicleMod(playerid, componentid);
+    if (!VehicleModel(GetVehicleModel(vehicleid))->isValidComponent(componentid))
+        return false;
+
+    PropertyEvents->onVehicleModified();
+    CCrush__Modify(vehicleid);
+
+    return 1;
 }
 
 public OnVehicleDeath(vehicleid, killerid) {
     if (Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid vehicles.
+        return 0; // don't handle vehicles not created by Pawn
 
     Annotation::ExpandList<OnVehicleDeath>(vehicleid);
 
@@ -243,7 +176,7 @@ public OnVehicleDeath(vehicleid, killerid) {
 
 public OnVehicleSpawn(vehicleid) {
     if (Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid vehicles.
+        return 0; // don't handle vehicles not created by Pawn
 
     Annotation::ExpandList<OnVehicleSpawn>(vehicleid);
 
@@ -254,7 +187,7 @@ public OnVehicleSpawn(vehicleid) {
 public OnVehicleStreamIn(vehicleid, forplayerid) {
     if (Player(forplayerid)->isConnected() == false || Player(forplayerid)->isNonPlayerCharacter() == true
         || Vehicle(vehicleid)->isValid() == false)
-        return 0; // don't handle invalid players, NPCs or invalid vehicles.
+        return 0; // don't handle invalid players, NPCs or non-Pawn vehicles.
 
     VehicleEvents(vehicleid)->onVehicleStreamIn(forplayerid);
     return 1;

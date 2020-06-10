@@ -158,13 +158,13 @@ class RaceMinigame extends Minigame {
             // Associate a nitrous oxide system with the vehicle when desired.
             switch (spawnPosition.vehicle.nos) {
                 case 1:
-                    vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
+                    vehicle.addComponent(Vehicle.kComponentNitroSingleShot);
                     break;
                 case 5:
-                    vehicle.addComponent(Vehicle.COMPONENT_NOS_FIVE_SHOTS);
+                    vehicle.addComponent(Vehicle.kComponentNitroFiveShots);
                     break;
                 case 10:
-                    vehicle.addComponent(Vehicle.COMPONENT_NOS_TEN_SHOTS);
+                    vehicle.addComponent(Vehicle.kComponentNitroTenShots);
                     break;
             }
 
@@ -267,7 +267,7 @@ class RaceMinigame extends Minigame {
             return;  // the race does not have unlimited nitro for its vehicles.
 
         for (const player of this.activePlayers)
-            this.dataForPlayer(player).vehicle.addComponent(Vehicle.COMPONENT_NOS_SINGLE_SHOT);
+            this.dataForPlayer(player).vehicle.addComponent(Vehicle.kComponentNitroSingleShot);
 
         // Schedule another round of NOS component updates after a given amount of milliseconds.
         wait(InfiniteNitroInterval).then(() => this.updateInfiniteNitro());

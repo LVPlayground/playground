@@ -4,7 +4,6 @@
 
 import { Supplementable } from 'base/supplementable.js';
 
-
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.
 //
@@ -13,7 +12,7 @@ import { Supplementable } from 'base/supplementable.js';
 //
 // If you are considering extending the Player object with additional functionality, take a look at
 // the Supplementable system in //base/supplementable.js instead.
-class Vehicle extends Supplementable {
+export class Vehicle extends Supplementable {
     // ID indicating that a particular Player ID is explicitly not valid.
     static kInvalidId = 65535;
 
@@ -26,6 +25,18 @@ class Vehicle extends Supplementable {
     static kVehicleKeysNos = 32;
     static kVehicleKeysBlinkerRight = 64;
     static kVehicleKeysBlinkerLeft = 128;
+
+    // Constants that indicate the seat a player is occupying in the vehicle. Values above 1 are
+    // possible. They indicate passenger seats in the rear seat or further beyond. (E.g. for a bus.)
+    static kSeatDriver = 0;
+    static kSeatPassenger = 1;
+    static kSeatPassengerRearLeft = 2;
+    static kSeatPassengerRearRight = 3;
+
+    // Constants to use when adding components to vehicles.
+    static kComponentNitroSingleShot = 1009;
+    static kComponentNitroFiveShots = 1008;
+    static kComponentNitroTenShots = 1010;
 
     // ---------------------------------------------------------------------------------------------
 
@@ -45,6 +56,9 @@ class Vehicle extends Supplementable {
     #parent_ = null;
     #trailer_ = null;
 
+    #driver_ = null;
+    #passengers_ = null;
+
     #respawnDelay_ = null;
 
     constructor(manager) {
@@ -62,6 +76,7 @@ class Vehicle extends Supplementable {
         this.#secondaryColor_ = options.secondaryColor;
         this.#siren_ = options.siren;
 
+        this.#passengers_ = new Set();
         this.#respawnDelay_ = options.respawnDelay;
 
         this.#id_ = this.createVehicleInternal(options);
@@ -190,24 +205,16 @@ class Vehicle extends Supplementable {
             this.#trailer_.interiorId = value;
             this.attachTrailerInternal(this.#trailer_);
         }
-
-        if (this.trailer_) {
-            this.trailer_.interiorId = value;
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
-        }
     }
 
     get virtualWorld() { return this.#virtualWorld_; }
     set virtualWorld(value) {
-        if (this.driver && this.driver.syncedData.isIsolated())
-            return;
-
         pawnInvoke('SetVehicleVirtualWorld', 'ii', this.#id_, value);
         this.#virtualWorld_ = value;
 
-        if (this.trailer_) {
-            this.trailer_.virtualWorld = value;
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
+        if (this.#trailer_) {
+            this.#trailer_.virtualWorld = value;
+            this.attachTrailerInternal(this.#trailer_);
         }
     }
 
@@ -233,31 +240,41 @@ class Vehicle extends Supplementable {
     setTrailerInternal(trailer) { this.#trailer_ = trailer; }
 
     // ---------------------------------------------------------------------------------------------
+    // Occupant information
+    // ---------------------------------------------------------------------------------------------
 
+    get driver() { return this.#driver_; }
 
+    get occupantCount() { return this.#passengers_.size + (this.#driver_ ? 1 : 0); }
 
-    
-    
+    isOccupied() { return this.#driver_ || this.#passengers_.size; }
 
-    // Returns whether the vehicle is currently occupied by any player.
-    isOccupied() { return this.driver_ || this.passengers_.size; }
+    *getPassengers() { yield* this.#passengers_.values(); }
 
-    // Gets the number of occupants that are currently in the vehicle.
-    get occupantCount() { return this.passengers_.size + (this.driver_ ? 1 : 0); }
-
-    // Gets the Player that is currently driving this vehicle. May be NULL.
-    get driver() { return this.driver_; }
-
-    // Returns an iterator with the passengers that are currently driving in this vehicle.
-    *getPassengers() { yield this.passengers_.values(); }
-
-    // Returns an iterator with the occupants that are currently driving in this vehicle.
     *getOccupants() {
-        if (this.driver_)
-            yield this.driver_;
+        if (this.#driver_)
+            yield this.#driver_;
 
-        yield* this.passengers_;
+        yield* this.#passengers_;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    onPlayerEnterVehicle(player) {
+        if (player.vehicleSeat === Vehicle.kSeatDriver)
+            this.#driver_ = player;
+        else
+            this.#passengers_.add(player);
+    }
+
+    onPlayerLeaveVehicle(player) {
+        if (player.vehicleSeat === Vehicle.kSeatDriver)
+            this.#driver_ = null;
+        else
+            this.#passengers_.delete(player);
+    }
+
+
 
 
 
@@ -311,31 +328,6 @@ class Vehicle extends Supplementable {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Returns whether the vehicle is currently within streaming range of |player|.
-    inRangeForPlayer(player) {
-        return !!pawnInvoke('IsVehicleStreamedIn', 'ii', this.id_, player.id);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Called by the vehicle manager when |player| has entered this vehicle.
-    onPlayerEnterVehicle(player) {
-        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
-            this.driver_ = player;
-        else
-            this.passengers_.add(player);
-    }
-
-    // Called by the vehicle manager when |player| has left this vehicle.
-    onPlayerLeaveVehicle(player) {
-        if (player.vehicleSeat === Vehicle.SEAT_DRIVER)
-            this.driver_ = null;
-        else
-            this.passengers_.delete(player);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     // Disposes the vehicle by removing it from the server.
     dispose() {
         this.#manager_.didDisposeVehicle(this);
@@ -345,19 +337,6 @@ class Vehicle extends Supplementable {
         this.id_ = null;
     }
 }
-
-// The Id that is used to represent invalid vehicles.
-Vehicle.INVALID_ID = 65535;
-
-// Commonly used components that can be added to vehicles, e.g. NOS.
-Vehicle.COMPONENT_NOS_SINGLE_SHOT = 1009;
-Vehicle.COMPONENT_NOS_FIVE_SHOTS = 1008;
-Vehicle.COMPONENT_NOS_TEN_SHOTS = 1010;
-
-// Constants that indicate the seat a player is occupying in the vehicle. Values above 1 are
-// possible. They indicate passenger seats in the rear seat or further beyond. (E.g. for a bus.)
-Vehicle.SEAT_DRIVER = 0;
-Vehicle.SEAT_PASSENGER = 1;
 
 // Expose the Vehicle object globally since it will be commonly used.
 global.Vehicle = Vehicle;

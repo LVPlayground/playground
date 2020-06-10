@@ -188,26 +188,6 @@ class VehicleManager {
         return 1;
     }
 
-
-    // To be called by vehicles when Vehicle.attach() is called.
-    attachTrailer(vehicle, trailer) {
-        vehicle.trailer = trailer;
-        vehicle.trailer.parent = vehicle;
-
-        this.notifyObservers('onTrailerAttached', vehicle, trailer);
-    }
-
-    // To be called by vehicles when Vehicle.detach() is called.
-    detachTrailer(vehicle) {
-        const formerTrailer = vehicle.trailer;
-
-        vehicle.trailer.parent = null;
-        vehicle.trailer = null;
-
-        if (formerTrailer.isConnected())
-            this.notifyObservers('onTrailerDetached', vehicle, formerTrailer);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     // Notifies observers about the |eventName|, passing |...args| as the argument to the method

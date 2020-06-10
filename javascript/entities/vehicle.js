@@ -1,10 +1,20 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Supplementable } from 'base/supplementable.js';
+
+
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.
-class Vehicle {
+//
+// This class amends the default SA-MP natives with additional functionality that keeps track of
+// modifications to vehicles, and allows them to be retrieved on the fly.
+//
+// If you are considering extending the Player object with additional functionality, take a look at
+// the Supplementable system in //base/supplementable.js instead.
+class Vehicle extends Supplementable {
+    // ID indicating that a particular Player ID is explicitly not valid.
     static kInvalidId = 65535;
 
     // Vehicle keys that can be awarded to players through various achievements.
@@ -17,23 +27,97 @@ class Vehicle {
     static kVehicleKeysBlinkerRight = 64;
     static kVehicleKeysBlinkerLeft = 128;
 
-    constructor(manager, options) {
-        this.manager_ = manager;
-        this.modelId_ = options.modelId;
-        this.siren_ = !!options.siren;
-        this.respawnDelay_ = options.respawnDelay;
+    // ---------------------------------------------------------------------------------------------
 
+    #manager_ = null;
+
+    #modelId_ = null;
+
+    #primaryColor_ = null;
+    #secondaryColor_ = null;
+    #paintjob_ = null;
+    #siren_ = null;
+
+    #respawnDelay_ = null;
+
+    constructor(manager) {
+        super();
+
+        this.#manager_ = manager;
+    }
+
+    initialize(options) {
+        this.#modelId_ = options.modelId;
+
+        this.#primaryColor_ = options.primaryColor;
+        this.#secondaryColor_ = options.secondaryColor;
+        this.#paintjob_ = options.paintjob;
+        this.#siren_ = options.siren;
+
+        this.oldInitialize(options);
+    }
+
+    // Actually changes a vehicle's colours on the server.
+    changeVehicleColorInternal(primaryColor, secondaryColor) {
+        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, primaryColor, secondaryColor);
+    }
+
+    // Actually changes a vehicle's paintjob on the server.
+    changeVehiclePaintjobInternal(paintjob) {
+        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, paintjob);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    
+    get id() { return this.id_; }
+
+    get modelId() { return this.#modelId_; }
+    get model() { return VehicleModel.getById(this.#modelId_); }
+
+    get primaryColor() { return this.#primaryColor_; }
+    set primaryColor(value) {
+        this.changeVehicleColorInternal(value, this.#secondaryColor_);
+        this.#primaryColor_ = value;
+    }
+
+    get secondaryColor() { return this.#secondaryColor_; }
+    set secondaryColor(value) {
+        this.changeVehicleColorInternal(this.#primaryColor_, value);
+        this.#secondaryColor_ = value;
+    }
+
+    get paintjob() { return this.paintjob_; }
+    set paintjob(value) {
+        this.changeVehiclePaintjobInternal(value);
+        this.paintjob_ = value;
+    }
+
+    get siren() { return this.#siren_; }
+
+    get respawnDelay() { return this.#respawnDelay_; }
+
+    isConnected() { return this.id_ !== Vehicle.kInvalidId; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
+    set position(value) {
+        pawnInfoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z);
+
+        if (this.trailer_)
+            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
+    }
+
+    get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
+    set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+
+    // ---------------------------------------------------------------------------------------------
+
+    oldInitialize(options) {
         this.driver_ = null;
         this.passengers_ = new Set();
 
         this.locks_ = new WeakSet();
-
-        // TODO(Russell): Synchronize these with the OnVehicleRespray event.
-        this.primaryColor_ = options.primaryColor;
-        this.secondaryColor_ = options.secondaryColor;
-
-        // TODO(Russell): Synchronize these with the OnVehiclePaintjob event.
-        this.paintjob_ = options.paintjob;
 
         this.numberPlate_ = options.numberPlate;
 
@@ -63,30 +147,7 @@ class Vehicle {
             this.virtualWorld = options.virtualWorld;
     }
 
-    // Returns whether this vehicle has been created on the server.
-    isConnected() { return this.id_ !== null; }
-
-    // Gets the Id of this vehicle as assigned by the SA-MP server.
-    get id() { return this.id_; }
-
-    // Gets the VehicleModel instance representing this vehicle's model Id.
-    get model() { return VehicleModel.getById(this.modelId_); }
-
-    // Gets the model Id associated with this vehicle.
-    get modelId() { return this.modelId_; }
-
-    // Gets or sets the position of this vehicle.
-    get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.id_)); }
-    set position(value) {
-        pawnInfoke('SetVehiclePos', 'ifff', this.id_, value.x, value.y, value.z);
-
-        if (this.trailer_)
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.id_);
-    }
-
-    // Gets or sets the rotation of this vehicle.
-    get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.id_); }
-    set rotation(value) { pawnInvoke('SetVehicleZAngle', 'if', this.id_, value); }
+    
 
     // Returns whether the vehicle is currently occupied by any player.
     isOccupied() { return this.driver_ || this.passengers_.size; }
@@ -108,39 +169,6 @@ class Vehicle {
         yield* this.passengers_;
     }
 
-    // Gets or sets the primary colour of this vehicle.
-    get primaryColor() { return this.primaryColor_; }
-    set primaryColor(value) {
-        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, value, this.secondaryColor_);
-        this.primaryColor_ = value;
-    }
-
-    // Gets or sets the secondary colour of this vehicle.
-    get secondaryColor() { return this.secondaryColor_; }
-    set secondaryColor(value) {
-        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, this.primaryColor_, value);
-        this.secondaryColor_ = value;
-    }
-
-    // Sets both colors of this vehicle at once instead of having to pawnInvoke twice
-    setColors(primaryColor, secondaryColor) {
-        pawnInvoke('ChangeVehicleColor', 'iii', this.id_, primaryColor, secondaryColor);
-        this.primaryColor_ = primaryColor;
-        this.secondaryColor_ = secondaryColor;
-    }
-
-    // Gets or sets the paintjob that have been applied to this vehicle.
-    get paintjob() { return this.paintjob_; }
-    set paintjob(value) {
-        pawnInvoke('ChangeVehiclePaintjob', 'ii', this.id_, value);
-        this.paintjob_ = value;
-    }
-
-    // Gets whether the vehicle has been forced to have a siren.
-    get siren() { return this.siren_; }
-
-    // Gets the delay, in seconds, after which the vehicle should be respawned without a driver.
-    get respawnDelay() { return this.respawnDelay_; }
 
     // Gets or sets the interior that this vehicle has been linked to.
     get interiorId() { return this.interiorId_; }
@@ -190,10 +218,10 @@ class Vehicle {
     // Attaches this vehicle to the given |trailer|.
     attachTrailer(trailer) {
         if (this.trailer_)
-            this.manager_.detachTrailer(this);
+            this.#manager_.detachTrailer(this);
 
         pawnInvoke('AttachTrailerToVehicle', 'ii', trailer.id, this.id_);
-        this.manager_.attachTrailer(this, trailer);
+        this.#manager_.attachTrailer(this, trailer);
     }
 
     // Detaches this vehicle from its current trailer.
@@ -202,7 +230,7 @@ class Vehicle {
             return;
 
         pawnInvoke('DetachTrailerFromVehicle', 'i', this.id_);
-        this.manager_.detachTrailer(this);
+        this.#manager_.detachTrailer(this);
     }
 
     // Gets or sets the trailer that is attached to this vehicle.
@@ -293,8 +321,8 @@ class Vehicle {
 
     // Disposes the vehicle by removing it from the server.
     dispose() {
-        this.manager_.didDisposeVehicle(this);
-        this.manager_ = null;
+        this.#manager_.didDisposeVehicle(this);
+        this.#manager_ = null;
 
         pawnInvoke('DestroyVehicle', 'i', this.id_);
         this.id_ = null;

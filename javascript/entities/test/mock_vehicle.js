@@ -5,8 +5,11 @@
 // Supports exactly the same API as a regular Vehicle entity, but will only store the data locally
 // instead of actually creating the vehicle on the server.
 class MockVehicle {
-    constructor(manager, options) {
+    constructor(manager) {
         this.manager_ = manager;
+    }
+
+    initialize(options) {
         this.id_ = Math.floor(Math.random() * 10000000);
 
         this.driver_ = null;

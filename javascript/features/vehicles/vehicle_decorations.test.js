@@ -37,7 +37,7 @@ describe('VehicleDecorations', it => {
         for (const { setting } of kVehicleDecorations)
             settings.setValue(setting, true);
 
-        var vehicle = new Vehicle(server.manager_, DFT);
+        var vehicle = server.vehicleManager.createVehicle(DFT);
         vehicles.decorations_.onPlayerEnterVehicle(gunther, vehicle);
 
         assert.isAbove(server.objectManager.count, objects);

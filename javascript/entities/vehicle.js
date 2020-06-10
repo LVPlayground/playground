@@ -42,6 +42,9 @@ class Vehicle extends Supplementable {
     #numberPlate_ = null;
     #siren_ = null;
 
+    #parent_ = null;
+    #trailer_ = null;
+
     #respawnDelay_ = null;
 
     constructor(manager) {
@@ -93,6 +96,14 @@ class Vehicle extends Supplementable {
             /* addsiren= */ options.siren ? 1 : 0) || Vehicle.kInvalidId;
     }
 
+    // Attaches the |trailer| to |this| when given, or detaches an existing trailer otherwise.
+    attachTrailerInternal(trailer) {
+        if (trailer)
+            pawnInvoke('AttachTrailerToVehicle', 'ii', trailer.id, this.#id_);
+        else
+            pawnInvoke('DetachTrailerFromVehicle', 'i', this.#id_);
+    }
+
     // Actually changes a vehicle's colours on the server.
     changeVehicleColorInternal(primaryColor, secondaryColor) {
         pawnInvoke('ChangeVehicleColor', 'iii', this.#id_, primaryColor, secondaryColor);
@@ -108,6 +119,8 @@ class Vehicle extends Supplementable {
         pawnInvoke('ChangeVehiclePaintjob', 'ii', this.#id_, paintjob);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Appearance and behavioural information.
     // ---------------------------------------------------------------------------------------------
     
     get id() { return this.#id_; }
@@ -146,6 +159,8 @@ class Vehicle extends Supplementable {
     isConnected() { return this.id_ !== Vehicle.kInvalidId; }
 
     // ---------------------------------------------------------------------------------------------
+    // World positioning and state information.
+    // ---------------------------------------------------------------------------------------------
 
     get health() { return pawnInvoke('GetVehicleHealth', 'iF', this.#id_); }
     set health(value) { pawnInvoke('SetVehicleHealth', 'if', this.#id_, value); }
@@ -154,8 +169,8 @@ class Vehicle extends Supplementable {
     set position(value) {
         pawnInfoke('SetVehiclePos', 'ifff', this.#id_, value.x, value.y, value.z);
 
-        if (this.trailer_)
-            pawnInvoke('AttachTrailerToVehicle', 'ii', this.trailer_.id, this.#id_);
+        if (this.#trailer_)
+            this.attachTrailerInternal(this.#trailer_);
     }
 
     get rotation() { return pawnInvoke('GetVehicleZAngle', 'iF', this.#id_); }
@@ -170,6 +185,11 @@ class Vehicle extends Supplementable {
     set interiorId(value) {
         pawnInvoke('LinkVehicleToInterior', 'ii', this.#id_, value);
         this.#interiorId_ = value;
+
+        if (this.#trailer_) {
+            this.#trailer_.interiorId = value;
+            this.attachTrailerInternal(this.#trailer_);
+        }
 
         if (this.trailer_) {
             this.trailer_.interiorId = value;
@@ -192,10 +212,31 @@ class Vehicle extends Supplementable {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Trailer & parent functionality. Represented as Vehicle instances.
+    // ---------------------------------------------------------------------------------------------
+
+    get trailer() { return this.#trailer_; }
+    set trailer(value) {
+        if (this.#trailer_ && this.#trailer_ !== value)
+            this.#trailer_.setParentInternal(value);
+
+        this.attachTrailerInternal(value);
+        if (value)
+            value.setParentInternal(this);
+
+        this.#trailer_ = value;
+    }
+
+    get parent() { return this.#parent_; }
+
+    setParentInternal(parent) { this.#parent_ = parent; }
+    setTrailerInternal(trailer) { this.#trailer_ = trailer; }
+
+    // ---------------------------------------------------------------------------------------------
 
 
 
-
+    
     
 
     // Returns whether the vehicle is currently occupied by any player.
@@ -219,39 +260,6 @@ class Vehicle extends Supplementable {
     }
 
 
-
-
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Attaches this vehicle to the given |trailer|.
-    attachTrailer(trailer) {
-        if (this.trailer_)
-            this.#manager_.detachTrailer(this);
-
-        pawnInvoke('AttachTrailerToVehicle', 'ii', trailer.id, this.id_);
-        this.#manager_.attachTrailer(this, trailer);
-    }
-
-    // Detaches this vehicle from its current trailer.
-    detachTrailer() {
-        if (!this.trailer_)
-            return;
-
-        pawnInvoke('DetachTrailerFromVehicle', 'i', this.id_);
-        this.#manager_.detachTrailer(this);
-    }
-
-    // Gets or sets the trailer that is attached to this vehicle.
-    get trailer() { return this.trailer_; }
-    set trailer(value) { this.trailer_ = value; }
-
-    // Gets or sets the parent vehicle, that is, the vehicle that has this one as a trailer.
-    get parent() { return this.parent_; }
-    set parent(value) { this.parent_ = value; }
-
-    // Finds the Id of the trailer attached to this vehicle. Should be used sparsely.
-    findTrailerId() { return pawnInvoke('GetVehicleTrailer', 'i', this.id_); }
 
     // ---------------------------------------------------------------------------------------------
 

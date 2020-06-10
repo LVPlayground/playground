@@ -6,6 +6,7 @@
 native MarkVehicleMoved(vehicleId);
 native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
+native ReportTrailerUpdate(vehicleid, trailerid);
 
 #include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
@@ -41,6 +42,9 @@ new g_vehicleKeysLastBoost[MAX_PLAYERS];
 
 // Time at which a vehicle has been marked for movement following an unoccupied sync.
 new g_vehicleLastUnoccupiedSyncMark[MAX_VEHICLES];
+
+// Vehicle ID of the trailer that's attached to a particular vehicle.
+new g_vehicleTrailerId[MAX_VEHICLES];
 
 // The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
 new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
@@ -358,6 +362,22 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
+}
+
+forward UpdateVehicleTrailerStatus();
+public UpdateVehicleTrailerStatus() {
+    for (new vehicleId = 1; vehicleId < GetVehiclePoolSize(); ++vehicleId) {
+        new const trailerId = GetVehicleTrailer(vehicleId);
+        if (trailerId == g_vehicleTrailerId[vehicleId])
+            continue;  // no change in the trailer attached to the |vehicleId|
+
+        g_vehicleTrailerId[vehicleId] = trailerId;
+
+        if (!IsValidVehicle(vehicleId))
+            continue;
+
+        ReportTrailerUpdate(vehicleId, trailerId);
+    }
 }
 
 public OnPlayerDeath(playerid, killerid, reason) {

@@ -108,8 +108,8 @@ describe('GameRuntime', (it, beforeEach) => {
             'onTick',
             'onPlayerSpawned',
             'onPlayerRemoved',
-            'onPlayerRemoved',
             'onTick',
+            'onPlayerRemoved',
             'onFinished',
         ]);
 

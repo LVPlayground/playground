@@ -4,9 +4,6 @@
 
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
-// Number of milliseconds before running a trailer status update.
-const TrailerStatusUpdateTimeMs = 1250;
-
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
 class VehicleManager {
@@ -35,7 +32,8 @@ class VehicleManager {
 
         // TODO(Russell): Handle OnVehicleSirenStateChange
 
-        this.processTrailerUpdates();
+        provideNative(
+            'ReportTrailerUpdate', 'ii', VehicleManager.prototype.reportTrailerUpdate.bind(this));
     }
 
     // Gets the number of vehicles currently created on the server.
@@ -166,25 +164,30 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Iterates over all live vehicles to determine whether they've got a trailer. When they do,
-    // mark the relationship between the vehicles.
-    async processTrailerUpdates() {
-        while (!this.disposed_) {
-            for (const vehicle of this.vehicles_.values()) {
-                const trailer = this.vehicles_.get(vehicle.findTrailerId()) || null;
-                if (trailer === vehicle.trailer)
-                    continue;
+    // Called when a trailer update has been reported by the Pawn driver. State is maintained by
+    // Pawn to significantly reduce the load on JavaScript, in which calls are more expensive.
+    reportTrailerUpdate(vehicleId, trailerId) {
+        const vehicle = this.vehicles_.get(vehicleId) ?? null;
+        const trailer = this.vehicles_.get(trailerId) ?? null;
 
-                if (vehicle.trailer)
-                    this.detachTrailer(vehicle);
+        if (!vehicle)
+            return 0;  // the |vehicle| is not known to JavaScript
+        
+        if (vehicle.trailer && vehicle.trailer !== trailer)
+            vehicle.trailer.setParentInternal(null);
 
-                if (trailer)
-                    this.attachTrailer(vehicle, trailer);
-            }
+        vehicle.setTrailerInternal(trailer);
 
-            await milliseconds(TrailerStatusUpdateTimeMs);
-        }
+        if (!trailer)
+            return 1;  // the |vehicle| had its trailer detached
+        
+        if (trailer.parent && trailer.parent !== vehicle)
+            trailer.parent.setTrailerInternal(null);
+
+        trailer.setParentInternal(vehicle);
+        return 1;
     }
+
 
     // To be called by vehicles when Vehicle.attach() is called.
     attachTrailer(vehicle, trailer) {
@@ -235,6 +238,8 @@ class VehicleManager {
     // Releases all references and state held by the vehicle manager.
     dispose() {
         this.disposed_ = true;
+
+        provideNative('ReportTrailerUpdate', 'ii', () => 0);
 
         this.callbacks_.dispose();
         this.callbacks_ = null;

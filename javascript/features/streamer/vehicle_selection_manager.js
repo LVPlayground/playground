@@ -56,6 +56,18 @@ export class VehicleSelectionManager {
         this.vehicleCache_ = new Map();
     }
 
+    // Gets the total number of vehicles that have been created on the server.
+    get liveVehicles() { return this.streamableVehicles_.size; }
+
+    // Gets the number of vehicles that are currently within streaming range.
+    get streamedVehicles() { return this.vehicles_.size; }
+
+    // Gets the number of vehicles that have been cached to reduce server churn.
+    get cachedVehicles() { return this.vehicleCache_.size; }
+
+    // Gets the total number of vehicles that are currently on the respawn queue.
+    get respawnQueueVehicles() { return this.respawnManager_.size; }
+
     // Gets the StreamableVehicle instance for the given |vehicle|.
     getStreamableVehicle(vehicle) { return this.streamableVehicles_.get(vehicle); }
 

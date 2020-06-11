@@ -4,8 +4,6 @@
 
 import Feature from 'components/feature_manager/feature.js';
 import { MockVehicleStreamer } from 'features/streamer/test/mock_vehicle_streamer.js';
-import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
-import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
 import { VehicleRegistry } from 'features/streamer/vehicle_registry.js';
 import { VehicleSelectionManager } from 'features/streamer/vehicle_selection_manager.js';
 import { VehicleStreamer } from 'features/streamer/vehicle_streamer.js';
@@ -64,10 +62,6 @@ export default class Streamer extends Feature {
         return streamableVehicle;
     }
 
-    // Requests the streamer plane to be optimised. Technically, this will re-insert all vehicles in
-    // the RTree which allows for them to be better balanaced.
-    optimise() { this.streamer_.optimise(); }
-
     // Deletes the given |vehicle| from the server, which must be a StreamableVehicle instance.
     // Ephemeral vehicles may be
     deleteVehicle(vehicle) {
@@ -78,6 +72,33 @@ export default class Streamer extends Feature {
 
         // Request deletion of any live representations of this vehicle as well.
         this.selectionManager_.requestDeleteVehicle(vehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Requests the streamer plane to be optimised. Technically, this will re-insert all vehicles in
+    // the RTree which allows for them to be better balanaced.
+    optimise() { this.streamer_.optimise(); }
+
+    // Gets statistics about the vehicle streamer, to understand how it's performing and what's
+    // been created on the server. Useful to understand whether the streamer is working well.
+    stats() {
+        return {
+            // Total number of vehicles known to the streamer.
+            totalVehicles: this.streamer_.size,
+
+            // Total number of vehicles that have been created on the server.
+            liveVehicles: this.selectionManager_.liveVehicles,
+
+            // Total number of vehicles that have been streamed in.
+            streamedVehicles: this.selectionManager_.streamedVehicles,
+            
+            // Total number of vehicles that have been cached.
+            cachedVehicles: this.selectionManager_.cachedVehicles,
+
+            // Total number of vehicles that are currently on the respawn queue.
+            respawnQueueVehicles: this.selectionManager_.respawnQueueVehicles,
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

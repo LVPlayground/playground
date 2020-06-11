@@ -4,7 +4,6 @@
 
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
-import { Vector } from 'base/vector.js';
 import { VehicleStreamer } from 'features/streamer/vehicle_streamer.js';
 
 import { random } from 'base/random.js';

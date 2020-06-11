@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
-import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
 
 // Model Id for the Infernus vehicle in GTA: San Andreas.
 const kInfernus = 411;
@@ -16,7 +15,7 @@ describe('VehicleSelectionManager', (it, beforeEach) => {
 
     let kSelectionIntervalMs = 0;
 
-    beforeEach(assert => {
+    beforeEach(() => {
         const feature = server.featureManager.loadFeature('streamer');
         settings = server.featureManager.loadFeature('settings');
 

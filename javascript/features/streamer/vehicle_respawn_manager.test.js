@@ -4,7 +4,6 @@
 
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
-import { VehicleRespawnManager } from 'features/streamer/vehicle_respawn_manager.js';
 
 describe('VehicleRespawnManager', (it, beforeEach) => {
     let gunther = null;

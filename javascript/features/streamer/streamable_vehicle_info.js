@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Vector } from 'base/vector.js';
-
 import { random } from 'base/random.js';
 
 // Details information about a streamable vehicle that can be created on the server. Provides

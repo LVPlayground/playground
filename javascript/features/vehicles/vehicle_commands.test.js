@@ -33,12 +33,12 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
-    function createVehicleForPlayer(player, { modelId = 411 /* Infernus */, position = null } = {}) {
+    function createVehicleForPlayer(player, { modelId = 411 /* Infernus */ } = {}) {
         const streamableVehicle = manager.createVehicle(player, modelId);
         if (!streamableVehicle || !streamableVehicle.live)
             return false;
 
-        player.enterVehicle(streamableVehicle.live, Vehicle.SEAT_DRIVER);
+        player.enterVehicle(streamableVehicle.live, Vehicle.kSeatDriver);
         return true;
     }
 
@@ -355,7 +355,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             rotation: gunther.rotation
         });
 
-        russell.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        russell.enterVehicle(vehicle, Vehicle.kSeatDriver);
 
         assert.isNotNull(russell.vehicle);
 
@@ -377,7 +377,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             rotation: gunther.rotation
         });
 
-        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        gunther.enterVehicle(vehicle, Vehicle.kSeatDriver);
 
         assert.isNotNull(gunther.vehicle);
 
@@ -518,8 +518,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.messages[0], Message.format(Message.VEHICLE_SAVE_TOO_BUSY, 101, 90, 2, 50));
     });
 
-    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
     it('should enable administrators to enter vehicles close to them', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
 
@@ -536,13 +534,8 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
 
         // Create a vehicle that's reasonable close to Gunther his position.
-        const vehicle = await manager.createVehicle({
-            modelId: 411 /* Infernus */,
-            position: gunther.position.translate({ x: 3, y: -5 }),
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
+        const streamableVehicle = await manager.createVehicle(gunther, /* Infernus= */ 411);
+        const vehicle = streamableVehicle.live;
 
         assert.isNotNull(vehicle);
 
@@ -556,7 +549,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
 
         // Make Russell enter the vehicle in the passenger seat.
-        russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
+        russell.enterVehicle(vehicle, Vehicle.kSeatPassenger);
 
         // (3) It should bail out when trying to enter in a seat that's already occupied.
         {
@@ -624,13 +617,8 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isTrue(createVehicleForPlayer(gunther));
         assert.isNotNull(gunther.vehicle);
 
-        const vehicle = manager.createVehicle({
-            modelId: 411 /* Infernus */,
-            position: gunther.position,
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
+        const streamableVehicle = manager.createVehicle(gunther, /* Infernus= */ 411);
+        const vehicle = streamableVehicle.live;
 
         assert.isNotNull(vehicle);
         assert.isTrue(vehicle.isConnected());
@@ -648,21 +636,17 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         // Gunther's vehicle is occupied so should be left alone. The |vehicle| should respawn.
         assert.notDeepEqual(gunther.vehicle.position, gunther.position);
-        assert.deepEqual(vehicle.position, gunther.position);
-
         assert.equal(gunther.vehicle.respawnCountForTesting, 0);
-        assert.equal(vehicle.respawnCountForTesting, 1);
+        assert.isFalse(vehicle.isConnected());
     });
 
     it('should be able to respawn vehicles on the server', async(assert) => {
         // Only administrators can respawn vehicles on the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        gunther.position = new Vector(10, 505, 995);  // within streaming radius of the vehicle
+        gunther.position = new Vector(0, 500, 1000);  // within streaming radius of the vehicle
 
-        assert.isTrue(createVehicleForPlayer(gunther, {
-            position: new Vector(0, 500, 1000)
-        }));
+        assert.isTrue(createVehicleForPlayer(gunther));
 
         const vehicle = gunther.vehicle;
         assert.isNotNull(vehicle);
@@ -694,9 +678,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         gunther.position = new Vector(10, 505, 995);  // within streaming radius of the vehicle
 
-        assert.isTrue(createVehicleForPlayer(gunther, {
-            position: new Vector(0, 500, 1000)
-        }));
+        assert.isTrue(createVehicleForPlayer(gunther));
 
         const vehicle = gunther.vehicle;
         assert.isNotNull(vehicle);

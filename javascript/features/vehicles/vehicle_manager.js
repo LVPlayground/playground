@@ -288,8 +288,37 @@ class VehicleManager {
     // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
     // vehicle will be reset prior to the actual respawn.
     respawnVehicle(vehicle) {
-        // Remove the trailers
-        // Respawning ephemeral vehicles should delete them
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            throw new Error(`Unable to respawn vehicles not managed by the Vehicle Manager.`);
+        
+        // Recursively respawn the vehicle and all trailers attached.
+        while (vehicle) {
+            const trailer = vehicle.trailer;
+
+            vehicle.respawn();
+            vehicle = trailer;
+        }
+
+        // If the |vehicle| was an ephemeral vehicle, delete it from the server.
+        if (result.type === VehicleManager.kTypeEphemeral)
+            this.streamer_().deleteVehicle(result.streamableVehicle);
+    }
+
+    // Respawns all unoccupied vehicles owned by the Vehicle Manager. This is quite a heavy task,
+    // both for the server and for all players for whom vehicles will be changing.
+    respawnUnoccupiedVehicles() {
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (streamableVehicle.live && !streamableVehicle.live.occupantCount)
+                this.streamer_().deleteVehicle(streamableVehicle);
+        }
+
+        this.ephemeralVehiclesPruneList();
+
+        for (const streamableVehicle of this.vehicles_.values()) {
+            if (streamableVehicle.live && !streamableVehicle.live.occupantCount)
+                streamableVehicle.live.respawn();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

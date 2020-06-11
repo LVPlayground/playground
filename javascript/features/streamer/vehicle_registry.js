@@ -48,9 +48,18 @@ export class VehicleRegistry {
         const vehicles = new Set();
         const models = new Set();
 
+        let closestStreamableVehicleDistance = Number.MAX_SAFE_INTEGER;
+        let closestStreamableVehicle = null;
+
         for (const streamableVehicle of this.vehicles_) {
-            if (streamableVehicle.position.distanceTo2D(position) > maxDistance)
-                continue;
+            const distance = streamableVehicle.position.distanceTo2D(position);
+            if (distance > maxDistance)
+                continue; // the |streamableVehicle| is outside of streaming range
+            
+            if (distance < closestStreamableVehicleDistance) {
+                closestStreamableVehicleDistance = distance;
+                closestStreamableVehicle = streamableVehicle;
+            }
             
             vehicles.add(streamableVehicle);
             models.add(streamableVehicle.modelId);
@@ -59,6 +68,8 @@ export class VehicleRegistry {
         return {
             vehicles: vehicles.size,
             models: models.size,
+
+            closestStreamableVehicle,
         };
     }
 

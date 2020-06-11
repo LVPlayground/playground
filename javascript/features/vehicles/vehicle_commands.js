@@ -286,29 +286,35 @@ class VehicleCommands {
         }
 
         const position = player.position;
-        const areaInfo = await this.manager_.streamer.query(position);
+        const areaInfo = await this.streamer_().query(position);
 
-        // Make sure that there is a vehicle close enough to the |player|.
-        if (!areaInfo.closestVehicle ||
-                areaInfo.closestVehicle.position.distanceTo(position) > MaximumVehicleDistance) {
+        const closestStreamableVehicle = areaInfo.closestStreamableVehicle;
+        if (!closestStreamableVehicle || !closestStreamableVehicle.live) {
             player.sendMessage(Message.VEHICLE_ENTER_NONE_NEAR);
             return;
         }
 
+        if (closestStreamableVehicle.position.distanceTo(position) > MaximumVehicleDistance) {
+            player.sendMessage(Message.VEHICLE_ENTER_NONE_NEAR);
+            return;
+        }
+
+        const closestVehicle = closestStreamableVehicle.live;
+
         // Make sure that the |seat| the |player| wants to sit in is available.
-        for (const occupant of areaInfo.closestVehicle.getOccupants()) {
+        for (const occupant of closestVehicle.getOccupants()) {
             if (occupant.vehicleSeat !== seat)
                 continue;
 
             player.sendMessage(
-                Message.VEHICLE_ENTER_SEAT_OCCUPIED, areaInfo.closestVehicle.model.name);
+                Message.VEHICLE_ENTER_SEAT_OCCUPIED, closestVehicle.model.name);
             return;
         }
 
         // Make the |player| enter the closest vehicle in their area.
-        player.enterVehicle(areaInfo.closestVehicle, seat);
+        player.enterVehicle(closestVehicle, seat);
 
-        player.sendMessage(Message.VEHICLE_ENTERED, areaInfo.closestVehicle.model.name);
+        player.sendMessage(Message.VEHICLE_ENTERED, closestVehicle.model.name);
     }
 
     // Called when the |player| executes `/v health` or `/v [player] health`, which means they wish
@@ -353,7 +359,7 @@ class VehicleCommands {
 
     // Called when the |player| requests the vehicle layout to be reset.
     onVehicleResetCommand(player) {
-        this.manager_.streamer.respawnUnoccupiedVehicles();
+        this.manager_.respawnUnoccupiedVehicles();
 
         this.announce_().announceToAdministrators(
             Message.VEHICLE_ANNOUNCE_RESET, player.name, player.id);

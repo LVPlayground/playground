@@ -18,3 +18,19 @@ Vehicles that have no `respawnDelay` set will be considered _ephemeral vehicles_
 deleted from the server three minutes after their most recent use. Vehicles that are given a
 `respawnDelay` are considered _persistent vehicles_. They will respawn after the configured delay
 following most recent use, and be reverted back to their initial configuration.
+
+### Vehicle cache
+Imagine that there are 25 players in-game, each of which are evenly spread out over the map. Given
+our default limit of 1,000 vehicles, this means fourty unique vehicles can be created for each of
+them. Given a streaming radius of 300 units, this means that we can create 17,160 vehicles on the
+server without any being in range for multiple players.
+
+In practice, this will never happen: players are near each other, whether it be fighting in Las
+Venturas, or driving around in a cruise. This means that _less_ than 1,000 vehicles are required.
+Creating a vehicle from scratch is expensive, however, which is why we _cache_ them.
+
+Instead of deleting a vehicle straight away when it's out of range, it will be added to the vehicle
+cache. When it becomes in-range again, it'll be re-activated from the cache, rather than be created
+from scratch. When there are too many vehicles instead, the least recently used vehicle will be
+deleted from the cache.
+

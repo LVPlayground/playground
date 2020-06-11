@@ -38,6 +38,9 @@ export class VehicleRespawnManager {
         return this.settings_().getValue('vehicles/respawn_ephemeral_delay_sec');
     }
 
+    // Gets the number of vehicles currently stored in the respawn queue.
+    get size() { return this.vehicles_.size; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Adds the |streamableVehicle| to the respawn manager, indicating that it's being used and

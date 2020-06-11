@@ -18,6 +18,7 @@ export class VehicleSelectionManager {
     disposed_ = false;
     entities_ = null;
     events_ = null;
+    maxVisible_ = null;
     respawnManager_ = null;
     streamableVehicles_ = null;
     vehicles_ = null;
@@ -40,12 +41,19 @@ export class VehicleSelectionManager {
         // throughout the streamer as deemed appropriate.
         this.events_ = new VehicleEventListener(this, this.respawnManager_);
 
+        // Stores the maximum number of vehicles that can be created on the server at once.
+        this.maxVisible_ = settings().getValue('vehicles/streamer_max_visible');
+
         // Map of the StreamableVehicles that have live representations, keyed by the entity.
         this.streamableVehicles_ = new Map();
 
         // Map of the vehicles that exist on the server, keyed by StreamableVehicle, valued by the
         // Vehicle entity instance that was created for the vehicle.
         this.vehicles_ = new Map();
+
+        // Map of vehicles that have been cached, to reduce churn of vehicles that exist on the
+        // server, since there's not always a need for all thousand vehicles to exist.
+        this.vehicleCache_ = new Map();
     }
 
     // Gets the StreamableVehicle instance for the given |vehicle|.
@@ -86,7 +94,7 @@ export class VehicleSelectionManager {
             if (this.respawnManager_.has(streamableVehicle))
                 continue;  // the |streamableVehicle| is being kept alive by the respawn manager
 
-            this.deleteVehicle(streamableVehicle);
+            this.deleteVehicle(streamableVehicle, /* immediate= */ false);
         }
 
         for (const streamableVehicle of respawnables) {
@@ -99,19 +107,32 @@ export class VehicleSelectionManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Creates a Vehicle entity for the given |streamableVehicle| instance.
+    // Creates a Vehicle entity for the given |streamableVehicle| instance. It's possible that the
+    // |streamableVehicle| still exists as part of the vehicle cache, in which case it will recover.
     createVehicle(streamableVehicle) {
         if (this.vehicles_.has(streamableVehicle))
             throw new Error(`The given streamable vehicle is already live: ${streamableVehicle}`);
 
+        // Recover the |streamableVehicle| from the vehicle cache if it lives there.
+        if (this.vehicleCache_.has(streamableVehicle)) {
+            const vehicle = this.vehicleCache_.get(streamableVehicle);
+
+            this.vehicleCache_.delete(streamableVehicle);
+            this.vehicles_.set(streamableVehicle, vehicle);
+            return;
+        }
+
+        // Otherwise create the vehicle on the server through our ScopedEntities.
         const vehicle = this.entities_.createVehicle({
             modelId: streamableVehicle.modelId,
 
             position: streamableVehicle.position,
             rotation: streamableVehicle.rotation,
 
+            paintjob: streamableVehicle.paintjob,
             primaryColor: streamableVehicle.primaryColor,
             secondaryColor: streamableVehicle.secondaryColor,
+            numberPlate: streamableVehicle.numberPlate,
             siren: streamableVehicle.siren,
 
             respawnDelay: -1,  // we handle respawns manually
@@ -133,14 +154,15 @@ export class VehicleSelectionManager {
 
         // If this vehicle is ephemeral, delete it straight away.
         if (streamableVehicle.isEphemeral())
-            this.deleteVehicle(streamableVehicle);
+            this.deleteVehicle(streamableVehicle, /* immediate= */ true);
         else
             vehicle.respawn();
     }
 
-    // Deletes the Vehicle entity for the given |streamableVehicle| instance. If the vehicle is
-    // ephemeral, it will further be deleted from the VehicleRegistry as well.
-    deleteVehicle(streamableVehicle) {
+    // Indicates that the given |streamableVehicle| should be deleted. If the |immediate| flag is
+    // set, it will be deleted immediately, otherwise it might be added to the vehicle cache to
+    // minimize vehicle churn on the server.
+    deleteVehicle(streamableVehicle, immediate) {
         if (!this.vehicles_.has(streamableVehicle))
             throw new Error(`The given streamable vehicle is not live: ${streamableVehicle}`);
         
@@ -148,6 +170,37 @@ export class VehicleSelectionManager {
             throw new Error(`The streamable vehicle has been pinned by the respawn manager.`);
         
         const vehicle = this.vehicles_.get(streamableVehicle);
+
+        // If the |streamableVehicle| is eligible to be cached, move it to the vehicle cache instead
+        // of being deleted immediately. This reduces churn on the server.
+        if (streamableVehicle.isPersistent() && !immediate) {
+            const limit = this.maxVisible_ + this.respawnManager_.size;
+
+            // If the number of |created| vehicles is equal to or above the |limit|, we delete the
+            // oldest cached vehicle(s) to make space for the |streamableVehicle|. This uses the
+            // fact that entries in JavaScript's Map are stored in insertion order, thus LRU.
+            for (const cacheEntry of this.vehicleCache_) {
+                if (this.streamableVehicles_.size <= limit)
+                    break;
+
+                this.deleteVehicleInternal(cacheEntry[0], cacheEntry[1]);
+            }
+
+            // Now store the |streamableVehicle| in the Map if there's space, where it'll be set as
+            // the most recently used entry, and remove it from the map of streamed vehicles.
+            if (this.streamableVehicles_.size <= limit) {
+                this.vehicleCache_.set(streamableVehicle, vehicle);
+                this.vehicles_.delete(streamableVehicle);
+                return;
+            }
+        }
+
+        this.deleteVehicleInternal(streamableVehicle, vehicle);
+    }
+
+    // Deletes the given |streamableVehicle|, represented by the |vehicle| from all sources, which
+    // includes the vehicle cache. Lenient with vehicles that may've been deleted elsewhere.
+    deleteVehicleInternal(streamableVehicle, vehicle) {
         if (!vehicle.isConnected())
             console.warning('[streamer][exception] Vehicle has already been destroyed: ' + vehicle);
         else
@@ -159,7 +212,9 @@ export class VehicleSelectionManager {
         streamableVehicle.setLiveVehicle(null);
 
         this.streamableVehicles_.delete(vehicle);
+
         this.vehicles_.delete(streamableVehicle);
+        this.vehicleCache_.delete(streamableVehicle);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -179,8 +234,12 @@ export class VehicleSelectionManager {
         if (this.respawnManager_.has(streamableVehicle))
             this.respawnManager_.delete(streamableVehicle);
 
-        if (this.vehicles_.has(streamableVehicle))
-            this.deleteVehicle(streamableVehicle);
+        if (this.vehicles_.has(streamableVehicle)) {
+            this.deleteVehicle(streamableVehicle, /* immediate= */ true);
+        } else if (this.vehicleCache_.has(streamableVehicle)) {
+            this.deleteVehicleInternal(
+                streamableVehicle, this.vehicleCache_.get(streamableVehicle));
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

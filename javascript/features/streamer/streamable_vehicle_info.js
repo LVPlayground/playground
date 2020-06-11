@@ -42,7 +42,7 @@ export class StreamableVehicleInfo {
         this.paintjob = paintjob;
         this.primaryColor = primaryColor ?? random(128, 251);
         this.secondaryColor = secondaryColor ?? random(128, 251);
-        this.numberPlate = numberplate;
+        this.numberPlate = numberPlate;
         this.siren = siren ?? false;
 
         this.respawnDelay = respawnDelay;

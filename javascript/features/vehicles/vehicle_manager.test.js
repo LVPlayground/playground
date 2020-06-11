@@ -10,15 +10,6 @@ describe('VehicleManager', (it, beforeEach) => {
     // The position at which the test vehicle should be created.
     const kPosition = new Vector(6000, 6000, 6000);
 
-    // Settings required to create a Hydra with the VehicleManager.
-    const kHydra = {
-        modelId: 520 /* Hydra */,
-        position: kPosition,
-        rotation: 90,
-        interiorId: 0,
-        virtualWorld: 0
-    };
-
     beforeEach(async() => {
         const feature = server.featureManager.loadFeature('vehicles');
 
@@ -65,32 +56,51 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(newStreamer.sizeForTesting, originalStreamerSize);
     });
 
-    return;  // disabled!
-
     it('should automatically stream created vehicles in', assert => {
-        gunther.position = new Vector(0, 0, 0);
-        assert.isNull(manager.createVehicle({
-            modelId: 412 /* Infernus */,
-            position: new Vector(3000, 3000, 3000),
-            rotation: 180,
-            interiorId: 0,
-            virtualWorld: 0
-        }));
-
         gunther.position = kPosition;
-        const vehicle = manager.createVehicle(kHydra);
+        gunther.rotation = 127;
 
-        assert.isNotNull(vehicle);
+        const streamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        assert.isNotNull(streamableVehicle);
+        assert.isNotNull(streamableVehicle.live);
+
+        const vehicle = streamableVehicle.live;
         assert.isTrue(vehicle.isConnected());
 
         assert.equal(vehicle.modelId, 520 /* Hydra */);
-        assert.isNull(vehicle.numberPlate);
+        assert.equal(vehicle.numberPlate, gunther.name);
 
         assert.deepEqual(vehicle.position, kPosition);
-        assert.equal(vehicle.rotation, 90);
+        assert.equal(vehicle.rotation, 127);
         assert.equal(vehicle.interiorId, 0);
         assert.equal(vehicle.virtualWorld, 0);
     });
+
+    it('should limit ephemeral vehicles to a single one for players', assert => {
+        assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
+
+        const firstStreamableVehicle = manager.createVehicle(gunther, /* Infernus= */ 411);
+        assert.isNotNull(firstStreamableVehicle);
+
+        const firstVehicle = firstStreamableVehicle.live;
+
+        assert.isNotNull(firstVehicle);
+        assert.isTrue(firstVehicle.isConnected());
+        assert.equal(firstVehicle.numberPlate, gunther.name);
+
+        const secondStreamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        assert.isNotNull(secondStreamableVehicle);
+
+        const secondVehicle = secondStreamableVehicle.live;
+
+        assert.isNotNull(secondVehicle);
+        assert.isTrue(secondVehicle.isConnected());
+
+        // The Infernus should now have been destroyed.
+        assert.isFalse(firstVehicle.isConnected());
+    });
+
+    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     it('should be able to tell whether it manages a vehicle', assert => {
         const managedVehicle = manager.createVehicle(kHydra);
@@ -206,39 +216,5 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isFalse(manager.isManagedVehicle(vehicle));
 
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
-    });
-
-    it('should limit ephemeral vehicles to a single one for players', assert => {
-        assert.equal(manager.getVehicleLimitForPlayer(gunther), 1);
-
-        const firstVehicle = manager.createVehicle({
-            player: gunther,
-
-            modelId: 411 /* Infernus */,
-            position: gunther.position,
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
-
-        assert.isNotNull(firstVehicle);
-        assert.isTrue(firstVehicle.isConnected());
-        assert.equal(firstVehicle.numberPlate, gunther.name);
-
-        const secondVehicle = manager.createVehicle({
-            player: gunther,
-
-            modelId: 520 /* Hydra */,
-            position: gunther.position,
-            rotation: 90,
-            interiorId: gunther.interiorId,
-            virtualWorld: gunther.virtualWorld
-        });
-
-        assert.isNotNull(secondVehicle);
-        assert.isTrue(secondVehicle.isConnected());
-
-        // The Infernus should now have been destroyed.
-        assert.isFalse(firstVehicle.isConnected());
     });
 });

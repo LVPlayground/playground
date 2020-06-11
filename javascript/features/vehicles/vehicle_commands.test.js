@@ -29,23 +29,14 @@ describe('VehicleCommands', (it, beforeEach) => {
         await manager.loadVehicles();
     });
 
-    return;  // disabled!
-
     // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
     function createVehicleForPlayer(player, { modelId = 411 /* Infernus */, position = null } = {}) {
-        const vehicle = manager.createVehicle({
-            modelId: modelId,
-            position: position || player.position,
-            rotation: player.rotation,
-            interiorId: player.interiorId,
-            virtualWorld: player.virtualWorld
-        });
-
-        if (!vehicle)
+        const streamableVehicle = manager.createVehicle(player, modelId);
+        if (!streamableVehicle || !streamableVehicle.live)
             return false;
 
-        player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
-        return player.vehicle === vehicle;
+        player.enterVehicle(streamableVehicle.live, Vehicle.SEAT_DRIVER);
+        return true;
     }
 
     it('should enable the quick vehicle commands based on their requirements', async(assert) => {
@@ -277,6 +268,8 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNotNull(gunther.vehicle);
         assert.equal(gunther.vehicle.modelId, 544 /* Firetruck 2 */);
     });
+
+    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     it('should be able to delete the vehicle the admin is driving in', async(assert) => {
         // Only administrators can delete vehicles from the server.

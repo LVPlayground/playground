@@ -229,15 +229,11 @@ class VehicleCommands {
             return;
         }
 
-        const vehicle = this.manager_.createVehicle({
-            player: player,  // associates the vehicle with the |player|
-
-            modelId: vehicleModel.id,
-            position: player.position,
-            rotation: player.rotation,
-            interiorId: player.interiorId,
-            virtualWorld: player.virtualWorld
-        });
+        const streamableVehicle = this.manager_.createVehicle(player, vehicleModel.id);
+        if (!streamableVehicle) {
+            player.sendMessage(Message.VEHICLE_SPAWN_NOT_ALLOWED);
+            return;
+        }
 
         // Inform the player of their new vehicle having been created.
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
@@ -246,8 +242,8 @@ class VehicleCommands {
         this.abuse_().reportSpawnedVehicle(player);
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
-        if (vehicle && vehicle.isConnected())
-            player.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
+        if (streamableVehicle.live)
+            player.enterVehicle(streamableVehicle.live, Vehicle.SEAT_DRIVER);
     }
 
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish

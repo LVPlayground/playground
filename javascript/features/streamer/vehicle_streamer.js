@@ -69,10 +69,8 @@ export class VehicleStreamer {
         if (results && Array.isArray(results)) {
             for (const entityId of results) {
                 const vehicle = this.vehicles_.get(entityId);
-                if (!vehicle) {
-                    console.log('vehicle not found');
+                if (!vehicle)
                     continue;  // presumed race condition
-                }
                 
                 vehicles.add(vehicle);
             }

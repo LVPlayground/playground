@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import MockVehicleDatabase from 'features/vehicles/test/mock_vehicle_database.js';
+import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import VehicleDatabase from 'features/vehicles/vehicle_database.js';
 
 // The vehicle manager is responsible for all vehicles created as part of the Vehicles feature. This
@@ -11,6 +12,7 @@ class VehicleManager {
     database_ = null;
     streamer_ = null;
 
+    playerVehicles_ = null;
     vehicles_ = null;
 
     constructor(settings, streamer) {
@@ -22,6 +24,9 @@ class VehicleManager {
         this.streamer_.addReloadObserver(
             this, VehicleManager.prototype.onStreamerReload.bind(this));
         
+        // Weak map from Player instance to Set of StreamableVehicle instances.
+        this.playerVehicles_ = new WeakMap();
+
         // Map from PersistentVehicleInfo to StreamableVehicle instances.
         this.vehicles_ = new Map();
 
@@ -64,7 +69,61 @@ class VehicleManager {
     // Creates a new ephemeral vehicle for the |player|. Players are only allowed a single vehicle
     // of their own, but administrators are allowed multiple when the setting allows for this.
     createVehicle(player, modelId) {
+        if (!this.playerVehicles_.has(player))
+            this.playerVehicles_.set(player, new Set());
 
+        let playerVehicles = this.playerVehicles_.get(player);
+        let playerVehicleLimit = this.getVehicleLimitForPlayer(player);
+
+        // If the |player| is not allowed to spawn any vehicles at all, bail out immediately.
+        if (!playerVehicleLimit)
+            return null;
+
+        // First prune all entries from the |playerVehicles| that aren't live anymore.
+        for (const streamableVehicle of playerVehicles) {
+            if (!streamableVehicle.live)
+                playerVehicles.delete(streamableVehicle);
+        }
+
+        // Delete vehicles from the |playerVehicles| until the player is no longer above the limit,
+        // while ignoring vehicles that are currently in use by others.
+        for (const streamableVehicle of playerVehicles) {
+            if (playerVehicles.size < playerVehicleLimit)
+                break;  // no more vehicles have to be removed
+
+            if (streamableVehicle.live.occupantCount)
+                continue;  // the vehicle is being used by other players.
+
+            this.streamer_().deleteVehicle(streamableVehicle);
+
+            playerVehicles.delete(streamableVehicle);
+        }
+
+        // Now create the new vehicle, and spawn that in the world immediately.
+        const streamableVehicleInfo = new StreamableVehicleInfo({
+            modelId,
+
+            position: player.position,
+            rotation: player.rotation,
+
+            numberPlate: player.name
+        });
+
+        const streamableVehicle =
+            this.streamer_().createVehicle(streamableVehicleInfo, /* immediate= */ true);
+
+        playerVehicles.add(streamableVehicle);
+        return streamableVehicle;
+    }
+
+    // Determines the maximum number of vehicles that the |player| is allowed to create on the
+    // server. Administrators have a business reason to be able to create multiple, e.g. when they
+    // host an event or are working on the server's vehicle layout.
+    getVehicleLimitForPlayer(player) {
+        if (player.isAdministrator())
+            return this.settings_().getValue('vehicles/vehicle_limit_administrator');
+        
+        return this.settings_().getValue('vehicles/vehicle_limit_player');
     }
 
     // ---------------------------------------------------------------------------------------------

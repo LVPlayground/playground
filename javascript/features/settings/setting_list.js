@@ -118,4 +118,6 @@ export default [
     new Setting('vehicles', 'streamer_interval_ms', Setting.TYPE_NUMBER, 1000, 'Interval at which the vehicle streamer runs, in milliseconds.'),
     new Setting('vehicles', 'streamer_max_distance', Setting.TYPE_NUMBER, 300, 'Maximum streaming distance before creating vehicles for a player.'),
     new Setting('vehicles', 'streamer_max_visible', Setting.TYPE_NUMBER, 1000, 'How many vehicles should at most be visible on the server?'),
+    new Setting('vehicles', 'vehicle_limit_administrator', Setting.TYPE_NUMBER, 5, 'Maximum number of vehicles administrators are allowed to create.'),
+    new Setting('vehicles', 'vehicle_limit_player', Setting.TYPE_NUMBER, 1, 'Maximum number of vehicles players are allowed to create.'),
 ];

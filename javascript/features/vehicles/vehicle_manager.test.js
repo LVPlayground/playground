@@ -100,10 +100,9 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isFalse(firstVehicle.isConnected());
     });
 
-    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
     it('should be able to tell whether it manages a vehicle', assert => {
-        const managedVehicle = manager.createVehicle(kHydra);
+        const streamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        const managedVehicle = streamableVehicle.live;
 
         assert.isTrue(managedVehicle.isConnected());
         assert.isTrue(manager.isManagedVehicle(managedVehicle));
@@ -124,8 +123,27 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.isTrue(unmanagedVehicle.isConnected());
     });
 
+    it('should be able to delete vehicles from the game', async(assert) => {
+        const streamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        const vehicle = streamableVehicle.live;
+
+        assert.isTrue(vehicle.isConnected());
+        assert.isTrue(manager.isManagedVehicle(vehicle));
+
+        const originalVehicleCount = server.vehicleManager.count;
+
+        await manager.deleteVehicle(vehicle);
+
+        assert.isFalse(vehicle.isConnected());
+        assert.isFalse(manager.isManagedVehicle(vehicle));
+
+        assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
+    });
+
+    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
     it('should be able to store new vehicles in the database', async(assert) => {
-        const managedVehicle = manager.createVehicle(kHydra);
+        const managedVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
         assert.isNotNull(managedVehicle);
         assert.isTrue(managedVehicle.isConnected());
 
@@ -200,21 +218,5 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(russell.vehicleSeat, Vehicle.SEAT_PASSENGER);
 
         assert.isNull(lucy.vehicle);
-    });
-
-    it('should be able to delete vehicles from the game', async(assert) => {
-        const vehicle = manager.createVehicle(kHydra);
-
-        assert.isTrue(vehicle.isConnected());
-        assert.isTrue(manager.isManagedVehicle(vehicle));
-
-        const originalVehicleCount = server.vehicleManager.count;
-
-        await manager.deleteVehicle(vehicle);
-
-        assert.isFalse(vehicle.isConnected());
-        assert.isFalse(manager.isManagedVehicle(vehicle));
-
-        assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
     });
 });

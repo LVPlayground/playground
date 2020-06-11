@@ -269,8 +269,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.modelId, 544 /* Firetruck 2 */);
     });
 
-    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
     it('should be able to delete the vehicle the admin is driving in', async(assert) => {
         // Only administrators can delete vehicles from the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -387,6 +385,8 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isNotNull(gunther.vehicle);
     });
+
+    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     it('should be able to delete persistent vehicles', async(assert) => {
         // Only administrators can delete vehicles from the server.

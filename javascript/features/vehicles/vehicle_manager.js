@@ -9,6 +9,10 @@ import VehicleDatabase from 'features/vehicles/vehicle_database.js';
 // The vehicle manager is responsible for all vehicles created as part of the Vehicles feature. This
 // is not to be confused with the global VehicleManager for the entire JavaScript gamemode.
 class VehicleManager {
+    // Types of vehicles managed by the VehicleManager.
+    static kTypePersistent = 0;
+    static kTypeEphemeral = 1;
+
     database_ = null;
     streamer_ = null;
 
@@ -26,6 +30,9 @@ class VehicleManager {
         
         // Weak map from Player instance to Set of StreamableVehicle instances.
         this.playerVehicles_ = new WeakMap();
+
+        // Set of the ephemeral vehicles created on the server. Unattributed.
+        this.ephemeralVehicles_ = new Set();
 
         // Map from PersistentVehicleInfo to StreamableVehicle instances.
         this.vehicles_ = new Map();
@@ -112,8 +119,39 @@ class VehicleManager {
         const streamableVehicle =
             this.streamer_().createVehicle(streamableVehicleInfo, /* immediate= */ true);
 
+        // (1) Store the |streamableVehicle| in storage specific to the player.
         playerVehicles.add(streamableVehicle);
+
+        // (2) Store the |streamableVehicle| in storage global to the server.
+        this.ephemeralVehicles_.add(streamableVehicle);
+        this.ephemeralVehiclesPruneList();
+
         return streamableVehicle;
+    }
+
+    // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
+    // will be asynchronously deleted from the database if it's persistent.
+    async deleteVehicle(vehicle) {
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            return;  // the |vehicle| is not managed by the Vehicles feature
+        
+        const streamableVehicle = result.streamableVehicle;
+
+        // Delete the |streamableVehicle| from the manager.
+        this.streamer_().deleteVehicle(streamableVehicle);
+
+        // Bail out if |vehicle| was ephemeral, it's been invalidated and will be cleaned up later.
+        if (result.type === VehicleManager.kTypeEphemeral)
+            return;
+
+        const persistentVehicleInfo = result.persistentVehicleInfo;
+
+        // (1) Delete the |persistentVehicleInfo| from the internal status.
+        this.vehicles_.delete(persistentVehicleInfo);
+
+        // (2) Delete the |persistentVehicleInfo| from the database.
+        await this.database_.deleteVehicle(persistentVehicleInfo.vehicleId);
     }
 
     // Determines the maximum number of vehicles that the |player| is allowed to create on the
@@ -128,12 +166,49 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Returns whether the |vehicle| is one managed by the VehicleManager. This will only return
-    // TRUE when the vehicle is stored by the streamer, and managed by us.
-    isManagedVehicle(vehicle) { return false; }
+    // Finds the StreamableVehicle instance for the given |vehicle|, which must be a Vehicle object,
+    // together with whether this is a persistent or an ephemeral vehicle. This operation is O(n+k)
+    // on the number of persistent and ephemeral vehicles on the server, but is really infrequent
+    // and does not need to leave the JavaScript context.
+    findStreamableVehicle(vehicle) {
+        for (const [ persistentVehicleInfo, streamableVehicle ] of this.vehicles_) {
+            if (streamableVehicle.live !== vehicle)
+                continue;
+
+            return {
+                persistentVehicleInfo,
+                streamableVehicle,
+                type: VehicleManager.kTypePersistent
+            };
+        }
+
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (streamableVehicle.live === vehicle)
+                return { streamableVehicle, type: VehicleManager.kTypeEphemeral };
+        }
+
+        return null;
+    }
+
+    // Returns whether the |vehicle| is one managed by the VehicleManager.
+    isManagedVehicle(vehicle) { return this.findStreamableVehicle(vehicle) !== null; }
 
     // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.
-    isPersistentVehicle(vehicle) { return false; }
+    isPersistentVehicle(vehicle) {
+        const result = this.findStreamableVehicle(vehicle);
+        return result && result.type === VehicleManager.kTypePersistent;
+    }
+
+    // Prunes the set of ephemeral vehicles that exists on the server, by removing all the entries
+    // which do not map to live vehicles anymore. They will no longer be considered.
+    ephemeralVehiclesPruneList() {
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (!streamableVehicle.live)
+                this.ephemeralVehicles_.delete(streamableVehicle);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
     // vehicle will be reset prior to the actual respawn.
@@ -147,10 +222,6 @@ class VehicleManager {
     async storeVehicle(vehicle) {
         // Take occupants out of the vehicle, re-create it, put them back in.
     }
-
-    // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
-    // will be asynchronously deleted from the database if it's persistent.
-    async deleteVehicle(vehicle) {}
 
     // ---------------------------------------------------------------------------------------------
 
@@ -167,8 +238,14 @@ class VehicleManager {
         for (const streamableVehicle of this.vehicles_.values())
             this.streamer_().deleteVehicle(streamableVehicle);
         
+        for (const streamableVehicle of this.ephemeralVehicles_)
+            this.streamer_().deleteVehicle(streamableVehicle);
+
         this.vehicles_.clear();
         this.vehicles_ = null;
+
+        this.ephemeralVehicles_.clear();
+        this.ephemeralVehicles_ = null;
 
         this.streamer_.removeReloadObserver(this);
         this.streamer_ = null;

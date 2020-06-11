@@ -213,10 +213,14 @@ export class VehicleSelectionManager {
     // Deletes the given |streamableVehicle|, represented by the |vehicle| from all sources, which
     // includes the vehicle cache. Lenient with vehicles that may've been deleted elsewhere.
     deleteVehicleInternal(streamableVehicle, vehicle) {
-        if (!vehicle.isConnected())
+        if (!vehicle.isConnected()) {
             console.warning('[streamer][exception] Vehicle has already been destroyed: ' + vehicle);
-        else
+        } else {
+            for (const player of vehicle.getOccupants())
+                player.leaveVehicle();
+
             vehicle.dispose();
+        }
 
         if (streamableVehicle.isEphemeral())
             this.registry_.deleteVehicle(streamableVehicle);

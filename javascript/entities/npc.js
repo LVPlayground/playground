@@ -151,6 +151,10 @@ class Npc {
         this.manager_.didDisposeNpc(this);
         this.events_ = null;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object Npc(${this.name_}, ${this.state_})]`; }
 }
 
 // Expose the Npc object globally since it is an entity.

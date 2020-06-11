@@ -31,6 +31,8 @@ const testRunner = new TestRunner();
 testRunner.run('.*\.test\.js').then(time => {
     console.log('Passed all ' + testRunner.testCount + ' tests in ' + time + 'ms!');
 
+    gc();  // force a garbage collection cycle
+    
     notifyReady();  // allow the SA-MP server to start accepting connections
 
     server = new Server();

@@ -104,5 +104,3 @@ export class MockVehicle extends Vehicle {
         });
     }
 }
-
-export default MockVehicle;

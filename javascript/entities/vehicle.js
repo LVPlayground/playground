@@ -320,6 +320,10 @@ export class Vehicle extends Supplementable {
 
         this.id_ = Vehicle.kInvalidId;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object Vehicle(${this.#id_}, ${this.#modelId_})]`; }
 }
 
 // Expose the Vehicle object globally since it will be commonly used.

@@ -131,6 +131,10 @@ export class TextLabel {
         this.#manager_.didDisposeTextLabel(this);
         this.#manager_ = null;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object TextLabel(${this.#id_}, ${this.#text_})]`; }
 }
 
 // Expose the TextLabel object globally since it is an entity.

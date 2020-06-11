@@ -303,4 +303,8 @@ export class Area {
 
         this.#id_ = Area.kInvalidId;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object Area(${this.#id_}, ${this.#type_})]`; }
 }

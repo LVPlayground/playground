@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
+import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
     let abuse = null;
@@ -10,6 +11,7 @@ describe('VehicleCommands', (it, beforeEach) => {
     let gunther = null;
     let playground = null;
     let manager = null;
+    let streamer = null;
 
     beforeEach(async(assert) => {
         const feature = server.featureManager.loadFeature('vehicles');
@@ -19,6 +21,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         playground = server.featureManager.loadFeature('playground');
         manager = feature.manager_;
+        streamer = server.featureManager.loadFeature('streamer');
 
         // Identify |gunther| to their account, and allow them to use the `/v` command.
         await gunther.identify({ userId: 42 });
@@ -484,18 +487,35 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isTrue(await gunther.issueCommand('/v help'));
             assert.equal(gunther.messages.length, 3);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-            assert.isFalse(gunther.messages[1].includes('optimise'));
 
             gunther.clearMessages();
         }
+    });
 
-        gunther.level = Player.LEVEL_MANAGEMENT;
-        {
-            assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 3);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-            assert.isTrue(gunther.messages[1].includes('optimise'));
+    it('should not save vehicles when the area is too busy', async(assert) => {
+        // Only administrators can save vehicles in the database.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        // Create a hundred other vehicles in the area.
+        for (let i = 0; i < 100; ++i) {
+            streamer.createVehicle(new StreamableVehicleInfo({
+                modelId: (i % 2 == 0 ? 411 /* Infernus */ : 520 /* Hydra */),
+
+                position: gunther.vehicle.position,
+                rotation: 90,
+            }));
         }
+
+        // Make sure that trying to save Gunther's current vehicle fails.
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0], Message.format(Message.VEHICLE_SAVE_TOO_BUSY, 101, 90, 2, 50));
     });
 
     return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -686,45 +706,5 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isNull(gunther.vehicle);
         assert.isFalse(vehicle.isConnected());
-    });
-
-    it('should enable Management to optimise the vehicle streamer', async(assert) => {
-        // Only Management members are allowed to optimise the vehicle streamer.
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        let optimised = false;
-
-        // Override the optimise() call in the streamer to verify that it actually got called.
-        manager.streamer.optimise = () => optimised = true;
-
-        assert.isTrue(await gunther.issueCommand('/v optimise'));
-        assert.isTrue(optimised);
-    });
-
-    it('should not save vehicles when the area is too busy', async(assert) => {
-        // Only administrators can save vehicles in the database.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-
-        assert.isNotNull(gunther.vehicle);
-        assert.isTrue(gunther.vehicle.isConnected());
-
-        // Create a hundred other vehicles in the area.
-        for (let i = 0; i < 100; ++i) {
-            manager.createVehicle({
-                modelId: (i % 2 == 0 ? 411 /* Infernus */ : 520 /* Hydra */),
-                position: gunther.vehicle.position,
-                rotation: 90,
-                interiorId: gunther.interiorId,
-                virtualWorld: gunther.virtualWorld
-            });
-        }
-
-        // Make sure that trying to save Gunther's current vehicle fails.
-        assert.isTrue(await gunther.issueCommand('/v save'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0], Message.format(Message.VEHICLE_SAVE_TOO_BUSY, 101, 90, 2, 50));
     });
 });

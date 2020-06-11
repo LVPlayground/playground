@@ -59,7 +59,7 @@ class VehicleCommands {
         }
 
         // Command: /v [vehicle]?
-        //          /v [enter/help/optimise/reset]
+        //          /v [enter/help/reset]
         //          /v [player]? [delete/health/respawn/save]
         server.commandManager.buildCommand('v')
             .restrict(player => this.playground_().canAccessCommand(player, 'v'))
@@ -70,9 +70,6 @@ class VehicleCommands {
                 .build(VehicleCommands.prototype.onVehicleEnterCommand.bind(this))
             .sub('help')
                 .build(VehicleCommands.prototype.onVehicleHelpCommand.bind(this))
-            .sub('optimise')
-                .restrict(Player.LEVEL_MANAGEMENT)
-                .build(VehicleCommands.prototype.onVehicleOptimiseCommand.bind(this))
             .sub('reset')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
@@ -350,51 +347,8 @@ class VehicleCommands {
         if (!player.isTemporaryAdministrator())
             vehicleOptions.push('delete', 'save');
 
-        if (player.isManagement())
-            globalOptions.push('optimise');
-
         player.sendMessage(Message.VEHICLE_HELP_GLOBAL, globalOptions.sort().join('/'));
         player.sendMessage(Message.VEHICLE_HELP_VEHICLE, vehicleOptions.sort().join('/'));
-    }
-
-    // Called when a Management member executes the `/v optimise` command in an effort to optimise
-    // the vehicle streamer. It will make an announcement to administrators about the game.
-    async onVehicleOptimiseCommand(player) {
-        let streamBeforeOptimiseTime = null;
-        let streamAfterOptimiseTime = null;
-        let optimiseTime = null;
-
-        const streamer = this.manager_.streamer;
-
-        // (1) Determine the duration of a stream cycle prior to optimisation.
-        {
-            const beginTime = highResolutionTime();
-            await streamer.stream();
-
-            streamBeforeOptimiseTime = highResolutionTime() - beginTime;
-        }
-
-        // (2) Optimise the streamer.
-        {
-            const beginTime = highResolutionTime();
-            this.manager_.streamer.optimise();
-
-            optimiseTime = highResolutionTime() - beginTime;
-        }
-
-        // (3) Determine the duration of a stream cycle after optimisation.
-        {
-            const beginTime = highResolutionTime();
-            await streamer.stream();
-
-            streamAfterOptimiseTime = highResolutionTime() - beginTime;
-        }
-
-        this.announce_().announceToAdministrators(
-            Message.VEHICLE_ANNOUNCE_OPTIMISED, player.name, player.id, streamBeforeOptimiseTime,
-            streamAfterOptimiseTime, optimiseTime);
-
-        player.sendMessage(Message.VEHICLE_OPTIMISED);
     }
 
     // Called when the |player| requests the vehicle layout to be reset.

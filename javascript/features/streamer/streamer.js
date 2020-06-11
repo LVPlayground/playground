@@ -33,7 +33,7 @@ export default class Streamer extends Feature {
                                          : new VehicleStreamer(settings);
 
         // Keeps track of which streamable vehicles have been created on the server.
-        this.registry_ = new VehicleRegistry(this.streamer_);
+        this.registry_ = new VehicleRegistry(settings, this.streamer_);
 
         // Responsible for taking information from the vehicle streamer, and ensuring that those
         // vehicles are created on the server. The meaty bit of our streamer.
@@ -82,12 +82,7 @@ export default class Streamer extends Feature {
 
     // Queries the streaming radius around the given |position| to understand the number of vehicles
     // and vehicle models that exist in that area.
-    query(position) {
-        return {
-            models: 0,
-            vehicles: 0,
-        };
-    }
+    query(position) { return this.registry_.query(position); }
 
     // Gets statistics about the vehicle streamer, to understand how it's performing and what's
     // been created on the server. Useful to understand whether the streamer is working well.

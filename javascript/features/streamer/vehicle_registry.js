@@ -7,10 +7,12 @@ import { StreamableVehicle } from 'features/streamer/streamable_vehicle.js';
 // The registry is responsible for keeping track of which vehicles exist on the server. Vehicles can
 // be created using StreamableVehicleInfo, and will be represented by StreamableVehicle instances.
 export class VehicleRegistry {
+    settings_ = null;
     streamer_ = null;
     vehicles_ = null;
 
-    constructor(streamer) {
+    constructor(settings, streamer) {
+        this.settings_ = settings;
         this.streamer_ = streamer;
         this.vehicles_ = new Set();
     }
@@ -34,6 +36,30 @@ export class VehicleRegistry {
     deleteVehicle(vehicle) {
         this.streamer_.delete(vehicle);
         this.vehicles_.delete(vehicle);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Queries the streaming radius around the given |position| to understand the number of vehicles
+    // and vehicle models that exist in that area.
+    query(position) {
+        const maxDistance = this.settings_().getValue('vehicles/streamer_max_distance');
+
+        const vehicles = new Set();
+        const models = new Set();
+
+        for (const streamableVehicle of this.vehicles_) {
+            if (streamableVehicle.position.distanceTo2D(position) > maxDistance)
+                continue;
+            
+            vehicles.add(streamableVehicle);
+            models.add(streamableVehicle.modelId);
+        }
+
+        return {
+            vehicles: vehicles.size,
+            models: models.size,
+        };
     }
 
     // ---------------------------------------------------------------------------------------------

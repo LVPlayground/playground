@@ -39,6 +39,9 @@ export default class HouseVehicleController {
 
             position: parkingLot.position,
             rotation: parkingLot.rotation,
+
+            // Give the house's vehicle a number plate named after the owner when known.
+            numberPlate: location.settings?.ownerName ?? null,
         });
 
         const streamableVehicle = this.streamer.createVehicle(streamableVehicleInfo);

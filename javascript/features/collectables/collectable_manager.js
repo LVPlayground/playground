@@ -22,7 +22,7 @@ export class CollectableManager {
     delegates_ = null;
     notifications_ = new WeakMap();
 
-    constructor(collectables, settings) {
+    constructor(collectables, nuwani, settings) {
         this.collectables_ = collectables;
         this.settings_ = settings;
         this.settings_.addReloadObserver(
@@ -39,7 +39,7 @@ export class CollectableManager {
         this.delegates_ = new Map([
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
-            [ CollectableDatabase.kAchievement, new Achievements(collectables, this) ],
+            [ CollectableDatabase.kAchievement, new Achievements(collectables, this, nuwani) ],
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);

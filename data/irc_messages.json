@@ -32,6 +32,8 @@
     "notice-report": "<prefix:%><color:2>*** <color:7>Report from %s (Id:%d) about %s (Id:%d):<color> %s",
     "notice-say": "<color:10>*** Message from %s: %s",
 
+    "achievement": "<color:12>*** %s (Id:%d) has earned the achievement %s. Congratulations!",
+
     "status": "<color:2>[%d] <color:7>%s %s",
 
     "report": "<target:#LVP.Crew><color:7>Report from <color:5>%s <color:7>(Id:%d) about <color:5>%s <color:7>(Id:%d):<color> %s",

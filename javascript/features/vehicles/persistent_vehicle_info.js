@@ -14,13 +14,15 @@ export class PersistentVehicleInfo {
     position = null;
     rotation = null;
 
+    paintjob = null;
     primaryColor = null;
     secondaryColor = null;
+    numberPlate = null;
 
     // ---------------------------------------------------------------------------------------------
 
-    constructor({ vehicleId, modelId, position, rotation, primaryColor, secondaryColor } = {},
-                init = {}) {
+    constructor({ vehicleId, modelId, position, rotation, paintjob, primaryColor,
+                  secondaryColor, numberPlate } = {}, init = {}) {
         this.vehicleId = init.vehicleId ?? vehicleId;
         
         this.modelId = init.modelId ?? modelId;
@@ -28,8 +30,10 @@ export class PersistentVehicleInfo {
         this.position = init.position ?? position;
         this.rotation = init.rotation ?? rotation;
 
+        this.paintjob = init.paintjob ?? paintjob;
         this.primaryColor = init.primaryColor ?? primaryColor;
         this.secondaryColor = init.secondaryColor ?? secondaryColor;
+        this.numberPlate = init.numberPlate ?? numberPlate;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -43,8 +47,10 @@ export class PersistentVehicleInfo {
             position: this.position,
             rotation: this.rotation,
 
+            paintjob: this.paintjob,
             primaryColor: this.primaryColor,
             secondaryColor: this.secondaryColor,
+            numberPlate: this.numberPlate,
 
             respawnDelay,
         });

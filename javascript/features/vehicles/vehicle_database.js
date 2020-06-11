@@ -13,8 +13,10 @@ const LOAD_VEHICLES_QUERY = `
         vehicles.position_y,
         vehicles.position_z,
         vehicles.rotation,
+        vehicles.paintjob,
         vehicles.primary_color,
-        vehicles.secondary_color
+        vehicles.secondary_color,
+        vehicles.number_plate
     FROM
         vehicles
     WHERE
@@ -83,8 +85,10 @@ class VehicleDatabase {
                 position: new Vector(info.position_x, info.position_y, info.position_z),
                 rotation: info.rotation,
 
+                paintjob: info.paintjob,
                 primaryColor: info.primary_color,
-                secondaryColor: info.secondary_color
+                secondaryColor: info.secondary_color,
+                numberPlate: info.number_plate,
             });
 
             vehicles.push(vehicleInfo);

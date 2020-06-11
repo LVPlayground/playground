@@ -22,8 +22,7 @@ export default class SpawnWeapons extends PlayerCommand {
 
     buildAdmin(commandBuilder) {
         commandBuilder
-            .parameters([{ name: 'subject', type: CommandBuilder.PLAYER_PARAMETER, optional: false },
-            { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: false },
+            .parameters([{ name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: false },
             { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER, optional: false }])
             .build(SpawnWeapons.prototype.giveSpawnWeapon.bind(this));
     }

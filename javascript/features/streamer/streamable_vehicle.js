@@ -30,8 +30,10 @@ export class StreamableVehicle {
     get position() { return this.info_.position; }
     get rotation() { return this.info_.rotation; }
     
+    get paintjob() { return this.info_.paintjob; }
     get primaryColor() { return this.info_.primaryColor; }
     get secondaryColor() { return this.info_.secondaryColor; }
+    get numberPlate() { return this.info_.numberPlate; }
     get siren() { return this.info_.siren; }
 
     get respawnDelay() { return this.info_.respawnDelay; }

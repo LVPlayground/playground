@@ -14,14 +14,17 @@ export class StreamableVehicleInfo {
     position = null;
     rotation = null;
 
+    paintjob = null;
     primaryColor = null;
     secondaryColor = null;
+    numberPlate = null;
     siren = null;
 
     respawnDelay = null;
 
-    constructor({ modelId = null, position = null, rotation = null, primaryColor = null,
-                  secondaryColor = null, siren = null, respawnDelay = null } = {}) {
+    constructor({ modelId = null, position = null, rotation = null, paintjob = null,
+                  primaryColor = null, secondaryColor = null, numberPlate = null, siren = null,
+                  respawnDelay = null } = {}) {
         if (typeof modelId !== 'number' || modelId < 400 || modelId > 611)
             throw new Error(`Invalid vehicle model Id given: ${modelId}`);
         
@@ -36,8 +39,10 @@ export class StreamableVehicleInfo {
         this.position = position;
         this.rotation = rotation;
 
+        this.paintjob = paintjob;
         this.primaryColor = primaryColor ?? random(128, 251);
         this.secondaryColor = secondaryColor ?? random(128, 251);
+        this.numberPlate = numberplate;
         this.siren = siren ?? false;
 
         this.respawnDelay = respawnDelay;

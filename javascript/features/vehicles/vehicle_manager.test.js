@@ -140,16 +140,18 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(server.vehicleManager.count, originalVehicleCount - 1);
     });
 
-    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
     it('should be able to store new vehicles in the database', async(assert) => {
-        const managedVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        const managedStreamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        const managedVehicle = managedStreamableVehicle.live;
+
         assert.isNotNull(managedVehicle);
         assert.isTrue(managedVehicle.isConnected());
 
         assert.isFalse(manager.isPersistentVehicle(managedVehicle));
 
-        const updatedVehicle = await manager.storeVehicle(managedVehicle);
+        const updatedStreamableVehicle = await manager.storeVehicle(managedVehicle);
+        const updatedVehicle = updatedStreamableVehicle.live;
+
         assert.isNotNull(updatedVehicle);
 
         assert.isFalse(managedVehicle.isConnected());
@@ -160,26 +162,27 @@ describe('VehicleManager', (it, beforeEach) => {
 
     it('should be able to update existing vehicles in the database', async(assert) => {
         gunther.position = new Vector(500, 1000, 1500);
-        await vehicleStreamer.stream();
+        
+        await streamer.streamForTesting([ gunther ]);
 
-        assert.equal(manager.count, 1);
+        assert.equal(manager.vehicles_.size, 1);
 
-        const managedDatabaseVehicle = [...manager.vehicles][0];
-        assert.isTrue(managedDatabaseVehicle.isPersistent());
+        const managedStreamableVehicle = [ ...manager.vehicles_.values() ][0];
+        const managedVehicle = managedStreamableVehicle.live;
 
-        const managedVehicle = manager.streamer.getLiveVehicle(managedDatabaseVehicle);
         assert.isNotNull(managedVehicle);
         assert.isTrue(managedVehicle.isConnected());
 
-        const updatedVehicle = await manager.storeVehicle(managedVehicle);
+        const updatedStreamableVehicle = await manager.storeVehicle(managedVehicle);
+        const updatedVehicle = updatedStreamableVehicle.live;
+
         assert.isNotNull(updatedVehicle);
 
-        assert.equal(manager.count, 1);
+        assert.equal(manager.vehicles_.size, 1);
 
-        const updatedDatabaseVehicle = [...manager.vehicles][0];
-        assert.notEqual(updatedDatabaseVehicle, managedDatabaseVehicle);
-        assert.equal(updatedDatabaseVehicle.databaseId, managedDatabaseVehicle.databaseId);
-        assert.isTrue(updatedDatabaseVehicle.isPersistent());
+        const updatedManagedStreamableVehicle = [ ...manager.vehicles_.values() ][0];
+
+        assert.notEqual(updatedManagedStreamableVehicle, managedStreamableVehicle);
 
         assert.isFalse(managedVehicle.isConnected());
         assert.isTrue(updatedVehicle.isConnected());
@@ -189,18 +192,22 @@ describe('VehicleManager', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy = server.playerManager.getById(2 /* Lucy */);
 
-        const vehicle = manager.createVehicle(kHydra);
+        const streamableVehicle = manager.createVehicle(gunther, /* Hydra= */ 520);
+        const vehicle = streamableVehicle.live;
+
         assert.isTrue(vehicle.isConnected());
 
-        gunther.enterVehicle(vehicle, Vehicle.SEAT_DRIVER);
-        russell.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER);
-        lucy.enterVehicle(vehicle, Vehicle.SEAT_PASSENGER + 2 /* 3rd passenger */);
+        gunther.enterVehicle(vehicle, Vehicle.kSeatDriver);
+        russell.enterVehicle(vehicle, Vehicle.kSeatPassenger);
+        lucy.enterVehicle(vehicle, Vehicle.kSeatPassengerRearLeft);
 
         assert.equal(gunther.vehicle, vehicle);
         assert.equal(russell.vehicle, vehicle);
         assert.equal(lucy.vehicle, vehicle);
 
-        const updatedVehicle = await manager.storeVehicle(vehicle);
+        const updatedStreamableVehicle = await manager.storeVehicle(vehicle);
+        const updatedVehicle = updatedStreamableVehicle.live;
+
         assert.isNotNull(updatedVehicle);
 
         assert.isNull(gunther.vehicle);
@@ -212,10 +219,10 @@ describe('VehicleManager', (it, beforeEach) => {
         await server.clock.advance(500);  // half a second
 
         assert.equal(gunther.vehicle, updatedVehicle);
-        assert.equal(gunther.vehicleSeat, Vehicle.SEAT_DRIVER);
+        assert.equal(gunther.vehicleSeat, Vehicle.kSeatDriver);
 
         assert.equal(russell.vehicle, updatedVehicle);
-        assert.equal(russell.vehicleSeat, Vehicle.SEAT_PASSENGER);
+        assert.equal(russell.vehicleSeat, Vehicle.kSeatPassenger);
 
         assert.isNull(lucy.vehicle);
     });

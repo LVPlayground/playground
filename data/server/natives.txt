@@ -32,9 +32,6 @@ GetPlayerTeleportStatus
 # native ReportPlayerTeleport(playerId, timeLimited);
 ReportPlayerTeleport
 
-# native IsPersistentVehicle(vehicleId);
-IsPersistentVehicle
-
 # native IsCommunicationMuted();
 IsCommunicationMuted
 

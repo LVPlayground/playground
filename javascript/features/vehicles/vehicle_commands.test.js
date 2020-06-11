@@ -386,8 +386,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.isNotNull(gunther.vehicle);
     });
 
-    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
     it('should be able to delete persistent vehicles', async(assert) => {
         // Only administrators can delete vehicles from the server.
         gunther.level = Player.LEVEL_ADMINISTRATOR;
@@ -410,6 +408,97 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isFalse(oldVehicle.isConnected());
     });
+
+    it('should be able to save vehicles to the database', async(assert) => {
+        // Only administrators can save vehicles in the database.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
+        assert.isFalse(manager.isPersistentVehicle(gunther.vehicle));
+
+        const oldVehicle = gunther.vehicle;
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1], Message.format(Message.VEHICLE_SAVED, 'Infernus', 'saved'));
+
+        await server.clock.advance(500);  // to re-enter the new vehicle
+
+        assert.isNotNull(gunther.vehicle);
+        assert.isTrue(gunther.vehicle.isConnected());
+
+        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
+        assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
+
+        assert.notStrictEqual(gunther.vehicle, oldVehicle);
+
+        assert.equal(gunther.vehicle.primaryColor, oldVehicle.primaryColor);
+        assert.equal(gunther.vehicle.secondaryColor, oldVehicle.secondaryColor);
+    });
+
+    it('should clean up the commands when being disposed of', async(assert) => {
+        const originalCommandCount = server.commandManager.size;
+
+        commands.dispose();
+        commands.dispose = () => true;
+
+        assert.equal(server.commandManager.size, originalCommandCount - 8);
+    });
+
+    it('should pretend that the delete and save commands do not exist for temps', async(assert) => {
+        // Only administrators can manipulate vehicle color(s) on the server, but certain commands
+        // have been restricted from temporary administrators.
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.levelIsTemporary = true;
+
+        assert.isTrue(createVehicleForPlayer(gunther));
+        assert.isNotNull(gunther.vehicle);
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+    });
+
+    it('should have comprehensive output when requesting help', async(assert) => {
+        gunther.level = Player.LEVEL_PLAYER;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+
+            gunther.clearMessages();
+        }
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 3);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.isFalse(gunther.messages[1].includes('optimise'));
+
+            gunther.clearMessages();
+        }
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        {
+            assert.isTrue(await gunther.issueCommand('/v help'));
+            assert.equal(gunther.messages.length, 3);
+            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.isTrue(gunther.messages[1].includes('optimise'));
+        }
+    });
+
+    return;  // disabled! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     it('should enable administrators to enter vehicles close to them', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
@@ -477,35 +566,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(
                 gunther.messages[0],
                 Message.format(Message.VEHICLE_ENTER_ALREADY_DRIVING, russell.vehicle.model.name));
-        }
-    });
-
-    it('should have comprehensive output when requesting help', async(assert) => {
-        gunther.level = Player.LEVEL_PLAYER;
-        {
-            assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-
-            gunther.clearMessages();
-        }
-
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-        {
-            assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 3);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-            assert.isFalse(gunther.messages[1].includes('optimise'));
-
-            gunther.clearMessages();
-        }
-
-        gunther.level = Player.LEVEL_MANAGEMENT;
-        {
-            assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 3);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-            assert.isTrue(gunther.messages[1].includes('optimise'));
         }
     });
 
@@ -666,65 +726,5 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0], Message.format(Message.VEHICLE_SAVE_TOO_BUSY, 101, 90, 2, 50));
-    });
-
-    it('should be able to save vehicles to the database', async(assert) => {
-        // Only administrators can save vehicles in the database.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-
-        assert.isNotNull(gunther.vehicle);
-        assert.isTrue(gunther.vehicle.isConnected());
-
-        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
-        assert.isFalse(manager.isPersistentVehicle(gunther.vehicle));
-
-        const oldVehicle = gunther.vehicle;
-
-        assert.isTrue(await gunther.issueCommand('/v save'));
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(
-            gunther.messages[1], Message.format(Message.VEHICLE_SAVED, 'Infernus', 'saved'));
-
-        await server.clock.advance(500);  // to re-enter the new vehicle
-
-        assert.isNotNull(gunther.vehicle);
-        assert.isTrue(gunther.vehicle.isConnected());
-
-        assert.isTrue(manager.isManagedVehicle(gunther.vehicle));
-        assert.isTrue(manager.isPersistentVehicle(gunther.vehicle));
-
-        assert.notStrictEqual(gunther.vehicle, oldVehicle);
-
-        assert.equal(gunther.vehicle.primaryColor, oldVehicle.primaryColor);
-        assert.equal(gunther.vehicle.secondaryColor, oldVehicle.secondaryColor);
-    });
-
-    it('should clean up the commands when being disposed of', async(assert) => {
-        const originalCommandCount = server.commandManager.size;
-
-        commands.dispose();
-        commands.dispose = () => true;
-
-        assert.equal(server.commandManager.size, originalCommandCount - 10);
-    });
-
-    it('should pretend that the delete and save commands do not exist for temps', async(assert) => {
-        // Only administrators can manipulate vehicle color(s) on the server, but certain commands
-        // have been restricted from temporary administrators.
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-        gunther.levelIsTemporary = true;
-
-        assert.isTrue(createVehicleForPlayer(gunther));
-        assert.isNotNull(gunther.vehicle);
-
-        assert.isTrue(await gunther.issueCommand('/v save'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
-
-        assert.isTrue(await gunther.issueCommand('/v delete'));
-        assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[1], Message.VEHICLE_QUICK_ALREADY_DRIVING);
     });
 });

@@ -26,26 +26,25 @@ const LOAD_VEHICLES_QUERY = `
 const CREATE_VEHICLE_QUERY = `
     INSERT INTO
         vehicles
-        (vehicle_access_type, vehicle_access_value, model_id, position_x, position_y, position_z,
-         rotation, primary_color, secondary_color, paintjob, interior_id, vehicle_created)
+        (model_id, position_x, position_y, position_z, rotation, paintjob, primary_color,
+         secondary_color, number_plate, vehicle_created)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
 
 // Query to update the details of an existing persistent vehicle in the database.
 const UPDATE_VEHICLE_QUERY = `
     UPDATE
         vehicles
     SET
-        vehicle_access_type = ?,
-        vehicle_access_value = ?,
         model_id = ?,
         position_x = ?,
         position_y = ?,
         position_z = ?,
         rotation = ?,
+        paintjob = ?,
         primary_color = ?,
         secondary_color = ?,
-        paintjob = ?,
+        number_plate = ?,
         interior_id = ?
     WHERE
         vehicle_id = ?`;
@@ -97,24 +96,27 @@ class VehicleDatabase {
         return vehicles;
     }
 
-    // Asynchronously creates the |databaseVehicle| in the database.
-    async createVehicle(databaseVehicle) {
-        const data = await server.database.query(CREATE_VEHICLE_QUERY, databaseVehicle.accessType,
-            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
-            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
-            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
-            databaseVehicle.interiorId);
-
-        databaseVehicle.databaseId = data.insertId;
+    // Asynchronously creates the |vehicleSettings| in the database.
+    async createVehicle(vehicleSettings) {
+        const data = await server.database.query(CREATE_VEHICLE_QUERY, vehicleSettings.modelId,
+            vehicleSettings.position.x, vehicleSettings.position.y, vehicleSettings.position.z,
+            vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
+            vehicleSettings.secondaryColor, vehicleSettings.numberPlate);
+        
+        return new PersistentVehicleInfo(settings, {
+            vehicleId: data.insertId
+        });
     }
 
     // Asynchronously updates the |databaseVehicle| in the database.
-    async updateVehicle(databaseVehicle) {
-        await server.database.query(UPDATE_VEHICLE_QUERY, databaseVehicle.accessType,
-            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
-            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
-            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
-            databaseVehicle.interiorId, databaseVehicle.databaseId);
+    async updateVehicle(vehicleSettings, persistentVehicleInfo) {
+        await server.database.query(UPDATE_VEHICLE_QUERY, vehicleSettings.modelId,
+            vehicleSettings.position.x, vehicleSettings.position.y, vehicleSettings.position.z,
+            vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
+            vehicleSettings.secondaryColor, vehicleSettings.numberPlate,
+            persistentVehicleInfo.vehicleId);
+        
+        return new PersistentVehicleInfo(persistentVehicleInfo, vehicleSettings);
     }
 
     // Asynchronously updates the |databaseVehicle|'s access values in the database.

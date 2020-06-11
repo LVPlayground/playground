@@ -27,11 +27,15 @@ class MockVehicleDatabase {
         ];
     }
 
-    async createVehicle(databaseVehicle) {
-        databaseVehicle.databaseId = this.latestVehicleId_++;
+    async createVehicle(vehicleSettings) {
+        return new PersistentVehicleInfo(vehicleSettings, {
+            vehicleId: this.latestVehicleId_++,
+        });
     }
 
-    async updateVehicle(databaseVehicle) {}
+    async updateVehicle(vehicleSettings, persistentVehicleInfo) {
+        return new PersistentVehicleInfo(persistentVehicleInfo, vehicleSettings);
+    }
 
     async updateVehicleAccess(databaseVehicle) {}
 

@@ -43,7 +43,6 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define VEHICLE_KEYS_BLINKER_RIGHT 64
 #define VEHICLE_KEYS_BLINKER_LEFT 128
 
-native IsPersistentVehicle(vehicleId);
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);
 

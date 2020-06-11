@@ -147,7 +147,7 @@ export class MockPlayer extends Player {
         if (this.vehicle !== null) {
             dispatchEvent('playerstatechange', {
                 playerid: this.id,
-                oldstate: this.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                oldstate: this.vehicleSeat == Vehicle.kSeatDriver ? Player.kStateVehicleDriver
                                                                   : Player.kStateVehiclePassenger,
                 newstate: Player.kStateOnFoot,
             });

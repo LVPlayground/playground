@@ -34,12 +34,13 @@ const kQuickVehicleCommands = {
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, abuse, announce, collectables, playground) {
+    constructor(manager, abuse, announce, collectables, playground, streamer) {
         this.manager_ = manager;
 
         this.abuse_ = abuse;
         this.announce_ = announce;
         this.collectables_ = collectables;
+        this.streamer_ = streamer;
 
         this.playground_ = playground;
         this.playground_.addReloadObserver(
@@ -436,7 +437,7 @@ class VehicleCommands {
         const wasPersistent = this.manager_.isPersistentVehicle(vehicle);
 
         // Bail out if there are too many models or vehicles in the area already.
-        const areaInfo = await this.manager_.streamer.query(vehicle.position);
+        const areaInfo = await this.streamer_().query(vehicle.position);
 
         if ((areaInfo.vehicles > MaximumVehiclesInArea || areaInfo.models > MaximumModelsInArea) &&
                 !wasPersistent /* persistent vehicles are usually already counted for */) {

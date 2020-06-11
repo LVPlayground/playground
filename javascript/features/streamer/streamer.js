@@ -80,6 +80,15 @@ export default class Streamer extends Feature {
     // the RTree which allows for them to be better balanaced.
     optimise() { this.streamer_.optimise(); }
 
+    // Queries the streaming radius around the given |position| to understand the number of vehicles
+    // and vehicle models that exist in that area.
+    query(position) {
+        return {
+            models: 0,
+            vehicles: 0,
+        };
+    }
+
     // Gets statistics about the vehicle streamer, to understand how it's performing and what's
     // been created on the server. Useful to understand whether the streamer is working well.
     stats() {

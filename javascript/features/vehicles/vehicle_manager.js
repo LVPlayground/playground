@@ -134,7 +134,7 @@ class VehicleManager {
     async deleteVehicle(vehicle) {
         const result = this.findStreamableVehicle(vehicle);
         if (!result)
-            return;  // the |vehicle| is not managed by the Vehicles feature
+            throw new Error(`Unable to delete vehicles not managed by the Vehicle Manager.`);
         
         const streamableVehicle = result.streamableVehicle;
 
@@ -210,17 +210,86 @@ class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
+    // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
+    async storeVehicle(vehicle) {
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            throw new Error(`Unable to store vehicles not managed by the Vehicle Manager.`);
+
+        // Compose the new settings for the |vehicle|. These will be used both for updating vehicles
+        // and for creating new ones, just in a subtly different way.
+        const vehicleSettings = {
+            modelId: vehicle.modelId,
+
+            position: vehicle.position,
+            rotation: vehicle.rotation,
+
+            paintjob: vehicle.paintjob,
+            primaryColor: vehicle.primaryColor,
+            secondaryColor: vehicle.secondaryColor,
+            numberPlate: vehicle.numberPlate,
+        };
+
+        // Store the current occupants of the vehicle. They will be teleported back in after.
+        const occupants = new Map();
+
+        for (const player of vehicle.getOccupants()) {
+            occupants.set(player, player.vehicleSeat);
+
+            // Teleport the player out of the vehicle. This will prevent them from showing up as
+            // hidden later on: https://wiki.sa-mp.com/wiki/PutPlayerInVehicle.
+            player.position = vehicle.position.translate({ z: 2 });
+        }
+
+        // Delete the |streamableVehicle| right now, regardless of its type.
+        this.streamer_().deleteVehicle(result.streamableVehicle);
+
+        let persistentVehicleInfo = null;
+
+        // If the |vehicle| was a persistent vehicle, update it. Otherwise, create it. This will
+        // give us a new PersistentVehicleInfo object to represent the vehicle with.
+        if (result.type === VehicleManager.kTypeEphemeral) {
+            persistentVehicleInfo = await this.database_.createVehicle(vehicleSettings);
+        } else {
+            persistentVehicleInfo = await this.database_.updateVehicle(
+                vehicleSettings, result.persistentVehicleInfo);
+
+            // Further remove the existing vehicle from the local vehicle cache.
+            this.vehicles_.delete(result.persistentVehicleInfo);
+        }
+
+        const streamableVehicleInfo =
+            persistentVehicleInfo.toStreamableVehicleInfo(this.persistentVehicleRespawnDelay);
+
+        const streamableVehicle = this.streamer_().createVehicle(
+            streamableVehicleInfo, /* immediate= */ true);
+
+        // Store the updated |streamableVehicle| in the local vehicle cache.
+        this.vehicles_.set(persistentVehicleInfo, streamableVehicle);
+
+        // Now that the vehicle exists again, wait a little bit of time and then teleport all the
+        // |occupants| who were in the vehicle, back into the vehicle.
+        wait(100).then(() => {
+            if (!streamableVehicle || !streamableVehicle.live)
+                return;  // the vehicle has been removed since
+            
+            for (const [ player, seat ] of occupants) {
+                if (player.isConnected())
+                    player.enterVehicle(streamableVehicle.live, seat);
+            }
+        });
+
+        return streamableVehicle;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
     // vehicle will be reset prior to the actual respawn.
     respawnVehicle(vehicle) {
         // Remove the trailers
         // Respawning ephemeral vehicles should delete them
-    }
-
-    // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
-    // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
-    async storeVehicle(vehicle) {
-        // Take occupants out of the vehicle, re-create it, put them back in.
     }
 
     // ---------------------------------------------------------------------------------------------

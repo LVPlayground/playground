@@ -35,7 +35,7 @@ export default class SpawnWeapons extends PlayerCommand {
     // Gve the |subject| his |weapon| with |multiplier| * ammunations (from config).
     // If |player| is not |subject| an admin gives the weapon. Costs are not applied.
     giveSpawnWeapon(player, subject, weapon, multiplier) {        
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const teleportStatus = this.abuse_().canTeleport(subject, { enforceTimeLimit: true });
 
         // Bail out if the |player| might abuse it.
         if (!teleportStatus.allowed) {

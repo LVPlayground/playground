@@ -451,7 +451,7 @@
   
   "PLAYER_COMMANDS_INVALID_SPAWN_WEAPON" : "@error Sorry, id %d is not a valid spawn weapon.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT" : "@error Sorry, you can't get weapons now because you %s.",
-  "PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET" : "@error Sorry, you can't get weapons now because %s %s.",
+  "PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET" : "@error Sorry, the player can't get weapons now because %s %s.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_ARMOUR": "@success the armour has been bought.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_INVALID_AMOUNT" : "@error Sorry, you can only have a multiplier of 1-100.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_NOT_ENOUGH_MONEY": "@error Sorry, you need %$ to buy this.",

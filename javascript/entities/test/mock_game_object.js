@@ -13,8 +13,6 @@ export class MockGameObject extends GameObject {
     #position_ = null;
     #rotation_ = null;
 
-    #moveResolver_ = null;
-
     // Overridden to avoid creating a real object on the server.
     createInternal(options) {
         this.#position_ = options.position;

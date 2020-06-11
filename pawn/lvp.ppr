@@ -254,7 +254,6 @@
     <DiskObject>\Resources\Callbacks\Others\OnGameModeInit.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnRconLoginAttempt.pwn</DiskObject>
     <DiskObject>\Resources\Games\</DiskObject>
-    <DiskObject>\Resources\Games\Achievements.pwn</DiskObject>
     <DiskObject>\Resources\Games\Bag_of_Cash.pwn</DiskObject>
     <DiskObject>\Resources\Games\Bonuses.pwn</DiskObject>
     <DiskObject>\Resources\Games\Chase.pwn</DiskObject>
@@ -341,6 +340,9 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
+    <DiskObject>\Driver\Drift\</DiskObject>
+    <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
+    <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

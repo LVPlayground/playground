@@ -3,10 +3,14 @@
 // be found in the LICENSE file.
 
 // Natives provided by the PlaygroundJS plugin.
+native MarkVehicleMoved(vehicleId);
 native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
+native ReportTrailerUpdate(vehicleid, trailerid);
 
+#include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
+#include "Driver/Drift/DriftHelpers.pwn"
 
 // The keys that have to be pressed by the player to activate certain vehicle key effects. These
 // have been carried over from the SAS gamemode by leaty, Lithirm and Kase.
@@ -22,6 +26,9 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
 
+// Number of milliseconds between marking a vehicle as having moved due to unoccupied sync.
+new const kUnoccupiedSyncMarkTimeMs = 60000;
+
 // Keeps track of the last vehicle they entered, and hijacked, to work around "ninja jack" kills.
 new g_ninjaJackCurrentVehicleId[MAX_PLAYERS];
 new g_ninjaJackLastAttemptTime[MAX_PLAYERS];
@@ -32,6 +39,12 @@ new g_sprayTagStartTime[MAX_PLAYERS];
 
 // Time at which the player last used the boost Vehicle Keys feature.
 new g_vehicleKeysLastBoost[MAX_PLAYERS];
+
+// Time at which a vehicle has been marked for movement following an unoccupied sync.
+new g_vehicleLastUnoccupiedSyncMark[MAX_VEHICLES];
+
+// Vehicle ID of the trailer that's attached to a particular vehicle.
+new g_vehicleTrailerId[MAX_VEHICLES];
 
 // The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
 new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
@@ -175,7 +188,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         // Vehicle keys (1): speed boost
         if (HOLDING(VEHICLE_KEYS_BINDING_BOOST) && (vehicleKeys & VEHICLE_KEYS_BOOST)) {
             new const boostLimitMs = 1250;
-            new const Float: boost = 2;
+            new const Float: boost = 1.5;
 
             new Float: velocity[3];
 
@@ -351,6 +364,22 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
 }
 
+forward UpdateVehicleTrailerStatus();
+public UpdateVehicleTrailerStatus() {
+    for (new vehicleId = 1; vehicleId < GetVehiclePoolSize(); ++vehicleId) {
+        new const trailerId = GetVehicleTrailer(vehicleId);
+        if (trailerId == g_vehicleTrailerId[vehicleId])
+            continue;  // no change in the trailer attached to the |vehicleId|
+
+        g_vehicleTrailerId[vehicleId] = trailerId;
+
+        if (!IsValidVehicle(vehicleId))
+            continue;
+
+        ReportTrailerUpdate(vehicleId, trailerId);
+    }
+}
+
 public OnPlayerDeath(playerid, killerid, reason) {
     // Corrects the |killerid| when the "ninja jacking" bug has been used, and issues a monitor-
     // level abuse report on the player abusing that bug, informing administrators.
@@ -376,6 +405,34 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
 #if Feature::EnableServerSideWeaponConfig == 0
     DetectAbuseOnWeaponShot(playerid, hittype, hitid);
 
+    // We might want to ignore damage done by players who are passengers as the sole occupant of a
+    // vehicle. They can only be damaged with a chainsaw, making this very unfair in fights.
+    if (g_abuseIgnoreSolePassengerDamage && hittype != BULLET_HIT_TYPE_NONE) {
+        new const playerVehicleId = GetPlayerVehicleID(playerid);
+        new const playerVehicleSeat = GetPlayerVehicleSeat(playerid);
+
+        if (playerVehicleId != 0 && playerVehicleSeat != 0) {
+            new bool: foundDriver = false;
+
+            for (new otherPlayerId = 0; otherPlayerId < GetPlayerPoolSize(); ++otherPlayerId) {
+                if (otherPlayerId == playerid)
+                    continue;  // the |otherplayerId| is the |playerid|!
+
+                if (GetPlayerVehicleID(otherPlayerId) != playerVehicleId)
+                    continue;  // the |otherPlayerId| is not connected, or not in the same vehicle
+
+                if (GetPlayerVehicleSeat(otherPlayerId) != 0)
+                    continue;  // the |otherPlayerId| is not a driver either
+
+                foundDriver = true;
+                break;
+            }
+
+            if (!foundDriver)
+                return 0;
+        }
+    }
+
     if (PlayerSyncedData(playerid)->skipDamage())
         return 0;
 
@@ -392,6 +449,26 @@ public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
     ShipManager->onPlayerLeaveShip(playerid, areaid);
 }
 
+// Unoccupied but moved vehicles should be scheduled for respawn after a certain amount of time
+// passes. Only forward this to JavaScript at most once per minute per vehicle.
+public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z, Float:vel_x, Float:vel_y, Float:vel_z) {
+    new const currentTime = GetTickCount();
+    new const difference = currentTime - g_vehicleLastUnoccupiedSyncMark[vehicleid];
+
+    if (difference < kUnoccupiedSyncMarkTimeMs)
+        return 1;
+
+    g_vehicleLastUnoccupiedSyncMark[vehicleid] = currentTime;
+
+    printf("[debug] MarkVehicleMoved(%d)", vehicleid);
+
+    // Calls the MarkVehicleMoved() JavaScript native, which will mark the |vehicleid| for respawn.
+    MarkVehicleMoved(vehicleid);
+
+    return 1;
+    #pragma unused playerid, passenger_seat, new_x, new_y, new_z, vel_x, vel_y, vel_z
+}
+
 // Define so that JavaScript can intercept the events.
 public OnPlayerText(playerid, text[]) {}
 public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz) {}
@@ -400,5 +477,10 @@ public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, model
 public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
-public OnPlayerUpdate(playerid) { return 1; }
+public OnPlayerUpdate(playerid) {
+    if (g_driftingEnabled)
+        ProcessDriftUpdateForPlayer(playerid);
+
+    return 1;
+}
 #endif

@@ -78,7 +78,7 @@ export default class Assert {
       return;
 
     // TODO(Russell): Improve this error message.
-    this.reportFailure('is not deep equal to ' + this.toString(expected));
+    this.reportFailure(this.toString(actual) + ' is not deep equal to ' + this.toString(expected));
   }
 
   // Asserts that |actual| is not deep equal to |expected|.

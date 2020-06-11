@@ -97,6 +97,13 @@ export class Vector {
 
         return new Vector(this.x_ / magnitude, this.y_ / magnitude, this.z_ / magnitude);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() {
+        return `[object Vector(${Math.round(this.x_)}, ${Math.round(this.y_)}, ` +
+                              `${Math.round(this.z_)})]`;
+    }
 };
 
 global.Vector = Vector;

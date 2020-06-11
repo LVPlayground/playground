@@ -48,7 +48,7 @@ class RampCarCommand extends Command {
         });
 
         pawnInvoke('SetVehicleNumberPlate', 'is', rampVehicle.id, 'Ramp it up!');
-        rampVehicle.addComponent(Vehicle.COMPONENT_NOS_TEN_SHOTS);
+        rampVehicle.addComponent(Vehicle.kComponentNitroTenShots);
 
         var rampObject = this.rampCar_.createObject({
             modelId: 13645,

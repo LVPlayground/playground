@@ -5,7 +5,6 @@
 import createTestEnvironment from 'features/houses/test/test_environment.js';
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
-import HouseCommands from 'features/houses/house_commands.js';
 import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
@@ -13,18 +12,16 @@ import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import PlayerSetting from 'entities/player_setting.js';
 
 describe('HouseCommands', (it, beforeEach) => {
-    let abuse = null;
     let commands = null;
     let location = null;
     let manager = null;
     let maxticks = null;
-    let streamer = null;
 
     // Offset in the `/house settings` menu of the last non-VIP entry.
     const SETTINGS_OFFSET = 3;
 
-    beforeEach(async(assert) => {
-        ({ abuse, commands, manager, streamer } = await createTestEnvironment());
+    beforeEach(async() => {
+        ({ commands, manager } = await createTestEnvironment());
 
         location = server.featureManager.createDependencyWrapperForFeature('location');
 
@@ -137,7 +134,6 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(server.objectManager.count, objectCount + 2);
 
         await server.clock.advance(180000);  // forward the clock to test the auto-expire function
-        await streamer.getVehicleStreamer().stream();
 
         assert.equal(server.objectManager.count, objectCount);
     });

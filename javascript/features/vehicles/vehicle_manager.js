@@ -2,206 +2,238 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import DatabaseVehicle from 'features/vehicles/database_vehicle.js';
 import MockVehicleDatabase from 'features/vehicles/test/mock_vehicle_database.js';
-import VehicleAccessManager from 'features/vehicles/vehicle_access_manager.js';
+import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import VehicleDatabase from 'features/vehicles/vehicle_database.js';
-
-// The maximum value that can be given to a vehicle's color.
-const MaximumVehicleColorValue = 255;
 
 // The vehicle manager is responsible for all vehicles created as part of the Vehicles feature. This
 // is not to be confused with the global VehicleManager for the entire JavaScript gamemode.
 class VehicleManager {
-    constructor(streamer) {
-        this.access_ = new VehicleAccessManager(streamer);
+    // Types of vehicles managed by the VehicleManager.
+    static kTypePersistent = 0;
+    static kTypeEphemeral = 1;
+
+    database_ = null;
+    streamer_ = null;
+
+    playerVehicles_ = null;
+    vehicles_ = null;
+
+    constructor(settings, streamer) {
+        this.settings_ = settings;
         this.database_ = server.isTest() ? new MockVehicleDatabase()
                                          : new VehicleDatabase();
-
-        this.dataLoadedPromise_ = new Promise(resolver =>
-            this.dataLoadedResolver_ = resolver);
-
-        // Function tells the Pawn code that |vehicleId| has been destroyed. Will be overridden by
-        // tests to prevent accidentially hitting the Pawn code.
-        this.reportVehicleDestroyed_ = vehicleId =>
-            !!pawnInvoke('OnJavaScriptVehicleDestroyed', 'i', vehicleId);
-
-        // Set of all DatabaseVehicle instances owned by this VehicleManager.
-        this.vehicles_ = new Set();
-
-        // Map of Player instances to a set of their associated vehicles, and DatabaseVehicle
-        // instances to the Player they've been associated with.
-        this.associatedVehicles_ = new WeakMap();
-        this.associatedPlayers_ = new Map();
 
         this.streamer_ = streamer;
         this.streamer_.addReloadObserver(
             this, VehicleManager.prototype.onStreamerReload.bind(this));
+        
+        // Weak map from Player instance to Set of StreamableVehicle instances.
+        this.playerVehicles_ = new WeakMap();
+
+        // Set of the ephemeral vehicles created on the server. Unattributed.
+        this.ephemeralVehicles_ = new Set();
+
+        // Map from PersistentVehicleInfo to StreamableVehicle instances.
+        this.vehicles_ = new Map();
+
+        // Only load the vehicles when not running tests. There are tests covering this case which
+        // manually load the vehicles, which is something they want to wait for.
+        if (!server.isTest())
+            this.loadVehicles();
     }
 
-    // Gets the vehicle access manager, determining whether a player can enter a particular vehicle.
-    get access() { return this.access_; }
+    // Gets the default respawn delay for vehicles, in seconds. This is configurable through the
+    // "/lvp settings" command, but changes only apply to newly created vehicles.
+    get persistentVehicleRespawnDelay() {
+        return this.settings_().getValue('vehicles/respawn_persistent_delay_sec');
+    }
 
-    // Gets the number of vehicles that have been created by the manager.
-    get count() { return this.vehicles_.size; }
-
-    // Gets a promise that is to be resolved when the feature is ready.
-    get ready() { return this.dataLoadedPromise_; }
-
-    // Gets the active vehicle streamer. Should not be cached.
-    get streamer() { return this.streamer_().getVehicleStreamer(); }
-
-    // Gets an iterator with access to all DatabaseVehicle instances.
-    get vehicles() { return this.vehicles_.values(); }
+    // Gets the number of vehicles that have been created on the server.
+    get size() { return this.vehicles_.size; }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Returns the DatabaseVehicle instance for |vehicle| when it's managed. May return NULL.
-    getManagedDatabaseVehicle(vehicle) {
-        const storedVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (storedVehicle && storedVehicle instanceof DatabaseVehicle)
-            return storedVehicle;
+    // Asynchronously loads the vehicles from the database, and creates them using the streamer. The
+    // streamer will be asked to optimise the plane after this has completed.
+    async loadVehicles() {
+        const vehicles = await this.database_.loadVehicles();
+        for (const vehicleInfo of vehicles) {
+            const streamableVehicleInfo =
+                vehicleInfo.toStreamableVehicleInfo(this.persistentVehicleRespawnDelay);
+
+            // Create the |vehicleInfo| on the Streamer, and store a reference locally. This further
+            // is able to tell us whether the given vehicle is live.
+            const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo);
+
+            this.vehicles_.set(vehicleInfo, streamableVehicle);
+        }
+
+        // Optimise the streamer, now that many mutations in the available vehicles have been made.
+        this.streamer_().optimise();
+    }
+
+    // Creates a new ephemeral vehicle for the |player|. Players are only allowed a single vehicle
+    // of their own, but administrators are allowed multiple when the setting allows for this.
+    createVehicle(player, modelId) {
+        if (!this.playerVehicles_.has(player))
+            this.playerVehicles_.set(player, new Set());
+
+        let playerVehicles = this.playerVehicles_.get(player);
+        let playerVehicleLimit = this.getVehicleLimitForPlayer(player);
+
+        // If the |player| is not allowed to spawn any vehicles at all, bail out immediately.
+        if (!playerVehicleLimit)
+            return null;
+
+        // First prune all entries from the |playerVehicles| that aren't live anymore.
+        for (const streamableVehicle of playerVehicles) {
+            if (!streamableVehicle.live)
+                playerVehicles.delete(streamableVehicle);
+        }
+
+        // Delete vehicles from the |playerVehicles| until the player is no longer above the limit,
+        // while ignoring vehicles that are currently in use by others.
+        for (const streamableVehicle of playerVehicles) {
+            if (playerVehicles.size < playerVehicleLimit)
+                break;  // no more vehicles have to be removed
+
+            if (streamableVehicle.live.occupantCount)
+                continue;  // the vehicle is being used by other players.
+
+            this.streamer_().deleteVehicle(streamableVehicle);
+
+            playerVehicles.delete(streamableVehicle);
+        }
+
+        // Now create the new vehicle, and spawn that in the world immediately.
+        const streamableVehicleInfo = new StreamableVehicleInfo({
+            modelId,
+
+            position: player.position,
+            rotation: player.rotation,
+
+            numberPlate: player.name
+        });
+
+        const streamableVehicle =
+            this.streamer_().createVehicle(streamableVehicleInfo, /* immediate= */ true);
+
+        // (1) Store the |streamableVehicle| in storage specific to the player.
+        playerVehicles.add(streamableVehicle);
+
+        // (2) Store the |streamableVehicle| in storage global to the server.
+        this.ephemeralVehicles_.add(streamableVehicle);
+        this.ephemeralVehiclesPruneList();
+
+        return streamableVehicle;
+    }
+
+    // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
+    // will be asynchronously deleted from the database if it's persistent.
+    async deleteVehicle(vehicle) {
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            throw new Error(`Unable to delete vehicles not managed by the Vehicle Manager.`);
+        
+        const streamableVehicle = result.streamableVehicle;
+
+        // Delete the |streamableVehicle| from the manager.
+        this.streamer_().deleteVehicle(streamableVehicle);
+
+        // Bail out if |vehicle| was ephemeral, it's been invalidated and will be cleaned up later.
+        if (result.type === VehicleManager.kTypeEphemeral)
+            return;
+
+        const persistentVehicleInfo = result.persistentVehicleInfo;
+
+        // (1) Delete the |persistentVehicleInfo| from the internal status.
+        this.vehicles_.delete(persistentVehicleInfo);
+
+        // (2) Delete the |persistentVehicleInfo| from the database.
+        await this.database_.deleteVehicle(persistentVehicleInfo.vehicleId);
+    }
+
+    // Determines the maximum number of vehicles that the |player| is allowed to create on the
+    // server. Administrators have a business reason to be able to create multiple, e.g. when they
+    // host an event or are working on the server's vehicle layout.
+    getVehicleLimitForPlayer(player) {
+        if (player.isAdministrator())
+            return this.settings_().getValue('vehicles/vehicle_limit_administrator');
+        
+        return this.settings_().getValue('vehicles/vehicle_limit_player');
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Finds the StreamableVehicle instance for the given |vehicle|, which must be a Vehicle object,
+    // together with whether this is a persistent or an ephemeral vehicle. This operation is O(n+k)
+    // on the number of persistent and ephemeral vehicles on the server, but is really infrequent
+    // and does not need to leave the JavaScript context.
+    findStreamableVehicle(vehicle) {
+        for (const [ persistentVehicleInfo, streamableVehicle ] of this.vehicles_) {
+            if (streamableVehicle.live !== vehicle)
+                continue;
+
+            return {
+                persistentVehicleInfo,
+                streamableVehicle,
+                type: VehicleManager.kTypePersistent
+            };
+        }
+
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (streamableVehicle.live === vehicle)
+                return { streamableVehicle, type: VehicleManager.kTypeEphemeral };
+        }
 
         return null;
     }
 
-    // ---------------------------------------------------------------------------------------------
-
-    // Asynchronously loads the vehicles from the database, and creates them on the server using the
-    // streamer. Will display warnings for invalid vehicle definitions.
-    async loadVehicles() {
-        for (const vehicleInfo of await this.database_.loadVehicles()) {
-            const databaseVehicle = new DatabaseVehicle(vehicleInfo);
-
-            this.enforceVehicleAccess(databaseVehicle, false /* sync */);
-            this.internalCreateVehicle(databaseVehicle, true /* lazy */);
-        }
-
-        this.dataLoadedResolver_();
-    }
-
-    // Creates a vehicle with |modelId| at given location. It will be eagerly created by the
-    // streamer if any player is within streaming range of the vehicle.
-    createVehicle({ player = null, modelId, position, rotation, interiorId, virtualWorld }) {
-        const databaseVehicle = new DatabaseVehicle({
-            databaseId: null /* non-persistent vehicle */,
-
-            accessType: DatabaseVehicle.ACCESS_TYPE_EVERYONE,
-            accessValue: 0 /* unused for ACCESS_TYPE_EVERYONE */,
-
-            // Include the arguments as passed to this method.
-            modelId, position, rotation, interiorId, virtualWorld,
-
-            // Automatically assign a random, but fixed color to the vehicle.
-            primaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
-            secondaryColor: Math.floor(Math.random() * MaximumVehicleColorValue),
-
-            // Personalize the vehicle's number plate when |player| is set.
-            numberPlate: player ? player.name : null,
-
-            // Make the VehicleAccessManager the authority on whether a player can access it.
-            deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
-            accessFn: this.access_.accessFn
-        });
-
-        // Associate the vehicle with the |player| when set.
-        if (player) {
-            this.associatedPlayers_.set(databaseVehicle, player);
-
-            if (!this.associatedVehicles_.has(player))
-                this.associatedVehicles_.set(player, new Set());
-
-            const associatedVehicles = this.associatedVehicles_.get(player);
-            const deletionList = [];
-
-            // Respawn the oldest unoccupied vehicle created by the |player| when they exceed their
-            // vehicle limit. This means it's possible to exceed their limit.
-            const limit = this.getVehicleLimitForPlayer(player);
-            let count = associatedVehicles.size;
-
-            for (const existingVehicle of associatedVehicles) {
-                if (count < limit)
-                    break;  // no need to free up another vehicle
-
-                const liveVehicle = this.streamer.getLiveVehicle(existingVehicle);
-                if (liveVehicle && liveVehicle.isOccupied())
-                    continue;  // the vehicle is occupied, ignore it
-
-                deletionList.push(existingVehicle);
-                count--;
-            }
-
-            deletionList.forEach(existingVehicle =>
-                this.internalDeleteVehicle(existingVehicle));
-
-            // Now associate the |databaseVehicle| with the |player|.
-            associatedVehicles.add(databaseVehicle);
-        }
-
-        this.internalCreateVehicle(databaseVehicle, false /* lazy */);
-
-        return this.streamer.getLiveVehicle(databaseVehicle);
-    }
-
-    // Returns whether the |vehicle| is one managed by the VehicleManager. This will only return
-    // TRUE when the vehicle is stored by the streamer, and managed by us.
-    isManagedVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        return databaseVehicle && databaseVehicle instanceof DatabaseVehicle;
-    }
+    // Returns whether the |vehicle| is one managed by the VehicleManager.
+    isManagedVehicle(vehicle) { return this.findStreamableVehicle(vehicle) !== null; }
 
     // Returns whether the |vehicle| is a persistent vehicle managed by the VehicleManager.
     isPersistentVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
-            return false;
-
-        return databaseVehicle.isPersistent();
+        const result = this.findStreamableVehicle(vehicle);
+        return result && result.type === VehicleManager.kTypePersistent;
     }
 
-    // Updates the |vehicle|'s |accessType| and |accessValue| in all places where it's stored.
-    async updateVehicleAccess(vehicle, accessType, accessValue) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
-            throw new Error('The given |vehicle| is not managed by the vehicle manager.');
-
-        databaseVehicle.accessType = accessType;
-        databaseVehicle.accessValue = accessValue;
-
-        this.enforceVehicleAccess(databaseVehicle);
-
-        await this.database_.updateVehicleAccess(databaseVehicle);
-    }
-
-    // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
-    // vehicle will be reset prior to the actual respawn.
-    respawnVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (databaseVehicle && databaseVehicle instanceof DatabaseVehicle)
-            this.enforceVehicleAccess(databaseVehicle, false /* sync */);
-
-        while (vehicle) {
-            const trailer = vehicle.trailer;
-
-            vehicle.respawn();
-            vehicle = trailer;
+    // Prunes the set of ephemeral vehicles that exists on the server, by removing all the entries
+    // which do not map to live vehicles anymore. They will no longer be considered.
+    ephemeralVehiclesPruneList() {
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (!streamableVehicle.live)
+                this.ephemeralVehicles_.delete(streamableVehicle);
         }
-
-        // Delete the |vehicle| if it wasn't a persistent vehicle.
-        if (!databaseVehicle.isPersistent())
-            this.internalDeleteVehicle(databaseVehicle);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Stores the |vehicle| in the database. If it's a persistent vehicle already, the existing
     // vehicle will be updated. Otherwise it will be stored as a new persistent vehicle.
     async storeVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
-            throw new Error('The given |vehicle| is not managed by the vehicle manager.');
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            throw new Error(`Unable to store vehicles not managed by the Vehicle Manager.`);
 
+        // Compose the new settings for the |vehicle|. These will be used both for updating vehicles
+        // and for creating new ones, just in a subtly different way.
+        const vehicleSettings = {
+            modelId: vehicle.modelId,
+
+            position: vehicle.position,
+            rotation: vehicle.rotation,
+
+            paintjob: vehicle.paintjob,
+            primaryColor: vehicle.primaryColor,
+            secondaryColor: vehicle.secondaryColor,
+            numberPlate: vehicle.numberPlate,
+        };
+
+        // Store the current occupants of the vehicle. They will be teleported back in after.
         const occupants = new Map();
 
-        // Store the occupants of the |vehicle| so that we can teleport them back.
         for (const player of vehicle.getOccupants()) {
             occupants.set(player, player.vehicleSeat);
 
@@ -210,220 +242,114 @@ class VehicleManager {
             player.position = vehicle.position.translate({ z: 2 });
         }
 
-        // Create the new vehicle with the appropriate settings based on the available data.
-        const newVehicle = new DatabaseVehicle({
-            databaseId: databaseVehicle.databaseId,  // may be NULL
+        // Delete the |streamableVehicle| right now, regardless of its type.
+        this.streamer_().deleteVehicle(result.streamableVehicle);
 
-            accessType: databaseVehicle.accessType,
-            accessValue: databaseVehicle.accessValue,
+        let persistentVehicleInfo = null;
 
-            modelId: vehicle.modelId,
-            position: vehicle.position,
-            rotation: vehicle.rotation,
-            interiorId: vehicle.interiorId,
-            virtualWorld: vehicle.virtualWorld,
+        // If the |vehicle| was a persistent vehicle, update it. Otherwise, create it. This will
+        // give us a new PersistentVehicleInfo object to represent the vehicle with.
+        if (result.type === VehicleManager.kTypeEphemeral) {
+            persistentVehicleInfo = await this.database_.createVehicle(vehicleSettings);
+        } else {
+            persistentVehicleInfo = await this.database_.updateVehicle(
+                vehicleSettings, result.persistentVehicleInfo);
 
-            primaryColor: vehicle.primaryColor,
-            secondaryColor: vehicle.secondaryColor,
-            paintjob: vehicle.paintjob,
-            siren: vehicle.siren,
+            // Further remove the existing vehicle from the local vehicle cache.
+            this.vehicles_.delete(result.persistentVehicleInfo);
+        }
 
-            respawnDelay: databaseVehicle.respawnDelay,
+        const streamableVehicleInfo =
+            persistentVehicleInfo.toStreamableVehicleInfo(this.persistentVehicleRespawnDelay);
 
-            // Make the VehicleAccessManager the authority on whether a player can access it.
-            deathFn: VehicleManager.prototype.onVehicleDeath.bind(this),
-            accessFn: this.access_.accessFn
-        });
+        const streamableVehicle = this.streamer_().createVehicle(
+            streamableVehicleInfo, /* immediate= */ true);
 
-        // Delete the existing vehicle from the streamer immediately.
-        this.internalDeleteVehicle(databaseVehicle);
+        // Store the updated |streamableVehicle| in the local vehicle cache.
+        this.vehicles_.set(persistentVehicleInfo, streamableVehicle);
 
-        // Set the vehicle access policies before the vehicle gets spawned.
-        this.enforceVehicleAccess(newVehicle, false /* sync */);
-
-        // Create the new vehicle with the streamer immediately. It may still have the invalid
-        // databaseId property assigned if this is the first time we're creating it.
-        this.internalCreateVehicle(newVehicle);
-
-        // Put all the |occupants| back in the vehicle after a short wait.
-        milliseconds(100).then(() => {
-            if (!this.vehicles_.has(newVehicle))
-                return;  // the |newVehicle| has been removed since
-
-            const liveVehicle = this.streamer.getLiveVehicle(newVehicle);
-            if (!liveVehicle)
-                return;  // the |newVehicle| has not been created by the streamer
-
-            for (const [player, seat] of occupants) {
-                if (!player.isConnected())
-                    continue;  // the |player| has since disconnected
-
-                player.enterVehicle(liveVehicle, seat);
+        // Now that the vehicle exists again, wait a little bit of time and then teleport all the
+        // |occupants| who were in the vehicle, back into the vehicle.
+        wait(100).then(() => {
+            if (!streamableVehicle || !streamableVehicle.live)
+                return;  // the vehicle has been removed since
+            
+            for (const [ player, seat ] of occupants) {
+                if (player.isConnected())
+                    player.enterVehicle(streamableVehicle.live, seat);
             }
         });
 
-        // Either create or update the |newVehicle|'s properties in the database.
-        if (newVehicle.isPersistent())
-            await this.database_.updateVehicle(newVehicle);
-        else
-            await this.database_.createVehicle(newVehicle);
-
-        return this.streamer.getLiveVehicle(newVehicle);
-    }
-
-    // Asynchronously deletes the |vehicle|. It will be immediately removed from the streamer, but
-    // will be asynchronously deleted from the database if it's persistent.
-    async deleteVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle || !(databaseVehicle instanceof DatabaseVehicle))
-            throw new Error('The given |vehicle| is not managed by the vehicle manager.');
-
-        this.internalDeleteVehicle(databaseVehicle);
-
-        if (databaseVehicle.isPersistent())
-            await this.database_.deleteVehicle(databaseVehicle);
+        return streamableVehicle;
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Pins the |vehicle| in the streamer. Returns whether the |vehicle| is managed and could be
-    // pinned, even when it already was pinned.
-    pinVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
-            return false;
+    // Respawns the |vehicle|. If the vehicle is a managed vehicle, the access settings for the
+    // vehicle will be reset prior to the actual respawn.
+    respawnVehicle(vehicle) {
+        const result = this.findStreamableVehicle(vehicle);
+        if (!result)
+            throw new Error(`Unable to respawn vehicles not managed by the Vehicle Manager.`);
+        
+        // Recursively respawn the vehicle and all trailers attached.
+        while (vehicle) {
+            const trailer = vehicle.trailer;
 
-        if (!this.streamer.isPinned(databaseVehicle, VehicleManager.MANAGEMENT_PIN))
-            this.streamer.pin(databaseVehicle, VehicleManager.MANAGEMENT_PIN);
-
-        return true;
-    }
-
-    // Unpins the |vehicle| from the streamer. Returns whether the |vehicle| is managed.
-    unpinVehicle(vehicle) {
-        const databaseVehicle = this.streamer.getStoredVehicle(vehicle);
-        if (!databaseVehicle)
-            return false;
-
-        if (this.streamer.isPinned(databaseVehicle, VehicleManager.MANAGEMENT_PIN))
-            this.streamer.unpin(databaseVehicle, VehicleManager.MANAGEMENT_PIN);
-
-        return true;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Gets the maximum number of ephemeral vehicles to be created for |player|.
-    getVehicleLimitForPlayer(player) {
-        if (player.isManagement())
-            return 10;
-
-        if (player.isAdministrator())
-            return 5;
-
-        return 1;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Called when a vehicle managed by this VehicleManager is about to respawn. Deletes ephemeral
-    // vehicles from the server before their respawn is complete.
-    onVehicleDeath(vehicle, databaseVehicle) {
-        if (this.associatedPlayers_.has(databaseVehicle)) {
-            this.internalDeleteVehicle(databaseVehicle);
-            return;
+            vehicle.respawn();
+            vehicle = trailer;
         }
 
-        this.enforceVehicleAccess(databaseVehicle, false /* sync */);
+        // If the |vehicle| was an ephemeral vehicle, delete it from the server.
+        if (result.type === VehicleManager.kTypeEphemeral)
+            this.streamer_().deleteVehicle(result.streamableVehicle);
+    }
+
+    // Respawns all unoccupied vehicles owned by the Vehicle Manager. This is quite a heavy task,
+    // both for the server and for all players for whom vehicles will be changing.
+    respawnUnoccupiedVehicles() {
+        for (const streamableVehicle of this.ephemeralVehicles_) {
+            if (streamableVehicle.live && !streamableVehicle.live.occupantCount)
+                this.streamer_().deleteVehicle(streamableVehicle);
+        }
+
+        this.ephemeralVehiclesPruneList();
+
+        for (const streamableVehicle of this.vehicles_.values()) {
+            if (streamableVehicle.live && !streamableVehicle.live.occupantCount)
+                streamableVehicle.live.respawn();
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the streamer has been reloaded. Will recreate all our vehicles.
+    // Called when the streamer has been reloaded. Will reload all vehicles from the database, and
+    // re-adds them to the streamer. This is quite an involved operation.
     onStreamerReload(streamer) {
-        const vehicleStreamer = streamer.getVehicleStreamer();
-
-        for (const databaseVehicle of this.vehicles_)
-            vehicleStreamer.add(databaseVehicle, true /* lazy */);
-
-        vehicleStreamer.optimise();
-    }
-
-    // Creates the |databaseVehicle| in the vehicle streamer. The vehicle will be created lazily
-    // when the |lazy| flag has been set, which means it won't automatically be streamed in.
-    internalCreateVehicle(databaseVehicle, lazy) {
-        this.vehicles_.add(databaseVehicle)
-        this.streamer_().getVehicleStreamer().add(databaseVehicle, lazy);
-    }
-
-    // Deletes the |databaseVehicle| from the vehicle streamer.
-    internalDeleteVehicle(databaseVehicle) {
-        const vehicle = this.streamer.getLiveVehicle(databaseVehicle);
-        if (vehicle) {
-            const vehicleId = vehicle.id;
-
-            Promise.resolve().then(() =>
-                this.reportVehicleDestroyed_(vehicleId));
-        }
-
-        this.streamer_().getVehicleStreamer().delete(databaseVehicle);
-
-        const associatedPlayer = this.associatedPlayers_.get(databaseVehicle);
-        if (associatedPlayer) {
-            this.associatedPlayers_.delete(databaseVehicle);
-
-            const associatedVehicles = this.associatedVehicles_.get(associatedPlayer);
-            if (associatedVehicles)
-                associatedVehicles.delete(associatedPlayer);
-        }
-
-        this.access_.delete(databaseVehicle);
-        this.vehicles_.delete(databaseVehicle);
-    }
-
-    // Enforces the access rules for the |databaseVehicle| with the Vehicle Access manager.
-    enforceVehicleAccess(databaseVehicle, sync = true) {
-        switch (databaseVehicle.accessType) {
-            case DatabaseVehicle.ACCESS_TYPE_EVERYONE:
-                if (sync)
-                    this.access_.unlock(databaseVehicle);
-                else
-                    this.access_.delete(databaseVehicle);
-                break;
-            case DatabaseVehicle.ACCESS_TYPE_PLAYER:
-                this.access_.restrictToPlayer(databaseVehicle, databaseVehicle.accessValue, sync);
-                break;
-            case DatabaseVehicle.ACCESS_TYPE_PLAYER_LEVEL:
-                this.access_.restrictToPlayerLevel(
-                    databaseVehicle, databaseVehicle.accessValue, sync);
-                break;
-            case DatabaseVehicle.ACCESS_TYPE_PLAYER_VIP:
-                this.access_.restrictToVip(databaseVehicle, sync);
-                break;
-            default:
-                console.log('Warning: invalid access type given for vehicle ' +
-                            databaseVehicle.id + ': ' + databaseVehicle.accessType);
-                break;
-        }
+        this.vehicles_.clear();
+        this.loadVehicles();
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        for (const databaseVehicle of this.vehicles_)
-            this.internalDeleteVehicle(databaseVehicle);
-
-        this.streamer_.removeReloadObserver(this);
-        this.streamer_ = null;
+        for (const streamableVehicle of this.vehicles_.values())
+            this.streamer_().deleteVehicle(streamableVehicle);
+        
+        for (const streamableVehicle of this.ephemeralVehicles_)
+            this.streamer_().deleteVehicle(streamableVehicle);
 
         this.vehicles_.clear();
         this.vehicles_ = null;
 
+        this.ephemeralVehicles_.clear();
+        this.ephemeralVehicles_ = null;
+
+        this.streamer_.removeReloadObserver(this);
+        this.streamer_ = null;
+
         this.database_ = null;
     }
 }
-
-// Pin that will be used to keep vehicles alive by order of Management.
-VehicleManager.MANAGEMENT_PIN = Symbol();
 
 export default VehicleManager;

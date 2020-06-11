@@ -87,7 +87,7 @@ export function relativeTime({ date1, date2 }) {
     const absoluteDifferenceSeconds = Math.floor(absoluteDifference / 1000);
 
     // Whether |date1| and |date2| happened at the same moment.
-    const isCurrent = difference === 0;
+    const isCurrent = absoluteDifferenceSeconds === 0;
 
     // Whether |date1| happened before |date2|.
     const isPast = difference < 0;

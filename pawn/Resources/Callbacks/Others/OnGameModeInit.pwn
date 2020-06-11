@@ -23,6 +23,9 @@ public OnGameModeInit() {
         return 1;
     }
 
+    // Part of Driver.
+    SetTimer("UpdateVehicleTrailerStatus", 1000, 1);
+
     // Initalize the Las Venturas Playground handlers - Note that the Gang base
     // handler is loaded at the end of the callback due to a textdraw issue.
 

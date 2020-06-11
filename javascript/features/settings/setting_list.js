@@ -18,15 +18,12 @@ export default [
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
     new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
-
+    new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
-
     new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
     new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
-
     new Setting('abuse', 'teleportation_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override teleportation restrictions?'),
     new Setting('abuse', 'teleportation_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between teleporting twice.'),
-
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */
@@ -109,4 +106,18 @@ export default [
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),
     new Setting('radio', 'restricted_to_vehicles', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be restricted to players in vehicles?'),
+
+    /** Vehicle related settings */
+    new Setting('vehicles', 'drifting_enabled', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),
+    new Setting('vehicles', 'drifting_max_angle', Setting.TYPE_NUMBER, 82.5, 'Maximum drifting angle to award points for, to ignore spins.'),
+    new Setting('vehicles', 'drifting_min_angle', Setting.TYPE_NUMBER, 14, 'Minimum drifting angle to award points for.'),
+    new Setting('vehicles', 'drifting_min_speed', Setting.TYPE_NUMBER, 50, 'Minimum speed in km/h before awarding points for a drift.'),
+    new Setting('vehicles', 'respawn_death_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds a vehicle should respawn after its death.'),
+    new Setting('vehicles', 'respawn_ephemeral_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds after which ephemeral vehicles should respawn.'),
+    new Setting('vehicles', 'respawn_persistent_delay_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds after last usage for vehicles to respawn.'),
+    new Setting('vehicles', 'streamer_interval_ms', Setting.TYPE_NUMBER, 1000, 'Interval at which the vehicle streamer runs, in milliseconds.'),
+    new Setting('vehicles', 'streamer_max_distance', Setting.TYPE_NUMBER, 300, 'Maximum streaming distance before creating vehicles for a player.'),
+    new Setting('vehicles', 'streamer_max_visible', Setting.TYPE_NUMBER, 1000, 'How many vehicles should at most be visible on the server?'),
+    new Setting('vehicles', 'vehicle_limit_administrator', Setting.TYPE_NUMBER, 5, 'Maximum number of vehicles administrators are allowed to create.'),
+    new Setting('vehicles', 'vehicle_limit_player', Setting.TYPE_NUMBER, 1, 'Maximum number of vehicles players are allowed to create.'),
 ];

@@ -1,17 +1,20 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 import Feature from 'components/feature_manager/feature.js';
 import VehicleCommands from 'features/vehicles/vehicle_commands.js';
 import VehicleManager from 'features/vehicles/vehicle_manager.js';
-import VehicleNatives from 'features/vehicles/vehicle_natives.js';
 import { VehicleDecorations } from 'features/vehicles/vehicle_decorations.js';
 
 // The Vehicles feature is responsible for the features one might find around San Andreas. It allows
 // all players to create vehicles on demand, administrators to store and modify them persistently.
 // The vehicles will be created through the streamer, so there is no strict limit to them.
 class Vehicles extends Feature {
+    commands_ = null;
+    decorations_ = null;
+    manager_ = null;
+
     constructor() {
         super();
 
@@ -33,23 +36,22 @@ class Vehicles extends Feature {
         // Used for decorations
         const settings = this.defineDependency('settings');
 
-        this.manager_ = new VehicleManager(streamer);
-        this.manager_.loadVehicles();
+        // The VehicleManager is responsible for loading and keeping track of all vehicles created
+        // by this feature, which includes the ephemeral vehicles.
+        this.manager_ = new VehicleManager(settings, streamer);
 
-        this.natives_ = new VehicleNatives(this.manager_);
-
+        // Provides the `/v` command, as well as various other commands for quick vehicle access and
+        // maintenance & control of the vehicles created on the server.
         this.commands_ = new VehicleCommands(
-            this.manager_, abuse, announce, collectables, playground);
+            this.manager_, abuse, announce, collectables, playground, streamer);
 
+        // Able to spawn rich, decorated vehicles on the server.
         this.decorations_ = new VehicleDecorations(settings, announce);
     }
 
     dispose() {
         this.commands_.dispose();
         this.commands_ = null;
-
-        this.natives_.dispose();
-        this.natives_ = null;
 
         this.manager_.dispose();
         this.manager_ = null;

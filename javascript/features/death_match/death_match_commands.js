@@ -11,7 +11,10 @@ export class DeathMatchCommands {
         server.commandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
             .sub('leave')
-                .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))        
+                .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))
+            .sub('stats')
+                .build(DeathMatchCommands.prototype.onStatsCommand.bind(this))
+    
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
         this.manager_ = manager;
@@ -28,6 +31,10 @@ export class DeathMatchCommands {
 
     onLeaveCommand(player) {
         this.manager_.leave(player);
+    }
+
+    onStatsCommand(player) { 
+        this.manager_.showStats(player);
     }
 
     // Cleans up the state created by this class, i.e. removes the command.

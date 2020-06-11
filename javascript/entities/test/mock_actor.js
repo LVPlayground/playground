@@ -102,6 +102,10 @@ class MockActor {
         this.connected_ = false;
         this.manager_.didDisposeActor(this);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object MockActor(${this.modelId_})]`; }
 }
 
 export default MockActor;

@@ -278,7 +278,7 @@ describe('HouseManager', (it, beforeEach) => {
     });
 
     it('should be able to create and remove vehicles for a house', async(assert) => {
-        const serverVehicleCount = server.vehicleManager.count;
+        const serverVehicleCount = streamer.sizeForTesting;
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);
@@ -298,7 +298,7 @@ describe('HouseManager', (it, beforeEach) => {
         });
 
         assert.isTrue(location.settings.vehicles.has(parkingLot));
-        assert.equal(server.vehicleManager.count, serverVehicleCount + 1);
+        assert.equal(streamer.sizeForTesting, serverVehicleCount + 1);
 
         const vehicle = location.settings.vehicles.get(parkingLot);
 
@@ -308,12 +308,11 @@ describe('HouseManager', (it, beforeEach) => {
         await manager.removeVehicle(location, parkingLot, vehicle);
 
         assert.isFalse(location.settings.vehicles.has(parkingLot));
-        assert.equal(server.vehicleManager.count, serverVehicleCount);
+        assert.equal(streamer.sizeForTesting, serverVehicleCount);
     });
 
     it('should remove associated vehicles when removing the house', async(assert) => {
-        const vehicleStreamer = streamer.getVehicleStreamer();
-        const originalVehicleStreamerSize = vehicleStreamer.size;
+        const originalVehicleStreamerSize = streamer.sizeForTesting;
 
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = new Vector(500, 500, 500);
@@ -326,7 +325,7 @@ describe('HouseManager', (it, beforeEach) => {
 
         await manager.removeHouse(location);
 
-        assert.equal(vehicleStreamer.size, originalVehicleStreamerSize - 1);
+        assert.equal(streamer.sizeForTesting, originalVehicleStreamerSize - 1);
     });
 
     it('should handle house extension instances in a sensible way', async(assert) => {

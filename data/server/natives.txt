@@ -14,8 +14,14 @@ IsPlayerEligibleForBenefit
 # native ReportAbuse(playerid, detectorName[], certainty[]);
 ReportAbuse
 
+# native ReportTrailerUpdate(vehicleid, trailerid);
+ReportTrailerUpdate
+
 # native SetIsRegistered(playerid, bool: isRegistered);
 SetIsRegistered
+
+# native MarkVehicleMoved(vehicleId);
+MarkVehicleMoved
 
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
@@ -25,9 +31,6 @@ GetPlayerTeleportStatus
 
 # native ReportPlayerTeleport(playerId, timeLimited);
 ReportPlayerTeleport
-
-# native IsPersistentVehicle(vehicleId);
-IsPersistentVehicle
 
 # native IsCommunicationMuted();
 IsCommunicationMuted

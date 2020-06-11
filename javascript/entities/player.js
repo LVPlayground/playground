@@ -453,6 +453,10 @@ export class Player extends Supplementable {
     leaveVehicleWithAnimation() { pawnInvoke('RemovePlayerFromVehicle', 'i', this.#id_); }
 
     // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object Player(${this.#id_}, ${this.#name_})]`; }
+
+    // ---------------------------------------------------------------------------------------------
     // Stuff that needs a better home
     // ---------------------------------------------------------------------------------------------
     get syncedData() { return this.#syncedData_; }

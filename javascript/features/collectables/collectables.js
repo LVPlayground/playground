@@ -79,19 +79,14 @@ export default class Collectables extends Feature {
     // tied to a particular achievement that can be awarded to the |player|. This method is the
     // canonical place for such associations to live, used by both JavaScript and Pawn code.
     isPlayerEligibleForBenefit(player, benefit) {
-        const requiredAchievements = kBenefitMapping.get(benefit) || [];
+        const requiredAchievement = kBenefitMapping.get(benefit);
         const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
 
         // Allow the |benefit| if the requirements are not known, otherwise it's unachievable.
-        if (!requiredAchievements.length || !achievements)
+        if (!requiredAchievement)
             return true;
 
-        for (const achievement of requiredAchievements) {
-            if (!achievements.hasAchievement(player, achievement, /* round= */ false))
-                return false;
-        }
-
-        return true;
+        return achievements.hasAchievement(player, requiredAchievement, /* round= */ false);
     }
 
     // ---------------------------------------------------------------------------------------------

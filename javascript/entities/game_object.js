@@ -155,6 +155,10 @@ export class GameObject {
 
         this.#id_ = GameObject.kInvalidId;
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object GameObject(${this.#id_}, ${this.#modelId_})]`; }
 }
 
 // Expose the GameObject object globally since it will be commonly used.

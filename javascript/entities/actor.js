@@ -72,6 +72,10 @@ class Actor {
 
         this.manager_.didDisposeActor(this);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object Actor(${this.id_}, ${this.modelId_})]`; }
 }
 
 // Expose the Actor object globally since it is an entity.

@@ -4,7 +4,6 @@
 
 import { CleoDmageDetector } from 'features/abuse/detectors/cleo_dmage_detector.js';
 import { CleoProAimDetector } from 'features/abuse/detectors/cleo_proaim_detector.js';
-import { IllegalVehicleEntryDetector } from 'features/abuse/detectors/illegal_vehicle_entry_detector.js';
 
 // Maintains the list of abuse detectors relevant to the server. The `/lvp settings` command can be
 // used to enable or disable detectors at runtime, and not all are enabled by default.
@@ -21,7 +20,6 @@ export class AbuseDetectors {
             // Setting                                Constructor
             [ 'abuse/detector_cleo_dmage',            CleoDmageDetector ],
             [ 'abuse/detector_cleo_proaim',           CleoProAimDetector ],
-            [ 'abuse/detector_illegal_vehicle_entry', IllegalVehicleEntryDetector ],
         ]);
 
         this.settings_ = settings;

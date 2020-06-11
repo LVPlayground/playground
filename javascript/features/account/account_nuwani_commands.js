@@ -325,10 +325,11 @@ export class AccountNuwaniCommands {
             const registered = player.account.isRegistered();
             const vip = player.isVip();
             const minimized = isPlayerMinimized(player.id);
+            const temporary = player.isTemporaryAdministrator();
             const level = player.isUndercover() ? Player.LEVEL_PLAYER
                                                 : player.level;
 
-            players.push({ name, registered, vip, level, minimized });
+            players.push({ name, registered, vip, temporary, level, minimized });
         });
 
         // (2) Sort the list of |players| alphabetically for display. 
@@ -351,7 +352,8 @@ export class AccountNuwaniCommands {
                         break;
 
                     case Player.LEVEL_ADMINISTRATOR:
-                        color = '04';  // red
+                        color = info.temporary ? '10'   // blue-greyish
+                                               : '04';  // red
                         break;
 
                     case Player.LEVEL_MANAGEMENT:

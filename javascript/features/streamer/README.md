@@ -1,30 +1,36 @@
-# Streamers
+# Vehicle Streamer
+San Andreas: Multiplayer is limited to 2,000 vehicles, whereas we'd like to offer an experience on
+Las Venturas Playground where it feels lik there are vehicles _everywhere_. To that end, we have
+implemented a vehicle streamer to support an arbitrary number of vehicles.
 
-## Global EntityStreamer
-Some entities, such as vehicles and pickups, can't be created on a per-player basis by SA-MP, and
-instead exist for all players connected to the server. These also often have a high processing cost
-on the server, which attempts to do its own streaming radius-based streaming.
+Part of the logic has been implemented as part of the
+[Streamer module](/LVPlayground/playgroundjs-plugin/blob/master/src/playground/bindings/modules/streamer_module.h)
+in PlaygroundJS, which employs an [R-tree](https://en.wikipedia.org/wiki/R-tree) running on a
+background thread to represent all the vehicles, using the
+[k-nearest neighbors](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) algorithm to
+identify the vehicles closest to each player. We then, iteratively, determine a balanced set of
+vehicles which should exist on the server, to make sure each player has their fair share available.
 
-We [implement an algorithm](entity_streamer_global.js) that is a lot smarter than this. The entities
-are stored in a 3D space in an [R* tree](https://en.wikipedia.org/wiki/R*_tree) to enable very fast
-and accurate [kNN searches](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
+## Concepts
 
-A _streaming cycle_ starts by finding the `N` closest entities to a player and comparing them with
-the entities previously closest to the player. This allows us to determine the entities that went
-either in or out of range. These entities then have their _reference count_ adjusted accordingly.
+### Ephemeral and persistent vehicles
+Vehicles that have no `respawnDelay` set will be considered _ephemeral vehicles_. They will be
+deleted from the server three minutes after their most recent use. Vehicles that are given a
+`respawnDelay` are considered _persistent vehicles_. They will respawn after the configured delay
+following most recent use, and be reverted back to their initial configuration.
 
-When an entity's _reference count_ increases from zero to one, it means that it's in range for at
-least one player and hasn't been created on the server yet. This is when we create the entity.
+### Vehicle cache
+Imagine that there are 25 players in-game, each of which are evenly spread out over the map. Given
+our default limit of 1,000 vehicles, this means fourty unique vehicles can be created for each of
+them. Given a streaming radius of 300 units, this means that we can create 17,160 vehicles on the
+server without any being in range for multiple players.
 
-When an entity's _reference count_ decreases down to zero, it means that the entity no longer is in
-range for any player. This is where the entity can be deleted.
+In practice, this will never happen: players are near each other, whether it be fighting in Las
+Venturas, or driving around in a cruise. This means that _less_ than 1,000 vehicles are required.
+Creating a vehicle from scratch is expensive, however, which is why we _cache_ them.
 
-However, creating and deleting entities eagerly causes a lot of churn on the server, and potentially
-a lot of traffic to players that could otherwise be avoided. Because of this, we use [LRU caching]
-(https://en.wikipedia.org/wiki/Cache_algorithms#LRU) together with an _entity saturation ratio_ to
-cache unreferenced entities. This cache is prioritized by the total number of references an entity
-has ever received. This favors less churn in densely populated areas.
+Instead of deleting a vehicle straight away when it's out of range, it will be added to the vehicle
+cache. When it becomes in-range again, it'll be re-activated from the cache, rather than be created
+from scratch. When there are too many vehicles instead, the least recently used vehicle will be
+deleted from the cache.
 
-In the future, a half time will be applied to the total number of references received by entities to
-reduce bias in area population, which may become an issue when the server has been running for a
-very long time.

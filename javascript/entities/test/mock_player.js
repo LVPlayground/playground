@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockVehicle from 'entities/test/mock_vehicle.js';
+import { MockVehicle } from 'entities/test/mock_vehicle.js';
 import { Player } from 'entities/player.js';
 import { Vector } from 'base/vector.js';
 
@@ -147,7 +147,7 @@ export class MockPlayer extends Player {
         if (this.vehicle !== null) {
             dispatchEvent('playerstatechange', {
                 playerid: this.id,
-                oldstate: this.vehicleSeat == Vehicle.SEAT_DRIVER ? Player.kStateVehicleDriver
+                oldstate: this.vehicleSeat == Vehicle.kSeatDriver ? Player.kStateVehicleDriver
                                                                   : Player.kStateVehiclePassenger,
                 newstate: Player.kStateOnFoot,
             });

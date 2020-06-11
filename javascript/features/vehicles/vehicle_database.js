@@ -1,22 +1,22 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
+
+import { PersistentVehicleInfo } from 'features/vehicles/persistent_vehicle_info.js';
 
 // Query to load all created vehicles from the database.
 const LOAD_VEHICLES_QUERY = `
     SELECT
-        vehicle_id,
-        vehicle_access_type,
-        vehicle_access_value,
-        model_id,
-        position_x,
-        position_y,
-        position_z,
-        rotation,
-        primary_color,
-        secondary_color,
-        paintjob,
-        interior_id
+        vehicles.vehicle_id,
+        vehicles.model_id,
+        vehicles.position_x,
+        vehicles.position_y,
+        vehicles.position_z,
+        vehicles.rotation,
+        vehicles.paintjob,
+        vehicles.primary_color,
+        vehicles.secondary_color,
+        vehicles.number_plate
     FROM
         vehicles
     WHERE
@@ -26,26 +26,25 @@ const LOAD_VEHICLES_QUERY = `
 const CREATE_VEHICLE_QUERY = `
     INSERT INTO
         vehicles
-        (vehicle_access_type, vehicle_access_value, model_id, position_x, position_y, position_z,
-         rotation, primary_color, secondary_color, paintjob, interior_id, vehicle_created)
+        (model_id, position_x, position_y, position_z, rotation, paintjob, primary_color,
+         secondary_color, number_plate, vehicle_created)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
 
 // Query to update the details of an existing persistent vehicle in the database.
 const UPDATE_VEHICLE_QUERY = `
     UPDATE
         vehicles
     SET
-        vehicle_access_type = ?,
-        vehicle_access_value = ?,
         model_id = ?,
         position_x = ?,
         position_y = ?,
         position_z = ?,
         rotation = ?,
+        paintjob = ?,
         primary_color = ?,
         secondary_color = ?,
-        paintjob = ?,
+        number_plate = ?,
         interior_id = ?
     WHERE
         vehicle_id = ?`;
@@ -77,46 +76,47 @@ class VehicleDatabase {
 
         const data = await server.database.query(LOAD_VEHICLES_QUERY);
         data.rows.forEach(info => {
-            vehicles.push({
-                databaseId: info.vehicle_id,
-
-                accessType: info.vehicle_access_type,
-                accessValue: info.vehicle_access_value,
+            const vehicleInfo = new PersistentVehicleInfo({
+                vehicleId: info.vehicle_id,
 
                 modelId: info.model_id,
+
                 position: new Vector(info.position_x, info.position_y, info.position_z),
                 rotation: info.rotation,
 
-                interiorId: info.interior_id,
-                virtualWorld: 0 /* main world */,
-
+                paintjob: info.paintjob,
                 primaryColor: info.primary_color,
                 secondaryColor: info.secondary_color,
-                paintjob: info.paintjob
+                numberPlate: info.number_plate,
             });
+
+            vehicles.push(vehicleInfo);
         });
 
         return vehicles;
     }
 
-    // Asynchronously creates the |databaseVehicle| in the database.
-    async createVehicle(databaseVehicle) {
-        const data = await server.database.query(CREATE_VEHICLE_QUERY, databaseVehicle.accessType,
-            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
-            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
-            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
-            databaseVehicle.interiorId);
-
-        databaseVehicle.databaseId = data.insertId;
+    // Asynchronously creates the |vehicleSettings| in the database.
+    async createVehicle(vehicleSettings) {
+        const data = await server.database.query(CREATE_VEHICLE_QUERY, vehicleSettings.modelId,
+            vehicleSettings.position.x, vehicleSettings.position.y, vehicleSettings.position.z,
+            vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
+            vehicleSettings.secondaryColor, vehicleSettings.numberPlate);
+        
+        return new PersistentVehicleInfo(settings, {
+            vehicleId: data.insertId
+        });
     }
 
     // Asynchronously updates the |databaseVehicle| in the database.
-    async updateVehicle(databaseVehicle) {
-        await server.database.query(UPDATE_VEHICLE_QUERY, databaseVehicle.accessType,
-            databaseVehicle.accessValue, databaseVehicle.modelId, databaseVehicle.position.x,
-            databaseVehicle.position.y, databaseVehicle.position.z, databaseVehicle.rotation,
-            databaseVehicle.primaryColor, databaseVehicle.secondaryColor, databaseVehicle.paintjob,
-            databaseVehicle.interiorId, databaseVehicle.databaseId);
+    async updateVehicle(vehicleSettings, persistentVehicleInfo) {
+        await server.database.query(UPDATE_VEHICLE_QUERY, vehicleSettings.modelId,
+            vehicleSettings.position.x, vehicleSettings.position.y, vehicleSettings.position.z,
+            vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
+            vehicleSettings.secondaryColor, vehicleSettings.numberPlate,
+            persistentVehicleInfo.vehicleId);
+        
+        return new PersistentVehicleInfo(persistentVehicleInfo, vehicleSettings);
     }
 
     // Asynchronously updates the |databaseVehicle|'s access values in the database.

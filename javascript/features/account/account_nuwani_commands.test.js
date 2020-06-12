@@ -18,20 +18,18 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
     let commands = null;
 
     beforeEach(() => {
-        const database = new MockAccountDatabase();
+        const account = server.featureManager.loadFeature('account');
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
 
         commandManager = nuwani.commandManager;
-        commands = new AccountNuwaniCommands(commandManager, database);
-        database.setPasswordSalt('s4lt');
+        commands = account.nuwaniCommands_;
+
+        account.database_.setPasswordSalt('s4lt');
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     const kFieldAccessibleByAdmins = 'skin_id';
     const kFieldNotAccessibleByAdmins = 'online_time';

@@ -16,10 +16,12 @@ const kHourSeconds = kMinuteSeconds * 60;
 export class AccountNuwaniCommands {
     commandManager_ = null;
     database_ = null;
+    playerIdentifier_ = null;
 
-    constructor(commandManager, database) {
+    constructor(commandManager, database, playerIdentifier) {
         this.commandManager_ = commandManager;
         this.database_ = database;
+        this.playerIdentifier_ = playerIdentifier;
 
         // !addalias [nickname] [alias]
         this.commandManager_.buildCommand('addalias')
@@ -101,6 +103,12 @@ export class AccountNuwaniCommands {
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(AccountNuwaniCommands.prototype.onSetValueCommand.bind(this));
+        
+        // !whois [player]
+        this.commandManager_.buildCommand('whois')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .build(AccountNuwaniCommands.prototype.onWhoisCommand.bind(this));
     }
 
     // !addalias [nickname] [alias]
@@ -520,6 +528,16 @@ export class AccountNuwaniCommands {
         context.respond(format(messageFormat, ...params));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Enables administrators to quickly look up if the |targetPlayer| might be another player who's
+    // recently been on the server. Results will be displayed with a level of certainty.
+    async onWhoisCommand(context, targetPlayer) {
+
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Explodes the given |time| in seconds to a structure containing hours, minutes and seconds.
     explodeOnlineTime(time) {
         const hours = Math.floor(time / kHourSeconds);
@@ -530,6 +548,7 @@ export class AccountNuwaniCommands {
     }
 
     dispose() {
+        this.commandManager_.removeCommand('whois');
         this.commandManager_.removeCommand('setvalue');
         this.commandManager_.removeCommand('getvalue');
         this.commandManager_.removeCommand('supported');

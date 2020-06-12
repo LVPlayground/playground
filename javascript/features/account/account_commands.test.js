@@ -2,10 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { AccountCommands } from 'features/account/account_commands.js';
-import { MockAccountDatabase } from 'features/account/test/mock_account_database.js';
-
-describe('AccountCommands', (it, beforeEach, afterEach) => {
+describe('AccountCommands', (it, beforeEach) => {
     let commands = null;
     let database = null;
 
@@ -15,9 +12,9 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     let settings = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        const account = server.featureManager.loadFeature('account');
         
-        database = new MockAccountDatabase();
+        database = account.database_;
         database.setPasswordSalt('s4lt$');
 
         gunther = server.playerManager.getById(0 /* Gunther */);
@@ -26,13 +23,11 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         settings = server.featureManager.loadFeature('settings');
 
         // Create the commands so that the server is aware of them.
-        commands = new AccountCommands(() => announce, () => playground, () => settings, database);
+        commands = account.commands_;
 
         // Give |russell| administrator rights.
         russell.level = Player.LEVEL_ADMINISTRATOR;
     });
-
-    afterEach(() => commands.dispose());
 
     it('should not work if the player is not registered', async (assert) => {
         assert.isFalse(russell.account.isRegistered());

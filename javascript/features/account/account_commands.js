@@ -20,6 +20,7 @@ const kRegistrationFile = 'data/commands/register.json';
 // abilities is gated through the Playground feature, which manages command access.
 export class AccountCommands {
     announce_ = null;
+    playerIdentifier_ = null;
     playground_ = null;
     settings_ = null;
 
@@ -29,8 +30,9 @@ export class AccountCommands {
     // The AccountDatabase instance which will execute operations.
     database_ = null;
 
-    constructor(announce, playground, settings, database) {
+    constructor(announce, playerIdentifier, playground, settings, database) {
         this.announce_ = announce;
+        this.playerIdentifier_ = playerIdentifier;
         this.playground_ = playground;
         this.settings_ = settings;
 
@@ -51,6 +53,12 @@ export class AccountCommands {
         // /register
         server.commandManager.buildCommand('register')
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
+        
+        // /whois [player]
+        server.commandManager.buildCommand('whois')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .build(AccountCommands.prototype.onWhoisCommand.bind(this));
     }
 
     // /account
@@ -756,6 +764,14 @@ export class AccountCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Enables administrators to quickly look up if the |targetPlayer| might be another player who's
+    // recently been on the server. Results will be displayed with a level of certainty.
+    async onWhoisCommand(player, targetPlayer) {
+
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.
     formatDuration(duration) {
         const hours = Math.floor(duration / 3600);
@@ -800,7 +816,10 @@ export class AccountCommands {
         this.announce_ = null;
         this.database_ = null;
         this.playground_ = null;
+        this.playerIdentifier_ = null;
 
+        server.commandManager.removeCommand('whois');
+        server.commandManager.removeCommand('register');
         server.commandManager.removeCommand('account');
     }
 }

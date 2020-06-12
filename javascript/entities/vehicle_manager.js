@@ -111,19 +111,6 @@ class VehicleManager {
         this.notifyObservers('onVehicleDeath', vehicle);
     }
 
-    // Called when a vehicle has streamed in for a particular player. The vehicle needs to be re-
-    // locked if a lock was in place for the particular player.
-    onVehicleStreamIn(event) {
-        const player = server.playerManager.getById(event.forplayerid);
-        const vehicle = this.vehicles_.get(event.vehicleid);
-
-        if (!player || !vehicle)
-            return;  // either the player or the vehicle are not recognized
-
-        if (vehicle.isLockedForPlayer(player))
-            vehicle.lockForPlayer(player);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     onVehicleMod(event) {

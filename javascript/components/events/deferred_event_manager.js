@@ -48,10 +48,6 @@ export class DeferredEventManager {
                         server.objectManager.onPlayerShootObject(event);
                         break;
 
-                    case 'OnVehicleStreamIn':
-                        server.vehicleManager.onVehicleStreamIn(event);
-                        break;
-
                     default:
                         console.log(`Warning: unhandled deferred event "${type}".`);
                         break;

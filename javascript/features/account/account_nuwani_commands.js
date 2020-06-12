@@ -559,8 +559,10 @@ export class AccountNuwaniCommands {
             return;
         }
 
+        const displayResults = results.splice(0, 5);
+
         const matches = [];
-        for (const result of results) {
+        for (const result of displayResults) {
             let text = '';
 
             if (result.registered)
@@ -592,7 +594,10 @@ export class AccountNuwaniCommands {
             matches.push(text + metadata.join(', ') + ')');
         }
 
-        context.respond('3Results: ' + matches.join(', '));
+        const suffix = results.length ? '15[' + results.length + ' omitted...]'
+                                      : '';
+
+        context.respond('3Results: ' + matches.join(', ') + suffix);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -20,7 +20,6 @@ const kRegistrationFile = 'data/commands/register.json';
 // abilities is gated through the Playground feature, which manages command access.
 export class AccountCommands {
     announce_ = null;
-    playerIdentifier_ = null;
     playground_ = null;
     settings_ = null;
 
@@ -30,9 +29,8 @@ export class AccountCommands {
     // The AccountDatabase instance which will execute operations.
     database_ = null;
 
-    constructor(announce, playerIdentifier, playground, settings, database) {
+    constructor(announce, playground, settings, database) {
         this.announce_ = announce;
-        this.playerIdentifier_ = playerIdentifier;
         this.playground_ = playground;
         this.settings_ = settings;
 

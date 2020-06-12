@@ -351,4 +351,14 @@ describe('AccountDatabase', it => {
         for (const fieldName of administratorFields)
             assert.isTrue(fieldName in fields);
     });
+
+    it('should be able to look up accounts similar to a player', async (assert) => {
+        const instance = new MockAccountDatabase();
+
+        const noResults = await instance.whois('37.48.87.211', 1337);
+        assert.equal(noResults.length, 0);
+
+        const results = await instance.whois('37.48.87.211', 9001);
+        assert.equal(results.length, 3);
+    });
 });

@@ -272,7 +272,55 @@ const PLAYER_BETA_SET_VIP = `
     WHERE
         users.user_id = ?`;
     
-    
+// Query to investigate which players are likely candidates for a given IP address and serial
+// number. Uses a ton of heuristics to get to a reasonable sorting of results.
+const WHOIS_QUERY = `
+    SELECT
+        IFNULL(users.username, sessions.nickname) AS nickname,
+        IF(users.username IS NULL, 0, 1) AS registered,
+        sessions.ip_address,
+        @ip_distance := CASE
+            WHEN sessions.ip_address = ? THEN 1
+            WHEN sessions.ip_address >= ? AND sessions.ip_address <= ? THEN 2
+            WHEN sessions.ip_address >= ? AND sessions.ip_address <= ? THEN 3
+            ELSE 4
+        END AS ip_address_distance,
+        sessions.gpci_hash,
+        @gpci_common := IFNULL(sessions_common_gpci.hits, 0) AS gpci_common,
+        MAX(sessions.session_date) AS last_seen,
+        COUNT(*) AS hits,
+        (
+            IF(@ip_distance = 1, 5, 0) +
+            IF(@ip_distance = 2, 4, 0) +
+            IF(@ip_distance = 3, 2, 0) +
+            IF(sessions.gpci_hash = ? AND sessions_common_gpci.hits IS NULL, 4, 0) +
+            IF(sessions.gpci_hash = ? AND sessions_common_gpci.hits IS NOT NULL, 2, 0) +
+            IF(users.username IS NOT NULL AND COUNT(*) > 25, 2, 0) +
+            IF(users.username IS NOT NULL, 2, 0)
+        ) AS score
+    FROM
+        sessions
+    LEFT JOIN
+        sessions_common_gpci ON sessions_common_gpci.gpci_hash = sessions.gpci_hash AND
+                                sessions_common_gpci.gpci_hash > 250
+    LEFT JOIN
+        users ON users.user_id = sessions.user_id
+    WHERE
+        (
+            (sessions.user_id IS NULL AND sessions.session_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)) OR
+            (sessions.user_id IS NOT NULL AND sessions.session_date > DATE_SUB(NOW(), INTERVAL 18 MONTH))
+        ) AND
+        (
+            (sessions.ip_address >= ? AND sessions.ip_address <= ?) OR
+            (sessions.gpci_hash = ?)
+        )
+    GROUP BY
+        nickname, ip_address_distance, gpci_hash
+    ORDER BY
+        score DESC, hits DESC, last_seen DESC
+    LIMIT
+        20`;
+
 // Regular expression to test whether a string is a valid SA-MP nickname.
 const kValidNicknameExpression = /^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i;
 
@@ -837,5 +885,72 @@ export class AccountDatabase {
     // Changes whether the |userId| has VIP rights or not.
     async setUserVip(userId, vip) {
         await server.database.query(PLAYER_BETA_SET_VIP, (!!vip) ? 1 : 0, userId);
+    }
+    
+    // Query to find similar users based on a given IP address and serial number. Most of the logic
+    // is contained within the query, but some post-processing is done in JavaScript.
+    async whois(ip, serial) {
+        const numericIp = ip2long(ip);
+        const classC = [
+            ip2long(ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.$3.0')),
+            ip2long(ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.$3.255')),
+        ];
+
+        const classB = [
+            ip2long(ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.0.0')),
+            ip2long(ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.255.255')),
+        ];
+
+        const results = await this._whoisQuery(numericIp, classC, classB, serial);
+        const matches = [];
+
+        for (const row of results) {
+            let match = null;
+
+            switch (row.ip_address_distance) {
+                case 1:
+                    match = ip;
+                    break;
+                
+                case 2:
+                    match = ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.$3.*');
+                    break;
+                
+                case 3:
+                    match = ip.replace(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/, '$1.$2.*.*');
+                    break;
+                
+                case 4:
+                    match = 'n/a';
+                    break;
+            }
+
+            matches.push({
+                nickname: row.nickname,
+                registered: !!row.registered,
+                hits: row.hits,
+
+                ip: long2ip(row.ip_address),
+                ipDistance: row.ip_address_distance,
+                ipMatch: match,
+
+                serial: row.gpci_hash,
+                serialCommon: !!row.gpci_common,
+
+                lastSeen: new Date(row.last_seen),
+                score: row.score,
+            });
+        }
+
+        return matches;
+    }
+
+    // Actually executes the WHOIS query for the given information.
+    async _whoisQuery(numericIp, classC, classB, serial) {
+        const result = await server.database.query(
+            WHOIS_QUERY, numericIp, classC[0], classC[1], classB[0], classB[1], serial, serial,
+            classB[0], classB[1], serial);
+        
+        return result && result.rows ? result.rows : [];
     }
 }

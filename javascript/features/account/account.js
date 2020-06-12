@@ -6,7 +6,6 @@ import { AccountCommands } from 'features/account/account_commands.js';
 import { AccountDatabase } from 'features/account/account_database.js';
 import { AccountNuwaniCommands } from 'features/account/account_nuwani_commands.js';
 import Feature from 'components/feature_manager/feature.js';
-import { PlayerIdentifier } from 'features/account/player_identifier.js';
 
 import { MockAccountDatabase } from 'features/account/test/mock_account_database.js';
 
@@ -34,14 +33,9 @@ export default class Account extends Feature {
         this.database_ = server.isTest() ? new MockAccountDatabase()
                                          : new AccountDatabase();
 
-        // The player identifier, which is able to determine whether a given player might actually
-        // be someone else as well. Takes an IP address & serial number as input.
-        this.playerIdentifier_ = new PlayerIdentifier(this.database_);
-
         // The in-game commands will be made available using this object.
         this.commands_ =
-            new AccountCommands(this.announce_, this.playerIdentifier_, this.playground_, settings,
-                                this.database_);
+            new AccountCommands(this.announce_, this.playground_, settings, this.database_);
 
         this.initializeNuwaniCommands();
     }
@@ -51,8 +45,7 @@ export default class Account extends Feature {
     initializeNuwaniCommands() {
         this.database_.setPasswordSalt(this.nuwani_().configuration.passwordSalt);
         this.nuwaniCommands_ =
-            new AccountNuwaniCommands(this.nuwani_().commandManager, this.database_,
-                                      this.playerIdentifier_);        
+            new AccountNuwaniCommands(this.nuwani_().commandManager, this.database_);        
     }
 
     dispose() {

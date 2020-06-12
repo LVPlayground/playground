@@ -16,12 +16,10 @@ const kHourSeconds = kMinuteSeconds * 60;
 export class AccountNuwaniCommands {
     commandManager_ = null;
     database_ = null;
-    playerIdentifier_ = null;
 
-    constructor(commandManager, database, playerIdentifier) {
+    constructor(commandManager, database) {
         this.commandManager_ = commandManager;
         this.database_ = database;
-        this.playerIdentifier_ = playerIdentifier;
 
         // !addalias [nickname] [alias]
         this.commandManager_.buildCommand('addalias')

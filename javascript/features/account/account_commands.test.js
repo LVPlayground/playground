@@ -665,7 +665,7 @@ describe('AccountCommands', (it, beforeEach) => {
         ]);
     });
 
-    it('should be able to find a player identify', async (assert) => {
+    it('should be able to find player identifies when they are undercover', async (assert) => {
         await russell.identify();
 
         playground.access.addException('whois', russell);

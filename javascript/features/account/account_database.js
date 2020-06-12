@@ -921,7 +921,7 @@ export class AccountDatabase {
                     break;
                 
                 case 4:
-                    match = 'n/a';
+                    match = 'no match';
                     break;
             }
 

@@ -665,6 +665,51 @@ describe('AccountCommands', (it, beforeEach) => {
         ]);
     });
 
+    it('should be able to find a player identify', async (assert) => {
+        await russell.identify();
+
+        playground.access.addException('whois', russell);
+
+        gunther.setIpForTesting('37.48.87.211');
+        gunther.setSerialForTesting(1337);  // no results
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whois Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Who is Gunther?!');
+        assert.includes(russell.lastDialog, 'their first playing session');
+
+        gunther.setSerialForTesting(9001);  // results
+        
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whois Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Who is Gunther?!');
+
+        const result = russell.getLastDialogAsTable();
+        assert.equal(result.rows.length, 3);
+        assert.deepEqual(result.rows, [
+            [
+                '[BB]Joe {90A4AE}(27x)',
+                '{FFEE58}37.48.87.211',
+                '{FFEE58}match',
+                '14 days ago',
+            ],
+            [
+                'TotallyNotJoe',
+                '37.48.*.*',
+                '{BEC7CC}no match',
+                '6 months ago',
+            ],
+            [
+                '{BEC7CC}MaybeJoe {90A4AE}(12x)',
+                '{BEC7CC}no match',
+                '{FFEE58}match {FF7043}(common)',
+                '4 days ago',
+            ]
+        ]);
+    });
+
     it('is able to format duration', async (assert) => {
         assert.equal(commands.formatDuration(0), '0:00:00');
         assert.equal(commands.formatDuration(1), '0:00:01');

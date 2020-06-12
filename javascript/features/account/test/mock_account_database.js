@@ -253,9 +253,9 @@ export class MockAccountDatabase extends AccountDatabase {
                     registered: 1,
                     ip_address: 623925203,  // 37.48.87.211
                     ip_address_distance: 1,
-                    gpci_hash: 2652315008,
+                    gpci_hash: 9001,
                     gpci_common: 0,
-                    last_seen: '2020-05-31 10:15:51',
+                    last_seen: (new Date(Date.now() - 14.35 * 86400 * 1000)).toString(),
                     hits: 27,
                     score: 9,
                 },
@@ -264,10 +264,10 @@ export class MockAccountDatabase extends AccountDatabase {
                     registered: 1,
                     ip_address: 623905868,  // 37.48.12.76
                     ip_address_distance: 3,
-                    gpci_hash: 3637452349,
+                    gpci_hash: 1338,
                     gpci_common: 0,
-                    last_seen: '2020-06-01 18:41:32',
-                    hits: 3,
+                    last_seen: (new Date(Date.now() - 198.35 * 86400 * 1000)).toString(),
+                    hits: 1,
                     score: 6,
                 },
                 {
@@ -275,9 +275,9 @@ export class MockAccountDatabase extends AccountDatabase {
                     registered: 0,
                     ip_address: 2130706433,  // 127.0.0.1
                     ip_address_distance: 4,
-                    gpci_hash: 2652315008,
+                    gpci_hash: 9001,
                     gpci_common: 1,
-                    last_seen: '2020-05-12 16:28:12',
+                    last_seen: (new Date(Date.now() - 4.35 * 86400 * 1000)).toString(),
                     hits: 12,
                     score: 4,
                 }

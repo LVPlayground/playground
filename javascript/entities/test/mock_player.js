@@ -105,7 +105,9 @@ export class MockPlayer extends Player {
 
     kick() { this.disconnectForTesting(/* reason= */ 2); }
 
+    setIpForTesting(ip) { this.#ipAddress_ = ip; }
     setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
+    setSerialForTesting(serial) { this.#serial_ = serial; }
 
     updateName() { this.#name_ += 'a'; /* any change will do */ }
 

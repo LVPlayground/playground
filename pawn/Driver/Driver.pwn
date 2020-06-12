@@ -181,7 +181,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
     // Implementation of the vehicle keys, that can be enabled for players when they achieve certain
     // achievements. The exact requirements are documented elsewhere.
-    if (PlayerSyncedData(playerid)->vehicleKeys() > 0 && AreVehicleKeysAvailable(playerid)) {
+    if (PlayerSyncedData(playerid)->vehicleKeys() > 0 && AreVehicleKeysAvailable(playerid) &&
+            GetPlayerVehicleSeat(playerid) == 0 /* also checks if |playerid| is in a vehicle */) {
         new const vehicleId = GetPlayerVehicleID(playerid);
         new const vehicleKeys = PlayerSyncedData(playerid)->vehicleKeys();
 

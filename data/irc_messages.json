@@ -4,7 +4,9 @@
     "join": "<color:2>[%d] <color:3>*** %s has joined the game.",
     "login": "<color:2>[%d] <color:3>*** %s has logged in.",
     "guest": "<color:2>[%d] <color:3>*** %s has decided to play as %s (guest).",
+
     "quit": "<color:2>[%d] <color:3>*** %s has left the game (%s).",
+    "quit-reason": "<color:2>[%d] <color:3>*** %s has left the game (%s): %s",
 
     "join-ip-gpci": "<prefix:%><color:5>*** <color:4>%s (Id:%d) IP address:<color:5> %s<color:4>, serial:<color:5> %s",
 

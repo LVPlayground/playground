@@ -279,46 +279,45 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     return 1;
 }
 
-// Enable the |left| and or |right| blinkers for |playerid| in |vehicleId|
-SetBlinker(playerid, vehicleId, bool:left, bool:right) {
-    new const blinkerModel = 19294;
+// Enable the |left| and/or |right| blinkers for |playerId| who is driving the |vehicleId|.
+SetBlinker(playerId, vehicleId, bool: left, bool: right) {
+    new const kBlinkerModel = 19294;
     new const modelId = GetVehicleModel(vehicleId);
 
-    if(!VehicleModel(modelId)->isNitroInjectionAvailable()) {
+    if (!VehicleModel(modelId)->isNitroInjectionAvailable())
         return;
-    }
 
-    new Float:sizeX, Float:sizeY, Float:sizeZ;
+    new Float: sizeX, Float: sizeY, Float: sizeZ;
     GetVehicleModelInfo(modelId, VEHICLE_MODEL_INFO_SIZE, sizeX, sizeY, sizeZ);
 
     if (right) {
-        if (!IsValidDynamicObject(g_blinkerObjects[playerid][0])) {
-            g_blinkerObjects[playerid][0] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
-            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][0], vehicleId, sizeX/2.23, sizeY/2.23, 
-                0.1, 0, 0, 0);
+        if (!IsValidDynamicObject(g_blinkerObjects[playerId][0])) {
+            g_blinkerObjects[playerId][0] = CreateDynamicObject(kBlinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerId][0], vehicleId, sizeX / 2.23,
+                                         sizeY / 2.23, 0.1, 0, 0, 0);
 
-            g_blinkerObjects[playerid][1] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
-            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][1], vehicleId, sizeX/2.23, -sizeY/2.23, 
-                0.1, 0, 0, 0);
+            g_blinkerObjects[playerId][1] = CreateDynamicObject(kBlinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerId][1], vehicleId, sizeX / 2.23,
+                                         -sizeY / 2.23, 0.1, 0, 0, 0);
         }
     } else {
-        DestroyDynamicBlinkerObject(playerid, 0);
-        DestroyDynamicBlinkerObject(playerid, 1);
+        DestroyDynamicBlinkerObject(playerId, 0);
+        DestroyDynamicBlinkerObject(playerId, 1);
     }
 
     if (left) {
-        if (!IsValidDynamicObject(g_blinkerObjects[playerid][2])) {
-            g_blinkerObjects[playerid][2] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
-            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][2], vehicleId, -sizeX/2.23, sizeY/2.23, 
-                0.1, 0, 0, 0);
+        if (!IsValidDynamicObject(g_blinkerObjects[playerId][2])) {
+            g_blinkerObjects[playerId][2] = CreateDynamicObject(kBlinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerId][2], vehicleId, -sizeX / 2.23,
+                                         sizeY / 2.23, 0.1, 0, 0, 0);
 
-            g_blinkerObjects[playerid][3] = CreateDynamicObject(blinkerModel, 0, 0, 0, 0, 0, 0);
-            AttachDynamicObjectToVehicle(g_blinkerObjects[playerid][3], vehicleId, -sizeX/2.23, -sizeY/2.23, 
-                0.1, 0, 0, 0);
+            g_blinkerObjects[playerId][3] = CreateDynamicObject(kBlinkerModel, 0, 0, 0, 0, 0, 0);
+            AttachDynamicObjectToVehicle(g_blinkerObjects[playerId][3], vehicleId, -sizeX / 2.23,
+                                         -sizeY / 2.23, 0.1, 0, 0, 0);
         }
     } else {
-        DestroyDynamicBlinkerObject(playerid, 2);
-        DestroyDynamicBlinkerObject(playerid, 3);
+        DestroyDynamicBlinkerObject(playerId, 2);
+        DestroyDynamicBlinkerObject(playerId, 3);
     }
 }
 
@@ -460,8 +459,6 @@ public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_
         return 1;
 
     g_vehicleLastUnoccupiedSyncMark[vehicleid] = currentTime;
-
-    printf("[debug] MarkVehicleMoved(%d)", vehicleid);
 
     // Calls the MarkVehicleMoved() JavaScript native, which will mark the |vehicleid| for respawn.
     MarkVehicleMoved(vehicleid);

@@ -81,8 +81,8 @@ class AccountCommands {
         SendClientMessage(victimId, Color::Information, "Oops.. seems like you're bugged! Please reconnect!");
 
         CSave__OnPlayerDisconnect(victimId);
-        Player(victimId)->scheduleKick();
 
+        Player(victimId)->scheduleKick(ForceReconnectKickReason, "");
         return 1;
     }
 

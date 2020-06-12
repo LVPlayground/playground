@@ -26,3 +26,15 @@ enum ColorPickerResultTarget {
     PlayerColor,
     JavaScriptColor
 };
+
+/**
+ * Reason why a player has left the server, to avoid having "2" (kicked) as a catch-all.
+ */
+enum PlayerKickReason {
+    UnknownKickReason,
+
+    KickedKickReason,
+    BannedKickReason,
+    AutoBannedKickReason,
+    ForceReconnectKickReason
+};

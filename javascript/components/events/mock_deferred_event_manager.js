@@ -15,13 +15,32 @@ export class MockDeferredEventManager {
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerresolveddeath', MockDeferredEventManager.prototype.onPlayerDeath.bind(this));
+        this.callbacks_.addEventListener(
+            'playerweaponshot', MockDeferredEventManager.prototype.onPlayerWeaponShot.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
 
     onPlayerDeath(event) {
-        for (const observer of this.observers_)
-            observer.onPlayerDeath(event);
+        const player = server.playerManager.getById(event.playerid);
+        const killer = server.playerManager.getById(event.killerid);
+
+        if (player) {
+            for (const observer of this.observers_)
+                observer.onPlayerDeath(player, killer, event.reason);
+        }
+    }
+
+    onPlayerWeaponShot(event) {
+        const player = server.playerManager.getById(event.playerid);
+        const position = new Vector(event.fX, event.fY, event.fZ);
+
+        if (player) {
+            for (const observer of this.observers_) {
+                observer.onPlayerWeaponShot(
+                    player, event.weaponid, event.hittype, event.hitid, position);
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

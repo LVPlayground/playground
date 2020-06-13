@@ -5,7 +5,10 @@
 // Observer for player-related events straight from the DeferredEventManager. Any of the methods can
 // be overridden by the implementation of this class.
 export class PlayerEventObserver {
-    // Called when a player has died, potentially by another player. The event is structured as:
-    // { playerid: number, killerid: number, reason: number }
-    onPlayerDeath(event) {}
+    // Called when a player has died, potentially by another player. |killer| may be NULL.
+    onPlayerDeath(player, killer, reason) {}
+
+    // Called when a player has shot their weapon, and potentially hit something. The parameters are
+    // documented here: https://wiki.sa-mp.com/wiki/OnPlayerWeaponShot
+    onPlayerWeaponShot(player, weaponId, hitType, hitId, hitPosition) {}
 }

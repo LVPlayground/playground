@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { PlayerEventObserver } from 'components/events/player_event_observer.js';
+import { Vector } from 'base/vector.js';
 
 // Every how many milliseconds should pending deferred events be read from the server.
 const kDeferredEventReadIntervalMs = 50;  // 20Hz, 10% of server fps
@@ -21,18 +22,14 @@ export class DeferredEventManager {
     async deferredEventDispatcher() {
         await wait(kDeferredEventReadIntervalMs);
 
+        let player, killer, position;
+
         while (!this.disposed_) {
             const events = getDeferredEvents();
             for (const { type, event } of events) {
                 switch (type) {
                     case 'OnDynamicObjectMoved':
                         server.objectManager.onObjectMoved(event);
-                        break;
-                    
-                    case 'OnPlayerResolvedDeath':
-                        for (const observer of this.observers_)
-                            observer.onPlayerDeath(event);
-
                         break;
 
                     case 'OnPlayerEditDynamicObject':
@@ -51,12 +48,38 @@ export class DeferredEventManager {
                         server.pickupManager.onPickupPickedUp(event);
                         break;
                     
+                    case 'OnPlayerResolvedDeath':
+                        player = server.playerManager.getById(event.playerid);
+                        killer = server.playerManager.getById(event.killerid);
+
+                        if (player) {
+                            for (const observer of this.observers_)
+                                observer.onPlayerDeath(player, killer, event.reason);
+                        }
+
+                        break;
+                    
                     case 'OnPlayerSelectDynamicObject':
                         server.playerManager.onPlayerSelectObject(event);
                         break;
                     
                     case 'OnPlayerShootDynamicObject':
                         server.objectManager.onPlayerShootObject(event);
+                        break;
+                    
+                    case 'OnPlayerWeaponShot':
+                        player = server.playerManager.getById(event.playerid);
+                        position = new Vector(event.fX, event.fY, event.fZ);
+
+                        if (player) {
+                            for (const observer of this.observers_) {
+                                observer.onPlayerWeaponShot(
+                                    player, event.weaponid, event.hittype, event.hitid, position);
+                            }
+                        }
+
+                        // TODO: Migrate all the event listeners to observe |this|.
+                        dispatchEvent('playerweaponshot', event);
                         break;
 
                     default:

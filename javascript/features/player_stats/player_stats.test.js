@@ -33,6 +33,9 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(gunther.stats.session.deathCount, 0);
         assert.equal(gunther.stats.session.killCount, 0);
 
+        assert.equal(gunther.stats.session.ratio, 0);
+        assert.equal(russell.stats.session.ratio, 0);
+
         dispatchEvent('playerresolveddeath', {
             playerid: gunther.id,
             killerid: Player.kInvalidId,
@@ -43,6 +46,9 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(gunther.stats.enduring.killCount, 0);
         assert.equal(gunther.stats.session.deathCount, 1);
         assert.equal(gunther.stats.session.killCount, 0);
+
+        assert.equal(gunther.stats.session.ratio, 0);
+        assert.equal(russell.stats.session.ratio, 0);
 
         assert.equal(russell.stats.enduring.deathCount, 0);
         assert.equal(russell.stats.session.deathCount, 0);
@@ -58,8 +64,109 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(gunther.stats.session.deathCount, 1);
         assert.equal(gunther.stats.session.killCount, 1);
 
+        assert.equal(gunther.stats.session.ratio, 1);
+        assert.equal(russell.stats.session.ratio, 0);
+
         assert.equal(russell.stats.enduring.deathCount, 1);
         assert.equal(russell.stats.session.deathCount, 1);
+
+        russell.stats.session.killCount = 200;
+        russell.stats.session.deathCount = 50;
+
+        assert.equal(russell.stats.session.ratio, 4);
+    });
+
+    it('is able to track statistics about individual shots', assert => {
+        assert.equal(gunther.stats.enduring.shotsHit, 0);
+        assert.equal(gunther.stats.enduring.shotsMissed, 0);
+        assert.equal(gunther.stats.enduring.shotsTaken, 0);
+
+        assert.equal(gunther.stats.session.shotsHit, 0);
+        assert.equal(gunther.stats.session.shotsMissed, 0);
+        assert.equal(gunther.stats.session.shotsTaken, 0);
+
+        assert.equal(gunther.stats.enduring.accuracy, 0);
+        assert.equal(gunther.stats.enduring.shots, 0);
+        assert.equal(gunther.stats.enduring.shotsRatio, 0);
+
+        assert.equal(gunther.stats.session.accuracy, 0);
+        assert.equal(gunther.stats.session.shots, 0);
+        assert.equal(gunther.stats.session.shotsRatio, 0);
+
+        dispatchEvent('playerweaponshot', {
+            playerid: gunther.id,
+            weaponid: 24,  // desert eagle
+            hittype: 0,  // nothing
+            hitid: 0,
+            fX: 0,
+            fY: 0,
+            fZ: 0,
+        });
+
+        assert.equal(gunther.stats.enduring.shotsHit, 0);
+        assert.equal(gunther.stats.enduring.shotsMissed, 1);
+        assert.equal(gunther.stats.enduring.shotsTaken, 0);
+
+        assert.equal(gunther.stats.session.shotsHit, 0);
+        assert.equal(gunther.stats.session.shotsMissed, 1);
+        assert.equal(gunther.stats.session.shotsTaken, 0);
+
+        assert.equal(gunther.stats.enduring.accuracy, 0);
+        assert.equal(gunther.stats.enduring.shots, 1);
+        assert.equal(gunther.stats.enduring.shotsRatio, 0);
+
+        assert.equal(gunther.stats.session.accuracy, 0);
+        assert.equal(gunther.stats.session.shots, 1);
+        assert.equal(gunther.stats.session.shotsRatio, 0);
+
+        assert.equal(russell.stats.session.shotsHit, 0);
+        assert.equal(russell.stats.session.shotsMissed, 0);
+        assert.equal(russell.stats.session.shotsTaken, 0);
+
+        dispatchEvent('playerweaponshot', {
+            playerid: russell.id,
+            weaponid: 24,  // desert eagle
+            hittype: 1,  // player
+            hitid: gunther.id,
+            fX: 0,
+            fY: 0,
+            fZ: 0,
+        });
+
+        assert.equal(gunther.stats.enduring.shotsHit, 0);
+        assert.equal(gunther.stats.enduring.shotsMissed, 1);
+        assert.equal(gunther.stats.enduring.shotsTaken, 1);
+
+        assert.equal(gunther.stats.session.shotsHit, 0);
+        assert.equal(gunther.stats.session.shotsMissed, 1);
+        assert.equal(gunther.stats.session.shotsTaken, 1);
+
+        assert.equal(gunther.stats.enduring.accuracy, 0);
+        assert.equal(gunther.stats.enduring.shots, 1);
+        assert.equal(gunther.stats.enduring.shotsRatio, 0);
+
+        assert.equal(gunther.stats.session.accuracy, 0);
+        assert.equal(gunther.stats.session.shots, 1);
+        assert.equal(gunther.stats.session.shotsRatio, 0);
+
+        assert.equal(russell.stats.session.shotsHit, 1);
+        assert.equal(russell.stats.session.shotsMissed, 0);
+        assert.equal(russell.stats.session.shotsTaken, 0);
+
+        assert.equal(russell.stats.enduring.accuracy, 1);
+        assert.equal(russell.stats.enduring.shots, 1);
+        assert.equal(russell.stats.enduring.shotsRatio, 1);
+    
+        russell.stats.session.shotsHit = 50;
+        russell.stats.session.shotsMissed = 150;
+
+        assert.equal(russell.stats.session.shots, 200);
+        assert.equal(russell.stats.session.accuracy, 0.25);
+
+        russell.stats.session.shotsHit = 200;
+        russell.stats.session.shotsTaken = 50;
+
+        assert.equal(russell.stats.session.shotsRatio, 4);
     });
 
     it('is able to create snapshots and differentiate them with current statistics', assert => {

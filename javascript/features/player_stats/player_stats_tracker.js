@@ -16,13 +16,7 @@ export class PlayerStatsTracker extends PlayerEventObserver {
     // ---------------------------------------------------------------------------------------------
 
     // Called when a player has died, potentially by doing of another player.
-    onPlayerDeath(event) {
-        const player = server.playerManager.getById(event.playerid);
-        const killer = server.playerManager.getById(event.killerid);
-
-        if (!player)
-            return;  // possibly a fake kill
-        
+    onPlayerDeath(player, killer, reason) {
         player.stats.enduring.deathCount++;
         player.stats.session.deathCount++;
 
@@ -31,6 +25,26 @@ export class PlayerStatsTracker extends PlayerEventObserver {
         
         killer.stats.enduring.killCount++;
         killer.stats.session.killCount++;
+    }
+
+    // Called when a player has issued a shot.
+    onPlayerWeaponShot(player, weaponId, hitType, hitId, hitPosition) {
+        if (hitType === /* player */ 1) {
+            const victim = server.playerManager.getById(hitId);
+            if (victim && victim !== player) {
+                player.stats.enduring.shotsHit++;
+                player.stats.session.shotsHit++;
+
+                victim.stats.enduring.shotsTaken++;
+                victim.stats.session.shotsTaken++;
+            }
+        } else if (hitType === /* vehicle */ 2) {
+            player.stats.enduring.shotsHit++;
+            player.stats.session.shotsHit++;
+        } else {
+            player.stats.enduring.shotsMissed++;
+            player.stats.session.shotsMissed++;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

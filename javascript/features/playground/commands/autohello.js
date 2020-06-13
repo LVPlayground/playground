@@ -39,7 +39,11 @@ const Greetings = [
     'sup, %s?',
     'morning, %s',
     'Here\'s %s!',
-    'oi %s'
+    'oi %s',
+    'Welcome %s, I hope you have an excellent time!',
+    'Hello %s, welcome to LVP!',
+    'Hello %s, hope you have an excellent stay at Las Venturas Playground!',
+    'Hey %s, I hope you have an excellent time!'
 ];
 
 // Command: /autohello [player?]

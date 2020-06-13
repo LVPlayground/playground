@@ -20,6 +20,7 @@ class Commands extends Feature {
         commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
         commandManager.registerCommand('irc', InfoDialogCommand.create('data/commands/irc.json'));
         commandManager.registerCommand('rules', InfoDialogCommand.create('data/commands/rules.json'));
+        commandManager.registerCommand('vip', InfoDialogCommand.create('data/commands/vip.json'));
 
         // Load the seperated positioning-related commands
         this.positioningCommands_ = new PositioningCommands();
@@ -38,6 +39,7 @@ class Commands extends Feature {
         server.commandManager.removeCommand('help');
         server.commandManager.removeCommand('irc');
         server.commandManager.removeCommand('rules');
+        server.commandManager.removeCommand('vip');
     }
 };
 

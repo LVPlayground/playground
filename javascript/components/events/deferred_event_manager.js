@@ -57,6 +57,8 @@ export class DeferredEventManager {
                                 observer.onPlayerDeath(player, killer, event.reason);
                         }
 
+                        // TODO: Migrate all the event listeners to observe |this|.
+                        dispatchEvent('playerresolveddeath', event);
                         break;
                     
                     case 'OnPlayerSelectDynamicObject':

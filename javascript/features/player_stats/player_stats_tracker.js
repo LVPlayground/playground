@@ -10,6 +10,14 @@ export class PlayerStatsTracker extends PlayerEventObserver {
     constructor() {
         super();
 
+        provideNative(
+            'GetPlayerDeathCountJS', 'i',
+            PlayerStatsTracker.prototype.getPlayerDeathCount.bind(this));
+
+        provideNative(
+            'GetPlayerKillCountJS', 'i',
+            PlayerStatsTracker.prototype.getPlayerKillCount.bind(this));
+
         server.deferredEventManager.addObserver(this);
     }
 
@@ -58,7 +66,25 @@ export class PlayerStatsTracker extends PlayerEventObserver {
 
     // ---------------------------------------------------------------------------------------------
 
+    // native GetPlayerDeathCountJS(playerId);
+    getPlayerDeathCount(playerId) {
+        const player = server.playerManager.getById(playerId);
+        return player ? player.stats.enduring.deathCount : 0;
+        
+    }
+
+    // native GetPlayerKillCountJS(playerId);
+    getPlayerKillCount(playerId) {
+        const player = server.playerManager.getById(playerId);
+        return player ? player.stats.enduring.killCount : 0;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
+        provideNative('GetPlayerDeathCountJS', 'i', () => 0);
+        provideNative('GetPlayerKillCountJS', 'i', () => 0);
+
         server.deferredEventManager.removeObserver(this);
     }
 }

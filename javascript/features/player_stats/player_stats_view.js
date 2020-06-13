@@ -6,6 +6,9 @@
 // statistics for the active playing session, a player's account statistics spanning multiple
 // playing sessions, and a diff view when snapshots are taken.
 export class PlayerStatsView {
+    // Properties that should be ignored when serializing the view.
+    static kIgnoredProperties = new Set(['ratio']);
+
     deathCount = 0;
     killCount = 0;
 

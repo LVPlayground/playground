@@ -61,4 +61,35 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(russell.stats.enduring.deathCount, 1);
         assert.equal(russell.stats.session.deathCount, 1);
     });
+
+    it('is able to create snapshots and differentiate them with current statistics', assert => {
+        const properties = new Map();
+        let index = 0;
+
+        // (1) Gather an array of |properties| that should be representable on the View.
+        for (const property of Object.getOwnPropertyNames(gunther.stats.session)) {
+            if (PlayerStatsView.kIgnoredProperties.has(property))
+                continue;
+            
+            properties.set(index++, property);
+        }
+
+        // (2) Populate |gunther|'s current statistics with mock values.
+        for (const [ index, property ] of properties)
+            gunther.stats.session[property] = index;
+
+        const snapshot = gunther.stats.snapshot();
+
+        // (3) Modify |gunther|'s statistics because he's really ace at these things.
+        for (const [ index, property ] of properties)
+            gunther.stats.session[property] += Math.pow(2, index);
+
+        const diff = gunther.stats.diff(snapshot);
+
+        // (4) Confirm that both |gunther|'s current statistics and diff are as expected.
+        for (const [ index, property ] of properties) {
+            assert.equal(gunther.stats.session[property], index + Math.pow(2, index));
+            assert.equal(diff[property], Math.pow(2, index));
+        }
+    });
 });

@@ -19,9 +19,40 @@ export class PlayerStatsSupplement extends Supplement {
         this.#session_ = new PlayerStatsView();
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Gets a PlayerStatsView instance for the player's statistics over the life of their account.
     get enduring() { return this.#enduring_; }
 
     // Gets a PlayerStatsView instance for the player's statistics during this playing session.
     get session() { return this.#session_; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns a difference between the player's current statistics and the given |snapshot|.
+    diff(snapshot) {
+        const view = new PlayerStatsView();
+
+        for (const property of Object.getOwnPropertyNames(this.#session_)) {
+            if (PlayerStatsView.kIgnoredProperties.has(property))
+                continue;
+
+            view[property] = this.#session_[property] - (snapshot.get(property) ?? 0);
+        }
+
+        return view;
+    }
+
+    // Returns a snapshot of the player's session statistics at this very moment.
+    snapshot() {
+        const snapshot = new Map();
+        for (const property of Object.getOwnPropertyNames(this.#session_)) {
+            if (PlayerStatsView.kIgnoredProperties.has(property))
+                continue;
+            
+            snapshot.set(property, this.#session_[property]);
+        }
+
+        return snapshot;
+    }
 }

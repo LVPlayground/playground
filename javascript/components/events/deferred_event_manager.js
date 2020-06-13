@@ -22,7 +22,7 @@ export class DeferredEventManager {
     async deferredEventDispatcher() {
         await wait(kDeferredEventReadIntervalMs);
 
-        let player, killer, position;
+        let player, killer, issuer, position;
 
         while (!this.disposed_) {
             const events = getDeferredEvents();
@@ -65,6 +65,21 @@ export class DeferredEventManager {
                     
                     case 'OnPlayerShootDynamicObject':
                         server.objectManager.onPlayerShootObject(event);
+                        break;
+                    
+                    case 'OnPlayerTakeDamage':
+                        player = server.playerManager.getById(event.playerid);
+                        issuer = server.playerManager.getById(event.issuerid);
+
+                        if (player && issuer) {
+                            for (const observer of this.observers_) {
+                                observer.onPlayerTakeDamage(
+                                    player, issuer, event.amount, event.weaponid, event.bodypart);
+                            }
+                        }
+
+                        // TODO: Migrate all the event listeners to observe |this|.
+                        dispatchEvent('playertakedamage', event);
                         break;
                     
                     case 'OnPlayerWeaponShot':

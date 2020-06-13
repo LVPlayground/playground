@@ -27,6 +27,15 @@ export class PlayerStatsTracker extends PlayerEventObserver {
         killer.stats.session.killCount++;
     }
 
+    // Called when a player has reported taking damage.
+    onPlayerTakeDamage(player, issuer, amount, weaponId, bodyPart) {
+        player.stats.enduring.damageTaken += amount;
+        player.stats.session.damageTaken += amount;
+
+        issuer.stats.enduring.damageGiven += amount;
+        issuer.stats.session.damageGiven += amount;
+    }
+
     // Called when a player has issued a shot.
     onPlayerWeaponShot(player, weaponId, hitType, hitId, hitPosition) {
         if (hitType === /* player */ 1) {

@@ -6,14 +6,27 @@
 // statistics for the active playing session, a player's account statistics spanning multiple
 // playing sessions, and a diff view when snapshots are taken.
 export class PlayerStatsView {
+    // ---------------------------------------------------------------------------------------------
     // Properties that should be ignored when serializing the view.
-    static kIgnoredProperties = new Set(['accuracy', 'ratio', 'shots', 'shotsRatio']);
+    static kIgnoredProperties = new Set([
+        'accuracy', 'damageRatio', 'ratio', 'shots', 'shotsRatio'
+    ]);
+
+    // ---------------------------------------------------------------------------------------------
 
     deathCount = 0;
     killCount = 0;
 
     // Gets the kills/deaths ratio based on the data in this view.
     get ratio() { return this.deathCount ? this.killCount / this.deathCount : this.killCount; }
+
+    damageGiven = 0;
+    damageTaken = 0;
+
+    // Gets the ratio of giving damage vs. taking damage, when counting the damage amounts.
+    get damageRatio() {
+        return this.damageTaken ? this.damageGiven / this.damageTaken : this.damageGiven;
+    }
 
     shotsHit = 0;
     shotsMissed = 0;

@@ -70,7 +70,7 @@ forward OnVehicleStreamOut(vehicleid, forplayerid);
 forward OnActorStreamIn(actorid, forplayerid);
 forward OnActorStreamOut(actorid, forplayerid);
 forward OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
-forward OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart);
+[Deferred] forward OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart);
 forward OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart);
 forward OnPlayerGiveDamageActor(playerid, damaged_actorid, Float:amount, weaponid, bodypart);
 forward OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);

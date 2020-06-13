@@ -169,6 +169,63 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(russell.stats.session.shotsRatio, 4);
     });
 
+    it('is able to include damage information in the statistics', assert => {
+        assert.equal(gunther.stats.enduring.damageGiven, 0);
+        assert.equal(gunther.stats.enduring.damageTaken, 0);
+        assert.equal(gunther.stats.session.damageGiven, 0);
+        assert.equal(gunther.stats.session.damageTaken, 0);
+
+        assert.equal(russell.stats.enduring.damageGiven, 0);
+        assert.equal(russell.stats.enduring.damageTaken, 0);
+        assert.equal(russell.stats.session.damageGiven, 0);
+        assert.equal(russell.stats.session.damageTaken, 0);
+    
+        assert.equal(gunther.stats.session.damageRatio, 0);
+        assert.equal(russell.stats.session.damageRatio, 0);
+
+        dispatchEvent('playertakedamage', {
+            playerid: russell.id,
+            issuerid: gunther.id,
+            amount: 25,
+            weaponid: 24,  // desert eagle
+            bodypart: 3,  // torso
+        });
+
+        assert.equal(gunther.stats.enduring.damageGiven, 25);
+        assert.equal(gunther.stats.enduring.damageTaken, 0);
+        assert.equal(gunther.stats.session.damageGiven, 25);
+        assert.equal(gunther.stats.session.damageTaken, 0);
+
+        assert.equal(russell.stats.enduring.damageGiven, 0);
+        assert.equal(russell.stats.enduring.damageTaken, 25);
+        assert.equal(russell.stats.session.damageGiven, 0);
+        assert.equal(russell.stats.session.damageTaken, 25);
+    
+        assert.equal(gunther.stats.session.damageRatio, 25);
+        assert.equal(russell.stats.session.damageRatio, 0);
+
+        dispatchEvent('playertakedamage', {
+            playerid: gunther.id,
+            issuerid: russell.id,
+            amount: 50,
+            weaponid: 24,  // desert eagle
+            bodypart: 9,  // head
+        });
+
+        assert.equal(gunther.stats.enduring.damageGiven, 25);
+        assert.equal(gunther.stats.enduring.damageTaken, 50);
+        assert.equal(gunther.stats.session.damageGiven, 25);
+        assert.equal(gunther.stats.session.damageTaken, 50);
+
+        assert.equal(russell.stats.enduring.damageGiven, 50);
+        assert.equal(russell.stats.enduring.damageTaken, 25);
+        assert.equal(russell.stats.session.damageGiven, 50);
+        assert.equal(russell.stats.session.damageTaken, 25);
+    
+        assert.equal(gunther.stats.session.damageRatio, 0.5);
+        assert.equal(russell.stats.session.damageRatio, 2);
+    });
+
     it('is able to create snapshots and differentiate them with current statistics', assert => {
         const properties = new Map();
         let index = 0;

@@ -16,6 +16,8 @@ export class MockDeferredEventManager {
         this.callbacks_.addEventListener(
             'playerresolveddeath', MockDeferredEventManager.prototype.onPlayerDeath.bind(this));
         this.callbacks_.addEventListener(
+            'playertakedamage', MockDeferredEventManager.prototype.onPlayerTakeDamage.bind(this));
+        this.callbacks_.addEventListener(
             'playerweaponshot', MockDeferredEventManager.prototype.onPlayerWeaponShot.bind(this));
     }
 
@@ -28,6 +30,18 @@ export class MockDeferredEventManager {
         if (player) {
             for (const observer of this.observers_)
                 observer.onPlayerDeath(player, killer, event.reason);
+        }
+    }
+
+    onPlayerTakeDamage(event) {
+        const player = server.playerManager.getById(event.playerid);
+        const issuer = server.playerManager.getById(event.issuerid);
+
+        if (player && issuer) {
+            for (const observer of this.observers_) {
+                observer.onPlayerTakeDamage(
+                    player, issuer, event.amount, event.weaponid, event.bodypart);
+            }
         }
     }
 

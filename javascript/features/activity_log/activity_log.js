@@ -93,7 +93,7 @@ export default class ActivityLog extends Feature {
         if (!sessionId)
             return;  // no session is known for the given |player|
         
-        this.recorder_.finalizePlayerSession(sessionId);
+        this.recorder_.finalizePlayerSession(player, sessionId);
         this.sessionIds_.delete(player);
     }
 

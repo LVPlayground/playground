@@ -38,11 +38,15 @@ IsCommunicationMuted
 # native bool: SpawnPlayerInHouse(playerId);
 SpawnPlayerInHouse
 
+# native GetPlayerKillCountJS(playerid);
+# native GetPlayerDeathCountJS(playerid);
 # native GetPlayerMoneyJS(playerid);
 # native GivePlayerMoneyJS(playerid, amount);
 # native ResetPlayerMoneyJS(playerid);
 # native GetAccountBalanceJS(playerid, balance[]);
 # native DepositToAccountJS(playerid, amount);
+GetPlayerKillCountJS
+GetPlayerDeathCountJS
 GetPlayerMoneyJS
 GivePlayerMoneyJS
 ResetPlayerMoneyJS

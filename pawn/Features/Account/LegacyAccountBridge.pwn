@@ -27,12 +27,6 @@ class LegacyAccountBridge {
         if (skinId != SpawnManager(playerId)->skinId())
             SpawnManager(playerId)->setSkinId(skinId);
 
-        // mutable: kill_count
-        MyKills[playerId] = DatabaseResult(resultId)->readInteger("kill_count");
-
-        // mutable: death_count
-        MyDeaths[playerId] = DatabaseResult(resultId)->readInteger("death_count");
-
         // mutable: money_debt
         iLoan[playerId] = DatabaseResult(resultId)->readInteger("money_debt");
         iLoanPercent[playerId] = 4; /* default to 4% */
@@ -131,8 +125,6 @@ class LegacyAccountBridge {
                 "save_location = \"%.2f %.2f %.2f %.2f %.2f\", " ...
 
                 "online_time = %d, " ...
-                "kill_count = %d, " ...
-                "death_count = %d, " ...
 
                 "money_debt = %d, " ...
                 "money_bounty = %d, " ...
@@ -170,8 +162,6 @@ class LegacyAccountBridge {
 
                 // Gameplay statistics (values)
                 onlineTime,
-                MyKills[playerId],
-                MyDeaths[playerId],
 
                 // Financial information
                 iLoan[playerId],

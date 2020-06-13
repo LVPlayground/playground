@@ -180,13 +180,6 @@ LegacyPlayerDeath(playerid, killerid, reason) {
 
     // ---- MINIGAME & LAME-KILL CHECKS ------------------------------------------------------------
 
-    if (killerid == Player::InvalidId || Player(killerid)->isConnected() == false) {
-        MyDeaths[playerid]++;
-    } else {
-        MyKills[killerid]++;
-        MyDeaths[playerid]++;
-    }
-
     // Brief
     if (briefStatus == BRIEF_STATE_RUNNING && isPlayerBrief[playerid]) {
         CBrief__Death(playerid, killerid);

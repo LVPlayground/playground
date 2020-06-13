@@ -61,8 +61,6 @@ new FCPickup;
 new FCDPickup;
 #endif
 new PlayerHandOfGod[MAX_PLAYERS];
-new MyKills[MAX_PLAYERS];
-new MyDeaths[MAX_PLAYERS];
 new WonMinigame[MAX_PLAYERS];
 new MyDrivebys[MAX_PLAYERS];
 new MyHeliKills[MAX_PLAYERS];

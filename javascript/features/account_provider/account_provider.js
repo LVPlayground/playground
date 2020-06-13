@@ -20,6 +20,10 @@ export default class AccountProvider extends Feature {
         // This is a foundational feature.
         this.markFoundational();
 
+        // Depend on the PlayerStats feature, where certain statistics will be stored. It provides
+        // a Supplement that we expect to be available.
+        this.defineDependency('player_stats');
+
         // The database powers the actual storage layer shared between the commands and other logic
         // provided by this feature. There's only a single instance of it.
         this.database_ = server.isTest() ? new MockAccountProviderDatabase()

@@ -6,9 +6,16 @@
 const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
+        users_mutable.kill_count,
+        users_mutable.death_count,
         users_mutable.money_bank,
         users_mutable.money_cash,
         users_mutable.stats_reaction,
+        users_mutable.stats_damage_given,
+        users_mutable.stats_damage_taken,
+        users_mutable.stats_shots_hit,
+        users_mutable.stats_shots_missed,
+        users_mutable.stats_shots.taken,
         users_mutable.muted
     FROM
         users_mutable

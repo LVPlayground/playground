@@ -15,6 +15,8 @@ describe('PlayerAccountSupplement', it => {
     });
 
     it('should be able to flag high priority database updates', assert => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+
         const data = new PlayerAccountSupplement();
         assert.isFalse(data.hasRequestedUpdate());
 
@@ -24,18 +26,20 @@ describe('PlayerAccountSupplement', it => {
         assert.isTrue(data.hasRequestedUpdate());
 
         // Reading the properties for serialization back to the database will remove the flag.
-        data.prepareForDatabase();
+        data.prepareForDatabase(gunther);
 
         assert.isFalse(data.hasRequestedUpdate());
     });
 
     it('should be able to translate the `muted` field', async (assert) => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+
         const data = new PlayerAccountSupplement();
         assert.isNull(data.mutedUntil);
 
-        data.initializeFromDatabase({ muted: 300 });
+        data.initializeFromDatabase(gunther, { muted: 300 });
 
-        const beforeTimeShiftDatabaseData = data.prepareForDatabase();
+        const beforeTimeShiftDatabaseData = data.prepareForDatabase(gunther);
 
         assert.isNotNull(data.mutedUntil);
         assert.closeTo(
@@ -44,12 +48,12 @@ describe('PlayerAccountSupplement', it => {
 
         await server.clock.advance(150 * 1000);
 
-        const afterTimeShiftDatabaseData = data.prepareForDatabase();
+        const afterTimeShiftDatabaseData = data.prepareForDatabase(gunther);
         assert.closeTo(afterTimeShiftDatabaseData.muted, 150, 5);
         
         await server.clock.advance(150 * 1000);
 
-        const finalDatabaseData = data.prepareForDatabase();
+        const finalDatabaseData = data.prepareForDatabase(gunther);
         assert.equal(finalDatabaseData.muted, 0);
     });
 });

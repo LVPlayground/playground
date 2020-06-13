@@ -44,6 +44,7 @@ class FancyCommand extends Command {
                 break;
 
             case 'parrot':
+            case 'cow':
                 this.fancy_.set(subject, type);
                 this.onPlayerSpawn({ playerid: subject.id });
 
@@ -52,7 +53,7 @@ class FancyCommand extends Command {
                 break;
 
             default:
-                player.sendMessage(Message.COMMAND_USAGE, '/fancy [player] [none/parrot]');
+                player.sendMessage(Message.COMMAND_USAGE, '/fancy [player] [none/cow/parrot]');
                 break;
         }
     }
@@ -70,6 +71,11 @@ class FancyCommand extends Command {
             case 'parrot':
                 pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffffii', player.id, 0, 19079, 16,
                            0.12, 0.05, 0, 180, 270, 0, 1, 1, 1, 0xFFFFFF00, 0xFFFFFF00);
+                break;
+
+            case 'cow':
+                pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 1, 19833, 1, 
+                            -3.14, 0, 0, 180, 90, 0, 3.14, 3.14, 3.14);
                 break;
         }
     }

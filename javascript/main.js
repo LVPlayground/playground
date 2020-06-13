@@ -50,6 +50,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'communication',
         'finance',
         'nuwani',
+        'player_stats',
         'settings',
 
         // -----------------------------------------------------------------------------------------

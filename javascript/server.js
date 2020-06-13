@@ -67,6 +67,9 @@ class Server {
     // Gets the global command manager that owns all commands available to players.
     get commandManager() { return this.commandManager_; }
 
+    // Gets the deferred event manager, which dispatches deferred events.
+    get deferredEventManager() { return this.deferredEventManager_; }
+
     // Gets the feature manager, which is responsible for tracking all enabled features.
     get featureManager() { return this.featureManager_; }
 

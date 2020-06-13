@@ -9,7 +9,7 @@ forward OnPlayerActivityChange(playerid, activity);
 forward OnPlayerLeaveActivity(playerid);
 forward OnPlayerLevelChange(playerid, newlevel, temporary);
 forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
-forward OnPlayerResolvedDeath(playerid, killerid, reason);
+[Deferred] forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId);
 forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);

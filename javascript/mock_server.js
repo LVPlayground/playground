@@ -9,6 +9,7 @@ import CommandManager from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import { MapIconManager } from 'entities/map_icon_manager.js';
+import { MockDeferredEventManager } from 'components/events/mock_deferred_event_manager.js';
 import { MockPickupManager } from 'entities/test/mock_pickup_manager.js';
 import NpcManager from 'entities/npc_manager.js';
 import ObjectManager from 'entities/object_manager.js';
@@ -45,6 +46,7 @@ import Haystack from 'features/haystack/haystack.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
+import PlayerStats from 'features/player_stats/player_stats.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
@@ -62,6 +64,7 @@ class MockServer {
         this.pawnInvoke_ = new MockPawnInvoke();
 
         this.commandManager_ = new CommandManager();
+        this.deferredEventManager_ = new MockDeferredEventManager();
         this.featureManager_ = new FeatureManager();
 
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
@@ -97,6 +100,7 @@ class MockServer {
             haystack: Haystack,
             nuwani: MockNuwani,
             player_settings: PlayerSettings,
+            player_stats: PlayerStats,
             playground: MockPlayground,
             punishments: Punishments,
             radio: Radio,
@@ -133,6 +137,9 @@ class MockServer {
 
     // Gets the command manager. This is a real instance.
     get commandManager() { return this.commandManager_; }
+
+    // Gets the deferred event manager, which dispatches deferred events.
+    get deferredEventManager() { return this.deferredEventManager_; }
 
     // Gets the feature manager. This is a real instance.
     get featureManager() { return this.featureManager_; }
@@ -194,6 +201,7 @@ class MockServer {
     // Disposes the MockServer and uninitializes all owned objects.
     async dispose() {
         this.featureManager_.dispose();
+        this.deferredEventManager_.dispose();
         this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();

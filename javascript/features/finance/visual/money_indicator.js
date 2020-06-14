@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Color from 'base/color.js';
+import { Color } from 'base/color.js';
 import TextDraw from 'components/text_draw/text_draw.js';
 
 // After how many milliseconds should the money indicator be removed again?

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import CommandBuilder from 'components/command_manager/command_builder.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Id of the sound to play when a player has received a message.
 const kMessageReceivedSoundId = 1058;

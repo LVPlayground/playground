@@ -4,7 +4,7 @@
 
 import Command from 'features/playground/command.js';
 import CommandBuilder from 'components/command_manager/command_builder.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Command: /fancy [player] [none/parrot]
 class FancyCommand extends Command {

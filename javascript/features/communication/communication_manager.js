@@ -5,7 +5,7 @@
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 import { CallChannel } from 'features/communication/channels/call_channel.js';
 import { PublicChannel } from 'features/communication/channels/public_channel.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 import { VipChannel } from 'features/communication/channels/vip_channel.js';
 
 import { relativeTime } from 'base/time.js';

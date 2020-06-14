@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 const VEHICLE_ENTER_EXIT = 16;  // also KEY_SECONDARY_ATTACK
 

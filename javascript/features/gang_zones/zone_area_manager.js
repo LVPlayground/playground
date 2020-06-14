@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 // @ts-check
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 import { ZoneNatives } from 'features/gang_zones/zone_natives.js';
 

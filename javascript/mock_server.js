@@ -21,11 +21,11 @@ import VirtualWorldManager from 'entities/virtual_world_manager.js';
 
 import MockActor from 'entities/test/mock_actor.js';
 import { MockArea } from 'entities/test/mock_area.js';
-import MockClock from 'base/test/mock_clock.js';
+import { MockClock } from 'base/test/mock_clock.js';
 import { MockGameObject } from 'entities/test/mock_game_object.js';
 import { MockMapIcon } from 'entities/test/mock_map_icon.js';
 import MockNpc from 'entities/test/mock_npc.js';
-import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
+import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 import { MockPickup } from 'entities/test/mock_pickup.js';
 import { MockPlayer } from 'entities/test/mock_player.js';
 import { MockTextLabel } from 'entities/test/mock_text_label.js';

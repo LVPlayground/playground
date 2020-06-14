@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Channel from 'features/radio/channel.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 import TextDraw from 'components/text_draw/text_draw.js';
 
 // Manager for the radio feature that's responsible for determining whether and when the radio

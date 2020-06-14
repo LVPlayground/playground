@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { DeathMatchLocation } from 'features/death_match/death_match_location.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // This class will manage the DeathMatch zones. Allowing the player to join and leave at will.
 export class DeathMatchManger {

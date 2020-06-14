@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { PlayerEventObserver } from 'components/events/player_event_observer.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Mock implementation of the DeferredEventManager that has a similar interface, but is powered
 // through events fired through `dispatchEvent()` rather than the server's own deferred system.

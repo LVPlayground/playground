@@ -4,7 +4,7 @@
 
 import CommandBuilder from 'components/command_manager/command_builder.js';
 import CommandGameDelegate from 'components/command_manager/command_game_delegate.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.

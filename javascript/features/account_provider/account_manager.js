@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Delay, in seconds, before a player's data will be written to the database after they disconnect.
 const kPlayerDisconnectQueryDelayMs = 1000;

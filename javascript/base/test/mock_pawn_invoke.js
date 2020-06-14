@@ -7,7 +7,7 @@ let instance = null;
 
 // Mocked version of pawnInvoke() that allows Pawn calls to happen during testing without hitting
 // the actual SA-MP server. It powers Assert.prototype.pawnCall().
-class MockPawnInvoke {
+export class MockPawnInvoke {
     constructor() {
         this.calls_ = [];
 
@@ -42,5 +42,3 @@ class MockPawnInvoke {
         instance = null;
     }
 }
-
-export default MockPawnInvoke;

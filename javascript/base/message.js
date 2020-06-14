@@ -23,7 +23,7 @@ export const kMessagePrefixes = {
 // When initializing the system, all messages will be loaded from messages.json in the data
 // directory, and made available as a static member of the Message class. While loading the messages
 // any unsafe messages will be considered to be a fatal error, as they might crash players.
-class Message {
+export class Message {
     // Formats |message| with |parameters|. The following formatting rules are available:
     //
     //   %s  - String, will be passed in unmodified.
@@ -137,5 +137,3 @@ Message.loadMessages();
 // Expose the Message class on the global object, since it will be common practice for features to
 // format messages or deal with predefined ones.
 global.Message = Message;
-
-export default Message;

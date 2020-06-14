@@ -5,7 +5,7 @@
 // Scoped callbacks provide a convenient way for ephemeral classes to listen to server-wide events.
 // When the callbacks are no longer necessary, the |dispose()| method can be called which will
 // remove all associated event listeners from the state.
-class ScopedCallbacks {
+export class ScopedCallbacks {
   constructor() {
     this.events_ = {};
     this.eventListeners_ = {};
@@ -41,5 +41,3 @@ class ScopedCallbacks {
     this.eventListeners_ = {};
   }
 };
-
-export default ScopedCallbacks;

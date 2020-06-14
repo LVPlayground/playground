@@ -5,7 +5,7 @@
 import ActorManager from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
-import Clock from 'base/clock.js';
+import { Clock } from 'base/clock.js';
 import CommandManager from 'components/command_manager/command_manager.js';
 import Database from 'components/database/database.js';
 import { DeferredEventManager } from 'components/events/deferred_event_manager.js';

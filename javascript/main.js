@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Server from 'server.js';
-import TestRunner from 'base/test/test_runner.js';
+import { TestRunner } from 'base/test/test_runner.js';
 
 // Import global objects.
 import 'base/color.js';

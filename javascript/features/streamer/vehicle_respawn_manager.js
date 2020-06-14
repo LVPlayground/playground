@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PriorityQueue from 'base/priority_queue.js';
+import { PriorityQueue } from 'base/priority_queue.js';
 
 // Responsible for keeping track of used vehicles, and whether (and when) they should respawn. All
 // vehicles known to this object will be kept alive beyond streaming availability.

@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Clock from 'base/clock.js';
-import PriorityQueue from 'base/priority_queue.js';
+import { Clock } from 'base/clock.js';
+import { PriorityQueue } from 'base/priority_queue.js';
 
 // Mocked version of the clock that will be used for tests. Beyond the normal functionality, the
 // clock can be advanced by a given number of milliseconds.
-class MockClock {
+export class MockClock {
     constructor() {
         this.offset_ = 0;
 
@@ -71,5 +71,3 @@ class MockClock {
 
 // Carry-over the formatRelativeTime() implementation from the real Clock.
 MockClock.prototype.formatRelativeTime = Clock.prototype.formatRelativeTime;
-
-export default MockClock;

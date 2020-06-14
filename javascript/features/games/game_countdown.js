@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Rectangle from 'components/text_draw/rectangle.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { Rectangle } from 'components/text_draw/rectangle.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Each game is able to (and probably should) have a callback before players will actually start to
 // participate in the game. This happens before they spawn for the first time, and is the best

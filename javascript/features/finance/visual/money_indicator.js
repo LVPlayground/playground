@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Color } from 'base/color.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // After how many milliseconds should the money indicator be removed again?
 const kMoneyIndicatorDisplayTimeMs = 2500;

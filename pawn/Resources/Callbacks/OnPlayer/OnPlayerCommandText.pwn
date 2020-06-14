@@ -764,21 +764,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if(strcmp(cmd, "/handsup", true) == 0) {
-            SetPlayerSpecialAction( playerid, SPECIAL_ACTION_HANDSUP );
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-
         if (strcmp(cmd, "/fu", true ) == 0)
         {
             ApplyAnimation( playerid,"ped", "fucku", 4.1, 0, 1, 1, 0, 0 );
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/smoke", true ) == 0)
-        {
-            SetPlayerSpecialAction(playerid, 21);
             iPlayerAnimation[playerid] = true;
             return 1;
         }
@@ -857,12 +845,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (strcmp(cmd, "/piss", true ) == 0)
-        {
-            SetPlayerSpecialAction(playerid,68);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
         if (strcmp(cmd, "/wave", true ) == 0)
         {
             ApplyAnimation(playerid,"KISSING","BD_GF_Wave",4.1,0,1,1,0,0);

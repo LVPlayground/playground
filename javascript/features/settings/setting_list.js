@@ -10,6 +10,7 @@ const isDecember = (new Date()).getMonth() == 11;
 
 export default [
     /** Abuse related settings */
+    new Setting('abuse', 'announce_admin_animation', Setting.TYPE_BOOLEAN, true, 'Announce when admins force animations on other players.'),
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
     new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
     new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),

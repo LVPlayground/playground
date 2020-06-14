@@ -1,0 +1,23 @@
+[
+    {
+        "command": "handsup",
+        "description": "Makes your character put their hands in the air.",
+
+        "type": "special-action",
+        "action": 10
+    },
+    {
+        "command": "piss",
+        "description": "Makes your character take a leak.",
+
+        "type": "special-action",
+        "action": 68
+    },
+    {
+        "command": "smoke",
+        "description": "Makes your character take a smoke.",
+
+        "type": "special-action",
+        "action": 21
+    }
+]

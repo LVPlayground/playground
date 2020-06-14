@@ -17,7 +17,7 @@ import ObjectGroup from 'entities/object_group.js';
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(abuse, announce, economy, friends, gangs, location, streamer) {
+    constructor(abuse, announce, economy, friends, gangs, location, settings, streamer) {
         this.database_ = server.isTest() ? new MockHouseDatabase()
                                          : new HouseDatabase();
 
@@ -38,7 +38,7 @@ class HouseManager {
             new HouseEntranceController(this, abuse, economy, friends, gangs, location);
 
         // Responsible for all vehicles associated with the houses.
-        this.vehicleController_ = new HouseVehicleController(streamer);
+        this.vehicleController_ = new HouseVehicleController(settings, streamer);
 
         // Start listening to player events when the House data has been loaded from the database.
         this.dataLoadedPromise_.then(() => {

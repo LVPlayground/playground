@@ -74,7 +74,7 @@ class FancyCommand extends Command {
                 break;
 
             case 'cow':
-                pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 1, 19833, 1, 
+                pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 0, 19833, 1, 
                             -3.14, 0, 0, 180, 90, 0, 3.14, 3.14, 3.14);
                 break;
         }

@@ -136,12 +136,14 @@ class TeleportationCommands {
      */
     @switch(PlayerCommand, "teleport")
     public onPlayerTeleportCommand(playerId, subjectId, params[]) {
-        if (playerId == subjectId && Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
+        if (playerId == subjectId && Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false
+            && (Player(playerId)->isRegular() == true || Player(playerId)->isRegistered() == false)) {
             SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
             return 1;
         }
 
-        if (playerId != subjectId && Player(subjectId)->isVip() == false) {
+        if (playerId != subjectId && Player(subjectId)->isVip() == false 
+            && (Player(playerId)->isRegular() == true || Player(playerId)->isRegistered() == false)) {
             SendClientMessage(playerId, Color::Error, "Error: This player has no VIP status.");
             return 1;
         }
@@ -173,6 +175,10 @@ class TeleportationCommands {
                 "{DC143C}disabled" :
                 "{33AA33}enabled"));
         SendClientMessage(playerId, Color::Success, message);
+
+        if(playerId == subjectId && Player(playerId)->isRegular() == false &&
+            Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false)
+            SendClientMessage(playerId, Color::Information, "This is a VIP only command but enabled for new players. check out \"/donate\"!");
 
         return 1;
     }

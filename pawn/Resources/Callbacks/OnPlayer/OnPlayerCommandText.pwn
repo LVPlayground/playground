@@ -1080,6 +1080,9 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             // If a player is undercover, show this to other admins.
             if (UndercoverAdministrator(player)->isUndercoverAdministrator()) {
+                if (tempLevel[playerid] == 2)
+                    continue;  // people with temporary rights cannot see other undercover players
+
                 if (Player(playerid)->isAdministrator()) {
                     new originalUsername[MAX_PLAYER_NAME+1];
                     UndercoverAdministrator(player)->getOriginalUsername(originalUsername, sizeof(originalUsername));

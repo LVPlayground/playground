@@ -5,7 +5,7 @@
 import { CommandError } from 'components/command_manager/command_error.js';
 
 // Implementation of the CommandDelegate interface for in-game usage.
-export default class CommandGameDelegate {
+export class CommandGameDelegate {
     // Returns the prefix to show before command names in usage and error messages.
     getCommandPrefix() {
         return '/';

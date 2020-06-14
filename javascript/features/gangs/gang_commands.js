@@ -6,7 +6,7 @@ import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';
 
 import ColorPicker from 'components/dialogs/color_picker.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import Dialog from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';

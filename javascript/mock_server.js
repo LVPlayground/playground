@@ -5,7 +5,7 @@
 import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
-import CommandManager from 'components/command_manager/command_manager.js';
+import { CommandManager } from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import { MapIconManager } from 'entities/map_icon_manager.js';

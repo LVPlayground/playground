@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
 // Command: /rampcar [player]?

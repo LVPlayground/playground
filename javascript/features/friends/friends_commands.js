@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Implementation of the commands available as part of the friends feature, all under the entry
 // point of /friends. See the README.md file for better documentation on the usage.

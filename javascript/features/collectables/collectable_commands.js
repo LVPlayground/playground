@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { CubicBezier } from 'base/cubic_bezier.js';
 import Menu from 'components/menu/menu.js';
 

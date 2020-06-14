@@ -376,5 +376,3 @@ CommandBuilder.PLAYER_PARAMETER = 42;
 CommandBuilder.ALLOWED_SUBCOMMANDS = [CommandBuilder.NUMBER_PARAMETER,
                                       CommandBuilder.WORD_PARAMETER,
                                       CommandBuilder.PLAYER_PARAMETER];
-
-export default CommandBuilder;

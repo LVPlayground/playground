@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import CommandGameDelegate from 'components/command_manager/command_game_delegate.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandGameDelegate } from 'components/command_manager/command_game_delegate.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
-class CommandManager {
+export class CommandManager {
   constructor() {
     this.commands_ = {};
     this.delegate_ = new CommandGameDelegate();
@@ -90,5 +90,3 @@ class CommandManager {
     this.callbacks_.dispose();
   }
 };
-
-export default CommandManager;

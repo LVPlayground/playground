@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { BanDatabase } from 'features/punishments/ban_database.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import Menu from 'components/menu/menu.js';
 import Question from 'components/dialogs/question.js';
 

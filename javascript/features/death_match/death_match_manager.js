@@ -174,7 +174,7 @@ export class DeathMatchManger {
         killer.armour = Math.min(armour + health, 100);
 
         killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStatistics.killCount);
-        player.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, playerStatistics.deathCount);
+        player.sendMessage(Message.DEATH_MATCH_TOTAL_DEATHS, playerStatistics.deathCount);
     }
 
     // When a player spawns while in the mini game we want to teleport him back.

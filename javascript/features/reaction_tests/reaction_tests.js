@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 

@@ -418,7 +418,7 @@ lvp_taxi(playerid,params[])
             return 1;
         }
 
-        if(locateid != 13)
+        if(locateid != 16)
         {
             new Float:playerToLocationDistance = GetDistance(playerid, taxiLocations[locateid][0], taxiLocations[locateid][1], taxiLocations[locateid][2]);
             distance = floatround(playerToLocationDistance/50);

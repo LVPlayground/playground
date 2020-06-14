@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
-class VehicleManager {
+export class VehicleManager {
     constructor(vehicleConstructor = Vehicle) {
         this.vehicleConstructor_ = vehicleConstructor;
         this.disposed_ = false;
@@ -38,6 +38,9 @@ class VehicleManager {
 
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
+
+    // Returns an iterator that can be used to iterate over the created vehicles.
+    [Symbol.iterator]() { return this.vehicles_.values(); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -221,5 +224,3 @@ class VehicleManager {
         this.observers_ = null;
     }
 }
-
-export default VehicleManager;

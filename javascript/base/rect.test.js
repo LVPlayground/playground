@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Rect } from 'base/rect.js';
+
 describe('Rect', it => {
     it('should reflect the given values', assert => {
         const rect = new Rect(100, 80, 150, 120);

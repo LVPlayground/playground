@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 import ChannelSelection from 'features/radio/channel_selection.js';
 import RadioCommands from 'features/radio/radio_commands.js';

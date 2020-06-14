@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
+import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 
 import Economy from 'features/economy/economy.js';
 import Killtime from 'features/killtime/killtime.js';

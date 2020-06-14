@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
 
 // This class provides the /playersettings command available to administrators to manage 
 // there desired settings.

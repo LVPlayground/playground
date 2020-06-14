@@ -4,7 +4,7 @@
 
 import { CommunicationManager } from 'features/communication/communication_manager.js';
 import { CommunicationNatives } from 'features/communication/communication_natives.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { MessageFilter } from 'features/communication/message_filter.js';
 import { MessageVisibilityManager } from 'features/communication/message_visibility_manager.js';
 import { MuteManager } from 'features/communication/mute_manager.js';

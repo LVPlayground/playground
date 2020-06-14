@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js';
+import { Rect } from 'base/rect.js';
 
 describe('ZoneDatabase', it => {
     it('is able to get details about the active gang members on the server', async (assert) => {

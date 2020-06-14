@@ -2,12 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
-
 import HouseExtension from 'features/houses/house_extension.js';
-import Menu from 'components/menu/menu.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { Menu } from 'components/menu/menu.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
+
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
 
 // Delay, in seconds, after which a health pickup in a house respawns.
 const HealthPickupRespawnDelay = 180;

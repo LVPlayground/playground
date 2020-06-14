@@ -3,7 +3,8 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Command: /jetpack [player] ["remove"]
 class JetpackCommand extends Command {

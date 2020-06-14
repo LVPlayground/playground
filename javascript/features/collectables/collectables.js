@@ -5,7 +5,7 @@
 import { CollectableCommands } from 'features/collectables/collectable_commands.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { CollectableManager } from 'features/collectables/collectable_manager.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 import * as achievements from 'features/collectables/achievements.js';
 import * as benefits from 'features/collectables/collectable_benefits.js';

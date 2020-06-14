@@ -8,7 +8,7 @@ const PrivateSymbol = Symbol('Please use the static methods.');
 // A color instance defines a color that can be used for text, background or other features. The
 // internal representation separates red, green, blue and the alpha channel, but it can be exported
 // in various formats.
-class Color {
+export class Color {
     // Create a new Color instance based on the |r|, |g|, |b| channels.
     static fromRGB(r, g, b) {
         return new Color(PrivateSymbol, r, g, b, 255);
@@ -104,5 +104,3 @@ Color.YELLOW = Color.fromRGB(255, 255, 0);
 
 // Define the Color object on the global object.
 global.Color = Color;
-
-export default Color;

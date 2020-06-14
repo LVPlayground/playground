@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import NpcManager from 'entities/npc_manager.js';
-import MockNpc from 'entities/test/mock_npc.js';
+import { NpcManager } from 'entities/npc_manager.js';
+import { MockNpc } from 'entities/test/mock_npc.js';
 import { MockPlayer } from 'entities/test/mock_player.js';
-import PlayerManager from 'entities/player_manager.js';
+import { PlayerManager } from 'entities/player_manager.js';
 
 describe('NpcManager', (it, beforeEach, afterEach) => {
     let playerManager = null;

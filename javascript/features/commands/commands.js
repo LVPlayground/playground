@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import InfoDialogCommand from 'features/commands/info_dialog_command.js';
 import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 import PositioningCommands from 'features/commands/positioning_commands.js';

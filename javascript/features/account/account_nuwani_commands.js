@@ -594,7 +594,7 @@ export class AccountNuwaniCommands {
             matches.push(text + metadata.join(', ') + ')');
         }
 
-        const suffix = results.length ? '15[' + results.length + ' omitted...]'
+        const suffix = results.length ? ' 15[' + results.length + ' omitted...]'
                                       : '';
 
         context.respond('3Results: ' + matches.join(', ') + suffix);

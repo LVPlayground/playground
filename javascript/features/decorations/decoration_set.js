@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { DecorationNpc } from 'features/decorations/decoration_npc.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Encapsulates a particular decoration. It will be loaded from a JSON file, of which the structure
 // is specified in README.md. Data in other formats will throw exceptions. Validity of all known

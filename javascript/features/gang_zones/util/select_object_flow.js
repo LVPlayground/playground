@@ -5,7 +5,7 @@
 
 import { Vector } from 'base/vector.js';
 
-import confirm from 'components/dialogs/confirm.js';
+import { confirm } from 'components/dialogs/confirm.js';
 
 // Object ID for the area boundary screen that's a meter wide.
 const kAreaBoundary1M = 11753;

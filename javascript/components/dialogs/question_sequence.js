@@ -2,14 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Question from 'components/dialogs/question.js';
+import { Question } from 'components/dialogs/question.js';
 
 // Private symbol ensuring that the QuestionSequence constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 
 // Asks a certain player a sequence of questions. A single promise will be returned that will be
 // resolved once all questions have been answered and verified given their constraints.
-class QuestionSequence {
+export class QuestionSequence {
     // Asks the |questions| to |player|. A promise will be returned that will be resolved with an
     // array  of the answers if all of them were valid, or NULL otherwise.
     static ask(player, questions) {
@@ -66,5 +66,3 @@ class QuestionSequence {
         });
     }
 }
-
-export default QuestionSequence;

@@ -85,7 +85,7 @@ function SentenceParser(argumentString) {
 // After creating the parser, the `parse` function may be used with the input string to apply the
 // parsing rules to said string. Failures will cause NULL to be returned, otherwise an array with
 // the parsed properties will be returned.
-class StringParser {
+export class StringParser {
   constructor(parameters) {
     this.parameters_ = [];
 
@@ -220,5 +220,3 @@ StringParser.PARAM_TYPE_CUSTOM = 4;
 // Error messages that can be returned by the string parser instead of NULL.
 StringParser.ERROR_MISSING_PARAMETER = 0;
 StringParser.ERROR_MISSING_PLAYER_PARAMETER = 1;
-
-export default StringParser;

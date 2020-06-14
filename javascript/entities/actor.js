@@ -7,7 +7,7 @@ const INVALID_ID = 0xFFFF;
 
 // An actor is a name-less character that can be spawned in Grand Theft Auto: San Andreas without
 // taking up player slots. They have very basic interactions, options, and no events.
-class Actor {
+export class Actor {
     // Creates a new actor. Do NOT use this constructor directly, instead get the ActorManager from
     // the global Server object and create your actors through there.
     constructor(manager, modelId, position, rotation) {
@@ -77,6 +77,3 @@ class Actor {
 
     toString() { return `[object Actor(${this.id_}, ${this.modelId_})]`; }
 }
-
-// Expose the Actor object globally since it is an entity.
-global.Actor = Actor;

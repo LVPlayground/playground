@@ -275,8 +275,6 @@ ResetPlayerStats(playerId) {
     iTuneTime[playerId] = 0;
     iDiveTime[playerId] = false;
     iPlayerDied[playerId] = false;
-    MyDeaths[playerId] = 0;
-    MyKills[playerId] = 0;
     PlayerInfo[playerId][reactionTestWins] = 0;
     playerVehExp[playerId] = 0;
     WonMinigame[playerId] = 0;

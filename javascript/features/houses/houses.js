@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import HouseCommands from 'features/houses/house_commands.js';
 import HouseManager from 'features/houses/house_manager.js';
 import HouseNatives from 'features/houses/house_natives.js';
@@ -40,10 +40,14 @@ class Houses extends Feature {
         // The `/house` command is currently restricted to Management.
         const playground = this.defineDependency('playground');
 
+        // Certain things about houses can be configured with "/lvp settings".
+        const settings = this.defineDependency('settings');
+
         // The streamer will be used for creation of house vehicles.
         const streamer = this.defineDependency('streamer');
 
-        this.manager_ = new HouseManager(abuse, announce, economy, friends, gangs, location, streamer);
+        this.manager_ = new HouseManager(
+            abuse, announce, economy, friends, gangs, location, settings, streamer);
 
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new Pickups(this.manager_, economy, finance));

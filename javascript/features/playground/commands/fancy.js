@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Command: /fancy [player] [none/parrot]
 class FancyCommand extends Command {
@@ -74,7 +74,7 @@ class FancyCommand extends Command {
                 break;
 
             case 'cow':
-                pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 1, 19833, 1, 
+                pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 0, 19833, 1, 
                             -3.14, 0, 0, 180, 90, 0, 3.14, 3.14, 3.14);
                 break;
         }

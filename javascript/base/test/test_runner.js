@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TestSuite from 'base/test/test_suite.js';
+import { TestSuite } from 'base/test/test_suite.js';
 
 // The test runner class manages execution of tests before the gamemode starts.
 //
@@ -34,7 +34,7 @@ import TestSuite from 'base/test/test_suite.js';
 // Las Venturas Playground will only be allowed to run when *ALL* tests included in the JavaScript
 // part of the gamemode pass. Running the gamemode while there is broken functionality will lead to
 // unexpected results, and major inconvenience for players.
-class TestRunner {
+export class TestRunner {
   constructor() {
     this.testSuites_ = [];
   }
@@ -131,5 +131,3 @@ class TestRunner {
     delete global.describe;
   }
 };
-
-export default TestRunner;

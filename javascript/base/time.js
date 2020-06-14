@@ -2,12 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Various utility methods (global) for making the `wait()` function easier to deal with.
-global.milliseconds = milliseconds => wait(milliseconds);
-global.seconds = seconds => wait(seconds * 1000);
-global.minutes = minutes => wait(minutes * 60 * 1000);
-global.hours = hours => wait(hours * 60 * 60 * 1000);
-
 // Returns a formatted version of the given |date|. If |includeTime| is given, the time will be
 // included in the output as well.
 //

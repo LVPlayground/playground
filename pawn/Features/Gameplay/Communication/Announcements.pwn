@@ -129,14 +129,17 @@ class Announcements {
      * @param reason The reason why they're disconnecting from the server.
      */
     public announcePlayerDisconnected(playerId, reason) {
+        new nameString[MAX_PLAYER_NAME];
         new reasonString[16];
         new reasonText[128];
 
+        GetPlayerName(playerId, nameString, sizeof(nameString));
+
         switch (reason) {
             case 0 /** timed out **/: {
-                format(reasonString, sizeof(reasonString), "timed out");
+                format(reasonString, sizeof(reasonString), "timeout");
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (timed out).",
-                    Player(playerId)->nicknameString(), playerId);
+                    nameString, playerId);
             }
             case 2 /** kicked or banned **/: {
                 switch (Player(playerId)->kickReason()) {
@@ -160,16 +163,16 @@ class Announcements {
 
                 if (AreKickReasonsPublic() && reasonText[0]) {
                     format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (%s): %s",
-                        Player(playerId)->nicknameString(), playerId, reasonString, reasonText);
+                        nameString, playerId, reasonString, reasonText);
                 } else {
                     format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC} (%s).",
-                        Player(playerId)->nicknameString(), playerId, reasonString);
+                        nameString, playerId, reasonString);
                 }
             }
             default: {
                 format(reasonString, sizeof(reasonString), "leaving");
                 format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has left {A9C4E4}Las Venturas Playground{CCCCCC}.",
-                    Player(playerId)->nicknameString(), playerId);
+                    nameString, playerId);
             }
         }
 
@@ -177,11 +180,11 @@ class Announcements {
 
         // Announce this player's disconnection to people watching from IRC.
         if (AreKickReasonsPublic() && reasonText[0]) {
-            format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, Player(playerId)->nicknameString(), reasonString, reasonText);
-            EchoMessage("quit-reason", "dsz", m_formatBuffer);
+            format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s %s", playerId, nameString, reasonString, reasonText);
+            EchoMessage("quit-reason", "dssz", m_formatBuffer);
         } else {
-            format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, Player(playerId)->nicknameString(), reasonString);
-            EchoMessage("quit", "dsz", m_formatBuffer);
+            format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s %s", playerId, nameString, reasonString);
+            EchoMessage("quit", "dss", m_formatBuffer);
         }
     }
 

@@ -2,13 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Npc } from 'entities/npc.js';
+
 // Number of milliseconds to wait before considering an NPC's connection as having timed out.
 const kNpcConnectionTimeoutMs = 8 /* seconds */ * 1000;
 
 // This manager is responsible for creating non-player characters, controlled by a predefined
 // script. For all intents and purposes, when connected, NPCs can be considered as Player
 // instances as well, and be fully controlled as such.
-class NpcManager {
+export class NpcManager {
     constructor(npcConstructor = Npc, playerManager) {
         this.npcConstructor_ = npcConstructor;
         this.npcs_ = new Map();
@@ -145,5 +147,3 @@ class NpcManager {
             throw new Error('There are remaining NPCs after disposing all of them.');
     }
 }
-
-export default NpcManager;

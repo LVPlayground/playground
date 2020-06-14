@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TestError from 'base/test/test_error.js';
+import { TestError } from 'base/test/test_error.js';
 
 // Error thrown when an unexpected exception occurs while running a test. The inner error will be
 // displayed to the developer in total, while the TestError information will be fulfiled as well.
-class UnexpectedExceptionError extends TestError {
+export class UnexpectedExceptionError extends TestError {
   constructor(context) {
     super(context);
 
@@ -20,5 +20,3 @@ class UnexpectedExceptionError extends TestError {
     return super.toString() + ': unexpected exception\n\n' + this.error_.stack;
   }
 };
-
-export default UnexpectedExceptionError;

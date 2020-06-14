@@ -3,9 +3,9 @@
 // be found in the LICENSE file.
 
 import AbsoluteTimeView from 'features/races/ui/absolute_time_view.js';
-import Rectangle from 'components/text_draw/rectangle.js';
+import { Rectangle } from 'components/text_draw/rectangle.js';
 import RelativeTimeView from 'features/races/ui/relative_time_view.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Background color of the score board. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);

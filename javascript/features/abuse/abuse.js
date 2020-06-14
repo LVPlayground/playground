@@ -8,7 +8,7 @@ import { AbuseEventListener } from 'features/abuse/abuse_event_listener.js';
 import AbuseMitigator from 'features/abuse/abuse_mitigator.js';
 import { AbuseMonitor } from 'features/abuse/abuse_monitor.js';
 import AbuseNatives from 'features/abuse/abuse_natives.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 // Time period, in milliseconds, a player needs to wait between time limited teleportations.
 const TeleportCoolDownPeriodMs = 180000;  // 3 minutes

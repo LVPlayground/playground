@@ -4,7 +4,7 @@
 
 import Minigame from 'features/minigames/minigame.js';
 import MinigameDriver from 'features/minigames/minigame_driver.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Number of milliseconds player have to sign-up to another player's minigame.
 const SignupTimeoutMilliseconds = 20000;

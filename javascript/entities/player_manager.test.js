@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { MockPlayer } from 'entities/test/mock_player.js';
-import PlayerManager from 'entities/player_manager.js';
+import { PlayerManager } from 'entities/player_manager.js';
 
 describe('PlayerManager', (it, beforeEach, afterEach) => {
     let manager = null;

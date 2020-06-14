@@ -5,7 +5,7 @@
 // This class maintains a list of entities that can be conveniently disposed of as a group, for
 // example temporary entities that exist because of a minigame. The entities may optionally be fixed
 // to a particular Interior Id and Virtual World Id as well.
-class ScopedEntities {
+export class ScopedEntities {
     constructor({ interiorId = 0, virtualWorld = 0 } = {}) {
         this.actors_ = new Set();
         this.areas_ = new Set();
@@ -362,5 +362,3 @@ class ScopedEntities {
         this.vehicles_ = null;
     }
 }
-
-export default ScopedEntities;

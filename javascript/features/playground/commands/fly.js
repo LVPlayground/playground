@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // How many frames per second should be checked for directionality updates?
 const FramesPerSecond = 20;
@@ -138,7 +138,7 @@ class FlyCommand extends Command {
             // Update the animation with whatever is most recent for the player.
             this.applyFlightAnimation(subject, moving);
 
-            await seconds(1 / FramesPerSecond);
+            await wait(1000 / FramesPerSecond);
         }
 
         this.flying_.delete(subject);

@@ -8,7 +8,15 @@ import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info
 // works based on HouseLocation and HouseVehicle instances, communicating with the VehicleStreamer
 // to make sure that the vehicles get created when they're required.
 export default class HouseVehicleController {
-    constructor(streamer) {
+    settings_ = null;
+    streamer_ = null;
+
+    locationVehicles_ = null;
+    streamableVehicles_ = null;
+
+    constructor(settings, streamer) {
+        this.settings_ = settings;
+
         this.streamer_ = streamer;
         this.streamer_.addReloadObserver(
             this, HouseVehicleController.prototype.onStreamerReloaded);
@@ -22,9 +30,6 @@ export default class HouseVehicleController {
 
     // Gets the total number of vehicles that have been created as part of houses.
     get count() { return this.streamableVehicles_.size; }
-
-    // Gets the vehicle streamer that this controller operates on.
-    get streamer() { return this.streamer_(); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -42,9 +47,12 @@ export default class HouseVehicleController {
 
             // Give the house's vehicle a number plate named after the owner when known.
             numberPlate: location.settings?.ownerName ?? null,
+
+            // House vehicles are considered persistent vehicles, so set a `respawnDelay`.
+            respawnDelay: this.settings_().getValue('vehicles/respawn_persistent_delay_sec'),
         });
 
-        const streamableVehicle = this.streamer.createVehicle(streamableVehicleInfo);
+        const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo);
 
         this.locationVehicles_.get(location).add(houseVehicle);
         this.streamableVehicles_.set(houseVehicle, streamableVehicle);
@@ -64,7 +72,7 @@ export default class HouseVehicleController {
             throw new Error('Invalid |houseVehicle| passed while removing a house vehicle.');
 
         this.streamableVehicles_.delete(houseVehicle);
-        this.streamer.deleteVehicle(streamableVehicle);
+        this.streamer_().deleteVehicle(streamableVehicle);
 
         houseVehicles.delete(houseVehicle);
         if (!houseVehicles.size)
@@ -83,7 +91,7 @@ export default class HouseVehicleController {
                 throw new Error('No streamable vehicle for the given |houseVehicle|.');
 
             this.streamableVehicles_.delete(houseVehicle);
-            this.streamer.deleteVehicle(streamableVehicle);
+            this.streamer_().deleteVehicle(streamableVehicle);
         }
 
         this.locationVehicles_.delete(location);
@@ -94,9 +102,12 @@ export default class HouseVehicleController {
     // Called when the streamer has been reloaded, in which case we need to reattach all the known
     // vehicles associated with houses. Achieve this by creating them all from scratch.
     onStreamerReloaded() {
+        const existingVehicles = new Map(this.locationVehicles_);
+
+        this.locationVehicles_.clear();
         this.streamableVehicles_.clear();
 
-        for (const [ location, houseVehicles ] of this.locationVehicles_) {
+        for (const [ location, houseVehicles ] of existingVehicles) {
             for (const houseVehicle of houseVehicles)
                 this.createVehicle(location, houseVehicle);
         }
@@ -111,7 +122,7 @@ export default class HouseVehicleController {
         this.locationVehicles_ = null;
 
         for (const streamableVehicle of this.streamableVehicles_.values())
-            this.streamer.deleteVehicle(streamableVehicle);
+            this.streamer_().deleteVehicle(streamableVehicle);
 
         this.streamableVehicles_.clear();
         this.streamableVehicles_ = null;

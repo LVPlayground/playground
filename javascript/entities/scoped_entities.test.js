@@ -3,7 +3,8 @@
 // be found in the LICENSE file.
 
 import { Area } from 'entities/area.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { Rect } from 'base/rect.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 describe('ScopedEntities', it => {
     it('should be able to create and dispose of scoped actors', assert => {

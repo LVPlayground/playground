@@ -18,7 +18,7 @@ let isTwoNumberArray = value =>
 //
 // The coordinate space of text-draws assumes a screen resolution of 640x480 pixels, regardless of
 // the actual resolution of the player's screen, with the origin being in the top-left corner.
-class TextDraw {
+export class TextDraw {
   constructor(options) {
     this.position_ = [10, 10];
 
@@ -341,5 +341,3 @@ TextDraw.FONT_MODEL_PREVIEW = 5;
 TextDraw.ALIGN_LEFT = 1;
 TextDraw.ALIGN_CENTER = 2;
 TextDraw.ALIGN_RIGHT = 3;
-
-export default TextDraw;

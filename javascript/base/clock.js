@@ -11,7 +11,7 @@
 //
 // The Clock class is mocked for tests, and will be of type MockClock instead which provides the
 // same interface, but also a utility method to advance the current time.
-class Clock {
+export class Clock {
     // Returns the current time as the number of milliseconds elapsed since January 1st 1970. May
     // jump forwards or backwards when the server time changes, use for presentational purposes.
     currentTime() {
@@ -66,5 +66,3 @@ class Clock {
     // Disposes of the instance.
     dispose() {}
 }
-
-export default Clock;

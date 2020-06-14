@@ -9,7 +9,7 @@ import { GameDescription,
          kDefaultPrice,
          kDefaultTickIntervalMs } from 'features/games/game_description.js';
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
 

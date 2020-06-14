@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Supplement } from 'base/supplementable.js';
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 
 // Supplements the Player object with an `settings` accessor, giving other features access to the
 // persistent settings of the players. If player is not registered settings are not persistent.

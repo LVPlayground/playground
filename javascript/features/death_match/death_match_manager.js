@@ -2,10 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
-
 import { DeathMatchLocation } from 'features/death_match/death_match_location.js';
-import { DeathMatchStats, DeathMatchTeamScore } from 'features/death_match/death_match_stats.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 const RED_TEAM = 0;
 const BLUE_TEAM = 1;
@@ -18,6 +16,7 @@ export class DeathMatchManger {
         this.abuse_ = abuse;
         this.announce_ = announce;
         this.playersInDeathMatch_ = new Map();
+
         // Stats of the player. Will not be cleared upon leaving the death match.
         this.playerStats_ = new Map();
         // Key: player.id, value: { zone: zone, team: team }
@@ -29,15 +28,11 @@ export class DeathMatchManger {
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
-            'playerdeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
+            'playerresolveddeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
         this.callbacks_.addEventListener(
             'playerspawn', DeathMatchManger.prototype.onPlayerSpawn.bind(this));
         this.callbacks_.addEventListener(
             'playerdisconnect', DeathMatchManger.prototype.onPlayerDisconnect.bind(this));
-        this.callbacks_.addEventListener(
-            'playertakedamage', DeathMatchManger.prototype.onPlayerTakeDamage.bind(this));
-        this.callbacks_.addEventListener(
-            'playerweaponshot', DeathMatchManger.prototype.onPlayerWeaponShot.bind(this));
     }
 
     // The player wants to join the death match.
@@ -66,7 +61,7 @@ export class DeathMatchManger {
         this.playerTeam_.delete(player.id);
         this.removeTextDrawForPlayer(player);
         this.playersInDeathMatch_.set(player.id, zone);
-        this.playerStats_.set(player.id, new DeathMatchStats());
+        this.playerStats_.set(player.id, player.stats.snapshot());
         this.setPlayerTeam(player, zone);
         this.spawnPlayer(player, zone);
 
@@ -118,11 +113,16 @@ export class DeathMatchManger {
 
         player.sendMessage(Message.DEATH_MATCH_STATS);
 
-        const playerStats = this.playerStats_.get(player.id);
-        player.sendMessage(Message.DEATH_MATCH_KILL_DEATH, playerStats.kills, playerStats.deaths,
-            playerStats.kdRatio);
-        player.sendMessage(Message.DEATH_MATCH_DAMAGE_ACCURACY, playerStats.damage,
-            playerStats.accuracyPercentage);
+        const snapshot = this.playerStats_.get(player.id);
+        const statistics = player.stats.diff(snapshot);
+
+        player.sendMessage(
+            Message.DEATH_MATCH_KILL_DEATH, statistics.killCount, statistics.deathCount,
+            Math.round(statistics.ratio * 100) / 100);
+
+        player.sendMessage(
+            Message.DEATH_MATCH_DAMAGE_ACCURACY, Math.round(statistics.damageGiven),
+            Math.round(statistics.accuracy * 100));
     }
 
     // If this DM has teams we'll set the player in a team.
@@ -221,50 +221,10 @@ export class DeathMatchManger {
             return this.findRandomSpawnPosition(location, attempt++);
 
         this.lastQuarterUsedLocationsQueue.push(spawnIndex);
-        if (this.lastQuarterUsedLocationsQueue.length >
-            Math.floor(spawnPositions.length / 4)
-        )
+        if (this.lastQuarterUsedLocationsQueue.length > Math.floor(spawnPositions.length / 4))
             this.lastQuarterUsedLocationsQueue.shift();
 
         return spawnPositions[spawnIndex];
-    }
-
-    onPlayerTakeDamage(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |event| was not received for a valid player
-
-        if (!this.playersInDeathMatch_.has(player.id))
-            return;
-
-        const issuer = server.playerManager.getById(event.issuerid);
-        if (!issuer)
-            return; // the |event| was not done by a valid player
-
-        if (!this.playersInDeathMatch_.has(issuer.id))
-            return;
-
-        if (isNaN(event.amount))
-            return; // the |event| does not have a valid amount of damage.
-
-        const issuerStats = this.playerStats_.get(issuer.id);
-        issuerStats.damage += +event.amount;
-    }
-
-    onPlayerWeaponShot(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |event| was not received for a valid |player|
-
-        if (!this.playersInDeathMatch_.has(player.id))
-            return;
-
-        const playerStats = this.playerStats_.get(player.id);
-        if (event.hittype === 1 || event.hittype === 2) {
-            playerStats.bulletsHit++;
-        } else {
-            playerStats.bulletsMissed++;
-        }
     }
 
     // If a player died we'll update stats and reward killer.
@@ -283,19 +243,22 @@ export class DeathMatchManger {
         if (!this.playersInDeathMatch_.has(killer.id))
             return;
 
-        const killerStats = this.playerStats_.get(killer.id);
-        killerStats.kills++;
+        const playerSnapshot = this.playerStats_.get(player.id);
+        const playerStatistics = player.stats.diff(playerSnapshot);
+
+        const killerSnapshot = this.playerStats_.get(killer.id);
+        const killerStatistics = killer.stats.diff(killerSnapshot);
 
         const health = killer.health;
         const armour = killer.armour;
+
         killer.health = 100;
         killer.armour = Math.min(armour + health, 100);
 
-        killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStats.kills);
-
         const playerStats = this.playerStats_.get(player.id);
         playerStats.deaths++;
-        player.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, playerStats.deaths);
+        killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStatistics.killCount);
+        player.sendMessage(Message.DEATH_MATCH_TOTAL_DEATHS, playerStatistics.deathCount);
 
         this.addKillToTeamForPlayer(killer);
     }
@@ -371,4 +334,9 @@ export class DeathMatchManger {
             pawnInvoke('TextDrawDestroy', 'i', textDraw);
         }
     }
+}
+
+export class DeathMatchTeamScore {
+    redTeamKills = 0;
+    blueTeamKills = 0;
 }

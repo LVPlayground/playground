@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Dialog from 'components/dialogs/dialog.js';
+import { Dialog } from 'components/dialogs/dialog.js';
 
 // All messages share the same title. Only the message's content is configurable.
 const CAPTION = 'Las Venturas Playground';
@@ -13,7 +13,7 @@ const BUTTON_CAPTION = 'Alright!';
 // A message is a very simple alert dialog centered on the player's screen that contains a bit of
 // text informing the user of something critical (it will obstruct their experience!), after which
 // they can dismiss it either by clicking on ESC, or by clicking on the included button.
-class MessageBox {
+export class MessageBox {
   static display(player, { message, title, leftButton = 'Close', rightButton = '' } = {}) {
     const instance = new MessageBox(message, title, leftButton, rightButton);
     return instance.displayForPlayer(player);
@@ -35,5 +35,3 @@ class MessageBox {
     });
   }
 };
-
-export default MessageBox;

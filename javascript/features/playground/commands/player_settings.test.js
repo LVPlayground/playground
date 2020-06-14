@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 
 describe('PlayerSettingsCommands', (it, beforeEach, afterEach) => {

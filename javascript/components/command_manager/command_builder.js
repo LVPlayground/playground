@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandError } from 'components/command_manager/command_error.js';
-import StringParser from 'base/string_parser.js';
+import { StringParser } from 'base/string_parser.js';
 
 // Parses the first word in |argumentString| as either the id or the name of a player. Returns the
 // player when successful, or fails when the player is not connected to the server.
@@ -376,5 +376,3 @@ CommandBuilder.PLAYER_PARAMETER = 42;
 CommandBuilder.ALLOWED_SUBCOMMANDS = [CommandBuilder.NUMBER_PARAMETER,
                                       CommandBuilder.WORD_PARAMETER,
                                       CommandBuilder.PLAYER_PARAMETER];
-
-export default CommandBuilder;

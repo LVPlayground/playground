@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { VirtualWorld } from 'entities/virtual_world.js';
+
 // The message visibility manager is able to determine whether a particular message, sent by a
 // particular player, should be visible. This considers their own settings, ignore lists, as well
 // as general visibility guidelines between different Virtual Worlds.

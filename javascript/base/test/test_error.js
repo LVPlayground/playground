@@ -4,7 +4,7 @@
 
 // The TestError is the base class for all errors that will be thrown as a consequence of the test
 // framework. It provides the infrastructure required to identify the failing test.
-class TestError extends Error {
+export class TestError extends Error {
   constructor(context) {
     super();
 
@@ -46,5 +46,3 @@ class TestError extends Error {
            this.context_.suiteDescription + ' ' + this.context_.testDescription;
   }
 };
-
-export default TestError;

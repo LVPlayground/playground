@@ -4,7 +4,7 @@
 
 import { FinancialNativeCalls } from 'features/finance/financial_natives.js';
 import { MoneyIndicator } from 'features/finance/visual/money_indicator.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The financial regulator is responsible for managing money in Las Venturas Playground. It
 // maintains its own books, and will continuously align player's own monitary values with it. Some

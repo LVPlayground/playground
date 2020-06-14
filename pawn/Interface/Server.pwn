@@ -19,6 +19,8 @@ native SetIsRegistered(playerid, bool: isRegistered);
 #define PLAYER_BENEFIT_VEHICLE_KEYS_COLOUR 4
 #define PLAYER_BENEFIT_VEHICLE_KEYS_JUMP 5
 
+native GetPlayerKillCountJS(playerid);
+native GetPlayerDeathCountJS(playerid);
 native GetPlayerMoneyJS(playerid);
 native GivePlayerMoneyJS(playerid, amount);
 native ResetPlayerMoneyJS(playerid);

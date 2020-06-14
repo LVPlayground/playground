@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
-import FeatureManager from 'components/feature_manager/feature_manager.js';
+import { Feature } from 'components/feature_manager/feature.js';
+import { FeatureManager } from 'components/feature_manager/feature_manager.js';
 
 describe('FeatureManager', it => {
     it('initializes the features', async assert => {

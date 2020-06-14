@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import { ActivityRecorder } from 'features/activity_log/activity_recorder.js';
-import Feature from 'components/feature_manager/feature.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { Feature } from 'components/feature_manager/feature.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';
 
@@ -93,7 +93,7 @@ export default class ActivityLog extends Feature {
         if (!sessionId)
             return;  // no session is known for the given |player|
         
-        this.recorder_.finalizePlayerSession(sessionId);
+        this.recorder_.finalizePlayerSession(player, sessionId);
         this.sessionIds_.delete(player);
     }
 

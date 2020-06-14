@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import StringParser from 'base/string_parser.js';
+import { StringParser } from 'base/string_parser.js';
 
 describe('StringParser', it => {
   let wordMatch = /^\s*(.+?)(?!\S)/;

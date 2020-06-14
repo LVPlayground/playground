@@ -6,7 +6,7 @@ import { CircularReadOnlyBuffer } from 'base/circular_read_only_buffer.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 import { range } from 'base/range.js';
 

@@ -4,7 +4,7 @@
 
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import PlaygroundCommands from 'features/playground/playground_commands.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
     let access = null;

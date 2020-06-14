@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 // @ts-check
 
+import { Rect } from 'base/rect.js';
 import { Zone } from 'features/gang_zones/structures/zone.js';
 
 import { meanShift } from 'features/gang_zones/mean_shift.js';

@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // The NavigationButton class represents a navigation button that points in a certain direction. The
 // directions are defined as statics on this class.
-class NavigationButton extends TextDraw {
+export class NavigationButton extends TextDraw {
     constructor(x, y, direction, callback) {
         super({
             position: [ x, y ],
@@ -39,5 +39,3 @@ NavigationButton.DIRECTION_LEFT = 'LD_BEAT:left';
 
 NavigationButton.ACTION_OK = 'LD_CHAT:thumbup';
 NavigationButton.ACTION_CANCEL = 'LD_CHAT:thumbdn';
-
-export default NavigationButton;

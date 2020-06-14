@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { VehicleModel } from 'entities/vehicle_model.js';
+
 describe('VehicleModel', it => {
     it('should be able to find vehicles by their Id', assert => {
         assert.isNull(VehicleModel.getById(42));

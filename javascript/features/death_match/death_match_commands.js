@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
 export class DeathMatchCommands {    

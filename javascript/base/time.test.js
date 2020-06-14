@@ -5,66 +5,6 @@
 import { formatDate, from, fromNow, to, toNow } from 'base/time.js';
 
 describe('Time', it => {
-    it('should add code sugar for millisecond waits', async(assert) => {
-        let invoked = false;
-
-        (async() => {
-            await milliseconds(1000);
-            invoked = true;
-        })();
-
-        assert.isFalse(invoked);
-        await server.clock.advance(900);
-        assert.isFalse(invoked);
-        await server.clock.advance(100);
-        assert.isTrue(invoked);
-    });
-
-    it('should add code sugar for seconds waits', async(assert) => {
-        let invoked = false;
-
-        (async() => {
-            await seconds(30);
-            invoked = true;
-        })();
-
-        assert.isFalse(invoked);
-        await server.clock.advance(28 * 1000);
-        assert.isFalse(invoked);
-        await server.clock.advance(2 * 1000);
-        assert.isTrue(invoked);
-    });
-
-    it('should add code sugar for minutes waits', async(assert) => {
-        let invoked = false;
-
-        (async() => {
-            await minutes(15);
-            invoked = true;
-        })();
-
-        assert.isFalse(invoked);
-        await server.clock.advance(13 * 60 * 1000);
-        assert.isFalse(invoked);
-        await server.clock.advance(2 * 60 * 1000);
-        assert.isTrue(invoked);
-    });
-
-    it('should add code sugar for hours waits', async(assert) => {
-        let invoked = false;
-
-        (async() => {
-            await hours(6);
-            invoked = true;
-        })();
-
-        assert.isFalse(invoked);
-        await server.clock.advance(4 * 60 * 60 * 1000);
-        assert.isFalse(invoked);
-        await server.clock.advance(2 * 60 * 60 * 1000);
-        assert.isTrue(invoked);
-    });
-
     it('is able to format dates for display', async (assert) => {
         assert.equal(formatDate(new Date('xxx')), '[invalid date]');
         assert.equal(formatDate(new Date('2020-05-01 14:12:15')), 'May 1, 2020');

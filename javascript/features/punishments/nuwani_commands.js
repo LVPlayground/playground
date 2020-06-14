@@ -595,6 +595,7 @@ export class NuwaniCommands {
     async onSerialInfoCommand(context, value, maxAge = 1095) {
         let serialNumber = parseInt(value, 10);
         let results = null;
+        let warning = '';
 
         if (!Number.isNaN(serialNumber) && serialNumber.toString().length == value.length) {
             results = await this.database_.findNicknamesForSerial({
@@ -606,6 +607,10 @@ export class NuwaniCommands {
                 context.respond(`4Error: No nicknames found for the serial number ${value}.`);
                 return;
             }
+
+            if (results.commonSerial)
+                warning = ' 4(common serial!)';
+
         } else {
             results = await this.database_.findSerialsForNickname({
                 nickname: value,
@@ -622,7 +627,7 @@ export class NuwaniCommands {
         if (results.total > results.entries.length)
             suffix = ` 15[${results.total - results.entries.length} omitted...]`;
 
-        context.respond('5Result: ' + this.formatInfoResults(results) + suffix);
+        context.respond(`5Result${warning}: ${this.formatInfoResults(results)}${suffix}`);
     }
 
     // !unban [nickname | ip | ip range | serial] [reason]
@@ -872,8 +877,16 @@ export class NuwaniCommands {
         let resultText = [];
 
         for (const entry of results.entries) {
+            const meta = [];
+
+            if (entry.common)
+                meta.push('4common14');
+
             if (entry.sessions > 1)
-                resultText.push(`${entry.text} 14(${entry.sessions}x)`);
+                meta.push(format('%dx', entry.sessions));
+
+            if (meta.length >= 1)
+                resultText.push(`${entry.text} 14(${meta.join(', ')})`);
             else
                 resultText.push(entry.text);
         }

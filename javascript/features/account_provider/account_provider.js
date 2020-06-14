@@ -4,7 +4,7 @@
 
 import { AccountManager } from 'features/account_provider/account_manager.js';
 import { AccountProviderDatabase } from 'features/account_provider/account_provider_database.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { MockAccountProviderDatabase } from 'features/account_provider/test/mock_account_provider_database.js';
 import { PlayerAccountSupplement } from 'features/account_provider/player_account_supplement.js';
 
@@ -19,6 +19,10 @@ export default class AccountProvider extends Feature {
 
         // This is a foundational feature.
         this.markFoundational();
+
+        // Depend on the PlayerStats feature, where certain statistics will be stored. It provides
+        // a Supplement that we expect to be available.
+        this.defineDependency('player_stats');
 
         // The database powers the actual storage layer shared between the commands and other logic
         // provided by this feature. There's only a single instance of it.

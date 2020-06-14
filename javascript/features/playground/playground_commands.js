@@ -3,15 +3,15 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
-import Question from 'components/dialogs/question.js';
-import Setting from 'entities/setting.js';
+import { Question } from 'components/dialogs/question.js';
+import { Setting } from 'entities/setting.js';
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
 
 // Directory in which the CPU profiles will be stored.
@@ -333,7 +333,7 @@ class PlaygroundCommands {
 
         // Start an asynchronous function that will report the profile as having finished.
         (async() => {
-            await milliseconds(profileDurationMs);
+            await wait(profileDurationMs);
 
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_PROFILE_FINISHED, player.name, filename);

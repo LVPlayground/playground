@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSyncedData from 'entities/player_synced_data.js';
+import { PlayerSyncedData } from 'entities/player_synced_data.js';
 import { Supplementable } from 'base/supplementable.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';

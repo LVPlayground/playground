@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AssertionFailedError from 'base/test/assertion_failed_error.js';
-import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
+import { AssertionFailedError } from 'base/test/assertion_failed_error.js';
+import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.
 //
 // This library implements the Chai assertion API, as documented here:
 //     http://chaijs.com/api/assert/
-export default class Assert {
+export class Assert {
   constructor(suite, description) {
     this.context_ = null;
     this.suite_ = suite;

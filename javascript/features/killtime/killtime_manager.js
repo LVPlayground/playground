@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Managing killtime, that magic happens here. We need to keep track of who is on top, how many minutes do we still
 // have and when we have to stop. At the end we of course want to give out the correct prize to the correct person.
@@ -43,7 +43,7 @@ class KilltimeManager {
         this.giveAllPlayersKillTimeWeapon();
         let minutesPassedBy = 0;
         while (this.isRunning_) {
-            await minutes(1);
+            await wait(60 * 1000);
             if (!this.isRunning_)
                 return;
 

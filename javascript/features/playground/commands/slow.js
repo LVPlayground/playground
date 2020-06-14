@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Command from 'features/playground/command.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Command: /slow [player]? [factor]
 class SlowCommand extends Command {
@@ -62,7 +62,7 @@ class SlowCommand extends Command {
                                                          velocity.y * factor, velocity.z);
             }
 
-            await milliseconds(500);
+            await wait(500);
         }
 
         this.slowing_.delete(subject);

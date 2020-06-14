@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PriorityQueue from 'base/priority_queue.js';
+import { PriorityQueue } from 'base/priority_queue.js';
 
 // Responsible for keeping track of used vehicles, and whether (and when) they should respawn. All
 // vehicles known to this object will be kept alive beyond streaming availability.
@@ -89,14 +89,23 @@ export class VehicleRespawnManager {
             this.delete(streamableVehicle);
 
             // If the |streamableVehicle| is occupied by players, just re-add it to the respawn
-            // queue. The players have been in there for the entire duration.
-            if (streamableVehicle.live && streamableVehicle.live.isOccupied()) {
-                this.add(streamableVehicle);
-                continue;
+            // queue. The players have been in there for the entire duration. This also checks any
+            // parent the vehicle might have, which is checked recursively.
+            let currentVehicle = streamableVehicle.live;
+            let occupied = false;
+
+            while (!occupied && currentVehicle) {
+                if (currentVehicle.isOccupied())
+                    occupied = true;
+                
+                currentVehicle = currentVehicle.parent;
             }
 
-            // Otherwise add it to the |vehicles| set - it can be deleted.
-            vehicles.add(streamableVehicle);
+            // If it's occupied, re-add to the queue, otherwise queue up for deletion.
+            if (occupied)
+                this.add(streamableVehicle);
+            else
+                vehicles.add(streamableVehicle);
         }
 
         return vehicles;

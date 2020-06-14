@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Assert from 'base/test/assert.js';
-import AssertionFailedError from 'base/test/assertion_failed_error.js';
+import { Assert } from 'base/test/assert.js';
+import { AssertionFailedError } from 'base/test/assertion_failed_error.js';
 
 describe('Assert', it => {
   // TODO: assert(expression, message)

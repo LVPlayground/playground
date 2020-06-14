@@ -23,7 +23,7 @@ describe('VehicleDecorations', it => {
         const objects = server.objectManager.count;
         const gunther = server.playerManager.getById(0 /* Gunther */);
         gunther.position = POSITION;
-        gunther.vehicleSeat = Vehicle.SEAT_DRIVER;
+        gunther.vehicleSeat = Vehicle.kSeatDriver;
 
         server.featureManager.registerFeaturesForTests({
             vehicles: Vehicles

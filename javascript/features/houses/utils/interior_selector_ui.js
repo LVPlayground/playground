@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import NavigationButton from 'components/text_draw/navigation_button.js';
-import Rectangle from 'components/text_draw/rectangle.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { NavigationButton } from 'components/text_draw/navigation_button.js';
+import { Rectangle } from 'components/text_draw/rectangle.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Background color of the user interface. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
@@ -75,7 +75,7 @@ class InteriorSelectorUI {
                 return;
 
             pawnInvoke('SelectTextDraw', 'ii', this.player_.id, BUTTON_HOVER_COLOR.toNumberRGBA());
-            await seconds(1);
+            await wait(1000);
         }
     }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Represents a rectangular text draw that can be displayed on the player's screen. There is no text
 // on the rectangle, it only has a set position, size and color.
@@ -10,7 +10,7 @@ import TextDraw from 'components/text_draw/text_draw.js';
 // Please don't ask me why the calculations in this class work. I don't know. I ended up with this
 // after a fair amount of trail and error, but it seems to work reliably despite the documentation
 // pointing out that these are entirely the wrong values.
-class Rectangle extends TextDraw {
+export class Rectangle extends TextDraw {
   constructor(x, y, width, height, color) {
     super({
       position: [x, y],
@@ -24,5 +24,3 @@ class Rectangle extends TextDraw {
     });
   }
 };
-
-export default Rectangle;

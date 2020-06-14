@@ -6,7 +6,7 @@ import createTestEnvironment from 'features/houses/test/test_environment.js';
 
 import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
-import MockLocation from 'features/location/test/mock_location.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends

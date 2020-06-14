@@ -4,7 +4,7 @@
 
 // The dependency graph maintains a list of the dependencies between features, and provides the
 // necessary functionality to determine whether a circular dependency may be created.
-class DependencyGraph {
+export class DependencyGraph {
     constructor() {
         this.features_ = new Map();
     }
@@ -87,5 +87,3 @@ class DependencyGraph {
         return disposalList;
     }
 }
-
-export default DependencyGraph;

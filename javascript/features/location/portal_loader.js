@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Portal from 'features/location/portal.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Loads a series of portals from a portal definition file into an array of Portal instances. The
 // file should contain an array of portal entries, each of which is defined as:

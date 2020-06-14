@@ -4,7 +4,7 @@
 
 // Implementation of a simple yet fast priority queue. A |comparator| must be given when
 // constructing the priority queue that will be used for ordering items.
-class PriorityQueue {
+export class PriorityQueue {
     constructor(comparator) {
         if (typeof comparator !== 'function')
             throw new Error('The comparator passed to a PriorityQueue must be a function.');
@@ -86,5 +86,3 @@ class PriorityQueue {
         this.values_ = [];
     }
 }
-
-export default PriorityQueue;

@@ -133,6 +133,9 @@ export class MockBanDatabase extends BanDatabase {
     }
 
     // Overridden.
+    async _isCommonSerialQuery(serial) { return 500; }
+
+    // Overridden.
     async findIpAddressesForNickname({ nickname, maxAge = 30 } = {}) {
         if (nickname === 'Xanland') {
             return {
@@ -157,7 +160,7 @@ export class MockBanDatabase extends BanDatabase {
                 total: 13,
                 entries: [
                     { text: 2657120904, sessions: 122 },
-                    { text: 5642214798, sessions: 1 },
+                    { text: 5642214798, common: true, sessions: 1 },
                 ],
             };
         }

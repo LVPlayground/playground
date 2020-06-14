@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { PlayerSettingsManager } from 'features/player_settings/player_settings_manager.js';
 import { PlayerSettingsSupplement } from 'features/player_settings/player_settings_supplement.js';
 import SettingList from 'entities/player_setting_list.js';

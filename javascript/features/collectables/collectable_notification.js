@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Implements an on-screen notification used to inform users that they've collected a collectable
 // of a particular type. Each type of collectable has their own, slightly different style, while

@@ -1013,7 +1013,7 @@ CFightClub__EndMatch(matchid, deathPlayerId)
     new iScore2 = Matches[matchid][score2];
 
 
-    new sMessage[256];
+    new sMessage[512];
 
     CFightClub__ResetMatch(matchid);
 

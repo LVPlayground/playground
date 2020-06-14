@@ -96,16 +96,11 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
 
         // TODO: Add individual settings which should be enabled by default here.
         this->toggleSetting(AccountUpdatedForSettingsSettingKey, true);
-    }
 
-    /**
-     * Restores any settings which were altered at giving tempadmin. Each setting will default to
-     * what they should be for a normal player. It will automatically be invoked when a player
-     * disconnects from Las Venturas Playground.
-     */
-    @list(OnPlayerDisconnect)
-    public restoreOnDisconnect() {
-        if (Player(playerId)->isVip() == false)
+        if(Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false)
+            this->setTeleportationDisabled(false);
+
+        if(Player(playerId)->isAdministrator() == false)
             this->toggleSetting(MapTeleportationEnabledSettingKey, false);
     }
 

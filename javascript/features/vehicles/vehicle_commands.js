@@ -241,7 +241,7 @@ class VehicleCommands {
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
         if (streamableVehicle.live)
-            player.enterVehicle(streamableVehicle.live, Vehicle.SEAT_DRIVER);
+            player.enterVehicle(streamableVehicle.live, Vehicle.kSeatDriver);
     }
 
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish

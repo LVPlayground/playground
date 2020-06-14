@@ -19,8 +19,10 @@ export class VehicleDecorations {
 
     // Contains a map of setting, VehicleDecorationSet
     decorations_ = null;
+
     // Contains a map of setting, decoration. Disabled settings will be removed from the map.
     enabledSettings_ = null;
+
     // Contains a map of what player, {vehicle, decoration}
     playerVehicleDecorations_ = null;
 
@@ -43,7 +45,6 @@ export class VehicleDecorations {
 
             if (this.settings_().getValue(setting))
                 this.enabledSettings_.set(setting, decoration);
-
         }
 
         this.attachSettingListeners();
@@ -65,9 +66,9 @@ export class VehicleDecorations {
             return;  // this |setting| doesn't map to a known configuration, odd
 
         if (!this.enabledSettings_.has(setting)) {
-            if (value) {
+            if (value)
                 this.enabledSettings_.set(setting, decoration);
-            }
+
             return;
         }
 
@@ -79,49 +80,41 @@ export class VehicleDecorations {
 
     // If payer enters a vehicle that can be decorated decorate it. 
     onPlayerEnterVehicle(player, vehicle) {
-        if (this.playerVehicleDecorations_.has(player)) {
+        if (this.playerVehicleDecorations_.has(player))
             return;
-        }
 
-        if (player.vehicleSeat !== Vehicle.SEAT_DRIVER) {
+        if (player.vehicleSeat !== Vehicle.kSeatDriver)
             return;
-        }
 
-        const decorations = [...this.enabledSettings_.values()]
-            .filter(v => v.modelId === vehicle.model.id);
+        const decorations = 
+            [...this.enabledSettings_.values()].filter(v => v.modelId === vehicle.model.id);
 
-        if (decorations.length === 0) {
+        if (decorations.length === 0)
             return;
-        }
 
-        for (const decoration of decorations) {
+        for (const decoration of decorations)
             decoration.enable(vehicle.id);
-        }
 
         //decoration.enable(vehicle.id);
         this.playerVehicleDecorations_.set(player, { vehicle: vehicle, decorations: decorations });
 
         // For the text draw only limit it to the first.
         const decoration = decorations[0];
-        if (decoration.enterMessage !== null && decoration.enterMessage !== undefined) {
+        if (decoration.enterMessage !== null && decoration.enterMessage !== undefined)
             player.gameText(decoration.enterMessage, 3000, 4);
-        }
 
-        if (decoration.announceMessage !== null && decoration.announceMessage !== undefined) {
+        if (decoration.announceMessage !== null && decoration.announceMessage !== undefined)
             this.announce_().announceToPlayers(decoration.announceMessage);
-        }
     }
 
     // Cleanup the objects upon leaving the vehicle.
     onPlayerLeaveVehicle(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || vehicleDecorations.length === 0) {
+        if (!vehicleDecorations || vehicleDecorations.length === 0)
             return;
-        }
 
-        for (const decoration of vehicleDecorations.decorations) {
+        for (const decoration of vehicleDecorations.decorations)
             decoration.disable(vehicleDecorations.vehicle.id);
-        }
 
         this.playerVehicleDecorations_.delete(player);
     }
@@ -129,13 +122,11 @@ export class VehicleDecorations {
     // Cleanup the objects upon disconnecting.
     onPlayerDisconnect(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || vehicleDecorations.length === 0) {
+        if (!vehicleDecorations || vehicleDecorations.length === 0)
             return;
-        }
 
-        for (const decoration of vehicleDecorations.decorations) {
+        for (const decoration of vehicleDecorations.decorations)
             decoration.disable(vehicleDecorations.vehicle.id);
-        }
 
         this.playerVehicleDecorations_.delete(player);
     }

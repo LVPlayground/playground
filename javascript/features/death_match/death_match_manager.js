@@ -189,7 +189,7 @@ export class DeathMatchManger {
         if (this.playerTeam_.has(player.id)) {
             const team = this.playerTeam_.get(player.id).team;
 
-            player.color = team === RED_TEAM ? Color.RED : Color.BLUE;
+            wait(1).then(() =>  player.color = team === RED_TEAM ? Color.RED : Color.BLUE);
 
             if (location.noTeamDamage)
                 player.team = team;

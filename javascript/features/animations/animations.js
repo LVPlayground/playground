@@ -31,7 +31,7 @@ export default class Animations extends Feature {
         // Certain announcement settings about animations are configurable.
         this.settings_ = this.defineDependency('settings');
 
-        // Map from all animation command names to their descriptions.
+        // Map from all animation command names to their PlayerAnimation instances.
         this.animations_ = new Map();
 
         // /animations
@@ -57,7 +57,7 @@ export default class Animations extends Feature {
             const animation = new PlayerAnimation(animationConfiguration);
 
             // (1) Store the animation command name in the local set.
-            this.animations_.set(animation.command, animation.description);
+            this.animations_.set(animation.command, animation);
 
             // (2) Create a command for the given animation.
             server.commandManager.buildCommand(animation.command)
@@ -114,20 +114,34 @@ export default class Animations extends Feature {
     // Called when the |player| types /animations, which will show them a dialog with all the
     // available animations on Las Venturas Playground.
     async onAnimationsCommand(player) {
-        const commands = [ ...this.animations_ ];
         const dialog = new Menu('Animations', [
             'Command',
             'Description',
         ]);
 
-        // Add the /dance command separately, which has been special-cased.
-        commands.push([ 'dance [1-4]', 'Makes your character dance!' ]);
-        
+        // (1) Populate an array with behaviour for the /dance command, which is special cased.
+        const commands = [
+            [
+                'dance [1-4]',
+                'Makes your character dance!',
+                Animations.prototype.onDanceCommand.bind(this, player, /* style= */ 1)
+            ]
+        ];
+
+        // (2) Add all the predefined animations to the dialog.
+        for (const [ command, animation ] of this.animations_) {
+            commands.push([
+                command,
+                animation.description,
+                Animations.prototype.executeAnimation.bind(this, animation, player)
+            ]);
+        }
+    
         // Sort the |commands| alphabetically. Someone will mess up our JSON file.
         commands.sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
 
-        for (const [ command, description ] of commands)
-            dialog.addItem('/' + command, description);
+        for (const [ command, description, listener ] of commands)
+            dialog.addItem('/' + command, description, listener);
         
         await dialog.displayForPlayer(player);
     }

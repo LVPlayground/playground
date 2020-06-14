@@ -79,5 +79,18 @@ describe('Animations', (it, beforeEach) => {
         assert.includes(gunther.lastDialog, '/piss');
         assert.includes(gunther.lastDialog, '/sit');
         assert.includes(gunther.lastDialog, '/wave');
+
+        // Double clicking on an entry in this dialog should start the animation.
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
+        assert.isNull(gunther.getLastAnimationForTesting());
+
+        gunther.respondToDialog({ listitem: 0 /* first animation in the list */ });
+
+        assert.isTrue(await gunther.issueCommand('/animations'));
+
+        if (gunther.specialAction === Player.kSpecialActionNone)
+            assert.isNotNull(gunther.getLastAnimationForTesting());
+        else
+            assert.notEqual(gunther.specialAction, Player.kSpecialActionNone);
     });
 });

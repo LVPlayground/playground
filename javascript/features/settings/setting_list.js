@@ -100,6 +100,8 @@ export default [
     new Setting('playground', 'reaction_test_expire_sec', Setting.TYPE_NUMBER, 300, 'After how many seconds does a reaction test expire?'),
     new Setting('playground', 'reaction_test_jitter_sec', Setting.TYPE_NUMBER, 150, 'Jitter to apply to the delay to reduce predictability.'),
     new Setting('playground', 'reaction_test_prize', Setting.TYPE_NUMBER, 5000, 'How much money will a player get for winning a reaction test?'),
+    new Setting('playground', 'reaction_test_random_length_max', Setting.TYPE_NUMBER, 11, 'Maximum length of random-string reaction tests.'),
+    new Setting('playground', 'reaction_test_random_length_min', Setting.TYPE_NUMBER, 7, 'Minimum length of random-string reaction tests.'),
     new Setting('playground', 'reaction_test_remember_delay_sec', Setting.TYPE_NUMBER, 150, 'How much delay should the remember tests wait for?'),
     new Setting('playground', 'reaction_test_remember_jitter_sec', Setting.TYPE_NUMBER, 90, 'How much jitter should be applied to the remember tests?'),
 

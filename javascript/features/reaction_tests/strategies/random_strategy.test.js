@@ -7,25 +7,30 @@ import { RandomStrategy } from 'features/reaction_tests/strategies/random_strate
 describe('RandomStrategy', (it, beforeEach) => {
     let announceFn = null;
     let nuwani = null;
+    let settings = null;
 
     beforeEach(() => {
         const driver = server.featureManager.loadFeature('reaction_tests');
 
         announceFn = driver.__proto__.announceToPlayers.bind(driver);
         nuwani = server.featureManager.loadFeature('nuwani');
+        settings = server.featureManager.loadFeature('settings');
     });
 
     it('is able to compute random strings of the exported specifications', assert => {
+        settings.setValue('playground/reaction_test_random_length_min', 5);
+        settings.setValue('playground/reaction_test_random_length_max', 25);
+
         for (let i = 0; i < 25; ++i) {
-            const strategy = new RandomStrategy();
+            const strategy = new RandomStrategy(() => settings);
 
             strategy.start(announceFn, () => nuwani, 0);
 
             const answer = strategy.answer;
 
             assert.typeOf(answer, 'string');
-            assert.isAboveOrEqual(answer.length, RandomStrategy.kMinimumLength);
-            assert.isBelowOrEqual(answer.length, RandomStrategy.kMaximumLength);
+            assert.isAboveOrEqual(answer.length, 5);
+            assert.isBelowOrEqual(answer.length, 25);
 
             for (const character of answer)
                 assert.includes(RandomStrategy.kAlphabet, character);
@@ -36,7 +41,7 @@ describe('RandomStrategy', (it, beforeEach) => {
 
     it('announces new tests to in-game players and Nuwani users', assert => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
-        const strategy = new RandomStrategy();
+        const strategy = new RandomStrategy(() => settings);
 
         assert.equal(gunther.messages.length, 0);
         assert.equal(nuwani.messagesForTesting.length, 0);

@@ -10,14 +10,17 @@ export class RandomStrategy extends Strategy {
     // How many players should be on the server in order to consider this strategy?
     static kMinimumPlayerCount = 1;
 
-    // Minimum and maximum lengths, in characters, of a generated random string.
-    static kMinimumLength = 7;
-    static kMaximumLength = 9;
-
     // The alphabet out of which random strings will be generated.
     static kAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456798ABCDEFGHJKLMNPQRSTUVWXYZ';
 
     answer_ = null;
+    settings_ = null;
+
+    constructor(settings) {
+        super();
+
+        this.settings_ = settings;
+    }
 
     // Gets the answer to the current reaction test. May be NULL.
     get answer() { return this.answer_; }
@@ -25,8 +28,8 @@ export class RandomStrategy extends Strategy {
     // Starts a new test provided by this strategy. The question must be determined, and it should
     // be announced to people in-game and available through Nuwani accordingly.
     start(announceFn, nuwani, prize) {
-        const minimum = RandomStrategy.kMinimumLength;
-        const maximum = RandomStrategy.kMaximumLength;
+        const minimum = this.settings_().getValue('playground/reaction_test_random_length_min');
+        const maximum = this.settings_().getValue('playground/reaction_test_random_length_max');
 
         const length = Math.floor(Math.random() * (maximum - minimum)) + minimum;
 

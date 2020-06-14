@@ -279,7 +279,6 @@ ResetPlayerStats(playerId) {
     playerVehExp[playerId] = 0;
     WonMinigame[playerId] = 0;
     ClearPlayer(playerId);
-    iPlayerAnimation[playerId] = 0;
     ResetWeaponCheatCount(playerId);
     playerArmour[playerId] = 0.0;
     iPlayerSawnoffWeapon[playerId] = 0;

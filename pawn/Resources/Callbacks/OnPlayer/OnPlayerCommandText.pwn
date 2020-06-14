@@ -712,41 +712,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
-        if(strcmp(cmd, "/dance", true) == 0) {
-
-            if(DamageManager(playerid)->isPlayerFighting() == true)
-            {
-                SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a gun fight.");
-                return 1;
-            }
-
-            new tmp[256];
-
-            // Get the dance style param
-            tmp = strtok(cmdtext, idx);
-            if(!tmp[0]) {
-                SendClientMessage(playerid,0xFF0000FF,"Usage: /dance [style 1-4]");
-                return 1;
-            }
-
-            new dancestyle = strval(tmp);
-            if(dancestyle < 1 || dancestyle > 4) {
-                SendClientMessage(playerid,0xFF0000FF,"Usage: /dance [style 1-4]");
-                return 1;
-            }
-
-            if(dancestyle == 1) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE1);
-            } else if(dancestyle == 2) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE2);
-            } else if(dancestyle == 3) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE3);
-            } else if(dancestyle == 4) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE4);
-            }
-            return 1;
-        }
-
         if(strcmp(cmd, "/bitchslap", true) == 0)
         {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];

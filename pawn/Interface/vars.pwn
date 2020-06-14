@@ -14,7 +14,6 @@ new iRecordName[MAX_PLAYER_NAME+1] = "LVP";
 new playerLastQuitInterior[MAX_PLAYERS];
 new iRconLoginAttempts[MAX_PLAYERS];
 new iPlayerSawnoffWeapon[MAX_PLAYERS];
-new iPlayerAnimation[MAX_PLAYERS];
 new iPlayerSesDeaths[MAX_PLAYERS];
 new iPlayerSesKills[MAX_PLAYERS];
 new iPlayerDied[MAX_PLAYERS];

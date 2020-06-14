@@ -25,6 +25,8 @@
   "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}%s{00E676} and {388E3C}%s{00E676} commands to spawn vehicles!",
 
   "ANIMATIONS_ADMIN_NOTICE": "%s (Id:%d) has started the /%s animation for %s (Id:%d)",
+  "ANIMATIONS_DANCE_USAGE_ADMIN": "@usage /dance [1-4] [player]?",
+  "ANIMATIONS_DANCE_USAGE": "@usage /dance [1-4]",
   "ANIMATIONS_EXECUTE_BY_ADMIN": "{E0E0E0}* %s (Id:%d) has started the /%s animation for you.",
   "ANIMATIONS_EXECUTED": "@success The /%s animation has started for %s (Id:%d).",
   "ANIMATIONS_NOT_IDLE": "@error %s have recently been involved in a fight, and can't start an animation.",

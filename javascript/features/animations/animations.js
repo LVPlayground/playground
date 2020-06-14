@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { DanceAnimation } from 'features/animations/dance_animation.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { Menu } from 'components/menu/menu.js';
 import { PlayerAnimation } from 'features/animations/player_animation.js';
@@ -36,6 +37,13 @@ export default class Animations extends Feature {
         // /animations
         server.commandManager.buildCommand('animations')
             .build(Animations.prototype.onAnimationsCommand.bind(this));
+
+        // /dance [1-4] [player]?
+        server.commandManager.buildCommand('dance')
+            .parameters([
+                { name: 'style', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true } ])
+            .build(Animations.prototype.onDanceCommand.bind(this));
 
         if (!server.isTest())
             this.loadAnimations();
@@ -106,20 +114,55 @@ export default class Animations extends Feature {
     // Called when the |player| types /animations, which will show them a dialog with all the
     // available animations on Las Venturas Playground.
     async onAnimationsCommand(player) {
+        const commands = [ ...this.animations_ ];
         const dialog = new Menu('Animations', [
             'Command',
             'Description',
         ]);
 
-        for (const [ command, description ] of this.animations_)
+        // Add the /dance command separately, which has been special-cased.
+        commands.push([ 'dance [1-4]', 'Makes your character dance!' ]);
+        
+        // Sort the |commands| alphabetically. Someone will mess up our JSON file.
+        commands.sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
+
+        for (const [ command, description ] of commands)
             dialog.addItem('/' + command, description);
         
         await dialog.displayForPlayer(player);
     }
 
+    // Called when a player executes the "/dance" command. The |style| is optional, and a usage
+    // message should be shown when omitted. The |targetPlayer| should only be available to admins.
+    onDanceCommand(player, style = null, targetPlayer = null) {
+        const kDanceSpecialActions = new Map([
+            [ 1, Player.kSpecialActionDance1 ],
+            [ 2, Player.kSpecialActionDance2 ],
+            [ 3, Player.kSpecialActionDance3 ],
+            [ 4, Player.kSpecialActionDance4 ],
+        ]);
+
+        // Show a usage message if the passed |style| is not valid.
+        if (!kDanceSpecialActions.has(style)) {
+            if (player.isAdministrator())
+                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE_ADMIN);
+            else
+                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE);
+            return;
+        }
+
+        // If the |player| is not an administrator, force-remove any passed players.
+        if (!player.isAdministrator())
+            targetPlayer = null;
+
+        this.executeAnimation(
+            new DanceAnimation(kDanceSpecialActions.get(style)), player, targetPlayer);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.commandManager.removeCommand('dance');
         server.commandManager.removeCommand('animations');
 
         for (const command of this.animations_.keys())

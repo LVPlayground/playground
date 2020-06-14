@@ -58,13 +58,9 @@ LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if (ShipManager->isPlayerWalkingOnShip(playerid)) {
                 if ((GetPlayerVirtualWorld(playerid) == 0)
                     && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
-                    && !iPlayerAnimation[playerid] && 
-                    ((GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE) || (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_DUCK)))
+                    && ((GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE) || (GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_DUCK)))
                     ClearAnimations(playerid, 1);
             }
-
-            if (iPlayerAnimation[playerid])
-                iPlayerAnimation[playerid] = 0;
 
             if (GetPlayerWeapon(playerid) >= 16) {
                 DamageManager(playerid)->setFighting(Time->currentTime());
@@ -81,8 +77,7 @@ LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if (PRESSED(KEY_SHIP_FIGHT) && ShipManager->isPlayerWalkingOnShip(playerid)) {
         if ((GetPlayerVirtualWorld(playerid) == 0)
             && !IsPlayerInMinigame(playerid) && Player(playerid)->isAdministrator() == false
-            && !iPlayerAnimation[playerid] && GetPlayerSpecialAction(playerid) == 0) {
-            iPlayerAnimation[playerid] = 0;
+            && GetPlayerSpecialAction(playerid) == 0) {
             ClearAnimations(playerid, 1);
         }
 

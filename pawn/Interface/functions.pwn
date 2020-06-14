@@ -34,10 +34,6 @@ LegacySetValidKillerVariables(forPlayerId, killerId, reasonId) {
     validReasonId[forPlayerId] = reasonId;
 }
 
-bool: LegacyIsUserTempAdmin(playerId) {
-    return tempLevel[playerId] > 0;
-}
-
 RemovePlayerFromAnyGame(playerId) {
     if (Player(playerId)->isConnected() == false)
         return 0;

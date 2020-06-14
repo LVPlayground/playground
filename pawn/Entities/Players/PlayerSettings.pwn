@@ -105,7 +105,7 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
      */
     @list(OnPlayerDisconnect)
     public restoreOnDisconnect() {
-        if (LegacyIsUserTempAdmin(playerId))
+        if (Player(playerId)->isVip() == false)
             this->toggleSetting(MapTeleportationEnabledSettingKey, false);
     }
 

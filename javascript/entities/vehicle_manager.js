@@ -39,6 +39,9 @@ class VehicleManager {
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
 
+    // Returns an iterator that can be used to iterate over the created vehicles.
+    [Symbol.iterator]() { return this.vehicles_.values(); }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns the vehicle identified by |vehicleId|, or NULL when the vehicle does not exist or

@@ -4,7 +4,7 @@
 
 // Mocked implementation of the Actor entity. Supports the same API, but won't actually create an
 // actor on the San Andreas: Multiplayer server.
-class MockActor {
+export class MockActor {
     // Creates a new actor. Do NOT use this constructor directly, instead get the ActorManager from
     // the global Server object and create your actors through there.
     constructor(manager, modelId, position, rotation) {
@@ -107,5 +107,3 @@ class MockActor {
 
     toString() { return `[object MockActor(${this.modelId_})]`; }
 }
-
-export default MockActor;

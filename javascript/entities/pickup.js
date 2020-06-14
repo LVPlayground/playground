@@ -136,6 +136,3 @@ export class Pickup extends Supplementable {
 
     toString() { return `[object Pickup(${this.#id_}, ${this.#modelId_})]`; }
 }
-
-// Expose the Pickup object globally since it is an entity.
-global.Pickup = Pickup;

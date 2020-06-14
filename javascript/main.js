@@ -2,25 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Server from 'server.js';
+import { Server } from 'server.js';
 import { TestRunner } from 'base/test/test_runner.js';
 
 // Import global objects.
 import 'base/color.js';
 import 'base/message.js';
-import 'base/string_util.js';
 import 'base/vector.js';
 
 // Import the entities. These are global objects.
-import 'entities/actor.js';
-import 'entities/game_object.js';
-import 'entities/npc.js';
-import 'entities/pickup.js';
 import 'entities/player.js';
-import 'entities/text_label.js';
 import 'entities/vehicle.js';
-import 'entities/vehicle_model.js';
-import 'entities/virtual_world.js';
 
 // All tests included in the JavaScript version of Las Venturas Playground must pass before we allow
 // the gamemode to be started. Without this requirement, certain features may break unexpectedly.

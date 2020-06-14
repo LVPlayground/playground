@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Npc from 'entities/npc.js';
+import { Npc } from 'entities/npc.js';
 
 // Mock implementation of the non-playing character objects. Instead of connecting actual bots, it
 // will mimic the behaviour and introduce some of the asynchronous semantics to be expected.
-class MockNpc extends Npc {
+export class MockNpc extends Npc {
     // Overridden from the parent class, to enable connections to be initialized without actually
     // initiating a new NPC through Pawn and the SA-MP server.
     async internalConnect() {
@@ -48,5 +48,3 @@ class MockNpc extends Npc {
         });
     }
 }
-
-export default MockNpc;

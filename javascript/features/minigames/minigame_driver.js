@@ -4,6 +4,7 @@
 
 import Minigame from 'features/minigames/minigame.js';
 import ScopedEntities from 'entities/scoped_entities.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 // A minigame driver contains the information required to run an individual minigame. It will keep
 // track of the engaged players, their states and will automatically unregister the minigame when

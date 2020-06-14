@@ -4,7 +4,7 @@
 
 // Represents a range of Virtual Worlds. Ids can be acquired and released through its interface,
 // although the block can be released in its entirety as well by disposing it.
-class VirtualWorldBlock {
+export class VirtualWorldBlock {
     constructor(manager, begin, end) {
         this.manager_ = manager;
 
@@ -56,5 +56,3 @@ class VirtualWorldBlock {
         this.manager_ = null;
     }
 }
-
-export default VirtualWorldBlock;

@@ -2,11 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { GameObject } from 'entities/game_object.js';
 import { Vector } from 'base/vector.js';
 
 // The object manager maintains and owns all objects that have been created on the server. It also
 // powers the events required for the promises on the GameObject instances to work.
-class ObjectManager {
+export class ObjectManager {
     objectConstructor_ = null;
     objects_ = null;
 
@@ -191,5 +192,3 @@ class ObjectManager {
             throw new Error('There are remaining objects after disposing all of them.');
     }
 }
-
-export default ObjectManager;

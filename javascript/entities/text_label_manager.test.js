@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextLabelManager from 'entities/text_label_manager.js';
+import { TextLabelManager } from 'entities/text_label_manager.js';
 import { MockTextLabel } from 'entities/test/mock_text_label.js';
 
 describe('TextLabelManager', (it, beforeEach, afterEach) => {

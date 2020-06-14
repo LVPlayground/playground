@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Actor } from 'entities/actor.js';
+
 // The actor manager maintains and owns all actors that have been created on the server. There are
 // no events supported by the manager right now, so it does not enable observers to be attached.
-class ActorManager {
+export class ActorManager {
     constructor(actorConstructor = Actor) {
         this.actorConstructor_ = actorConstructor;
         this.actors_ = new Set();
@@ -38,5 +40,3 @@ class ActorManager {
             throw new Error('There are remaining actors after disposing all of them.');
     }
 }
-
-export default ActorManager;

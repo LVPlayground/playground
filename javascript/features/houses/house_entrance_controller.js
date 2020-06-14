@@ -5,6 +5,7 @@
 import HouseSettings from 'features/houses/house_settings.js';
 import Portal from 'features/location/portal.js';
 import ScopedEntities from 'entities/scoped_entities.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 // The radius around a house pickup within which the label will be visible.
 const HOUSE_AVAILABLE_LABEL_DRAW_DISTANCE = 20;

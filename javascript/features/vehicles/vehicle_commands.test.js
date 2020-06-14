@@ -4,6 +4,7 @@
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
+import { VehicleModel } from 'entities/vehicle_model.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
     let abuse = null;

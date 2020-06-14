@@ -4,7 +4,7 @@
 
 // Represents a non-playing character, controlled by a particular script. By mindful of the status
 // of an Npc instance, as their lifetime semantics are asynchronous.
-class Npc {
+export class Npc {
     // Statuses that can be assigned to an NPC.
     static kStateConnecting = 0;
     static kStateConnected = 1;
@@ -156,9 +156,3 @@ class Npc {
 
     toString() { return `[object Npc(${this.name_}, ${this.state_})]`; }
 }
-
-// Expose the Npc object globally since it is an entity.
-global.Npc = Npc;
-
-// Export the Npc object as well, enabling MockNpc to inherit from this.
-export default Npc;

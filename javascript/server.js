@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ActorManager from 'entities/actor_manager.js';
+import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import { Clock } from 'base/clock.js';
@@ -12,18 +12,19 @@ import { DeferredEventManager } from 'components/events/deferred_event_manager.j
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import FeatureManager from 'components/feature_manager/feature_manager.js';
 import { MapIconManager } from 'entities/map_icon_manager.js';
-import NpcManager from 'entities/npc_manager.js';
-import ObjectManager from 'entities/object_manager.js';
+import { NpcManager } from 'entities/npc_manager.js';
+import { Npc } from 'entities/npc.js';
+import { ObjectManager } from 'entities/object_manager.js';
 import { PickupManager } from 'entities/pickup_manager.js';
 import PlayerManager from 'entities/player_manager.js';
 import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
-import TextLabelManager from 'entities/text_label_manager.js';
-import VehicleManager from 'entities/vehicle_manager.js';
-import VirtualWorldManager from 'entities/virtual_world_manager.js';
+import { TextLabelManager } from 'entities/text_label_manager.js';
+import { VehicleManager } from 'entities/vehicle_manager.js';
+import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
 
 // The Server object is the global instance of the Las Venturas Playground run-time. It is globally
 // available and exposes an interface that enables any aspect of the server to be changed.
-class Server {
+export class Server {
     constructor() {
         this.database_ = new Database();
         this.clock_ = new Clock();
@@ -153,8 +154,6 @@ class Server {
         this.database_.dispose();
     }
 }
-
-export default Server;
 
 // The Server object is exposed on the global scope. It must, however, be instantiated manually when
 // the test runner has finished verifying the state of the gamemode.

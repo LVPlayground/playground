@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 import { kMessagePrefixes } from 'base/message.js';
 import { relativeTime, toNow } from 'base/time.js';

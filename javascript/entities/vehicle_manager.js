@@ -6,7 +6,7 @@ import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
-class VehicleManager {
+export class VehicleManager {
     constructor(vehicleConstructor = Vehicle) {
         this.vehicleConstructor_ = vehicleConstructor;
         this.disposed_ = false;
@@ -224,5 +224,3 @@ class VehicleManager {
         this.observers_ = null;
     }
 }
-
-export default VehicleManager;

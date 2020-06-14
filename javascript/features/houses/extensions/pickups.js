@@ -8,6 +8,7 @@ import confirm from 'components/dialogs/confirm.js';
 import HouseExtension from 'features/houses/house_extension.js';
 import Menu from 'components/menu/menu.js';
 import ScopedEntities from 'entities/scoped_entities.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Delay, in seconds, after which a health pickup in a house respawns.
 const HealthPickupRespawnDelay = 180;

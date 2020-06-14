@@ -4,7 +4,7 @@
 
 import { AccountManager } from 'features/account_provider/account_manager.js';
 import { AccountProviderDatabase } from 'features/account_provider/account_provider_database.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { MockAccountProviderDatabase } from 'features/account_provider/test/mock_account_provider_database.js';
 import { PlayerAccountSupplement } from 'features/account_provider/player_account_supplement.js';
 

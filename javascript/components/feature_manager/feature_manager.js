@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import DependencyGraph from 'components/feature_manager/dependency_graph.js';
-import Feature from 'components/feature_manager/feature.js';
+import { DependencyGraph } from 'components/feature_manager/dependency_graph.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 // The feature manager owns all the features available in the JavaScript implementation of the
 // server, provides cross-feature interfaces and access to many of the shared objects.
@@ -12,7 +12,7 @@ import Feature from 'components/feature_manager/feature.js';
 // can get the latest instance of the feature it would like to depend on.
 //
 // Features that do not explicitly opt out of live-reloading can do so.
-class FeatureManager {
+export class FeatureManager {
     constructor() {
         this.dependencyGraph_ = new DependencyGraph();
 
@@ -291,5 +291,3 @@ class FeatureManager {
         this.registeredFeatures_ = null;
     }
 };
-
-export default FeatureManager;

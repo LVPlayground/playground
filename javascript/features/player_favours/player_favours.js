@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { ObjectGroup } from 'entities/object_group.js';
 import ObjectRemover from 'features/player_favours/object_remover.js';
 import ScopedEntities from 'entities/scoped_entities.js';

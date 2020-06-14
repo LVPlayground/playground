@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Database from 'components/database/database.js';
+import { Database } from 'components/database/database.js';
 
 const unresolvedPromise = new Promise(resolve => {});
 

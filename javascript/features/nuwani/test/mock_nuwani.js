@@ -4,7 +4,7 @@
 
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
 import { Runtime } from 'features/nuwani/runtime/runtime.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';

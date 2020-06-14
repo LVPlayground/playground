@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { GameCommands } from 'features/games/game_commands.js';
 import { GameDescription } from 'features/games/game_description.js';
 import { GameManager } from 'features/games/game_manager.js';

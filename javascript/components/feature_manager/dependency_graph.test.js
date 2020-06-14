@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import DependencyGraph from 'components/feature_manager/dependency_graph.js';
+import { DependencyGraph } from 'components/feature_manager/dependency_graph.js';
 
 describe('DependencyGraph', (it, beforeEach) => {
     let graph = null;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { MockVehicleStreamer } from 'features/streamer/test/mock_vehicle_streamer.js';
 import { VehicleRegistry } from 'features/streamer/vehicle_registry.js';
 import { VehicleSelectionManager } from 'features/streamer/vehicle_selection_manager.js';

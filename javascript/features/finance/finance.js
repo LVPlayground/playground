@@ -7,7 +7,7 @@ import { FinancialCommunityContribution } from 'features/finance/financial_commu
 import { FinancialDispositionMonitor } from 'features/finance/financial_disposition_monitor.js';
 import { FinancialNatives } from 'features/finance/financial_natives.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 // Introduces everything related to the financial situation in San Andreas to the server. Maintains
 // track of money, allows players to interact with it, and gives them a bank account.

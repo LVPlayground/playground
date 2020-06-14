@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { ActivityRecorder } from 'features/activity_log/activity_recorder.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 import { murmur3hash } from 'base/murmur3hash.js';

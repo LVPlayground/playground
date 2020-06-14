@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 

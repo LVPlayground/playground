@@ -27,7 +27,7 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 new const kSprayTagTimeMs = 2000;
 
 // Number of milliseconds between marking a vehicle as having moved due to unoccupied sync.
-new const kUnoccupiedSyncMarkTimeMs = 60000;
+new const kUnoccupiedSyncMarkTimeMs = 185000;
 
 // Keeps track of the last vehicle they entered, and hijacked, to work around "ninja jack" kills.
 new g_ninjaJackCurrentVehicleId[MAX_PLAYERS];

@@ -4,7 +4,7 @@
 
 // The race checkpoint class encapsulates information about a checkpoint of the race type. Only a
 // single checkpoint can be displayed to a player at any given time.
-class RaceCheckpoint {
+export class RaceCheckpoint {
   constructor(type, position, nextPosition, size) {
     this.type_ = type;
     this.position_ = position;
@@ -44,5 +44,3 @@ RaceCheckpoint.GROUND_FINISH = 1;
 RaceCheckpoint.AIRBORNE_NORMAL = 3;
 RaceCheckpoint.AIRBORNE_FINISH = 4;
 RaceCheckpoint.NO_MARKER = 2;
-
-export default RaceCheckpoint;

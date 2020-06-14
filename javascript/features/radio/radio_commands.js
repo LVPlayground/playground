@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
 
 // Implementation of the `/radio` command that enables players to control their radio-related
 // settings, notably their preferred channel and whether the radio should be enabled at all.

@@ -6,10 +6,10 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Menu } from 'components/menu/menu.js';
-import Question from 'components/dialogs/question.js';
+import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
 
-import confirm from 'components/dialogs/confirm.js';
+import { confirm } from 'components/dialogs/confirm.js';
 
 // Returns whether the two given maps are equal to each other.
 function mapEquals(left, right) {

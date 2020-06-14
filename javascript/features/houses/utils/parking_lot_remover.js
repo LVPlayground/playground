@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Dialog from 'components/dialogs/dialog.js';
+import { Dialog } from 'components/dialogs/dialog.js';
 import IdentityBeam from 'features/houses/utils/identity_beam.js';
 
 // Class that provides the user interface required for *removing* a previously created parking lot.

@@ -4,14 +4,14 @@
 // @ts-check
 
 import { EditObjectFlow } from 'features/gang_zones/util/edit_object_flow.js';
-import Menu from 'components/menu/menu.js';
+import { Menu } from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 import { SelectObjectFlow } from 'features/gang_zones/util/select_object_flow.js';
 import { Vector } from 'base/vector.js';
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
 import { format } from 'base/string_formatter.js';
 
 // Implements the commands associated with gang zones, which enable gangs to modify their settings,

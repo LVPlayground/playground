@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import QuestionSequence from 'components/dialogs/question_sequence.js';
+import { QuestionSequence } from 'components/dialogs/question_sequence.js';
 
 describe('QuestionSequence', (it, beforeEach, afterEach) => {
     let player = null;

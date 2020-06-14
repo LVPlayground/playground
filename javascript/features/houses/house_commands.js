@@ -3,13 +3,13 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
-import Dialog from 'components/dialogs/dialog.js';
+import { Dialog } from 'components/dialogs/dialog.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import IdentityBeam from 'features/houses/utils/identity_beam.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
 import InteriorSelector from 'features/houses/utils/interior_selector.js';
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
 import { PlayerSetting } from 'entities/player_setting.js';

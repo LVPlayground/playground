@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import Race from 'features/races/race.js';
-import RaceCheckpoint from 'components/checkpoints/race_checkpoint.js';
+import { RaceCheckpoint } from 'components/checkpoints/race_checkpoint.js';
 
 // Private symbol to prevent people from using the RaceImporter's constructor.
 const PrivateSymbol = Symbol('Required for constructing the RaceImporter.');

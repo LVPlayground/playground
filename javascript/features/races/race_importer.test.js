@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import RaceCheckpoint from 'components/checkpoints/race_checkpoint.js';
+import { RaceCheckpoint } from 'components/checkpoints/race_checkpoint.js';
 import RaceImporter from 'features/races/race_importer.js';
 
 describe('RaceImporter', it => {

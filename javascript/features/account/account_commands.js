@@ -4,11 +4,11 @@
 
 import { AccountDatabase } from 'features/account/account_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
-import Question from 'components/dialogs/question.js';
+import { Menu } from 'components/menu/menu.js';
+import { Question } from 'components/dialogs/question.js';
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
 import { formatDate, fromNow } from 'base/time.js';
 import { format } from 'base/string_formatter.js';
 import { random } from 'base/random.js';

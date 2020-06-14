@@ -10,7 +10,7 @@ const PrivateSymbol = Symbol('Please use the static methods.');
 // Displays a color picker for a given player. The color picker functionality is implemented in
 // Pawn and there is no huge value in moving it right now, so this is a mere shim to call through to
 // that implementation and apply slightly different behaviour for tests.
-class ColorPicker {
+export class ColorPicker {
     // Shows a color picker to |player|. Returns a promise that will be resolved when they have
     // either selected a color, or dismissed the dialog.
     static show(player) {
@@ -54,5 +54,3 @@ class ColorPicker {
         this.resolve_(color);
     }
 }
-
-export default ColorPicker;

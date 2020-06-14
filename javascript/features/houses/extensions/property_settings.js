@@ -3,9 +3,9 @@
 // be found in the LICENSE file.
 
 import HouseExtension from 'features/houses/house_extension.js';
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
-import Question from 'components/dialogs/question.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
+import { Question } from 'components/dialogs/question.js';
 
 // Options for asking the player what their house's name should be.
 const NAME_QUESTION = {

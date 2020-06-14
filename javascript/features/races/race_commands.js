@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
+import { Menu } from 'components/menu/menu.js';
 
 // Title of the dialog that displays the available races.
 const DIALOG_TITLE = 'Racing on Las Venturas Playground';

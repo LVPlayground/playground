@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
+import { Menu } from 'components/menu/menu.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
 import * as benefits from 'features/collectables/collectable_benefits.js';

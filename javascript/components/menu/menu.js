@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Dialog from 'components/dialogs/dialog.js';
+import { Dialog } from 'components/dialogs/dialog.js';
 
 // The menu class represents a user-visible dialog from which they can choose an option. Optionally,
 // the menu can have up to four columns, each of which must have a set header. The width of columns
@@ -137,5 +137,3 @@ Menu.MAX_COLUMN_COUNT = 4;
 
 // Maximum number of rows that can be displayed on a single menu page.
 Menu.MAX_ROW_COUNT = 100;
-
-export default Menu;

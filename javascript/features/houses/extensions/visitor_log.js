@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import HouseExtension from 'features/houses/house_extension.js';
-import Menu from 'components/menu/menu.js';
-import MessageBox from 'components/dialogs/message_box.js';
+import { Menu } from 'components/menu/menu.js';
+import { MessageBox } from 'components/dialogs/message_box.js';
 
 // Time, in milliseconds, to ignore players re-entering a house.
 const REENTRY_IGNORE_TIME_MS = 5 * 60 * 1000;

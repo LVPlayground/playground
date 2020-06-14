@@ -22,7 +22,7 @@ const DIALOG_STYLE_TABLIST_HEADERS = 5;
 //
 // Note that use of dialogs of style DIALOG_STYLE_TABLIST has been forbidden in Las Venturas
 // Playground, since we mandate use of headers in tab lists.
-class Dialog {
+export class Dialog {
   // Do not allow this class to be instantiated. Instead, use the static methods below.
   constructor() { throw new Error('The Dialog class must not be instantiated.'); }
 
@@ -64,5 +64,3 @@ Dialog.PRIMARY_BUTTON = 1;
 
 // Id of the secondary -right- button (optional) on a dialog in the SA-MP server.
 Dialog.SECONDARY_BUTTON = 0;
-
-export default Dialog;

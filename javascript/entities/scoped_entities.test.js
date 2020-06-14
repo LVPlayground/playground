@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { Area } from 'entities/area.js';
+import { Rect } from 'base/rect.js';
 import ScopedEntities from 'entities/scoped_entities.js';
 
 describe('ScopedEntities', it => {

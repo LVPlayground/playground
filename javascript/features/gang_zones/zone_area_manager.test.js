@@ -4,6 +4,7 @@
 // @ts-check
 
 import { Color } from 'base/color.js';
+import { Rect } from 'base/rect.js';
 import { ZoneAreaManager } from 'features/gang_zones/zone_area_manager.js';
 import { ZoneGang } from 'features/gang_zones/structures/zone_gang.js';
 import { Zone } from 'features/gang_zones/structures/zone.js';

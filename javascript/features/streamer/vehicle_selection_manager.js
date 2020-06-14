@@ -81,8 +81,13 @@ export class VehicleSelectionManager {
             if (this.disposed_)
                 break;  // |this| got disposed of whilst streaming was in progress
 
-            // Updates the vehicle selection based on the selected results.
-            this.updateSelection(new Set([ ...results ]));
+            // Updates the vehicle selection based on the selected results. This is done in a try/
+            // catch block because issues shouldn't be fatal for vehicles on the server.
+            try {
+                this.updateSelection(new Set([ ...results ]));
+            } catch (exception) {
+                console.log(exception);
+            }
 
             // Wait for the interval period again before repeating this dance.
             await wait(this.settings_().getValue('vehicles/streamer_interval_ms'));

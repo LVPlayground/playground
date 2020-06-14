@@ -6,7 +6,7 @@
 import { EditObjectFlow } from 'features/gang_zones/util/edit_object_flow.js';
 import { Menu } from 'components/menu/menu.js';
 import { Player } from 'entities/player.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { SelectObjectFlow } from 'features/gang_zones/util/select_object_flow.js';
 import { Vector } from 'base/vector.js';
 

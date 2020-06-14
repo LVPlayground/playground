@@ -4,7 +4,7 @@
 // @ts-check
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { ZoneNatives } from 'features/gang_zones/zone_natives.js';
 
 // The zone area manager is responsible for maintaining the areas, both on the map and in the

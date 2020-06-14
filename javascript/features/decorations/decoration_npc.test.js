@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { DecorationNpc, kReconnectionDelaySec } from 'features/decorations/decoration_npc.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 describe('DecorationNpc', it => {
     it('establishes the NPC when enabled, and maintains its connection', async (assert) => {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Narrow red-beam. Available since SA-MP 0.3.7 RC4.
 const BEAM_OBJECT_ID = 11753;

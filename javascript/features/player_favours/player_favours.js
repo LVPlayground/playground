@@ -5,7 +5,7 @@
 import { Feature } from 'components/feature_manager/feature.js';
 import { ObjectGroup } from 'entities/object_group.js';
 import ObjectRemover from 'features/player_favours/object_remover.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 import { format } from 'base/string_formatter.js';
 

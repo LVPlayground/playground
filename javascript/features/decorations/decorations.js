@@ -4,7 +4,7 @@
 
 import { DecorationSet } from 'features/decorations/decoration_set.js';
 import { Feature } from 'components/feature_manager/feature.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Directory in which all the decorations have been written.
 const kDecorationDirectory = 'data/decorations/';

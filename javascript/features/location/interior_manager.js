@@ -5,7 +5,7 @@
 import { ObjectGroup } from 'entities/object_group.js';
 import Portal from 'features/location/portal.js';
 import PortalLoader from 'features/location/portal_loader.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // The radius around a portal's entrance within which the label will be visible.
 const PORTAL_LABEL_DRAW_DISTANCE = 20;

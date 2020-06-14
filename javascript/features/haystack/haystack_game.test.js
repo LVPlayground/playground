@@ -7,7 +7,7 @@ import { HaystackGame,
          kPlayerProgressInterval,
          } from 'features/haystack/haystack_game.js';
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { Vector } from 'base/vector.js';
 
 describe('HaystackGame', (it, beforeEach) => {

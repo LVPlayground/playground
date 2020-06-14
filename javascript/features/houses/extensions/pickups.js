@@ -4,7 +4,7 @@
 
 import HouseExtension from 'features/houses/house_extension.js';
 import { Menu } from 'components/menu/menu.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 import { alert } from 'components/dialogs/alert.js';

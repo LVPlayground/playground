@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { VehicleEventListener } from 'features/streamer/vehicle_event_listener.js';
 import { VehicleRespawnManager } from 'features/streamer/vehicle_respawn_manager.js';
 

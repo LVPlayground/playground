@@ -68,8 +68,13 @@ export class VehicleSelectionManager {
     // Gets the total number of vehicles that are currently on the respawn queue.
     get respawnQueueVehicles() { return this.respawnManager_.size; }
 
-    // Gets the StreamableVehicle instance for the given |vehicle|.
-    getStreamableVehicle(vehicle) { return this.streamableVehicles_.get(vehicle); }
+    // Gets the StreamableVehicle instance for the given |vehicle|. We require the |vehicle| to be
+    // a streamed-in vehicle for this function to return the instance, to ensure that |this| and
+    // the VehicleRespawnManager stay in sync.
+    getStreamableVehicle(vehicle) {
+        const streamableVehicle = this.streamableVehicles_.get(vehicle);
+        return this.vehicles_.has(streamableVehicle) ? streamableVehicle : null;
+    }
 
     // ---------------------------------------------------------------------------------------------
 

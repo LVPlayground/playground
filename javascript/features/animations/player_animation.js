@@ -13,6 +13,7 @@ export class PlayerAnimation {
 
     #command_ = null;
     #description_ = null;
+    #prepare_ = null;
     #type_ = null;
 
     // Options specific to one of the kType* constants.
@@ -31,6 +32,9 @@ export class PlayerAnimation {
         
         this.#command_ = config.command;
         this.#description_ = config.description;
+
+        if (config.hasOwnProperty('prepare') && typeof config.prepare === 'string')
+            this.#prepare_ = config.prepare;
 
         switch (config.type) {
             case 'animation':
@@ -96,7 +100,11 @@ export class PlayerAnimation {
 
     // Executes the animation for the given |player|.
     execute(player) {
-        // TODO: Preparation steps to get the player ready for the animation.
+        switch (this.#prepare_) {
+            case 'turn-around':
+                player.rotation += 180;
+                break;
+        }
 
         switch (this.#type_) {
             case PlayerAnimation.kTypeAnimation:

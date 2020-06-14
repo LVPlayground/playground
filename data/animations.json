@@ -124,5 +124,21 @@
             "freeze": false,
             "time": 0
         }
+    },
+    {
+        "command": "wave",
+        "description": "Makes your character wave at someone else.",
+        "prepare": "turn-around",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "KISSING",
+            "animname": "BD_GF_Wave",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
     }
 ]

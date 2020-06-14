@@ -27,6 +27,12 @@ describe('Animations', (it, beforeEach) => {
         assert.equal(gunther.specialAction, Player.kSpecialActionNone);
         assert.isTrue(await gunther.issueCommand('/piss'));
         assert.equal(gunther.specialAction, Player.kSpecialActionPissing);
+
+        // (3) Animations that prepare the player by turning them around.
+        assert.equal(gunther.rotation, 0);
+        assert.isTrue(await gunther.issueCommand('/wave'));
+        assert.equal(gunther.getLastAnimationForTesting(), 'KISSING:BD_GF_Wave');
+        assert.equal(gunther.rotation, 180);
     });
 
     it('should be able to force animations on other players, with a message', async (assert) => {

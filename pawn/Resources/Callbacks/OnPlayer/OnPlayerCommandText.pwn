@@ -813,16 +813,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
             return 1;
         }
-
-        if (strcmp(cmd, "/wave", true ) == 0)
-        {
-            ApplyAnimation(playerid,"KISSING","BD_GF_Wave",4.1,0,1,1,0,0);
-            new Float: pAngle;
-            GetPlayerFacingAngle(playerid, pAngle);
-            SetPlayerFacingAngle(playerid, pAngle + 180);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
     }
 
     if(strcmp(cmd, "/customtax", true) == 0)

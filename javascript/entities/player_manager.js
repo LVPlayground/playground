@@ -4,12 +4,10 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
-const VEHICLE_ENTER_EXIT = 16;  // also KEY_SECONDARY_ATTACK
-
 // The player manager keeps track of all players connected to Las Venturas Playground. Features may
 // choose to observe the manager in order to receive notifications when someone connects or
 // disconnects from the server. Non-player characters are treated identical to players.
-class PlayerManager {
+export class PlayerManager {
     constructor(playerConstructor = Player) {
         this.playerConstructor_ = playerConstructor;
         this.players_ = new Map();
@@ -389,5 +387,3 @@ class PlayerManager {
         this.players_ = null;
     }
 }
-
-export default PlayerManager;

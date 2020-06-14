@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 // List of PawnConfig settings with their unique values and settings. Must be synced with Pawn. The
 // settings can be in any category, of any type, as long as the identifier is a valid one.

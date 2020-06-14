@@ -13,7 +13,7 @@ import { MockDeferredEventManager } from 'components/events/mock_deferred_event_
 import { MockPickupManager } from 'entities/test/mock_pickup_manager.js';
 import { NpcManager } from 'entities/npc_manager.js';
 import { ObjectManager } from 'entities/object_manager.js';
-import PlayerManager from 'entities/player_manager.js';
+import { PlayerManager } from 'entities/player_manager.js';
 import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
 import { TextLabelManager } from 'entities/text_label_manager.js';
 import { VehicleManager } from 'entities/vehicle_manager.js';

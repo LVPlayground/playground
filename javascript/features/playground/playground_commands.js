@@ -8,7 +8,7 @@ import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import Question from 'components/dialogs/question.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 import alert from 'components/dialogs/alert.js';
 import confirm from 'components/dialogs/confirm.js';

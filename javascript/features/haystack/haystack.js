@@ -4,7 +4,7 @@
 
 import Feature from 'components/feature_manager/feature.js';
 import { HaystackGame } from 'features/haystack/haystack_game.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
 // Provides the haystack game, in which players have to climb a series of haystacks to reach the

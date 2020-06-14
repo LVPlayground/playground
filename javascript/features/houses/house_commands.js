@@ -12,7 +12,7 @@ import Menu from 'components/menu/menu.js';
 import MessageBox from 'components/dialogs/message_box.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.

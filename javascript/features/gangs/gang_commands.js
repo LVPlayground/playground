@@ -12,7 +12,7 @@ import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
 import { GangFinance } from 'features/gangs/gang_finance.js';
 import Menu from 'components/menu/menu.js';
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 import Question from 'components/dialogs/question.js';
 import QuestionSequence from 'components/dialogs/question_sequence.js';
 

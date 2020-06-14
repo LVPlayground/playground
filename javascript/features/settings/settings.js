@@ -4,7 +4,7 @@
 
 import Feature from 'components/feature_manager/feature.js';
 import { PawnConfig } from 'features/settings/pawn_config.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 import SettingList from 'features/settings/setting_list.js';
 import SettingsDatabase from 'features/settings/settings_database.js';
 

@@ -7,7 +7,7 @@ import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Menu } from 'components/menu/menu.js';
 import Question from 'components/dialogs/question.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 import confirm from 'components/dialogs/confirm.js';
 

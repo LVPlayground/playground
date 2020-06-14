@@ -4,7 +4,7 @@
 
 // Encapsulates an individual setting. Must be constructed with its category, name, type and default
 // value. Only the actual value can be changed during run-time.
-class Setting {
+export class Setting {
     constructor(category, name, type, value, description) {
         this.category_ = category;
         this.name_ = name;
@@ -59,5 +59,3 @@ Setting.TYPE_BOOLEAN = 0;
 Setting.TYPE_NUMBER = 1;
 Setting.TYPE_STRING = 2;
 Setting.TYPE_ENUM = 3;
-
-export default Setting;

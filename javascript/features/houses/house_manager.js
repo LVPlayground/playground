@@ -12,7 +12,7 @@ import HouseSettings from 'features/houses/house_settings.js';
 import HouseVehicle from 'features/houses/house_vehicle.js';
 import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 import MockHouseDatabase from 'features/houses/test/mock_house_database.js';
-import ObjectGroup from 'entities/object_group.js';
+import { ObjectGroup } from 'entities/object_group.js';
 
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.

@@ -2,11 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 // Encapsulates an individual player setting. 
 // Only the actual value can be changed during run-time.
-class PlayerSetting extends Setting {
+export class PlayerSetting extends Setting {
     constructor(category, group, subCommand, name, type, value, description) {
         super(category, name, type, value, description);
         
@@ -62,5 +62,3 @@ PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED = 'teleported';
 
 PlayerSetting.GANG = { };
 PlayerSetting.GANG.USE_SKIN = 'use_skin';
-
-export default PlayerSetting;

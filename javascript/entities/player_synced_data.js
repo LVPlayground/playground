@@ -4,7 +4,7 @@
 
 // Bridges between Pawn and JavaScript for a number of player-related settings. Changes to any of
 // these values will be reflected in the Pawn code, and vice versa.
-class PlayerSyncedData {
+export class PlayerSyncedData {
     constructor(playerId) {
         this.playerId_ = playerId;
 
@@ -148,6 +148,3 @@ PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
 PlayerSyncedData.SKIP_DAMAGE = 5;
 PlayerSyncedData.VEHICLE_KEYS = 4;
-
-
-export default PlayerSyncedData;

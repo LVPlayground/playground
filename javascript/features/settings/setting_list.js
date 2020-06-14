@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 // Boolean indicating whether we're currently in the month December. Months are
 // zero-based in JavaScript for some reason.

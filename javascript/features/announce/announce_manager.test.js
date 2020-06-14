@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import AnnounceManager from 'features/announce/announce_manager.js';
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {
     let announceManager = null;

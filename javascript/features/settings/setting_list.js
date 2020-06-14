@@ -13,7 +13,6 @@ export default [
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
     new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
     new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
-    
     new Setting('abuse', 'detector_cleo_dmage', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Dmage detector be enabled?'),
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
     new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
@@ -45,7 +44,7 @@ export default [
 
     /** Decoration related settings */
     new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
-    new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, true, 'Is this the time for some fantasy?'),
+    new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),

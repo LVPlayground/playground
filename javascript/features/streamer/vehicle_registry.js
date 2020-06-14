@@ -34,6 +34,9 @@ export class VehicleRegistry {
     // It will be removed from the streamer as well, and, when it exists, will immediately be
     // removed from the game. Any player within it will be ejected.
     deleteVehicle(vehicle) {
+        if (!this.vehicles_.has(vehicle))
+            return;  // the |vehicle| already was destroyed, probably ephemeral
+
         this.streamer_.delete(vehicle);
         this.vehicles_.delete(vehicle);
     }

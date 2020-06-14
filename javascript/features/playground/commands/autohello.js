@@ -10,10 +10,10 @@ const MinimumWait = 3.5;
 const MaximumWait = 10;
 
 // Time, in minutes, for which we'll remember reconnecting players.
-const ReconnectionTimeout = 15;
+const kReconnectionTimeout = 15;
 
 // Time, in minutes, for which we'll ignore players after a reconnect.
-const IgnoreTimeout = 60;
+const kIgnoreTimeout = 60;
 
 // List of greetings that will randomly be selected from when a player logs in.
 const Greetings = [
@@ -96,7 +96,7 @@ class AutoHelloMessageCommand extends Command {
         this.reconnected_.set(userId, uniqueSymbol);
         this.userIds_.delete(player);
 
-        await minutes(ReconnectionTimeout);
+        await wait(kReconnectionTimeout * 60 * 1000);
 
         if (this.reconnected_.get(userId) !== uniqueSymbol)
             return;
@@ -121,7 +121,7 @@ class AutoHelloMessageCommand extends Command {
 
     // Asynchronously greets the |player| on behalf of |greeter|.
     async greetPlayer(player, greeter) {
-        await seconds((Math.random() * (MaximumWait - MinimumWait)) + MinimumWait);
+        await wait(1000 * ((Math.random() * (MaximumWait - MinimumWait)) + MinimumWait));
         if (!player.isConnected() || !greeter.isConnected())
             return;
 
@@ -154,7 +154,9 @@ class AutoHelloMessageCommand extends Command {
             return;
 
         this.ignored_.add(userId);
-        await minutes(IgnoreTimeout);
+
+        await wait(kIgnoreTimeout * 60 * 1000);
+
         this.ignored_.delete(userId);
     }
 

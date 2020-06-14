@@ -9,7 +9,6 @@ import { TestRunner } from 'base/test/test_runner.js';
 import 'base/color.js';
 import 'base/message.js';
 import 'base/string_util.js';
-import 'base/time.js';
 import 'base/vector.js';
 
 // Import the entities. These are global objects.

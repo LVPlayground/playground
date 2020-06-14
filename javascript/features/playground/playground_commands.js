@@ -333,7 +333,7 @@ class PlaygroundCommands {
 
         // Start an asynchronous function that will report the profile as having finished.
         (async() => {
-            await milliseconds(profileDurationMs);
+            await wait(profileDurationMs);
 
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_PROFILE_FINISHED, player.name, filename);

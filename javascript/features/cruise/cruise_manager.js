@@ -22,7 +22,7 @@ export class CruiseManager {
 
         this.announce_().announceToPlayers(Message.CRUISE_STARTED);
 
-        await seconds(5);
+        await wait(5000);
         this.run();
     }
 
@@ -31,7 +31,7 @@ export class CruiseManager {
         while (this.#isRunning) {
             this.announceCruiseRunning_();
 
-            await minutes(1);
+            await wait(60 * 1000);
         }
     }
 

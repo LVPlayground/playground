@@ -92,7 +92,7 @@ class PlayerSyncedData {
         if (server.isTest())
             return;  // nothing to sync when running a test
 
-        await milliseconds(1);  // avoid call re-entrancy
+        await wait(1);  // avoid call re-entrancy
         switch (property) {
             // Integral properties.
             case PlayerSyncedData.COLLECTABLES:

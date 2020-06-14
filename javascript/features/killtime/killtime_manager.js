@@ -43,7 +43,7 @@ class KilltimeManager {
         this.giveAllPlayersKillTimeWeapon();
         let minutesPassedBy = 0;
         while (this.isRunning_) {
-            await minutes(1);
+            await wait(60 * 1000);
             if (!this.isRunning_)
                 return;
 

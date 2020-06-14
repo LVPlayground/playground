@@ -75,7 +75,7 @@ class InteriorSelectorUI {
                 return;
 
             pawnInvoke('SelectTextDraw', 'ii', this.player_.id, BUTTON_HOVER_COLOR.toNumberRGBA());
-            await seconds(1);
+            await wait(1000);
         }
     }
 

@@ -54,9 +54,6 @@ export class DeathMatchLocation {
             if (locations.has(location.id))
                 throw new Error('Duplicated death match location Id: ' + location.id);
 
-            if (location.teams > 4)
-                throw new Error('Maximum of 4 teams allowed');
-
             locations.set(location.id, location);
         });
     }

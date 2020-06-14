@@ -78,7 +78,6 @@ export class DeathMatchManger {
         }
 
         const zone = this.playersInDeathMatch_.get(player.id);
-
         this.playersInDeathMatch_.delete(player.id);
         this.playerTeam_.delete(player.id);
         player.activity = Player.PLAYER_ACTIVITY_NONE;
@@ -95,14 +94,18 @@ export class DeathMatchManger {
             player.respawn();
         }
 
+        this.resetTeamScoreIfZoneEmpty(zone);
+
+        this.showStats(player);
+    }
+
+    resetTeamScoreIfZoneEmpty(zone) {
         const numPlayersLeftInZone = [...this.playersInDeathMatch_]
             .filter(item => item[1] === zone)
             .length;
 
         if (numPlayersLeftInZone === 0 && this.teamScore_.has(zone))
             this.teamScore_.set(zone, new DeathMatchTeamScore());
-
-        this.showStats(player);
     }
 
     showStats(player) {
@@ -255,8 +258,6 @@ export class DeathMatchManger {
         killer.health = 100;
         killer.armour = Math.min(armour + health, 100);
 
-        const playerStats = this.playerStats_.get(player.id);
-        playerStats.deaths++;
         killer.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, killerStatistics.killCount);
         player.sendMessage(Message.DEATH_MATCH_TOTAL_DEATHS, playerStatistics.deathCount);
 
@@ -317,6 +318,9 @@ export class DeathMatchManger {
 
     // Called when a player disconnects from the server. Clears out all state for the player.
     onPlayerDisconnect(event) {
+        const zone = this.playersInDeathMatch_.get(event.playerid);
+        if(zone !== null && zone !== undefined)
+            this.resetTeamScoreIfZoneEmpty(zone);
         this.playersInDeathMatch_.delete(event.playerid);
         this.playerStats_.delete(event.playerid);
         this.playerTeam_.delete(event.playerid);

@@ -204,7 +204,6 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         manager.onPlayerSpawn({ playerid: gunther.id });
 
-        assert.equal(gunther.color, Color.RED);
         assert.equal(gunther.team, 0);
     });
 

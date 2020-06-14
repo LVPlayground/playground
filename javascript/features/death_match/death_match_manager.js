@@ -5,7 +5,10 @@
 import ScopedCallbacks from 'base/scoped_callbacks.js';
 
 import { DeathMatchLocation } from 'features/death_match/death_match_location.js';
-import { DeathMatchStats } from 'features/death_match/death_match_stats.js';
+import { DeathMatchStats, DeathMatchTeamScore } from 'features/death_match/death_match_stats.js';
+
+const RED_TEAM = 0;
+const BLUE_TEAM = 1;
 
 // This class will manage the DeathMatch zones. Allowing the player to join and leave at will.
 export class DeathMatchManger {
@@ -17,6 +20,12 @@ export class DeathMatchManger {
         this.playersInDeathMatch_ = new Map();
         // Stats of the player. Will not be cleared upon leaving the death match.
         this.playerStats_ = new Map();
+        // Key: player.id, value: { zone: zone, team: team }
+        this.playerTeam_ = new Map();
+        // Key: Zone, value: DeathMatchTeamScore
+        this.teamScore_ = new Map();
+
+        this.zoneTextDraws_ = new Map();
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -54,8 +63,11 @@ export class DeathMatchManger {
             return;
         }
 
+        this.playerTeam_.delete(player.id);
+        this.removeTextDrawForPlayer(player);
         this.playersInDeathMatch_.set(player.id, zone);
         this.playerStats_.set(player.id, new DeathMatchStats());
+        this.setPlayerTeam(player, zone);
         this.spawnPlayer(player, zone);
 
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
@@ -70,9 +82,14 @@ export class DeathMatchManger {
             return;
         }
 
-        this.playersInDeathMatch_.delete(player.id);
-        player.activity = Player.PLAYER_ACTIVITY_NONE;
+        const zone = this.playersInDeathMatch_.get(player.id);
 
+        this.playersInDeathMatch_.delete(player.id);
+        this.playerTeam_.delete(player.id);
+        player.activity = Player.PLAYER_ACTIVITY_NONE;
+        player.team = Player.NO_TEAM;
+
+        this.removeTextDrawForPlayer(player);
         // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
         // way.
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
@@ -82,6 +99,13 @@ export class DeathMatchManger {
         } else {
             player.respawn();
         }
+
+        const numPlayersLeftInZone = [...this.playersInDeathMatch_]
+            .filter(item => item[1] === zone)
+            .length;
+
+        if (numPlayersLeftInZone === 0 && this.teamScore_.has(zone))
+            this.teamScore_.set(zone, new DeathMatchTeamScore());
 
         this.showStats(player);
     }
@@ -101,6 +125,54 @@ export class DeathMatchManger {
             playerStats.accuracyPercentage);
     }
 
+    // If this DM has teams we'll set the player in a team.
+    setPlayerTeam(player, zone, team = undefined) {
+        const location = DeathMatchLocation.getById(zone);
+        if (!location.hasTeams)
+            return;
+
+        if (!this.zoneTextDraws_.has(zone)) {
+            this.zoneTextDraws_.set(zone, -1);
+            wait(1).then(() => {
+                const textDraw = pawnInvoke('TextDrawCreate', 'ffs', 482, 311, 'Loading..');
+                pawnInvoke('TextDrawBackgroundColor', 'ii', textDraw, 255);
+                pawnInvoke('TextDrawFont', 'ii', textDraw, 2);
+                pawnInvoke('TextDrawLetterSize', 'iff', textDraw, 0.33, 1.5);
+                pawnInvoke('TextDrawColor', 'ii', textDraw, -1);
+                pawnInvoke('TextDrawSetOutline', 'ii', textDraw, 1);
+                pawnInvoke('TextDrawSetProportional', 'ii', textDraw, 1);
+
+                this.zoneTextDraws_.set(zone, textDraw);
+                pawnInvoke('TextDrawShowForPlayer', 'ii', player.id, textDraw);
+                this.updateTextDraw(zone);
+            });
+        } else {
+            wait(2).then(() => {
+                const textDraw = this.zoneTextDraws_.get(zone);
+                pawnInvoke('TextDrawShowForPlayer', 'ii', player.id, textDraw);
+            });
+        }
+
+        if (!this.teamScore_.has(zone))
+            this.teamScore_.set(zone, new DeathMatchTeamScore());
+
+        if (!isNaN(team) && team < 2) {
+            this.playerTeam_.set(player.id, { zone: zone, team: team });
+            return;
+        }
+
+        const teams = [...this.playerTeam_]
+            .filter(item => item[1].zone === zone)
+            .map(item => item[1].team);
+
+        const amountOfRedTeam = teams.filter(item => item === RED_TEAM).length;
+        const amountOfBlueTeam = teams.filter(item => item === BLUE_TEAM).length;
+
+        const newTeam = amountOfRedTeam <= amountOfBlueTeam ? RED_TEAM : BLUE_TEAM;
+
+        this.playerTeam_.set(player.id, { zone: zone, team: newTeam });
+    }
+
     // We want to spawn the player at the right location with the right settings.
     spawnPlayer(player, zone) {
         const location = DeathMatchLocation.getById(zone);
@@ -113,6 +185,16 @@ export class DeathMatchManger {
         player.armour = location.playerArmour;
         player.weather = location.weather;
         player.time = [location.time, 0];
+
+        if (this.playerTeam_.has(player.id)) {
+            const team = this.playerTeam_.get(player.id).team;
+
+            player.color = team === RED_TEAM ? Color.RED : Color.BLUE;
+
+            if (location.noTeamDamage)
+                player.team = team;
+        }
+
         // Make sure this world is set last. TODO: Fix without wait. (e.g. use game API)
         wait(1).then(() => player.virtualWorld = location.world);
         player.interiorId = location.interiorId;
@@ -132,7 +214,7 @@ export class DeathMatchManger {
     findRandomSpawnPosition(location, attempt = 0) {
         var spawnPositions = [...location.spawnPositions];
         var spawnIndex = Math.floor(Math.random() * spawnPositions.length);
-        if (attempt > 10) 
+        if (attempt > 10)
             return spawnPositions[spawnIndex];
 
         if (this.lastQuarterUsedLocationsQueue.includes(spawnIndex))
@@ -214,6 +296,42 @@ export class DeathMatchManger {
         const playerStats = this.playerStats_.get(player.id);
         playerStats.deaths++;
         player.sendMessage(Message.DEATH_MATCH_TOTAL_KILLED, playerStats.deaths);
+
+        this.addKillToTeamForPlayer(killer);
+    }
+
+    addKillToTeamForPlayer(player) {
+        const zone = this.playersInDeathMatch_.get(player.id);
+        const playerTeam = this.playerTeam_.get(player.id);
+        const teamScore = this.teamScore_.get(zone);
+        if (zone === null || zone === undefined || playerTeam === null || playerTeam === undefined
+            || teamScore === null || teamScore === undefined)
+            return;
+
+        if (playerTeam.team === RED_TEAM)
+            teamScore.redTeamKills++;
+        else
+            teamScore.blueTeamKills++;
+
+        this.updateTextDraw(zone);
+    }
+
+    updateTextDraw(zone) {
+        const teamScore = this.teamScore_.get(zone);
+        const textDraw = this.zoneTextDraws_.get(zone);
+        wait(0).then(() => {
+            pawnInvoke('TextDrawSetString', 'is', textDraw,
+                `~r~Red team: ${teamScore.redTeamKills} kills~n~~b~Blue team: ${teamScore.blueTeamKills} kills`);
+        });
+    }
+
+    removeTextDrawForPlayer(player) {
+        const zone = this.playersInDeathMatch_.get(player.id);
+        const textDraw = this.zoneTextDraws_.get(zone);
+        if (textDraw === null || textDraw === undefined)
+            return;
+
+        pawnInvoke('TextDrawHideForPlayer', 'ii', player.id, textDraw);
     }
 
     // When a player spawns while in the mini game we want to teleport him back.
@@ -238,6 +356,7 @@ export class DeathMatchManger {
     onPlayerDisconnect(event) {
         this.playersInDeathMatch_.delete(event.playerid);
         this.playerStats_.delete(event.playerid);
+        this.playerTeam_.delete(event.playerid);
     }
 
     // Returns the identifiers of all the death match locations.
@@ -248,5 +367,8 @@ export class DeathMatchManger {
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;
+        for (let textDraw of this.zoneTextDraws_.values()) {
+            pawnInvoke('TextDrawDestroy', 'i', textDraw);
+        }
     }
 }

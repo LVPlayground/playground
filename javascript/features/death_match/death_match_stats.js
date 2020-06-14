@@ -18,3 +18,8 @@ export class DeathMatchStats {
         return bulletsShot === 0 ? 100 : Math.round((this.bulletsHit / bulletsShot * 100));
     }
 }
+
+export class DeathMatchTeamScore {
+    redTeamKills = 0;
+    blueTeamKills = 0;
+}

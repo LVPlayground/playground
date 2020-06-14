@@ -52,6 +52,9 @@ export class DeathMatchLocation {
             if (locations.has(location.id))
                 throw new Error('Duplicated death match location Id: ' + location.id);
 
+            if(location.teams > 4) 
+                throw new Error('Maximum of 4 teams allowed');
+
             locations.set(location.id, location);
         });
     }
@@ -73,6 +76,9 @@ export class DeathMatchLocation {
 
         this.weather_ = locationInfo.weather ?? 10;
         this.time_ = locationInfo.time ?? 12;
+
+        this.hasTeams_ = locationInfo.has_teams ?? false;
+        this.noTeamDamage_ = locationInfo.no_team_damage ?? false;
 
         this.playerHealth_ = locationInfo.player_health ?? 100;
         this.playerArmour_ = locationInfo.player_armour ?? 0;
@@ -111,6 +117,9 @@ export class DeathMatchLocation {
 
     get weather() { return this.weather_; }
     get time() { return this.time_; }
+
+    get hasTeams() { return this.hasTeams_; }
+    get noTeamDamage() { return this.noTeamDamage_; }
 
     get playerHealth() { return this.playerHealth_; }
     get playerArmour() { return this.playerArmour_; }

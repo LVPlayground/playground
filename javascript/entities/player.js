@@ -493,6 +493,10 @@ export class Player extends Supplementable {
     setVip(value) { this.#vip_ = value; }
 };
 
+// Default value for not being in a tam = 255 
+// https://wiki.sa-mp.com/wroot/index.php?title=SetPlayerTeam
+Player.NO_TEAM = 255;
+
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn
 Player.PLAYER_ACTIVITY_NONE = 0;

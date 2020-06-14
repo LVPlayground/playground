@@ -5,6 +5,7 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 import { kMessagePrefixes } from 'base/message.js';
+import { relativeTime, toNow } from 'base/time.js';
 
 // Implementation of a series of commands meant for communication between the IRC server and in-game
 // players. This ranges from regular messaging that's available for everyone, to specific messages
@@ -19,6 +20,9 @@ export class NuwaniCommands {
     // Map of |nickname| => |NuwaniPlayer| instance for message filtering purposes.
     nuwaniPlayerContext_ = new Map();
     nuwaniPlayers_ = new Map();
+
+    // Gets the MuteManager from the Communication feature, which we service.
+    get muteManager() { return this.communication_().muteManager_; }
 
     constructor(commandManager, announce, communication, nuwani) {
         this.commandManager_ = commandManager;
@@ -51,6 +55,19 @@ export class NuwaniCommands {
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onMessageCommand.bind(this));
 
+        // !muted
+        this.commandManager_.buildCommand('muted')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .build(NuwaniCommands.prototype.onMutedCommand.bind(this));
+
+        // !mute [player] [duration=2]
+        this.commandManager_.buildCommand('mute')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
+                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 2 } ])
+            .build(NuwaniCommands.prototype.onMuteCommand.bind(this));
+
         // !pm [player] [message]
         this.commandManager_.buildCommand('pm')
             .parameters([
@@ -63,6 +80,12 @@ export class NuwaniCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onSayCommand.bind(this));
+
+        // !unmute [player]
+        this.commandManager_.buildCommand('unmute')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .build(NuwaniCommands.prototype.onUnmuteCommand.bind(this));
 
         // !vip [message]
         this.commandManager_.buildCommand('vip')
@@ -210,6 +233,77 @@ export class NuwaniCommands {
         this.nuwani_().echo('chat-from-irc', context.nickname, processedMessage);
     }
 
+    // !muted
+    //
+    // Lists the players who are currently muted in-game. The players will be listed in ascending
+    // order of remaining duration on their mute.
+    onMutedCommand(context) {
+        const muted = [];
+
+        for (const player of server.playerManager) {
+            const remainingDuration = this.muteManager.getPlayerRemainingMuteTime(player);
+            if (remainingDuration)
+                muted.push({ player, remainingDuration });
+        }
+
+        if (!muted.length) {
+            context.respond('5Result: Nobody is muted right now.');
+            return;
+        }
+
+        // Sort |muted| based on the remaining duration, in ascending order.
+        muted.sort((lhs, rhs) => {
+            if (lhs.remainingDuration === rhs.remainingDuration)
+                return 0;
+
+            return lhs.remainingDuration > rhs.remainingDuration ? 1 : -1;
+        });
+
+        // Split the response up in one message per ten muted players. That will fit comfortably,
+        // while using multiple messages to increase clarity where appropriate.
+        while (muted.length) {
+            let players = [];
+
+            for (const { player, remainingDuration } of muted.splice(0, 10)) {
+                const remaining = toNow({ date: new Date(Date.now() - remainingDuration * 1000 )});
+                players.push(`${player.name} 14(expires ${remaining})`);
+            }
+
+            context.respond(`'5Muted players: ${players.join(', ')}`);
+        }
+    }
+
+    // !mute [player] [duration=2]
+    //
+    // Mutes the given |player| for the given |duration|. No reason will be given, the administrator
+    // is expected to send a message to the |player| separately.
+    onMuteCommand(context, player, duration = 2) {
+        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(player);
+
+        const proposedTime = duration * 60;
+        const proposedText = relativeTime({
+            date1: new Date(),
+            date2: new Date(Date.now() + proposedTime * 1000)
+        }).text;
+
+        this.muteManager.mutePlayer(player, proposedTime);
+
+        if (!timeRemaining) {
+            player.sendMessage(Message.MUTE_MUTED_TARGET_IRC, context.nickname, proposedText);
+        } else {
+            const change = timeRemaining >= proposedTime ? 'decreased' : 'extended';
+
+            // Inform the |player| about their punishment having changed.
+            player.sendMessage(
+                Message.MUTE_MUTED_TARGET_UPDATE_IRC, context.nickname, change, proposedText);
+        }
+
+        this.announce_().announceToAdministrators(
+            Message.MUTE_ADMIN_MUTED_IRC, context.nickname, player.name, player.id, proposedText);
+
+        context.respond(`3Success: ${player.name} has been muted for ${proposedText}.`);
+    }
+
     // !pm [player] [message]
     //
     // Sends a private message that only the |player| and in-game crew can read. May be sent from
@@ -261,6 +355,26 @@ export class NuwaniCommands {
         context.respond('3Success: The message has been published.');
     }
 
+    // !unmute [player]
+    //
+    // Revokes any mute that's active for the given |player|.
+    onUnmuteCommand(context, player) {
+        const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(player);
+        if (!timeRemaining) {
+            context.respond(`4Error: ${player.name} is not muted right now.`);
+            return;
+        }
+
+        this.muteManager.unmutePlayer(player);
+
+        this.announce_().announceToAdministrators(
+            Message.MUTE_ADMIN_UNMUTED_IRC, context.nickname, player.name, player.id);
+
+        player.sendMessage(Message.MUTE_UNMUTED_TARGET_IRC, context.nickname);
+
+        context.respond(`3Success: ${player.name} has been unmuted.`);
+    }
+
     // !vip [message]
     //
     // Sends a message to all in-game VIP players. Only VIPs on IRC are able to send these messages,
@@ -288,8 +402,11 @@ export class NuwaniCommands {
 
     dispose() {
         this.commandManager_.removeCommand('vip');
+        this.commandManager_.removeCommand('unmute');
         this.commandManager_.removeCommand('say');
         this.commandManager_.removeCommand('pm');
+        this.commandManager_.removeCommand('mute');
+        this.commandManager_.removeCommand('muted');
         this.commandManager_.removeCommand('msg');
         this.commandManager_.removeCommand('help');
         this.commandManager_.removeCommand('discord');

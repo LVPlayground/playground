@@ -277,4 +277,59 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(result.length, 1);
         assert.includes(result[0], 'includes a forbidden word');
     });
+
+    it('should be able to mute and unmute in-game players', async (assert) => {
+        const communication = server.featureManager.loadFeature('communication');
+        const muteManager = communication.muteManager_;
+
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'h');
+
+        assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
+
+        const noMutes = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!muted',
+        });
+
+        assert.equal(noMutes.length, 1);
+        assert.includes(noMutes[0], 'Nobody is muted');
+
+        const setMute = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!mute Gunther',
+        });
+
+        assert.equal(setMute.length, 1);
+        assert.includes(setMute[0], 'Gunther has been muted for 2 minutes');
+
+        assert.closeTo(muteManager.getPlayerRemainingMuteTime(gunther), 120, 5);
+
+        const muted = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!muted',
+        });
+
+        assert.equal(muted.length, 1);
+        assert.includes(muted[0], 'Gunther (expires in 2 minutes)');
+
+        const updateMute = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!mute Gunther 4',
+        });
+
+        assert.equal(updateMute.length, 1);
+        assert.includes(updateMute[0], 'Gunther has been muted for 4 minutes');
+
+        assert.closeTo(muteManager.getPlayerRemainingMuteTime(gunther), 240, 5);
+
+        const removeMute = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!unmute 0',
+        });
+
+        assert.equal(removeMute.length, 1);
+        assert.includes(removeMute[0], 'Gunther has been unmuted');
+
+        assert.isNull(muteManager.getPlayerRemainingMuteTime(gunther));
+    });
 });

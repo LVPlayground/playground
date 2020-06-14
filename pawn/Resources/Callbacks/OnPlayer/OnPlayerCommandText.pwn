@@ -711,16 +711,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     }
 
-    if(strcmp(cmd, "/animations", true) == 0)
-    {
-        SendClientMessage(playerid, COLOR_YELLOW, "These are the animation commands:");
-        SendClientMessage(playerid, Color::White, "/fu, /smoke, /haha, /wank, /vomit, /handsup, /sit, /kiss,");
-        SendClientMessage(playerid, Color::White, "/bitchslap, /piss, /wave, /lay, /dance.");
-        SendClientMessage(playerid, Color::White, "To end an animation, press the enter/leave vehicle key.");
-
-        return 1;
-    }
-
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
         if(strcmp(cmd, "/dance", true) == 0) {
 

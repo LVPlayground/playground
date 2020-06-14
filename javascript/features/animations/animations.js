@@ -4,6 +4,7 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { Feature } from 'components/feature_manager/feature.js';
+import { Menu } from 'components/menu/menu.js';
 import { PlayerAnimation } from 'features/animations/player_animation.js';
 
 // Configuration file that declaratively details how an animation should be executed.
@@ -31,6 +32,10 @@ export default class Animations extends Feature {
 
         // Map from all animation command names to their descriptions.
         this.animations_ = new Map();
+
+        // /animations
+        server.commandManager.buildCommand('animations')
+            .build(Animations.prototype.onAnimationsCommand.bind(this));
 
         if (!server.isTest())
             this.loadAnimations();
@@ -98,7 +103,25 @@ export default class Animations extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |player| types /animations, which will show them a dialog with all the
+    // available animations on Las Venturas Playground.
+    async onAnimationsCommand(player) {
+        const dialog = new Menu('Animations', [
+            'Command',
+            'Description',
+        ]);
+
+        for (const [ command, description ] of this.animations_)
+            dialog.addItem('/' + command, description);
+        
+        await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
+        server.commandManager.removeCommand('animations');
+
         for (const command of this.animations_.keys())
             server.commandManager.removeCommand(command);
         

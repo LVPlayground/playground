@@ -6,7 +6,8 @@
 // as has been defined in the JSON file.
 export class PlayerAnimation {
     // Type of animation that's described by this instance.
-    static kTypeSpecialAction = 0;
+    static kTypeAnimation = 0;
+    static kTypeSpecialAction = 1;
 
     // ---------------------------------------------------------------------------------------------
 
@@ -14,8 +15,9 @@ export class PlayerAnimation {
     #description_ = null;
     #type_ = null;
 
-    // Options for kTypeSpecialAction animations.
+    // Options specific to one of the kType* constants.
     #action_ = null;
+    #animation_ = null;
 
     constructor(config) {
         if (!config.hasOwnProperty('command') || typeof config.command !== 'string')
@@ -31,6 +33,10 @@ export class PlayerAnimation {
         this.#description_ = config.description;
 
         switch (config.type) {
+            case 'animation':
+                this.initializeAnimation(config.animation ?? {});
+                break;
+
             case 'special-action':
                 this.initializeSpecialAction(config);
                 break;
@@ -44,6 +50,37 @@ export class PlayerAnimation {
     get description() { return this.#description_; }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Initializes |this| as a regular animation from GTA: San Andreas' libraries.
+    initializeAnimation(config) {
+        const kRequiredConfiguration = {
+            animlib: 'string',
+            animname: 'string',
+            delta: 'number',
+            loop: 'boolean',
+            lock: 'boolean',
+            freeze: 'boolean',
+            time: 'number',
+        };
+
+        // Do quick validation of all the properties given to an animation.
+        for (const [ property, type ] of Object.entries(kRequiredConfiguration)) {
+            if (!config.hasOwnProperty(property) || typeof config[property] !== type)
+                throw new Error(`Expected the animation (${this}) to have a valid ${property}.`);
+        }
+
+        this.#type_ = PlayerAnimation.kTypeAnimation;
+        this.#animation_ = {
+            library: config.animlib,
+            name: config.animname,
+            delta: config.delta,
+            loop: config.loop,
+            lock: config.lock,
+            freeze: config.freeze,
+            time: config.time,
+            forceSync: false
+        };
+    }
 
     // Initializes |this| as a special action-based animation. That's one of the following values:
     // https://wiki.sa-mp.com/wiki/SpecialActions
@@ -62,6 +99,10 @@ export class PlayerAnimation {
         // TODO: Preparation steps to get the player ready for the animation.
 
         switch (this.#type_) {
+            case PlayerAnimation.kTypeAnimation:
+                player.animate(this.#animation_);
+                break;
+
             case PlayerAnimation.kTypeSpecialAction:
                 player.specialAction = this.#action_;
                 break;

@@ -58,6 +58,8 @@ export class MockPlayer extends Player {
     #streamUrl_ = null;
     #soundId_ = null;
 
+    #lastAnimation_ = null;
+
     #hasBeenSerializedForTesting_ = false;
     #isSurfingVehicle_ = false;
 
@@ -328,7 +330,7 @@ export class MockPlayer extends Player {
     // Section: Visual
     // ---------------------------------------------------------------------------------------------
 
-    animate(options) {}
+    animate(options) { this.#lastAnimation_ = options.library + ':' + options.name; }
 
     get animationIndex() { return 0; }
 
@@ -344,6 +346,8 @@ export class MockPlayer extends Player {
     setCamera(position, target) {}
 
     setSpectating(value) {}
+
+    getLastAnimationForTesting() { return this.#lastAnimation_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Vehicles

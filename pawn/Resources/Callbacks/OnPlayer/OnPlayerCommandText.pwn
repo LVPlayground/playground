@@ -757,37 +757,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (strcmp("/sit", cmdtext, true, 4) == 0) {
-            // Small overhaul to use SA-MP's own Sit functions.
-            ApplyAnimation(playerid,"MISC","SEAT_LR",4.1,0,0,0,1,1);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-
-        if (strcmp(cmd, "/fu", true ) == 0)
-        {
-            ApplyAnimation( playerid,"ped", "fucku", 4.1, 0, 1, 1, 0, 0 );
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/haha", true ) == 0)
-        {
-            ApplyAnimation(playerid,"RAPPING","Laugh_01",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/wank", true ) == 0 || strcmp(cmd, "/fap", true, 4) == 0)
-        {
-            ApplyAnimation(playerid,"PAULNMAC","wank_loop",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/vomit", true ) == 0)
-        {
-            ApplyAnimation(playerid,"FOOD","EAT_Vomit_P",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
         if(strcmp(cmd, "/bitchslap", true) == 0)
         {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
@@ -851,18 +820,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             new Float: pAngle;
             GetPlayerFacingAngle(playerid, pAngle);
             SetPlayerFacingAngle(playerid, pAngle + 180);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/kiss", true ) == 0)
-        {
-            ApplyAnimation(playerid, "BD_FIRE", "Grlfrd_Kiss_03", 4.1, 0, 1, 1, 0, 0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/lay", true ) == 0)
-        {
-            ApplyAnimation(playerid,"SUNBATHE","batherdown",4.1,0,1,1,1,1, 1);
             iPlayerAnimation[playerid] = true;
             return 1;
         }

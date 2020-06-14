@@ -18,9 +18,13 @@ describe('Animations', (it, beforeEach) => {
     });
 
     it('should be able to load and process player animations', async (assert) => {
-        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
+        // (1) Animations based on `ApplyAnimation` Pawn calls.
+        assert.isNull(gunther.getLastAnimationForTesting());
+        assert.isTrue(await gunther.issueCommand('/sit'));
+        assert.equal(gunther.getLastAnimationForTesting(), 'MISC:SEAT_LR');
 
-        // (1) Animations based on special actions.
+        // (2) Animations based on special actions.
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
         assert.isTrue(await gunther.issueCommand('/piss'));
         assert.equal(gunther.specialAction, Player.kSpecialActionPissing);
     });

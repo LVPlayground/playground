@@ -42,6 +42,12 @@ class Abuse extends Feature {
     // ---------------------------------------------------------------------------------------------
     // Public API of the Abuse feature.
 
+    // Returns whether the |player| is allowed to animate.
+    canAnimate(player) {
+        return this.internalProcessFightingConstraints(
+            player, server.clock.monotonicallyIncreasingTime());
+    }
+
     // Returns whether the |player| is allowed to teleport right now. The |enforceTimeLimit| option
     // may be set to indicate that the player should adhere to the teleportation time limit.
     canTeleport(player, { enforceTimeLimit = false } = {}) {

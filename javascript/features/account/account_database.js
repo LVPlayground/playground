@@ -160,7 +160,7 @@ const PLAYER_ALIASES_QUERY = `
                 sessions.user_id = users_nickname.user_id AND
                 sessions.nickname COLLATE latin1_general_ci = users_nickname.nickname
         ) AS last_seen,
-        IF(users.username = users_nickname.nickname, 1, 0) AS is_primary
+        IF(BINARY users.username = users_nickname.nickname, 1, 0) AS is_primary
     FROM
         users_nickname
     LEFT JOIN

@@ -4,11 +4,7 @@
 
 import { Setting } from 'entities/setting.js';
 
-// Boolean indicating whether we're currently in the month December. Months are
-// zero-based in JavaScript for some reason.
-const isDecember = (new Date()).getMonth() == 11;
-
-export default [
+export const kSettingList = [
     /** Abuse related settings */
     new Setting('abuse', 'announce_admin_animation', Setting.TYPE_BOOLEAN, true, 'Announce when admins force animations on other players.'),
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
@@ -44,7 +40,7 @@ export default [
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */
-    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
+    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, false, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),

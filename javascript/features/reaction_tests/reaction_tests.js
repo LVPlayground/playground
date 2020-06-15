@@ -95,6 +95,9 @@ export default class ReactionTests extends Feature {
     // Picks a reaction test strategy. In essense this picks a random reaction tests which meets the
     // requirements to be ran at the current time, which is player-based.
     createReactionTestStrategy() {
+        if (this.communication_().isCommunicationMuted())
+            return null;  // all communication is muted, skip this test
+
         let candidateStrategies = [];
         let onlinePlayerCount = 0;
 
@@ -111,7 +114,7 @@ export default class ReactionTests extends Feature {
 
         if (!candidateStrategies.length)
             return null;  // none of the strategies wishes to be ran at this time
-        
+
         const index = Math.floor(Math.random() * candidateStrategies.length);
         return new candidateStrategies[index](this.settings_);
     }

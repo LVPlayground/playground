@@ -205,8 +205,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
         // Vehicle keys (2): colour change
         if (HOLDING(VEHICLE_KEYS_BINDING_COLOUR) && (vehicleKeys & VEHICLE_KEYS_COLOUR)) {
-            new primaryColour = random(126);
-            new secondaryColour = random(126);
+            new primaryColour = 128 + random(122);  // [128, 250]
+            new secondaryColour = 128 + random(122);  // [128, 250]
 
             ChangeVehicleColor(vehicleId, primaryColour, secondaryColour);
         }

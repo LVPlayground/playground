@@ -25,6 +25,7 @@ year means that requirements for all previous years must be met as well.
   - At least 75% test coverage, by rough estimation. Majority tested through classes obtained by loading the feature.
   - Four space indentation, no brackets for one-line statements, `kConstantName` constant naming.
   - Exclusively uses [Named Exports](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export).
+  - Has a `README.md` file in the feature directory.
 
 ## 1. Foundational features
 These features provide critical functionality. They may not depend on other features except for the

@@ -6,7 +6,7 @@
 const kNumberPlaceholders = new Set(['d']);
 
 // Regular expression used to fully understand the syntax of a placeholder.
-const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([ds])/;
+const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([dfs])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -23,7 +23,8 @@ const kTypePassthrough = '📝';
 // The following placeholders are available:
 //
 //     %% - literal percentage sign
-//     %d - signed integer, any value within JavaScript's safe range
+//     %d - signed integer, any value within JavaScript's safe range (aliased by %i)
+//     %f - floating point number
 //     %s - string, unmodified unless the precision argument has been used.
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
@@ -55,11 +56,25 @@ export function format(message, ...parameters) {
                 break;
             
             case 'd':
+            case 'i':
                 value = parseInt(parameter, 10);
+                break;
+            
+            case 'f':
+                value = parseFloat(parameter);
+                if (Number.isNaN(value))
+                    value = 'NaN';
+                else if (format.hasOwnProperty('precision'))
+                    value = value.toFixed(format.precision);
+
                 break;
 
             case 's':
-                value = format.precision ? parameter.substring(0, format.precision) : parameter;
+                if (format.hasOwnProperty('precision'))
+                    value = parameter.substring(0, format.precision);
+                else
+                    value = parameter;
+
                 break;
 
             default:

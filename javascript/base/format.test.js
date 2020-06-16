@@ -22,6 +22,20 @@ describe('format', it => {
         assert.equal(format('[%d]', -10), '[-10]');
         assert.equal(format('[%+d]', 10), '[+10]');
 
+        // Placeholder: %f
+        assert.equal(format('[%f]', 1), '[1]');
+        assert.equal(format('[%f]', 1.25), '[1.25]');
+        assert.equal(format('[%f]', -10), '[-10]');
+        assert.equal(format('[%+f]', 10), '[+10]');
+        assert.equal(format('[%f]', Number.NaN), '[NaN]');
+        assert.equal(format('[%f]', Number.NEGATIVE_INFINITY), '[-Infinity]');
+        assert.equal(format('[%f]', Number.POSITIVE_INFINITY), '[Infinity]');
+        assert.equal(format('[%+f]', Number.POSITIVE_INFINITY), '[+Infinity]');
+        assert.equal(format('[%.0f]', 1.56432189), '[2]');
+        assert.equal(format('[%.1f]', 1.56432189), '[1.6]');
+        assert.equal(format('[%.2f]', 1.56432189), '[1.56]');
+        assert.equal(format('[%.3f]', 1.56432189), '[1.564]');
+
         // Placeholder: %s
         assert.equal(format('[%s]', ''), '[]');
         assert.equal(format('[%s]', 'banana'), '[banana]');

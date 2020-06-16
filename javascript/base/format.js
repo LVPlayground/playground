@@ -3,10 +3,10 @@
 // be found in the LICENSE file.
 
 // Placeholder types (single characters) that expect a number value to be given.
-const kNumberPlaceholders = new Set('dfi'.split(''));
+const kNumberPlaceholders = new Set('dfi$'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
-const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX])/;
+const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -30,6 +30,7 @@ const kTypePassthrough = '📝';
 //     %s - string, unmodified unless the precision argument has been used.
 //     %x - integer in hexadecimal notation (lower-case)
 //     %X - integer in hexadecimal notation (upper-case)
+//     %$ - integer formatted as a price
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
@@ -52,6 +53,7 @@ export function format(message, ...parameters) {
         const parameter = format.type != kTypePassthrough ? getNextParameter() : null;
         const negative = kNumberPlaceholders.has(format.type) && parameter < 0;
 
+        let prefix = null;
         let value = null;
 
         switch (format.type) {
@@ -97,6 +99,11 @@ export function format(message, ...parameters) {
                 value = (parseInt(parameter, 10) >>> 0).toString(16).toUpperCase();
                 break;
 
+            case '$':
+                prefix = '$';
+                value = parseInt(parameter, 10);
+                break;
+
             default:
                 throw new Error(`Invalid formatting type found: ${format.type}.`);
         }
@@ -110,6 +117,10 @@ export function format(message, ...parameters) {
             // Populate the |sign| for numeric placeholders that are either negative, or forced.
             if (kNumberPlaceholders.has(format.type))
                 sign = negative ? '-' : (format.sign ? '+' : '');
+
+            // Append the |prefix| to the |sign| when it has been given by a formatter.
+            if (prefix)
+                sign += prefix;
 
             // Populate the |string| with the |value| taken away the negative sign mark when set.
             // The sign will be added back later, after handling padding.

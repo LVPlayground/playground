@@ -84,6 +84,12 @@ describe('format', it => {
         assert.equal(format('[%3x]', 15), '[  f]');
         assert.equal(format('[%-3x]', 15), '[f  ]');
 
+        // Placeholder: %$
+        assert.equal(format('[%$]', 1), '[$1]');
+        assert.equal(format('[%$]', 1.25), '[$1]');
+        assert.equal(format('[%$]', -10), '[-$10]');
+        assert.equal(format('[%+$]', 10), '[+$10]');
+
         // Miscellaneous
         assert.equal(format('[%b]', 25), '[11001]');
         assert.equal(format('[%o]', 25), '[31]');

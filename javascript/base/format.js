@@ -2,8 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Regular expression used to fully understand the syntax of a placeholder.
+const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([ds])/;
+
 // Types of substitutions that can be expected in formatted messages.
-const kTypePassthrough = 0;
+const kTypePassthrough = '📝';
 
 // Formats |message| with the given |parameters|.
 //
@@ -59,13 +62,13 @@ export function parseMessageToFormattingList(message) {
                 type: kTypePassthrough,
                 text: message.substring(start, index)
             });
-
-            start = index + 1;
         }
 
-        const remainder = message.substring(index + 1);
+        ++index;  // remove the %
+
+        const remainder = message.substring(index);
         if (!remainder.length)
-            throw new Error(`Unexpected end-of-string found: "${message}"`);
+            throw new Error(`Unexpected end-of-string found: "${message}".`);
 
         // Handle the special case where a literal percentage sign should be added, which will be
         // "escaped" by the placeholder indicator.
@@ -75,16 +78,36 @@ export function parseMessageToFormattingList(message) {
                 text: '%',
             });
 
-            index++, start++;
+            start = index + 1;
             continue;
         }
 
-        throw new Error('TODO');
+        // Parse the placeholder, which |remainder| begins with, using the regular expression. This
+        // will give us a full understanding of what's going on here.
+        const match = kPlaceholderExpression.exec(remainder);
+        if (!match)
+            throw new Error(`Unparseable placeholder found: "${message}".`);
+
+        let formatting = { type: match[6] };
+
+        // Append each of the other parameter values in a sanitized way. These properties will be
+        // absent on placeholder entries where they haven't been specified.
+        if (match[1]) formatting.sign = true;
+        if (match[2]) formatting.padding = match[2].replace(/^[']/, '');
+        if (match[3]) formatting.leftAlign = true;
+        if (match[4]) formatting.width = parseInt(match[4], 10);
+        if (match[5]) formatting.precision = parseInt(match[5], 10);
+
+        list.push(formatting);
+
+        // Skip past the |match|, and align both |start| and |index| with that.
+        index += match[0].length;
+        start = index;
     }
 
     // If there is content left on the |message| that we haven't yet considered, add it manually to
     // not cut the string off early and have a loss of data.
-    if (index !== start) {
+    if (index !== start && start < length) {
         list.push({
             type: kTypePassthrough,
             text: message.substring(start)

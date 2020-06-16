@@ -7,6 +7,8 @@ import { format, parseMessageToFormattingList } from 'base/format.js';
 describe('format', it => {
     it('reject invalid messages by throwing an exception', assert => {
         assert.throws(() => parseMessageToFormattingList('hello %'));
+        assert.throws(() => parseMessageToFormattingList('hello %:hello'));
+        assert.throws(() => parseMessageToFormattingList('hello %A'));
     });
     
     it('should be able to substitute formatting parameters', assert => {
@@ -17,13 +19,54 @@ describe('format', it => {
 
     it('it able to parse messages to formatting lists', assert => {
         assert.deepEqual(parseMessageToFormattingList('Hello, world'), [
-            { type: 0, text: 'Hello, world' },
+            { type: '📝', text: 'Hello, world' },
         ]);
 
         assert.deepEqual(parseMessageToFormattingList('Hello, %%orld'), [
-            { type: 0, text: 'Hello, ' },
-            { type: 0, text: '%' },
-            { type: 0, text: 'orld' },
+            { type: '📝', text: 'Hello, ' },
+            { type: '📝', text: '%' },
+            { type: '📝', text: 'orld' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList('Hello, %s'), [
+            { type: '📝', text: 'Hello, ' },
+            { type: 's' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList('Hello, %s, world!'), [
+            { type: '📝', text: 'Hello, ' },
+            { type: 's' },
+            { type: '📝', text: ', world!' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a%'x5sb`), [
+            { type: '📝', text: 'a' },
+            { type: 's', padding: 'x', width: 5 },
+            { type: '📝', text: 'b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a%.5sb`), [
+            { type: '📝', text: 'a' },
+            { type: 's', precision: 5 },
+            { type: '📝', text: 'b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a%+db`), [
+            { type: '📝', text: 'a' },
+            { type: 'd', sign: true },
+            { type: '📝', text: 'b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a%-db`), [
+            { type: '📝', text: 'a' },
+            { type: 'd', leftAlign: true },
+            { type: '📝', text: 'b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a%+0-10.5db`), [
+            { type: '📝', text: 'a' },
+            { type: 'd', sign: true, padding: '0', leftAlign: true, width: 10, precision: 5 },
+            { type: '📝', text: 'b' },
         ]);
     });
 });

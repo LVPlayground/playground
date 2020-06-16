@@ -6,7 +6,7 @@
 const kNumberPlaceholders = new Set('dfi'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
-const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([dfisx])/;
+const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -23,10 +23,13 @@ const kTypePassthrough = '📝';
 // The following placeholders are available:
 //
 //     %% - literal percentage sign
+//     %b - integer in binary notation
 //     %d - integer, any value within JavaScript's safe range (aliased by %i)
 //     %f - floating point number
+//     %o - integer in octal notation
 //     %s - string, unmodified unless the precision argument has been used.
-//     %x - integer as a hexadecimal number (lower-case)
+//     %x - integer in hexadecimal notation (lower-case)
+//     %X - integer in hexadecimal notation (upper-case)
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
@@ -56,6 +59,10 @@ export function format(message, ...parameters) {
                 ropes.push(format.text);
                 break;
             
+            case 'b':
+                value = parseInt(parameter, 10).toString(2);
+                break;
+
             case 'd':
             case 'i':
                 value = parseInt(parameter, 10);
@@ -70,6 +77,10 @@ export function format(message, ...parameters) {
 
                 break;
 
+            case 'o':
+                value = parseInt(parameter, 10).toString(8);
+                break;
+
             case 's':
                 if (format.hasOwnProperty('precision'))
                     value = parameter.substring(0, format.precision);
@@ -80,6 +91,10 @@ export function format(message, ...parameters) {
             
             case 'x':
                 value = (parseInt(parameter, 10) >>> 0).toString(16);
+                break;
+            
+            case 'X':
+                value = (parseInt(parameter, 10) >>> 0).toString(16).toUpperCase();
                 break;
 
             default:

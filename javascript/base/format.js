@@ -3,10 +3,10 @@
 // be found in the LICENSE file.
 
 // Placeholder types (single characters) that expect a number value to be given.
-const kNumberPlaceholders = new Set(['d']);
+const kNumberPlaceholders = new Set('dfi'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
-const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([dfs])/;
+const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([dfisx])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -23,9 +23,10 @@ const kTypePassthrough = '📝';
 // The following placeholders are available:
 //
 //     %% - literal percentage sign
-//     %d - signed integer, any value within JavaScript's safe range (aliased by %i)
+//     %d - integer, any value within JavaScript's safe range (aliased by %i)
 //     %f - floating point number
 //     %s - string, unmodified unless the precision argument has been used.
+//     %x - integer as a hexadecimal number (lower-case)
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
@@ -76,6 +77,10 @@ export function format(message, ...parameters) {
                     value = parameter;
 
                 break;
+            
+            case 'x':
+                value = (parseInt(parameter, 10) >>> 0).toString(16);
+                break;
 
             default:
                 throw new Error(`Invalid formatting type found: ${format.type}.`);
@@ -84,8 +89,12 @@ export function format(message, ...parameters) {
         // If a |value| has been given then we're dealing with a substituted value, rather than a
         // pass-through string. There are additional steps to apply.
         if (value) {
-            let sign = negative ? '-' : (format.sign ? '+' : '');
+            let sign = '';
             let string = '';
+
+            // Populate the |sign| for numeric placeholders that are either negative, or forced.
+            if (kNumberPlaceholders.has(format.type))
+                sign = negative ? '-' : (format.sign ? '+' : '');
 
             // Populate the |string| with the |value| taken away the negative sign mark when set.
             // The sign will be added back later, after handling padding.

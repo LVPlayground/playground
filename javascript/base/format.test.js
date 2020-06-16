@@ -21,6 +21,8 @@ describe('format', it => {
         assert.equal(format('[%d]', 1.25), '[1]');
         assert.equal(format('[%d]', -10), '[-10]');
         assert.equal(format('[%+d]', 10), '[+10]');
+        assert.equal(format('[%d]', '023'), '[23]');
+        assert.equal(format('[%d]', {}), '[]');
 
         // Placeholder: %f
         assert.equal(format('[%f]', 1), '[1]');
@@ -35,13 +37,26 @@ describe('format', it => {
         assert.equal(format('[%.1f]', 1.56432189), '[1.6]');
         assert.equal(format('[%.2f]', 1.56432189), '[1.56]');
         assert.equal(format('[%.3f]', 1.56432189), '[1.564]');
+        assert.equal(format('[%.2f]', '314e-2'), '[3.14]');
+        assert.equal(format('[%f]', {}), '[NaN]');
 
         // Placeholder: %s
         assert.equal(format('[%s]', ''), '[]');
         assert.equal(format('[%s]', 'banana'), '[banana]');
+        assert.equal(format('[%s]', {}), '[[object Object]]');
         assert.equal(format('[%s]', { toString: () => 'abc' }), '[abc]');
         assert.equal(format('[%.3s]', 'abcdef'), '[abc]');
         assert.equal(format('[%.9s]', 'abcdef'), '[abcdef]');
+        assert.equal(format('[%s]', 21.25), '[21.25]');
+        assert.equal(format('[%s]', Number.NaN), '[]');
+
+        // Placeholder: %x
+        assert.equal(format('[%x]', 15), '[f]');
+        assert.equal(format('[%x]', 16776960), '[ffff00]');
+        assert.equal(format('[%x]', 4294901930), '[ffff00aa]');
+        assert.equal(format('[%+x]', -10), '[fffffff6]');
+        assert.equal(format('[%+x]', 10), '[a]');
+        assert.equal(format('[%x]', {}), '[0]');
     });
 
     it('it able to parse messages to formatting lists', assert => {

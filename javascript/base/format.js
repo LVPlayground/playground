@@ -24,6 +24,7 @@ const kTypePassthrough = '📝';
 //
 //     %% - literal percentage sign
 //     %d - signed integer, any value within JavaScript's safe range
+//     %s - string, unmodified unless the precision argument has been used.
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
@@ -55,6 +56,10 @@ export function format(message, ...parameters) {
             
             case 'd':
                 value = parseInt(parameter, 10);
+                break;
+
+            case 's':
+                value = format.precision ? parameter.substring(0, format.precision) : parameter;
                 break;
 
             default:

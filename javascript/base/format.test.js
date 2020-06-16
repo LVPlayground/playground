@@ -21,6 +21,13 @@ describe('format', it => {
         assert.equal(format('[%d]', 1.25), '[1]');
         assert.equal(format('[%d]', -10), '[-10]');
         assert.equal(format('[%+d]', 10), '[+10]');
+
+        // Placeholder: %s
+        assert.equal(format('[%s]', ''), '[]');
+        assert.equal(format('[%s]', 'banana'), '[banana]');
+        assert.equal(format('[%s]', { toString: () => 'abc' }), '[abc]');
+        assert.equal(format('[%.3s]', 'abcdef'), '[abc]');
+        assert.equal(format('[%.9s]', 'abcdef'), '[abcdef]');
     });
 
     it('it able to parse messages to formatting lists', assert => {

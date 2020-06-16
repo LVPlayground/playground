@@ -2,10 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Placeholder types (single characters) that expect a number value to be given.
+const kNumberPlaceholders = new Set(['d']);
+
 // Regular expression used to fully understand the syntax of a placeholder.
 const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([ds])/;
 
-// Types of substitutions that can be expected in formatted messages.
+// Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
 
 // Formats |message| with the given |parameters|.
@@ -20,6 +23,7 @@ const kTypePassthrough = '📝';
 // The following placeholders are available:
 //
 //     %% - literal percentage sign
+//     %d - signed integer, any value within JavaScript's safe range
 //
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
@@ -27,14 +31,52 @@ export function format(message, ...parameters) {
     const formattingList = parseMessageToFormattingList(message);
     const ropes = [];
 
+    // Utility function to shift the first |parameter|s, throwing an exception when not enough
+    // |parameters| have been passed as substitutions for the |message|.
+    const getNextParameter = () => {
+        if (!parameters.length)
+            throw new Error(`Not enough substitution parmeters supplied: "${message}".`);
+        
+        return parameters.shift();
+    }
+
+    // Walk over all entries in the |formattingList| and, as instructed, replace the placeholders
+    // with the substitution values in the |parameters| array.
     for (const format of formattingList) {
+        const parameter = format.type != kTypePassthrough ? getNextParameter() : null;
+        const negative = kNumberPlaceholders.has(format.type) && parameter < 0;
+
+        let value = null;
+
         switch (format.type) {
             case kTypePassthrough:
                 ropes.push(format.text);
                 break;
             
+            case 'd':
+                value = parseInt(parameter, 10);
+                break;
+
             default:
                 throw new Error(`Invalid formatting type found: ${format.type}.`);
+        }
+
+        // If a |value| has been given then we're dealing with a substituted value, rather than a
+        // pass-through string. There are additional steps to apply.
+        if (value) {
+            let sign = negative ? '-' : (format.sign ? '+' : '');
+            let string = '';
+
+            // Populate the |string| with the |value| taken away the negative sign mark when set.
+            // The sign will be added back later, after handling padding.
+            if (negative)
+                string = String(value).substring(1);
+            else
+                string = String(value);
+
+            // TODO: Apply padding and maximum width
+
+            ropes.push(sign + string);
         }
     }
 

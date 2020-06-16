@@ -15,6 +15,12 @@ describe('format', it => {
         assert.equal(format(''), '');
         assert.equal(format('Hello, world'), 'Hello, world');
         assert.equal(format('Hello, %%orld'), 'Hello, %orld');
+
+        // Placeholder: %d
+        assert.equal(format('[%d]', 1), '[1]');
+        assert.equal(format('[%d]', 1.25), '[1]');
+        assert.equal(format('[%d]', -10), '[-10]');
+        assert.equal(format('[%+d]', 10), '[+10]');
     });
 
     it('it able to parse messages to formatting lists', assert => {

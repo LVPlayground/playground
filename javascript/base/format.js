@@ -2,7 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Formatter for currency and for numbers, which will be done by ICU.
+// Formatter for currency, which will be done by ICU. Because there are no cents in Grand Theft Auto
+// we drop any and all fraction digits that may be included in the number.
 const kCurrencyFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -10,6 +11,8 @@ const kCurrencyFormat = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0,
 });
 
+// Formatter for numbers. By default we prefer no fraction digits, but show up to the first two. If
+// more fraction digits are necessary, the precision modifier can be used.
 const kNumberFormat = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
@@ -19,7 +22,8 @@ const kNumberFormat = new Intl.NumberFormat('en-US', {
 const kNumberPlaceholders = new Set('dfi$'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
-const kPlaceholderExpression = /^(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
+const kPlaceholderExpression =
+    /^(?:\{([^)]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -30,8 +34,8 @@ const kTypePassthrough = '📝';
 // additions to make it specific to our use-case. In short, the |message| can contain formatting
 // operators, which will be substituted with one of the |parameters| also passed to this function.
 //
-//     format('Hello, %s!', 'world');           --> 'Hello, world!'
-//     format('You have won %$.', 1234.56);     --> 'You have won $1,235.'
+//     format('Hello, %s!', 'world');           -->  'Hello, world!'
+//     format('You have won %$.', 1234.56);     -->  'You have won $1,235.'
 //
 // The following placeholders are available:
 //
@@ -45,25 +49,72 @@ const kTypePassthrough = '📝';
 //     %X - integer in hexadecimal notation (upper-case)
 //     %$ - integer formatted as a price
 //
+// Furthermore, various placeholder modifiers are available for use. There are six:
+//
+//     1. An optional parameter index, when deriving from the regular order. These can be specified
+//        in JavaScript array-index-like syntax:
+//
+//        format('[%{1}d]', 10, 20);   -->  '[20]'
+//
+//     2. An optional `+` sign that will force the plus sign to be displayed on numeric values,
+//        which is omitted by default.
+//
+//        format('[%+d]', 25);     -->  '[+25]'
+//
+//     3. An optional padding character, when a width will be set (more on that later). Except for
+//        the zero, all padding characters must be preceded by a single quote.
+//
+//        format('[%05d]', 25);    -->   '[00025]'
+//        format(`[%'~5d]', 25);   -->   '[~~~25]'
+//
+//     4. An optional `-` sign, which will cause the significant value to be left-aligned instead.
+//
+//        format('[%-5d]', 25);    -->  '[25   ]'
+//        format(`[%'~-5d]', 25);  -->  '[25~~~]'
+//
+//     5. An optional width. Padding will be added until (at least) this number of characters has
+//        been reached. If no padding character was provided (see 2.), a space will be used instead.
+//
+//        format('[%5d]', 252);    -->  '[   25]'
+//
+//     6. An optional precision. For floating point values (%f) this will control the number of
+//        decimals, for strings it will consider this a maximum length, and cap the string.
+//
+//        format('[%.3s]', 'banana');  -->  '[ban]'
+//        format('[%f]', 1.2345);      -->  '[1.23]'
+//        format('[%.4f]', 1.2345);    -->  '[1.2345]'
+//
+// It's possible to combine these modifiers to get to really powerful substitutions quickly, but be
+// mindful of the fact that placeholders quickly get unreadable.
+//
+//     format(`[%'a6.3s]`, 'banana')   -->  '[banaaa]'
+//
 // Other placeholders will yield an exception, as the input |message| will be deemed invalid.
 // Because of this, exclusively use parameters for processing player input. 
 export function format(message, ...parameters) {
     const formattingList = parseMessageToFormattingList(message);
     const ropes = [];
 
-    // Utility function to shift the first |parameter|s, throwing an exception when not enough
-    // |parameters| have been passed as substitutions for the |message|.
-    const getNextParameter = () => {
-        if (!parameters.length)
-            throw new Error(`Not enough substitution parmeters supplied: "${message}".`);
-        
-        return parameters.shift();
-    }
+    const originalParameters = parameters;
 
     // Walk over all entries in the |formattingList| and, as instructed, replace the placeholders
     // with the substitution values in the |parameters| array.
     for (const format of formattingList) {
-        const parameter = format.type != kTypePassthrough ? getNextParameter() : null;
+        let parameter = null;
+
+        if (format.hasOwnProperty('index')) {
+            if (format.index < 0 || format.index >= originalParameters.length)
+                throw new Error(`Out-of-bounds substitution index supplied: "${message}".`);
+            
+            parameter = originalParameters[format.index];
+
+        } else if (format.type !== kTypePassthrough) {
+            if (!parameters.length)
+                throw new Error(`Not enough substitution parmeters supplied: "${message}".`);
+            
+            parameter = parameters.shift();
+        }
+
         const negative = kNumberPlaceholders.has(format.type) && parameter < 0;
 
         let prefix = null;
@@ -85,12 +136,15 @@ export function format(message, ...parameters) {
             
             case 'f':
                 value = parseFloat(parameter);
-                if (Number.isNaN(value))
+                if (Number.isNaN(value)) {
                     value = 'NaN';
-                else if (format.hasOwnProperty('precision'))
-                    value = new Intl.NumberFormat('en-US', { maximumFractionDigits: format.precision }).format(value);
-                else
+                } else if (format.hasOwnProperty('precision')) {
+                    value = new Intl.NumberFormat('en-US', {
+                        maximumFractionDigits: format.precision
+                    }).format(value);
+                } else {
                     value = kNumberFormat.format(value);
+                }
 
                 break;
 
@@ -169,6 +223,9 @@ export function format(message, ...parameters) {
 // Parses the given |message| in a formatting list. In short, this isolates parts of the |message|
 // which should be substituted (and how) from the parts of the message that should pass through.
 export function parseMessageToFormattingList(message) {
+    if (typeof message !== 'string')
+        throw new Error(`Given messages must be of type string: "${message}".`);
+
     const length = message.length;
     const list = [];
 
@@ -213,15 +270,16 @@ export function parseMessageToFormattingList(message) {
         if (!match)
             throw new Error(`Unparseable placeholder found: "${message}".`);
 
-        let formatting = { type: match[6] };
+        let formatting = { type: match[7] };
 
         // Append each of the other parameter values in a sanitized way. These properties will be
         // absent on placeholder entries where they haven't been specified.
-        if (match[1]) formatting.sign = true;
-        if (match[2]) formatting.padding = match[2].replace(/^[']/, '');
-        if (match[3]) formatting.leftAlign = true;
-        if (match[4]) formatting.width = parseInt(match[4], 10);
-        if (match[5]) formatting.precision = parseInt(match[5], 10);
+        if (match[1] !== undefined) formatting.index = parseInt(match[1], 10);
+        if (match[2] !== undefined) formatting.sign = true;
+        if (match[3] !== undefined) formatting.padding = match[3].replace(/^[']/, '');
+        if (match[4] !== undefined) formatting.leftAlign = true;
+        if (match[5] !== undefined) formatting.width = parseInt(match[5], 10);
+        if (match[6] !== undefined) formatting.precision = parseInt(match[6], 10);
 
         list.push(formatting);
 

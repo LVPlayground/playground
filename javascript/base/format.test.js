@@ -9,6 +9,10 @@ describe('format', it => {
         assert.throws(() => parseMessageToFormattingList('hello %'));
         assert.throws(() => parseMessageToFormattingList('hello %:hello'));
         assert.throws(() => parseMessageToFormattingList('hello %A'));
+
+        assert.throws(() => format('hello %s'));
+        assert.throws(() => format('hello %s %d', 'aa'));
+        assert.throws(() => format('hello %[1]s', 'aa'));
     });
     
     it('should be able to substitute formatting parameters', assert => {
@@ -35,6 +39,7 @@ describe('format', it => {
         assert.equal(format('[%d]', 10000.25), '[10,000]');
         assert.equal(format('[%d]', -10000), '[-10,000]');
         assert.equal(format('[%+d]', 10000), '[+10,000]');
+        assert.equal(format('[%{1}d]', 10, -10), '[-10]');
 
         // Placeholder: %f
         assert.equal(format('[%f]', 1), '[1]');
@@ -67,6 +72,7 @@ describe('format', it => {
         assert.equal(format('[%f]', -10000), '[-10,000]');
         assert.equal(format('[%+f]', 10000.25), '[+10,000.25]');
         assert.equal(format('[%f]', -10000.56432189), '[-10,000.56]');
+        assert.equal(format('[%{1}f]', 25, -10000.56432189), '[-10,000.56]');
 
         // Placeholder: %s
         assert.equal(format('[%s]', ''), '[]');
@@ -83,6 +89,7 @@ describe('format', it => {
         assert.equal(format('[%-5.3s]', 'banana'), '[ban  ]');
         assert.equal(format(`[%'a5.3s]`, 'banana'), '[aaban]');
         assert.equal(format(`[%'a-5.3s]`, 'banana'), '[banaa]');
+        assert.equal(format(`[%{1}'a-5.3s]`, 'banana', 'jip'), '[jipaa]');
 
         // Placeholder: %x
         assert.equal(format('[%x]', 15), '[f]');
@@ -134,6 +141,12 @@ describe('format', it => {
             { type: '📝', text: ', world!' },
         ]);
 
+        assert.deepEqual(parseMessageToFormattingList(`a%{25}sb`), [
+            { type: '📝', text: 'a' },
+            { type: 's', index: 25 },
+            { type: '📝', text: 'b' },
+        ]);
+
         assert.deepEqual(parseMessageToFormattingList(`a%'x5sb`), [
             { type: '📝', text: 'a' },
             { type: 's', padding: 'x', width: 5 },
@@ -158,9 +171,17 @@ describe('format', it => {
             { type: '📝', text: 'b' },
         ]);
 
-        assert.deepEqual(parseMessageToFormattingList(`a%+0-10.5db`), [
+        assert.deepEqual(parseMessageToFormattingList(`a%{1}+0-10.5db`), [
             { type: '📝', text: 'a' },
-            { type: 'd', sign: true, padding: '0', leftAlign: true, width: 10, precision: 5 },
+            {
+                type: 'd',
+                index: 1,
+                sign: true,
+                padding: '0',
+                leftAlign: true,
+                width: 10,
+                precision: 5
+            },
             { type: '📝', text: 'b' },
         ]);
     });

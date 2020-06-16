@@ -103,9 +103,27 @@ export function format(message, ...parameters) {
             else
                 string = String(value);
 
-            // TODO: Apply padding and maximum width
+            // Apply padding to the |string| if necessary. The character, length and position of
+            // the padding are all configurable with parameters given in the placeholder.
+            if (format.width !== 'undefined') {
+                const paddingCharacter = format.padding ?? ' ';
+                const paddingLength = format.width - sign.length - string.length;
 
-            ropes.push(sign + string);
+                if (paddingLength > 0) {
+                    const padding = paddingCharacter.repeat(paddingLength);
+                    if (format.leftAlign)
+                        ropes.push(sign, string, padding);
+                    else if (paddingCharacter === '0')
+                        ropes.push(sign, padding, string);
+                    else
+                        ropes.push(padding, sign, string);
+                    
+                    continue;
+                }
+            }
+
+            // Otherwise just append the sign and string individually.
+            ropes.push(sign, string);
         }
     }
 

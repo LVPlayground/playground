@@ -2,6 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Formatter for currency and for numbers, which will be done by ICU.
+const kCurrencyFormat = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+});
+
+const kNumberFormat = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+
 // Placeholder types (single characters) that expect a number value to be given.
 const kNumberPlaceholders = new Set('dfi$'.split(''));
 
@@ -67,7 +80,7 @@ export function format(message, ...parameters) {
 
             case 'd':
             case 'i':
-                value = parseInt(parameter, 10);
+                value = kNumberFormat.format(parseInt(parameter, 10));
                 break;
             
             case 'f':
@@ -75,7 +88,9 @@ export function format(message, ...parameters) {
                 if (Number.isNaN(value))
                     value = 'NaN';
                 else if (format.hasOwnProperty('precision'))
-                    value = value.toFixed(format.precision);
+                    value = new Intl.NumberFormat('en-US', { maximumFractionDigits: format.precision }).format(value);
+                else
+                    value = kNumberFormat.format(value);
 
                 break;
 
@@ -100,8 +115,7 @@ export function format(message, ...parameters) {
                 break;
 
             case '$':
-                prefix = '$';
-                value = parseInt(parameter, 10);
+                value = kCurrencyFormat.format(parseInt(parameter, 10));
                 break;
 
             default:
@@ -117,10 +131,6 @@ export function format(message, ...parameters) {
             // Populate the |sign| for numeric placeholders that are either negative, or forced.
             if (kNumberPlaceholders.has(format.type))
                 sign = negative ? '-' : (format.sign ? '+' : '');
-
-            // Append the |prefix| to the |sign| when it has been given by a formatter.
-            if (prefix)
-                sign += prefix;
 
             // Populate the |string| with the |value| taken away the negative sign mark when set.
             // The sign will be added back later, after handling padding.

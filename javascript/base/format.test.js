@@ -22,7 +22,7 @@ describe('format', it => {
         assert.equal(format('[%d]', -10), '[-10]');
         assert.equal(format('[%+d]', 10), '[+10]');
         assert.equal(format('[%d]', '023'), '[23]');
-        assert.equal(format('[%d]', {}), '[]');
+        assert.equal(format('[%d]', {}), '[NaN]');
         assert.equal(format('[%5d]', 10), '[   10]');
         assert.equal(format('[%-5d]', 10), '[10   ]');
         assert.equal(format('[%05d]', 10), '[00010]');
@@ -31,6 +31,10 @@ describe('format', it => {
         assert.equal(format('[%-5d]', -10), '[-10  ]');
         assert.equal(format('[%05d]', -10), '[-0010]');
         assert.equal(format('[%0-5d]', -10), '[-1000]');
+        assert.equal(format('[%d]', 10000), '[10,000]');
+        assert.equal(format('[%d]', 10000.25), '[10,000]');
+        assert.equal(format('[%d]', -10000), '[-10,000]');
+        assert.equal(format('[%+d]', 10000), '[+10,000]');
 
         // Placeholder: %f
         assert.equal(format('[%f]', 1), '[1]');
@@ -38,9 +42,9 @@ describe('format', it => {
         assert.equal(format('[%f]', -10), '[-10]');
         assert.equal(format('[%+f]', 10), '[+10]');
         assert.equal(format('[%f]', Number.NaN), '[NaN]');
-        assert.equal(format('[%f]', Number.NEGATIVE_INFINITY), '[-Infinity]');
-        assert.equal(format('[%f]', Number.POSITIVE_INFINITY), '[Infinity]');
-        assert.equal(format('[%+f]', Number.POSITIVE_INFINITY), '[+Infinity]');
+        assert.equal(format('[%f]', Number.NEGATIVE_INFINITY), '[-∞]');
+        assert.equal(format('[%f]', Number.POSITIVE_INFINITY), '[∞]');
+        assert.equal(format('[%+f]', Number.POSITIVE_INFINITY), '[+∞]');
         assert.equal(format('[%.0f]', 1.56432189), '[2]');
         assert.equal(format('[%.1f]', 1.56432189), '[1.6]');
         assert.equal(format('[%.2f]', 1.56432189), '[1.56]');
@@ -55,6 +59,14 @@ describe('format', it => {
         assert.equal(format('[%-6.2f]', -1.34689), '[-1.35 ]');
         assert.equal(format('[%06.2f]', -1.34689), '[-01.35]');
         assert.equal(format('[%0-6.2f]', -1.34689), '[-1.350]');
+        assert.equal(format('[%f]', 10000), '[10,000]');
+        assert.equal(format('[%f]', 10000.25), '[10,000.25]');
+        assert.equal(format('[%f]', 10000.56432189), '[10,000.56]');
+        assert.equal(format('[%.4f]', 10000.56432189), '[10,000.5643]');
+        assert.equal(format('[%.8f]', 10000.56432189), '[10,000.56432189]');
+        assert.equal(format('[%f]', -10000), '[-10,000]');
+        assert.equal(format('[%+f]', 10000.25), '[+10,000.25]');
+        assert.equal(format('[%f]', -10000.56432189), '[-10,000.56]');
 
         // Placeholder: %s
         assert.equal(format('[%s]', ''), '[]');
@@ -89,6 +101,10 @@ describe('format', it => {
         assert.equal(format('[%$]', 1.25), '[$1]');
         assert.equal(format('[%$]', -10), '[-$10]');
         assert.equal(format('[%+$]', 10), '[+$10]');
+        assert.equal(format('[%$]', 10000), '[$10,000]');
+        assert.equal(format('[%$]', 10000.25), '[$10,000]');
+        assert.equal(format('[%$]', -10000), '[-$10,000]');
+        assert.equal(format('[%+$]', 10000), '[+$10,000]');
 
         // Miscellaneous
         assert.equal(format('[%b]', 25), '[11001]');

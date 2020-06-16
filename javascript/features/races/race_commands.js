@@ -5,6 +5,8 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 
+import { formatTime } from 'base/time.js';
+
 // Title of the dialog that displays the available races.
 const DIALOG_TITLE = 'Racing on Las Venturas Playground';
 
@@ -62,7 +64,7 @@ class RaceCommands {
                 // Append the best time on Las Venturas Playground to the values.
                 if (race.bestRace !== null) {
                     columnValues.push(
-                        Message.format('%t', race.bestRace.time) + ' (' + race.bestRace.name + ')');
+                        formatTime(race.bestRace.time) + ' (' + race.bestRace.name + ')');
                 } else {
                     columnValues.push('---');
                 }
@@ -70,7 +72,7 @@ class RaceCommands {
                 // If the user has logged in, append their personal best to the values.
                 if (displayPersonalBest) {
                     if (race.personalBestTime !== null)
-                        columnValues.push(Message.format('%t', race.personalBestTime));
+                        columnValues.push(formatTime(race.personalBestTime));
                     else
                         columnValues.push('---');
                 }

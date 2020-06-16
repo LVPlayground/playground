@@ -10,7 +10,7 @@ import { Question } from 'components/dialogs/question.js';
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { formatDate, fromNow } from 'base/time.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.

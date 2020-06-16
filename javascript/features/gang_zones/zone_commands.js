@@ -12,7 +12,7 @@ import { Vector } from 'base/vector.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Implements the commands associated with gang zones, which enable gangs to modify their settings,
 // purchase decorations and special effects.

@@ -134,3 +134,24 @@ export function relativeTime({ date1, date2 }) {
     
     return { isCurrent, isPast, text: `${absoluteDifferenceYears} years` };
 }
+
+// Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour
+// will be formatted as HH:MM:SS instead. Non-numeric values will be returned as-is.
+export function formatTime(time) {
+    if (typeof time !== 'number')
+        return time;
+
+    let seconds = Math.floor(time % 60);
+    let minutes = Math.floor(time / 60) % 60;
+    let hours = Math.floor(time / 3600);
+
+    let representation = '';
+
+    if (hours > 0)
+        representation += (hours < 10 ? '0' : '') + hours + ':';
+
+    representation += (minutes < 10 ? '0' : '') + minutes + ':';
+    representation += (seconds < 10 ? '0' : '') + seconds;
+
+    return representation;
+}

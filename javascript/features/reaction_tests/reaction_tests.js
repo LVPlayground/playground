@@ -9,7 +9,7 @@ import { RememberStrategy } from 'features/reaction_tests/strategies/remember_st
 
 import * as achievements from 'features/collectables/achievements.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
@@ -170,15 +170,14 @@ export default class ReactionTests extends Feature {
         if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
             // Do nothing, the player's just repeating themselves. Cocky!
         } else if (this.activeTestWinnerName_) {
-            const difference = Math.round((currentTime - this.activeTestWinnerTime_) / 10) / 100;
             player.sendMessage(
-                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_, difference);
+                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_,
+                (currentTime - this.activeTestWinnerTime_) / 1000);
 
         } else {
             const previousWins = player.account.reactionTests;
             const differenceOffset = this.activeTest_.answerOffsetTimeMs;
-            const difference =
-                Math.round((currentTime - (this.activeTestStart_ + differenceOffset)) / 10) / 100;
+            const difference = (currentTime - this.activeTestStart_ - differenceOffset) / 1000;
 
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
             if (previousWins <= 1) {

@@ -15,7 +15,7 @@ import { QuestionSequence } from 'components/dialogs/question_sequence.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { formatDate, fromNow } from 'base/time.js';
 
 // Options for asking the player what the gang's full name should be.

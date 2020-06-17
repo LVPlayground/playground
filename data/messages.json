@@ -273,7 +273,7 @@
   "HOUSE_ANNOUNCE_PURCHASED": "%s (Id:%d) has purchased a house for %$ (Id:%d).",
   "HOUSE_ANNOUNCE_RENAMED": "%s (Id:%d) has set house (%s (Id:%d))'s name to \"%s\".",
   "HOUSE_ANNOUNCE_SET_WELCOME_MESSAGE": "%s (Id:%d) has set house (%s (Id:%d))'s welcome message to \"%s\".",
-  "HOUSE_ANNOUNCE_SOLD": "%s (Id:%d) has sold the \"%s\" house (Id:%d) for $s.",
+  "HOUSE_ANNOUNCE_SOLD": "%s (Id:%d) has sold the \"%s\" house (Id:%d) for %$.",
   "HOUSE_ANNOUNCE_SPAWN_CHANGED": "%s (Id:%d) has changed the spawn to (%s (Id:%d)).",
   "HOUSE_ANNOUNCE_SPAWN_REMOVED": "%s (Id:%d) does not spawn anymore at (%s (Id:%d)).",
   "HOUSE_ANNOUNCE_TELEPORTED": "%s (Id:%d) has teleported to \"%s\", a house owned by %s.",

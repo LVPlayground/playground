@@ -7,6 +7,51 @@ import { LeaderboardDatabase } from 'features/leaderboard/leaderboard_database.j
 // Implementation of the LeaderboardDatabase where methods interacting with the database have been
 // mocked out. Only intended for use while running tests on the server.
 export class MockLeaderboardDatabase extends LeaderboardDatabase {
+    async _getAccuracyLeaderboardQuery({ days, limit }) {
+        return [
+            {
+                user_id: 123,
+                username: 'Ds]_ch1r4q_',
+                color: 944491178,
+                accuracy: 0.5781,
+                shots_hit: 1681,
+                shots_missed: 1227,
+                shots_taken: 523,
+                duration: 55594,
+            },
+            {
+                user_id: 124,
+                username: 'Jasmine',
+                color: 265943722,
+                accuracy: 0.5262,
+                shots_hit: 15199,
+                shots_missed: 13688,
+                shots_taken: 8337,
+                duration: 84174,
+            },
+            {
+                user_id: 125,
+                username: '[BA]AzKiller',
+                color: 944491178,
+                accuracy: 0.4775,
+                shots_hit: 1038,
+                shots_missed: 1136,
+                shots_taken: 888,
+                duration: 12872,
+            },
+            {
+                user_id: 126,
+                username: 'TheMightyQ',
+                color: -1040716630,
+                accuracy: 0.3998,
+                shots_hit: 10484,
+                shots_missed: 15740,
+                shots_taken: 9001,
+                duration: 39046,
+            },
+        ];
+    }
+
     async _getDamageLeaderboardQuery({ days, limit }) {
         return [
             {
@@ -44,7 +89,7 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
                 damage_taken: 28392.9552,
                 duration: 17063,
                 shots: 7115,
-            }
+            },
         ];
     }
 }

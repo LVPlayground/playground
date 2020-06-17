@@ -94,11 +94,10 @@ export class DeathMatchManger {
 
         player.sendMessage(
             Message.DEATH_MATCH_KILL_DEATH, statistics.killCount, statistics.deathCount,
-            Math.round(statistics.ratio * 100) / 100);
+            statistics.ratio);
 
         player.sendMessage(
-            Message.DEATH_MATCH_DAMAGE_ACCURACY, Math.round(statistics.damageGiven),
-            Math.round(statistics.accuracy * 100));
+            Message.DEATH_MATCH_DAMAGE_ACCURACY, statistics.damageGiven, statistics.accuracy * 100);
     }
 
     // We want to spawn the player at the right location with the right settings.

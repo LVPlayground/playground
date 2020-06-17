@@ -90,20 +90,18 @@ export class LeaderboardDatabase {
             const sessionShotsMissed = sessionStatistics?.shotsMissed ?? 0;
             const sessionShotsTaken = sessionStatistics?.shotsTaken ?? 0;
 
-            const totalShots =
-                result.shots_hit + sessionShotsHit + result.shots_missed + sessionShotsMissed;
-            
+            const shotsHit = parseInt(result.shots_hit, 10) + sessionShotsHit;
+            const shotsMissed = parseInt(result.shots_missed, 10) + sessionShotsMissed;
+            const shotsTaken = parseInt(result.shots_taken, 10) + sessionShotsTaken;
+
             // Recalculate the |accuracy|, because it might've changed based on the database data.
-            const accuracy = (result.shots_hit + sessionShotsHit) / totalShots;
+            const accuracy = shotsHit / (shotsHit + shotsMissed);
 
             leaderboard.push({
                 nickname: result.username,
                 color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
 
-                accuracy,
-                shotsHit: result.shots_hit + sessionShotsHit,
-                shotsMissed: result.shots_missed + sessionShotsMissed,
-                shotsTaken: result.shots_taken + sessionShotsTaken,
+                accuracy, shotsHit, shotsMissed, shotsTaken,
 
                 duration: result.duration + sessionOnlineTime,
             });

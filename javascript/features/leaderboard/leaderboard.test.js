@@ -56,16 +56,16 @@ describe('Leaderboard', (it, beforeEach) => {
                     '4.51 / shot',
                 ],
                 [
-                    '2. {C1F7EC}TheMightyQ',
-                    '111.73k{BDBDBD} / 94.15k',
-                    '3.47k / hour',
-                    '4.26 / shot',
-                ],
-                [
-                    '3. {65ADEB}[CP]Humza',  // player is online, stats amended
+                    '2. {65ADEB}[CP]Humza',  // player is online, stats and position amended
                     '136.73k{BDBDBD} / 58.5k',
                     '3.27k / hour',
                     '10.37 / shot',
+                ],
+                [
+                    '3. {C1F7EC}TheMightyQ',
+                    '111.73k{BDBDBD} / 94.15k',
+                    '3.47k / hour',
+                    '4.26 / shot',
                 ],
                 [
                     '4. {C1F7EC}ioutHO',

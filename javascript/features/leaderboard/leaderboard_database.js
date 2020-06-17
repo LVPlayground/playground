@@ -66,6 +66,15 @@ export class LeaderboardDatabase {
             });
         }
 
+        // Re-sort the |leaderboard| now that live session statistics have been considered, which
+        // may influence the positioning of certain players.
+        leaderboard.sort((lhs, rhs) => {
+            if (lhs.damageGiven === rhs.damageGiven)
+                return 0;
+            
+            return lhs.damageGiven > rhs.damageGiven ? -1 : 1;
+        });
+
         return leaderboard;
     }
 

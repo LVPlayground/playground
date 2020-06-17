@@ -580,6 +580,7 @@ export class AccountDatabase {
             'money_cash',
             'money_debt',
             'money_spawn',
+            'muted',
             'skin_id',
             'validated',
         ];
@@ -616,6 +617,7 @@ export class AccountDatabase {
             stats_minigame: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_packages: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_reaction: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
+            muted: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             validated: { table: 'users', type: AccountDatabase.kTypeNumber },
         };
     }

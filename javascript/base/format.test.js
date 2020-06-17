@@ -117,6 +117,8 @@ describe('format', it => {
         assert.equal(format('[%b]', 25), '[11001]');
         assert.equal(format('[%o]', 25), '[31]');
         assert.equal(format('[%X]', 16776960), '[FFFF00]');
+        assert.equal(format('[%s%%]', 25), '[25%]');
+        assert.equal(format('[%d%d]', 1, 5), '[15]');
     });
 
     it('it able to parse messages to formatting lists', assert => {

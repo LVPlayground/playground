@@ -51,25 +51,25 @@ describe('Leaderboard', (it, beforeEach) => {
             rows: [
                 [
                     '1. {384BCA}Ds]_ch1r4q_',
-                    '57.81 % {BDBDBD} (1.68k / 1.23k)',
+                    '57.81% {BDBDBD} (1.68k / 1.23k)',
                     '3.21',
                     '108.85{9E9E9E} / hour',
                 ],
                 [
                     '2. {384BCA}[BA]AzKiller',   // player is online, stats and position amended
-                    '53.01 % {BDBDBD} (1.34k / 1.19k)',
+                    '53.01% {BDBDBD} (1.34k / 1.19k)',
                     '0.96',
                     '156.02{9E9E9E} / hour',
                 ],
                 [
                     '3. {0FD9FA}Jasmine',
-                    '52.62 % {BDBDBD} (15.2k / 13.69k)',
+                    '52.62% {BDBDBD} (15.2k / 13.69k)',
                     '1.82',
                     '650.04{9E9E9E} / hour',
                 ],
                 [
                     '4. {C1F7EC}TheMightyQ',
-                    '39.98 % {BDBDBD} (10.48k / 15.74k)',
+                    '39.98% {BDBDBD} (10.48k / 15.74k)',
                     '1.16',
                     '966.61{9E9E9E} / hour',
                 ],

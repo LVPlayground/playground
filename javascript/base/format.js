@@ -246,9 +246,7 @@ export function parseMessageToFormattingList(message) {
             });
         }
 
-        ++index;  // remove the %
-
-        const remainder = message.substring(index);
+        const remainder = message.substring(index + 1);
         if (!remainder.length)
             throw new Error(`Unexpected end-of-string found: "${message}".`);
 
@@ -260,6 +258,7 @@ export function parseMessageToFormattingList(message) {
                 text: '%',
             });
 
+            index += 1;
             start = index + 1;
             continue;
         }
@@ -285,7 +284,7 @@ export function parseMessageToFormattingList(message) {
 
         // Skip past the |match|, and align both |start| and |index| with that.
         index += match[0].length;
-        start = index;
+        start = index + 1;
     }
 
     // If there is content left on the |message| that we haven't yet considered, add it manually to

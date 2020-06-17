@@ -96,7 +96,7 @@ export default class Leaderboard extends Feature {
                     player += result.nickname;
 
                 // (2) Actual accuracy, with the individual shot numbers.
-                accuracy = format('%.2f %% {BDBDBD} (%s / %s)',
+                accuracy = format('%.2f%% {BDBDBD} (%s / %s)',
                     result.accuracy * 100,
                     this.toFormattedQuantityUnit(result.shotsHit),
                     this.toFormattedQuantityUnit(result.shotsMissed));

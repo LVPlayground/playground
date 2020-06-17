@@ -20,6 +20,9 @@ export default class Leaderboard extends Feature {
     constructor() {
         super();
 
+        // Uses the `Player.stats` supplement to amend leaderboard data with live metrics.
+        this.defineDependency('player_stats');
+
         // Uses settings to configure display of the leaderboard.
         this.settings_ = this.defineDependency('settings');
 

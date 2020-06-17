@@ -34,6 +34,7 @@ describe('Leaderboard', (it, beforeEach) => {
         // (1) Have [CP]Humza be online as Russell on their account, with session metrics.
         await russell.identify({ userId: 125 });
 
+        russell.stats.session.onlineTime = 18 * 60 * 60;  // 18 hours?!
         russell.stats.session.damageGiven = 100000;
         russell.stats.session.damageTaken = 10000;
         russell.stats.session.shotsHit = 2000;
@@ -63,7 +64,7 @@ describe('Leaderboard', (it, beforeEach) => {
                 [
                     '3. {65ADEB}[CP]Humza',  // player is online, stats amended
                     '136.73k{BDBDBD} / 58.5k',
-                    '5.73k / hour',
+                    '3.27k / hour',
                     '10.37 / shot',
                 ],
                 [

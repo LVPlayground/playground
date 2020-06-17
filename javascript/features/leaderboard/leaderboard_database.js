@@ -49,6 +49,7 @@ export class LeaderboardDatabase {
         for (const result of results) {
             const sessionStatistics = statistics.get(result.user_id);
 
+            const sessionOnlineTime = sessionStatistics?.onlineTime ?? 0;
             const sessionDamageGiven = sessionStatistics?.damageGiven ?? 0;
             const sessionDamageTaken = sessionStatistics?.damageTaken ?? 0;
             const sessionShots = sessionStatistics?.shots ?? 0;
@@ -60,7 +61,7 @@ export class LeaderboardDatabase {
                 damageGiven: result.damage_given + sessionDamageGiven,
                 damageTaken: result.damage_taken + sessionDamageTaken,
 
-                duration: result.duration,
+                duration: result.duration + sessionOnlineTime,
                 shots: result.shots + sessionShots,
             });
         }

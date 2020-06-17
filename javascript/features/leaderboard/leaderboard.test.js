@@ -3,19 +3,43 @@
 // be found in the LICENSE file.
 
 describe('Leaderboard', (it, beforeEach) => {
+    let database = null;
     let gunther = null;
-    
+    let russell = null;
+
     beforeEach(() => {
         const feature = server.featureManager.loadFeature('leaderboard');
 
+        database = feature.database_;
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        russell = server.playerManager.getById(/* Russell= */ 1);
     })
+
+    it('should be able to get all the session stats views for online players', async (assert) => {
+        gunther.stats.session.killCount = 25;
+
+        assert.equal(database.getOnlinePlayerStatistics().size, 0);
+
+        await gunther.identify({ userId: 471 });
+
+        const statistics = database.getOnlinePlayerStatistics();
+        assert.equal(statistics.size, 1);
+        assert.isTrue(statistics.has(471));
+        assert.equal(statistics.get(471).killCount, 25);
+    });
 
     it('should be able to display the damage leaderboard', async (assert) => {
         gunther.respondToDialog({ response: 0 /* Dismiss */ });
 
-        assert.isTrue(await gunther.issueCommand('/top damage'));
+        // (1) Have [CP]Humza be online as Russell on their account, with session metrics.
+        await russell.identify({ userId: 125 });
 
+        russell.stats.session.damageGiven = 100000;
+        russell.stats.session.damageTaken = 10000;
+        russell.stats.session.shotsHit = 2000;
+
+        // (2) Have |gunther| see the damage leaderboard dialog.
+        assert.isTrue(await gunther.issueCommand('/top damage'));
         assert.deepEqual(gunther.getLastDialogAsTable(), {
             columns: [
                 'Player',
@@ -37,10 +61,10 @@ describe('Leaderboard', (it, beforeEach) => {
                     '4.26 / shot',
                 ],
                 [
-                    '3. {65ADEB}[CP]Humza',
-                    '36.73k{BDBDBD} / 48.5k',
-                    '1.54k / hour',
-                    '3.29 / shot',
+                    '3. {65ADEB}[CP]Humza',  // player is online, stats amended
+                    '136.73k{BDBDBD} / 58.5k',
+                    '5.73k / hour',
+                    '10.37 / shot',
                 ],
                 [
                     '4. {C1F7EC}ioutHO',

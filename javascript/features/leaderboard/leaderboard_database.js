@@ -7,6 +7,7 @@ import { Color } from "base/color.js";
 // Query to compute the leaderboard entries for damage-based ranking.
 const kDamageLeaderboardQuery = `
     SELECT
+        sessions.user_id,
         users.username,
         IF(users_gangs.user_use_gang_color = 1,
             IFNULL(gangs.gang_color, users_mutable.custom_color),
@@ -41,18 +42,26 @@ export class LeaderboardDatabase {
     // Gets the leaderboard data when sorting players by amount of damage done.
     async getDamageLeaderboard({ days, limit }) {
         const results = await this._getDamageLeaderboardQuery({ days, limit });
+        const statistics = this.getOnlinePlayerStatistics();
+
         const leaderboard = [];
 
         for (const result of results) {
+            const sessionStatistics = statistics.get(result.user_id);
+
+            const sessionDamageGiven = sessionStatistics?.damageGiven ?? 0;
+            const sessionDamageTaken = sessionStatistics?.damageTaken ?? 0;
+            const sessionShots = sessionStatistics?.shots ?? 0;
+
             leaderboard.push({
                 nickname: result.username,
                 color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
 
-                damageGiven: result.damage_given,
-                damageTaken: result.damage_taken,
+                damageGiven: result.damage_given + sessionDamageGiven,
+                damageTaken: result.damage_taken + sessionDamageTaken,
 
                 duration: result.duration,
-                shots: result.shots,
+                shots: result.shots + sessionShots,
             });
         }
 
@@ -63,5 +72,17 @@ export class LeaderboardDatabase {
     async _getDamageLeaderboardQuery({ days, limit }) {
         const results = await server.database.query(kDamageLeaderboardQuery, days, limit);
         return results && results.rows ? results.rows : [];
+    }
+
+    // Gets a Map of userId to PlayerStatsView instances for online player session statistics.
+    getOnlinePlayerStatistics() {
+        const statistics = new Map();
+
+        for (const player of server.playerManager) {
+            if (player.account.isIdentified())
+                statistics.set(player.account.userId, player.stats.session);
+        }
+
+        return statistics;
     }
 }

@@ -10,6 +10,7 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
     async _getDamageLeaderboardQuery({ days, limit }) {
         return [
             {
+                user_id: 123,
                 username: '[BB]Ricky92',
                 color: -7597057,
                 damage_given: 149610.8407,
@@ -18,6 +19,7 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
                 shots: 33204,
             },
             {
+                user_id: 124,
                 username: 'TheMightyQ',
                 color: -1040716630,
                 damage_given: 111725.9262,
@@ -26,6 +28,7 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
                 shots: 26224,
             },
             {
+                user_id: 125,
                 username: '[CP]Humza',
                 color: 1705896874,
                 damage_given: 36733.4700,
@@ -34,6 +37,7 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
                 shots: 11182,
             },
             {
+                user_id: 126,
                 username: 'ioutHO',
                 color: -1040716630,
                 damage_given: 29535.9911,

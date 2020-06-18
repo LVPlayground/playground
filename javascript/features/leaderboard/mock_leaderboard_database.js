@@ -92,4 +92,45 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
             },
         ];
     }
+
+    async _getKillsLeaderboardQuery({ days, limit }) {
+        return [
+            {
+                user_id: 122,
+                username: '[BB]Ricky92',
+                color: -7597057,
+                death_count: 561,
+                kill_count: 891,
+                duration: 180249,
+                shots: 49746,
+            },
+            {
+                user_id: 123,
+                username: '[inC]Reni[CP]',
+                color: 612113322,
+                death_count: 409,
+                kill_count: 526,
+                duration: 217618,
+                shots: 42421,
+            },
+            {
+                user_id: 124,
+                username: '[AG]Newski',
+                color: -1991054422,
+                death_count: 188,
+                kill_count: 380,
+                duration: 49118,
+                shots: 12912,
+            },
+            {
+                user_id: 125,
+                username: 'Sophia_Naz',
+                color: 2070474410,
+                death_count: 264,
+                kill_count: 240,
+                duration: 134391,
+                shots: 25705,
+            },
+        ];
+    }
 }

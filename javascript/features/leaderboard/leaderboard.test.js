@@ -125,4 +125,54 @@ describe('Leaderboard', (it, beforeEach) => {
             ]
         });
     });
+
+    it('should be able to display the kills leaderboard', async (assert) => {
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        // (1) Have Sophia_Naz be online as Russell on their account, with session metrics.
+        await russell.identify({ userId: 125 });
+
+        russell.stats.session.onlineTime = 8 * 60 * 60;  // 8 hours
+        russell.stats.session.deathCount = 250;
+        russell.stats.session.killCount = 260;
+        russell.stats.session.shotsHit = 3000;
+        russell.stats.session.shotsMissed = 3000;
+
+        // (2) Have |gunther| see the kills leaderboard dialog.
+        assert.isTrue(await gunther.issueCommand('/top kills'));
+        assert.deepEqual(gunther.getLastDialogAsTable(), {
+            columns: [
+                'Player',
+                'Kills / deaths',
+                'Kills / hour',
+                'Shots / kill',
+            ],
+            rows: [
+                [
+                    '1. {FF8C13}[BB]Ricky92',
+                    '891{BDBDBD} / 561 (1.59)',
+                    '17{9E9E9E} / hour',
+                    '55.83{9E9E9E} / kill',
+                ],
+                [
+                    '2. {247C1B}[inC]Reni[CP]',
+                    '526{BDBDBD} / 409 (1.29)',
+                    '8{9E9E9E} / hour',
+                    '80.65{9E9E9E} / kill',
+                ],
+                [
+                    '3. {7B68EE}Sophia_Naz',  // player is online, stats and position amended
+                    '500{BDBDBD} / 514 (0.97)',
+                    '11{9E9E9E} / hour',
+                    '63.41{9E9E9E} / kill',
+                ],
+                [
+                    '4. {8952EB}[AG]Newski',
+                    '380{BDBDBD} / 188 (2.02)',
+                    '27{9E9E9E} / hour',
+                    '33.98{9E9E9E} / kill',
+                ],
+            ]
+        });
+    });
 });

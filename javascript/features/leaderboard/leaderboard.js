@@ -60,6 +60,10 @@ export default class Leaderboard extends Feature {
                 data = await this.getDamageLeaderboardData(settings);
                 break;
 
+            case 'kills':
+                data = await this.getKillsLeaderboardData(settings);
+                break;
+
             default:
                 return this.displayLeaderboardDialog(player, settings);
         }
@@ -82,7 +86,7 @@ export default class Leaderboard extends Feature {
         const headers = [ 'Player', 'Accuracy (hit / missed)', 'Strike ratio', 'Hits / hour' ];
 
         return {
-            title: 'Damage Statistics',
+            title: 'Accuracy Statistics',
             headers,
             leaderboard: leaderboard.map((result, index) => {
                 let player, accuracy, strike, online;
@@ -151,6 +155,44 @@ export default class Leaderboard extends Feature {
             }),
         };
     }
+
+    // Gets the `data` for displaying the kills leaderboard from the database, making sure that all
+    // the data that should be shown is appropriate for display.
+    async getKillsLeaderboardData(settings) {
+        const leaderboard = await this.database_.getKillsLeaderboard(settings);
+        const headers = [ 'Player', 'Kills / deaths', 'Kills / hour', 'Shots / kill' ];
+
+        return {
+            title: 'Kill Statistics',
+            headers,
+            leaderboard: leaderboard.map((result, index) => {
+                let player, stats, online, shots;
+
+                // (1) Rank and player identifier
+                player = (index + 1) + '. ';
+
+                if (result.color)
+                    player += `{${result.color.toHexRGB()}}${result.nickname}`;
+                else
+                    player += result.nickname;
+
+                // (2) Amount of kills and death, including their k/d ratio.
+                stats = format('%d{BDBDBD} / %d (%.2f)',
+                    result.killCount, result.deathCount, result.ratio);
+
+                // (3) Amount of players murdered per hour of in-game time.
+                online = format('%d{9E9E9E} / hour', result.killCount / (result.duration / 3600));
+
+                // (4) Number of shots fired for each of their kills.
+                shots = this.toFormattedQuantityUnit(
+                    result.shots / result.killCount) + '{9E9E9E} / kill';
+
+                return [ player, stats, online, shots ];
+            }),
+        };
+    }
+    
+    // ---------------------------------------------------------------------------------------------
 
     // Displays the leaderboard dialog, which shows an overview of all the available lists, together
     // with the player who currently tops that ranking.

@@ -72,6 +72,38 @@ const kDamageLeaderboardQuery = `
     LIMIT
         ?`;
 
+// Query to compute the leaderboard entries based on kill & death statistics.
+const kKillLeaderboardQuery = `
+    SELECT
+        sessions.user_id,
+        users.username,
+        IF(users_gangs.user_use_gang_color = 1,
+            IFNULL(gangs.gang_color, users_mutable.custom_color),
+            users_mutable.custom_color) AS color,
+        SUM(session_death_count) AS death_count,
+        SUM(session_kill_count) AS kill_count,
+        SUM(session_duration) AS duration,
+        (SUM(session_shots_hit) + SUM(session_shots_missed)) AS shots
+    FROM
+        sessions
+    LEFT JOIN
+        users ON users.user_id = sessions.user_id
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = sessions.user_id
+    LEFT JOIN
+        users_gangs ON users_gangs.user_id = sessions.user_id AND users_gangs.left_gang IS NULL
+    LEFT JOIN
+        gangs ON gangs.gang_id = users_gangs.gang_id AND gangs.gang_color IS NOT NULL
+    WHERE
+        session_date >= DATE_SUB(NOW(), INTERVAL ? DAY) AND
+        users.username IS NOT NULL
+    GROUP BY
+        sessions.user_id
+    ORDER BY
+        kill_count DESC
+    LIMIT
+        ?`;
+
 // Retrieves leaderboard information from the database and makes it available to JavaScript in an
 // intuitive and idiomatic manner. Not safe for testing, use MockLeaderboardDatabase instead.
 export class LeaderboardDatabase {
@@ -167,6 +199,55 @@ export class LeaderboardDatabase {
     // Actually executes the query for getting the damage-based leaderboard.
     async _getDamageLeaderboardQuery({ days, limit }) {
         const results = await server.database.query(kDamageLeaderboardQuery, days, limit);
+        return results && results.rows ? results.rows : [];
+    }
+
+    // Gets the leaderboard data when sorting players by number of kills.
+    async getKillsLeaderboard({ days, limit }) {
+        const results = await this._getKillsLeaderboardQuery({ days, limit });
+        const statistics = this.getOnlinePlayerStatistics();
+
+        const leaderboard = [];
+
+        for (const result of results) {
+            const sessionStatistics = statistics.get(result.user_id);
+
+            const sessionOnlineTime = sessionStatistics?.onlineTime ?? 0;
+            const sessionDeathCount = sessionStatistics?.deathCount ?? 0;
+            const sessionKillCount = sessionStatistics?.killCount ?? 0;
+            const sessionShots = sessionStatistics?.shots ?? 0;
+
+            const deathCount = parseInt(result.death_count, 10) + sessionDeathCount;
+            const killCount = parseInt(result.kill_count, 10) + sessionKillCount;
+
+            leaderboard.push({
+                nickname: result.username,
+                color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
+
+                deathCount, killCount,
+                ratio: deathCount > 0 ? killCount / deathCount
+                                      : killCount,
+
+                duration: result.duration + sessionOnlineTime,
+                shots: result.shots + sessionShots,
+            });
+        }
+
+        // Re-sort the |leaderboard| now that live session statistics have been considered, which
+        // may influence the positioning of certain players.
+        leaderboard.sort((lhs, rhs) => {
+            if (lhs.killCount === rhs.killCount)
+                return 0;
+            
+            return lhs.killCount > rhs.killCount ? -1 : 1;
+        });
+
+        return leaderboard;
+    }
+
+    // Actually executes the query for getting the kill-based leaderboard.
+    async _getKillsLeaderboardQuery({ days, limit }) {
+        const results = await server.database.query(kKillLeaderboardQuery, days, limit);
         return results && results.rows ? results.rows : [];
     }
 

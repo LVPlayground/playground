@@ -474,6 +474,9 @@ public OnPlayerPickUpDynamicPickup(playerid, STREAMER_TAG_PICKUP:pickupid) {}
 public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, modelid, Float:x, Float:y, Float:z) {}
 public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
 
+forward OnPlayerChecksumAvailable(playerid, address, checksum);
+public OnPlayerChecksumAvailable(playerid, address, checksum) {}
+
 #if Feature::EnableServerSideWeaponConfig == 0
 public OnPlayerUpdate(playerid) {
     if (g_driftingEnabled)

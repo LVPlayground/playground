@@ -6,6 +6,7 @@
 forward OnColorPickerResponse(playerid, color);
 forward OnMessageLevelChange(playerid, messagelevel);
 forward OnPlayerActivityChange(playerid, activity);
+[Deferred] forward OnPlayerChecksumAvailable(playerid, address, checksum);
 forward OnPlayerLeaveActivity(playerid);
 forward OnPlayerLevelChange(playerid, newlevel, temporary);
 forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);

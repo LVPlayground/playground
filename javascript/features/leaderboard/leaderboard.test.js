@@ -40,7 +40,7 @@ describe('Leaderboard', (it, beforeEach) => {
         russell.stats.session.shotsTaken = 510;
 
         // (2) Have |gunther| see the accuracy leaderboard dialog.
-        assert.isTrue(await gunther.issueCommand('/xxtop accuracy'));
+        assert.isTrue(await gunther.issueCommand('/top accuracy'));
         assert.deepEqual(gunther.getLastDialogAsTable(), {
             columns: [
                 'Player',
@@ -89,7 +89,7 @@ describe('Leaderboard', (it, beforeEach) => {
         russell.stats.session.shotsHit = 2000;
 
         // (2) Have |gunther| see the damage leaderboard dialog.
-        assert.isTrue(await gunther.issueCommand('/xxtop damage'));
+        assert.isTrue(await gunther.issueCommand('/top damage'));
         assert.deepEqual(gunther.getLastDialogAsTable(), {
             columns: [
                 'Player',

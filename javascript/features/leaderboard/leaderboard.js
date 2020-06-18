@@ -31,7 +31,7 @@ export default class Leaderboard extends Feature {
                                          : new LeaderboardDatabase();
 
         // The `/top` command, which shows the server's current leaderboard.
-        server.commandManager.buildCommand('xxtop')
+        server.commandManager.buildCommand('top')
             .parameters([{ name: 'view', type: CommandBuilder.WORD_PARAMETER, optional: true }])
             .build(Leaderboard.prototype.onLeaderboardCommand.bind(this));
     }
@@ -174,7 +174,7 @@ export default class Leaderboard extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('xxtop');
+        server.commandManager.removeCommand('top');
 
         this.settings_ = null;
         this.database_ = null;

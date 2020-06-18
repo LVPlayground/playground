@@ -13,17 +13,19 @@ const ExtraPriceFactor = 1.5;
 export default class SpawnWeapons extends PlayerCommand {
     get name() { return 'spawnweapons'; }
 
+    setCommandParameters(commandBuilder) {
+        return commandBuilder
+            .parameters([{ name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER },
+            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER }]);
+    }
+
     build(commandBuilder) {
-        commandBuilder
-            .parameters([{ name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: false },
-            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER, optional: false }])
+        this.setCommandParameters(commandBuilder)
             .build(SpawnWeapons.prototype.onSpawnWeaponsCommand.bind(this));
     }
 
     buildAdmin(commandBuilder) {
-        commandBuilder
-            .parameters([{ name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: false },
-            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER, optional: false }])
+        this.setCommandParameters(commandBuilder)
             .build(SpawnWeapons.prototype.giveSpawnWeapon.bind(this));
     }
 
@@ -36,7 +38,6 @@ export default class SpawnWeapons extends PlayerCommand {
     // If |player| is not |subject| an admin gives the weapon. Costs are not applied.
     giveSpawnWeapon(player, subject, weapon, multiplier) {        
         const teleportStatus = this.abuse_().canTeleport(subject, { enforceTimeLimit: true });
-
         // Bail out if the |player| might abuse it.
         if (!teleportStatus.allowed) {
             if(player.id === subject.id) {
@@ -60,7 +61,7 @@ export default class SpawnWeapons extends PlayerCommand {
 
         const weaponData = WeaponData.getWeaponById(weapon);
 
-        if (player.id === subject.id) {
+        if (player === subject) {
             const price = weaponData.basePrice * multiplier * ExtraPriceFactor;
             if (this.finance_().getPlayerCash(player) < price) {
                 player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_NOT_ENOUGH_MONEY, price);

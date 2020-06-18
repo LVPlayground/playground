@@ -28,7 +28,9 @@ export class PlayerCommandsCommands {
             .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
 
         await this.loadSubCommands(commandBuilder, adminCommandBuilder);
+
         commandBuilder.build(PlayerCommandsCommands.prototype.onMyCommand.bind(this));
+    
         adminCommandBuilder
             .build(PlayerCommandsCommands.prototype.onAdminCommandWithPlayer.bind(this)) 
             .build(PlayerCommandsCommands.prototype.onAdminCommand.bind(this));

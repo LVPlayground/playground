@@ -26,6 +26,7 @@ export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
     nuwani_ = null;
+    playground_ = null;
     settings_ = null;
 
     commands_ = null;
@@ -51,7 +52,9 @@ export default class CommunicationCommands extends Feature {
         this.nuwani_.addReloadObserver(this, () => this.initializeIrcCommands());
 
         // Used to make the required level for certain commands configurable.
-        const playground = this.defineDependency('playground');
+        this.playground_ = this.defineDependency('playground');
+        this.playground_.addReloadObserver(
+            this, CommunicationCommands.prototype.registerTrackedCommands);
 
         // Used to make certain parts of communication configurable.
         this.settings_ = this.defineDependency('settings');
@@ -64,12 +67,13 @@ export default class CommunicationCommands extends Feature {
         // which is reflected in the following array of command groups.
         this.commands_ = [
             new CallCommands(this.communication_),
-            new DirectCommunicationCommands(this.communication_, this.nuwani_, playground),
+            new DirectCommunicationCommands(this.communication_, this.nuwani_, this.playground_),
             new IgnoreCommands(this.communication_),
             new MuteCommands(this.announce_, this.communication_),
         ];
 
         this.initializeIrcCommands();
+        this.registerTrackedCommands();
 
         // /announce [message]
         server.commandManager.buildCommand('announce')
@@ -89,7 +93,7 @@ export default class CommunicationCommands extends Feature {
 
         // /psay [player] [message]
         server.commandManager.buildCommand('psay')
-            .restrict(Player.LEVEL_MANAGEMENT)
+            .restrict(player => this.playground_().canAccessCommand(player, 'spm'))
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -114,6 +118,11 @@ export default class CommunicationCommands extends Feature {
         const commandManager = this.nuwani_().commandManager;
         this.nuwaniCommands_ =
             new NuwaniCommands(commandManager, this.announce_, this.communication_, this.nuwani_);
+    }
+
+    // Initializes the commands whose access is controlled through Playground.
+    registerTrackedCommands() {
+        this.playground_().registerCommand('psay', Player.LEVEL_MANAGEMENT);
     }
 
     // The Gunther cycle will spin for the lifetime of this object, displaying a `/show` message at
@@ -295,6 +304,9 @@ export default class CommunicationCommands extends Feature {
 
         this.nuwaniCommands_.dispose();
         this.nuwaniCommands_ = null;
+
+        this.playground_().unregisterCommand('psay');
+        this.playground_.removeReloadObserver(this);
 
         this.nuwani_.removeReloadObserver(this);
         this.nuwani_ = null;

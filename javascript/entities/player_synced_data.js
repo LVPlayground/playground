@@ -10,6 +10,7 @@ export class PlayerSyncedData {
 
         this.collectables_ = 0;
         this.isolated_ = false;
+        this.lagCompensationMode_ = 2;
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
         this.skipDamage_ = false;
@@ -36,6 +37,13 @@ export class PlayerSyncedData {
 
         this.isolated_ = value;
         this.sync(PlayerSyncedData.ISOLATED, value);
+    }
+
+    // Gets or sets the lag compensation mode for this player.
+    get lagCompensationMode() { return this.lagCompensationMode_; }
+    set lagCompensationMode(value) {
+        this.lagCompensationMode_ = value;
+        this.sync(PlayerSyncedData.LAG_COMPENSATION_MODE, value);
     }
 
     // Gets or sets the name of the game that the player is currently engaged with. This will tell
@@ -96,6 +104,7 @@ export class PlayerSyncedData {
         switch (property) {
             // Integral properties.
             case PlayerSyncedData.COLLECTABLES:
+            case PlayerSyncedData.LAG_COMPENSATION_MODE:
             case PlayerSyncedData.VEHICLE_KEYS:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property, value,
                            0.0 /* invalid float */, '' /* empty string */);
@@ -141,9 +150,10 @@ export class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-// Next ID: 6
+// Next ID: 7
 PlayerSyncedData.COLLECTABLES = 3;
 PlayerSyncedData.ISOLATED = 1;
+PlayerSyncedData.LAG_COMPENSATION_MODE = 6;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
 PlayerSyncedData.SKIP_DAMAGE = 5;

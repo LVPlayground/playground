@@ -262,11 +262,6 @@ export class Player extends Supplementable {
 
     get state() { return pawnInvoke('GetPlayerState', 'i', this.#id_); }
 
-    setLagCompensationMode(mode) {
-        pawnInvoke('TogglePlayerLagCompensationMode', 'ii', this.#id_, mode);
-        pawnInvoke('TogglePlayerControllable', 'ii', this.#id_, 1);
-    }
-
     isAdministrator() { return this.#level_ >= Player.LEVEL_ADMINISTRATOR; }
 
     isManagement() { return this.#level_ >= Player.LEVEL_MANAGEMENT; }

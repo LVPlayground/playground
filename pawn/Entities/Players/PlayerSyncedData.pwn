@@ -5,10 +5,11 @@
 // Provided by PlaygroundJS for updating JavaScript data.
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
-// Next ID: 5
+// Next ID: 7
 enum PlayerSyncedDataProperty {
     COLLECTABLES = 3,
     ISOLATED = 1,
+    LAG_COMPENSATION_MODE = 6,
     MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
     SKIP_DAMAGE = 5,
@@ -24,6 +25,7 @@ enum PlayerSyncedDataProperty {
 class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     new m_collectables;
     new bool: m_isolated;
+    new m_lagCompensationMode;
     new m_minigameName[32];
     new m_preferredRadioChannel[64];
     new bool: m_skipDamage;
@@ -32,6 +34,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     public reset() {
         m_collectables = 0;
         m_isolated = false;
+        m_lagCompensationMode = 2;
         m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
         m_skipDamage = false;
@@ -57,6 +60,12 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     public setIsolated(bool: isolated) {
         m_isolated = isolated;
         this->sync(ISOLATED);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    public lagCompensationMode() {
+        return m_lagCompensationMode;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -114,6 +123,11 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
             case ISOLATED:
                 m_isolated = !!intValue;
+
+            case LAG_COMPENSATION_MODE: {
+                SpawnManager(playerId)->setLagCompensationMode(intValue);
+                m_lagCompensationMode = intValue;
+            }
 
             case MINIGAME_NAME:
                 format(m_minigameName, sizeof(m_minigameName), "%s", stringValue);

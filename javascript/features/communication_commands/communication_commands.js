@@ -93,7 +93,7 @@ export default class CommunicationCommands extends Feature {
 
         // /psay [player] [message]
         server.commandManager.buildCommand('psay')
-            .restrict(player => this.playground_().canAccessCommand(player, 'spm'))
+            .restrict(player => this.playground_().canAccessCommand(player, 'psay'))
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])

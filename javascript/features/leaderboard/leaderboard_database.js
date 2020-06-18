@@ -122,9 +122,9 @@ export class LeaderboardDatabase {
             const sessionShotsMissed = sessionStatistics?.shotsMissed ?? 0;
             const sessionShotsTaken = sessionStatistics?.shotsTaken ?? 0;
 
-            const shotsHit = parseInt(result.shots_hit, 10) + sessionShotsHit;
-            const shotsMissed = parseInt(result.shots_missed, 10) + sessionShotsMissed;
-            const shotsTaken = parseInt(result.shots_taken, 10) + sessionShotsTaken;
+            const shotsHit = result.shots_hit + sessionShotsHit;
+            const shotsMissed = result.shots_missed + sessionShotsMissed;
+            const shotsTaken = result.shots_taken + sessionShotsTaken;
 
             // Recalculate the |accuracy|, because it might've changed based on the database data.
             const accuracy = shotsHit / (shotsHit + shotsMissed);
@@ -217,8 +217,8 @@ export class LeaderboardDatabase {
             const sessionKillCount = sessionStatistics?.killCount ?? 0;
             const sessionShots = sessionStatistics?.shots ?? 0;
 
-            const deathCount = parseInt(result.death_count, 10) + sessionDeathCount;
-            const killCount = parseInt(result.kill_count, 10) + sessionKillCount;
+            const deathCount = result.death_count + sessionDeathCount;
+            const killCount = result.kill_count + sessionKillCount;
 
             leaderboard.push({
                 nickname: result.username,

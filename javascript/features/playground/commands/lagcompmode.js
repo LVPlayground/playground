@@ -5,7 +5,7 @@
 import Command from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
-// Command: /lagcompmode [player] [0-2]
+// Command: /lagcompmode [player] [0-2]?
 export default class LagCompModeCommand extends Command {
     get name() { return 'lagcompmode'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
@@ -14,21 +14,21 @@ export default class LagCompModeCommand extends Command {
         commandBuilder
             .parameters([
                 { name: 'target', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'mode', type: CommandBuilder.NUMBER_PARAMETER } ])
+                { name: 'mode', type: CommandBuilder.NUMBER_PARAMETER, optional: true } ])
             .build(LagCompModeCommand.prototype.onLagCompModeCommand.bind(this));
     }
 
     // Changes the lag compensation mode for the given |player|.
     async onLagCompModeCommand(player, target, mode) {
-        if (mode >= 0 && mode <= 2) {
+        if (typeof mode === 'number' && mode >= 0 && mode <= 2) {
             target.syncedData.lagCompensationMode = mode;
             player.sendMessage(
                 Message.COMMAND_SUCCESS, target.name + ' their lag compensation mode has been ' +
                 'updated to: ' + mode);
             
         } else {
-            player.sendMessage(
-                Message.COMMAND_ERROR, 'The lag compensation mode must be one of [0, 1, 2].');
+            player.sendMessage('%s their lag compensation mode has been set to %s.',
+                target.name, target.syncedData.lagCompensationMode);
         }
     }
 }

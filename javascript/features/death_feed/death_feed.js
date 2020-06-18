@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { Feature } from 'components/feature_manager/feature.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Number of death messages that are visible on the player's screens.
 const kDeathFeedVisibleMessageCount = 5;

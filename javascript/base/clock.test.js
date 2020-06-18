@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Clock from 'base/clock.js';
+import { Clock } from 'base/clock.js';
 
 describe('Clock', it => {
     it('should share the current (monotonically increasing) time', assert => {

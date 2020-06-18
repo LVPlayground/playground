@@ -28,7 +28,7 @@ declare module 'base/circular_read_only_buffer.js' {
 }
 
 declare module 'base/color.js' {
-    export default class Color {
+    export class Color {
         static BLUE: Color;
         static GREEN: Color;
         static RED: Color;
@@ -60,7 +60,7 @@ declare module 'base/float.js' {
 }
 
 declare module 'base/message.js' {
-    export default class Message {
+    export class Message {
         // We need static indexes to support the messages we populate on the Message object.
         // https://github.com/microsoft/TypeScript/pull/37797
 
@@ -77,7 +77,7 @@ declare module 'base/murmur3hash.js' {
 
 declare module 'base/priority_queue.js' {
     type ComperatorFunction = (left: any, right: any) => number;
-    export default class PriorityQueue {
+    export class PriorityQueue {
         constructor(comparator: ComperatorFunction);
 
         isEmpty(): boolean;
@@ -94,7 +94,7 @@ declare module 'base/priority_queue.js' {
 }
 
 declare module 'base/rect.js' {
-    export default class Rect {
+    export class Rect {
         constructor(minX: number, minY: number, maxX: number, maxY: number);
 
         minX: number;
@@ -119,7 +119,7 @@ declare module 'base/rect.js' {
 }
 
 declare module 'base/scoped_callbacks.js' {
-    export default class ScopedCallbacks {
+    export class ScopedCallbacks {
         constructor();
 
         addEventListener(eventType: string, listener: Function): void;

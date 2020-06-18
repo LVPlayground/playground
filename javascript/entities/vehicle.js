@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { Supplementable } from 'base/supplementable.js';
+import { VehicleModel } from 'entities/vehicle_model.js';
 
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.

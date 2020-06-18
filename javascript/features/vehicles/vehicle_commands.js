@@ -2,14 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Menu } from 'components/menu/menu.js';
+import { VehicleModel } from 'entities/vehicle_model.js';
 
 import * as benefits from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
-const MaximumVehicleDistance = 10;
+const kMaximumVehicleDistance = 10;
 
 // The maximum number of unique models and vehicles in the area local to the player. Used for
 // deciding whether it's save to store a vehicle at the given position.
@@ -241,7 +242,7 @@ class VehicleCommands {
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
         if (streamableVehicle.live)
-            player.enterVehicle(streamableVehicle.live, Vehicle.SEAT_DRIVER);
+            player.enterVehicle(streamableVehicle.live, Vehicle.kSeatDriver);
     }
 
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
@@ -285,21 +286,33 @@ class VehicleCommands {
             return;
         }
 
+        const interiorId = player.interiorId;
         const position = player.position;
-        const areaInfo = await this.streamer_().query(position);
+        const virtualWorld = player.virtualWorld;
 
-        const closestStreamableVehicle = areaInfo.closestStreamableVehicle;
-        if (!closestStreamableVehicle || !closestStreamableVehicle.live) {
+        let closestVehicleDistance = Number.MAX_SAFE_INTEGER;
+        let closestVehicle = null;
+
+        for (const vehicle of server.vehicleManager) {
+            const distance = vehicle.position.distanceTo(position);
+            if (distance > kMaximumVehicleDistance)
+                continue;  // the |vehicle| is too far away
+            
+            if (closestVehicleDistance < distance)
+                continue;  // a closer vehicle has already been found
+            
+            if (vehicle.interiorId != interiorId || vehicle.virtualWorld != virtualWorld)
+                continue;  // the |vehicle| is not in the same world as the |player|
+            
+            closestVehicleDistance = distance;
+            closestVehicle = vehicle;
+        }
+
+        // Bail out if no nearby vehicles have been found on the server.
+        if (!closestVehicle) {
             player.sendMessage(Message.VEHICLE_ENTER_NONE_NEAR);
             return;
         }
-
-        if (closestStreamableVehicle.position.distanceTo(position) > MaximumVehicleDistance) {
-            player.sendMessage(Message.VEHICLE_ENTER_NONE_NEAR);
-            return;
-        }
-
-        const closestVehicle = closestStreamableVehicle.live;
 
         // Make sure that the |seat| the |player| wants to sit in is available.
         for (const occupant of closestVehicle.getOccupants()) {

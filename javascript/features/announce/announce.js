@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import AnnounceManager from 'features/announce/announce_manager.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.

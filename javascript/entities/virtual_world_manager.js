@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import VirtualWorldBlock from 'entities/virtual_world_block.js';
+import { VirtualWorldBlock } from 'entities/virtual_world_block.js';
 
 // Id of the Virtual World that represents the main world.
 const MainVirtualWorld = 0;
@@ -10,7 +10,7 @@ const MainVirtualWorld = 0;
 // The Virtual World manager is responsible for management of the virtual worlds in existence on the
 // server. There is no concept of a "Virtual World" object, so they're represented by Ids, but
 // assignment of such Ids needs to be coordinated.
-class VirtualWorldManager {
+export class VirtualWorldManager {
     constructor() {
         this.allocated_ = 1 /* the main world */;
 
@@ -45,5 +45,3 @@ class VirtualWorldManager {
 
     dispose() {}
 }
-
-export default VirtualWorldManager;

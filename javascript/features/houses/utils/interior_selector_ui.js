@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import NavigationButton from 'components/text_draw/navigation_button.js';
-import Rectangle from 'components/text_draw/rectangle.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { NavigationButton } from 'components/text_draw/navigation_button.js';
+import { Rectangle } from 'components/text_draw/rectangle.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
+
+import { format } from 'base/format.js';
 
 // Background color of the user interface. Should be semi-transparent.
 const BACKGROUND_COLOR = Color.fromRGBA(0, 0, 0, 100);
@@ -75,13 +77,8 @@ class InteriorSelectorUI {
                 return;
 
             pawnInvoke('SelectTextDraw', 'ii', this.player_.id, BUTTON_HOVER_COLOR.toNumberRGBA());
-            await seconds(1);
+            await wait(1000);
         }
-    }
-
-    // Formats the price as a string using underscores as the thousand separator.
-    formatPrice(price) {
-        return '$' + price.toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1_');
     }
 
     // Creates or updates the text draw display for the price of the house. Different colours will
@@ -93,7 +90,7 @@ class InteriorSelectorUI {
 
         // Update the text if it already exists and has the same color.
         if (this.price_ && this.price_.color === color) {
-            this.price_.updateTextForPlayer(this.player_, this.formatPrice(price));
+            this.price_.updateTextForPlayer(this.player_, format('%$', price));
             return;
         }
 
@@ -105,7 +102,7 @@ class InteriorSelectorUI {
             letterSize: [ 0.260464, 1.064890 ],
             color: color,
             proportional: true,
-            text: this.formatPrice(price),
+            text: format('%$', price),
 
             font: TextDraw.FONT_MONOSPACE,
             alignment: TextDraw.ALIGN_CENTER

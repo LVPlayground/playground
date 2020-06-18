@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
+#define MAX_KICK_REASON 64
+
 /**
  * The Player class will encapsulate various bits of information about the player's current state.
  * This is unrelated to their account, statistics or stored data, and thus should be looked at as
@@ -34,6 +36,11 @@ class Player <playerId (MAX_PLAYERS)> {
     // What's the IP address the player connected with? We save this becaue of a SA:MP bug which
     // occurs when GetPlayerIp is called OnPlayerDisconnect.
     new m_ipAddress[16];
+
+    // Data to indicate why a particular player was kicked from the server. Used to create richer,
+    // more complete messages rather than the catch-all "kicked" reason.
+    new PlayerKickReason: m_kickReason;
+    new m_kickTextualReason[MAX_KICK_REASON];
 
     // ---- PRIVATE INLINE CONVENIENCE METHODS -----------------------------------------------------
 
@@ -83,6 +90,9 @@ class Player <playerId (MAX_PLAYERS)> {
         m_level = PlayerLevel;
         m_levelIsTemporary = false;
         m_connectionTime = Time->currentTime();
+
+        m_kickReason = UnknownKickReason;
+        m_kickTextualReason[0] = 0;
 
         this->enableFlag(IsConnectedPlayerFlag);
         if (IsPlayerNPC(playerId))
@@ -176,7 +186,7 @@ class Player <playerId (MAX_PLAYERS)> {
         SendClientMessage(playerId, Color::Information, "available through www.sa-mp.nl/chat");
 
         // Schedule for the player to be kicked from the server.
-        this->scheduleKick();
+        this->scheduleKick(BannedKickReason, reason);
     }
 
     /**
@@ -200,7 +210,7 @@ class Player <playerId (MAX_PLAYERS)> {
         SendClientMessage(playerId, Color::GangChat, reason);
 
         // Schedule for the player to be kicked from the server.
-        this->scheduleKick();
+        this->scheduleKick(KickedKickReason, reason);
     }
 
     /**
@@ -209,7 +219,10 @@ class Player <playerId (MAX_PLAYERS)> {
      * the server-sided connection when the Kick() method get called, even if there still are
      * other, in-flight undelivered messages.
      */
-    public scheduleKick() {
+    public scheduleKick(PlayerKickReason: reason, textualReason[]) {
+        m_kickReason = reason;
+        format(m_kickTextualReason, sizeof(m_kickTextualReason), "%s", textualReason);
+
         TogglePlayerControllable(playerId, false);
         ShowPlayerDialog(playerId, -1, 0, "", "", "", ""); // close all open dialogs.
 
@@ -287,6 +300,14 @@ class Player <playerId (MAX_PLAYERS)> {
      */
     public inline ipAddressString() {
         return m_ipAddress;
+    }
+
+    public inline PlayerKickReason: kickReason() {
+        return m_kickReason;
+    }
+
+    public inline kickReasonString() {
+        return m_kickTextualReason;
     }
 
     // ---- SETTERS FOR NORMAL DATA MEMBERS --------------------------------------------------------

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Delay, in seconds, before a player's data will be written to the database after they disconnect.
 const kPlayerDisconnectQueryDelayMs = 1000;
@@ -67,7 +67,7 @@ export class AccountManager {
             if (!databaseData || !player.isConnected())
                 return;  // the |player| has disconnected from the server since
 
-            player.account.initializeFromDatabase(databaseData);
+            player.account.initializeFromDatabase(player, databaseData);
 
             // Now that the player's account has been initialized, tell the rest of the server.
             server.playerManager.onPlayerLogin(event);
@@ -95,14 +95,14 @@ export class AccountManager {
         // When running a test, run the store immediately to get coverage over the functionality,
         // but do not wait for the |kPlayerDisconnectQueryDelayMs| delay like we do in production.
         if (server.isTest()) {
-            this.database_.saveAccountData(player.account.prepareForDatabase());
+            this.database_.saveAccountData(player.account.prepareForDatabase(player));
             return;
         }
 
         // Have a second's delay before saving the player's data to the account, allowing for other
         // parts of the game to make their final adjustments before they're gone.
         wait(kPlayerDisconnectQueryDelayMs).then(() =>
-            this.database_.saveAccountData(player.account.prepareForDatabase()));
+            this.database_.saveAccountData(player.account.prepareForDatabase(player)));
     }
 
     // ---------------------------------------------------------------------------------------------

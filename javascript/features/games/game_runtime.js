@@ -3,9 +3,8 @@
 // be found in the LICENSE file.
 
 import { GameActivity } from 'features/games/game_activity.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
-import { format } from 'base/string_formatter.js';
 import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate

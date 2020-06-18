@@ -56,7 +56,7 @@ export class PlayerAccountSupplement extends Supplement {
 
     // Called when the account data is being initialized from the database. Should do the necessary
     // data transformations to make the data types appropriate for JavaScript. (E.g. colours.)
-    initializeFromDatabase(databaseRow) {
+    initializeFromDatabase(player, databaseRow) {
         this.userId_ = databaseRow.user_id;
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.cashBalance_ = databaseRow.money_cash;
@@ -67,21 +67,39 @@ export class PlayerAccountSupplement extends Supplement {
         if (databaseRow.muted > 0)
             this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
 
+        // Statistics that will be stored by the PlayerStatsSupplement instead.
+        player.stats.enduring.onlineTime = databaseRow.online_time;
+        player.stats.enduring.deathCount = databaseRow.death_count;
+        player.stats.enduring.killCount = databaseRow.kill_count;
+        player.stats.enduring.damageGiven = databaseRow.stats_damage_given;
+        player.stats.enduring.damageTaken = databaseRow.stats_damage_taken;
+        player.stats.enduring.shotsHit = databaseRow.stats_shots_hit;
+        player.stats.enduring.shotsMissed = databaseRow.stats_shots_missed;
+        player.stats.enduring.shotsTaken = databaseRow.stats_shots_taken;
+        
         this.isRegistered_ = true;
         this.isIdentified_ = true;
     }
 
     // Called when the account data is being written to the database. Can happen multiple times for
     // the lifetime of this object.
-    prepareForDatabase() {
+    prepareForDatabase(player) {
         const currentTime = server.clock.monotonicallyIncreasingTime();
 
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
+            // TODO: include |online_time|
+            kill_count: player.stats.enduring.killCount,
+            death_count: player.stats.enduring.deathCount,
             money_bank: this.bankAccountBalance_,
             money_cash: this.cashBalance_,
             stats_reaction: this.reactionTests_,
+            stats_damage_given: player.stats.enduring.damageGiven,
+            stats_damage_taken: player.stats.enduring.damageTaken,
+            stats_shots_hit: player.stats.enduring.shotsHit,
+            stats_shots_missed: player.stats.enduring.shotsMissed,
+            stats_shots_taken: player.stats.enduring.shotsTaken,
             muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
         };
     }

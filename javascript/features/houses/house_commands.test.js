@@ -9,7 +9,7 @@ import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
-import PlayerSetting from 'entities/player_setting.js';
+import { PlayerSetting } from 'entities/player_setting.js';
 
 describe('HouseCommands', (it, beforeEach) => {
     let commands = null;

@@ -2,29 +2,30 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ActorManager from 'entities/actor_manager.js';
+import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
-import CommandManager from 'components/command_manager/command_manager.js';
+import { CommandManager } from 'components/command_manager/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
-import FeatureManager from 'components/feature_manager/feature_manager.js';
+import { FeatureManager } from 'components/feature_manager/feature_manager.js';
 import { MapIconManager } from 'entities/map_icon_manager.js';
+import { MockDeferredEventManager } from 'components/events/mock_deferred_event_manager.js';
 import { MockPickupManager } from 'entities/test/mock_pickup_manager.js';
-import NpcManager from 'entities/npc_manager.js';
-import ObjectManager from 'entities/object_manager.js';
-import PlayerManager from 'entities/player_manager.js';
+import { NpcManager } from 'entities/npc_manager.js';
+import { ObjectManager } from 'entities/object_manager.js';
+import { PlayerManager } from 'entities/player_manager.js';
 import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
-import TextLabelManager from 'entities/text_label_manager.js';
-import VehicleManager from 'entities/vehicle_manager.js';
-import VirtualWorldManager from 'entities/virtual_world_manager.js';
+import { TextLabelManager } from 'entities/text_label_manager.js';
+import { VehicleManager } from 'entities/vehicle_manager.js';
+import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
 
-import MockActor from 'entities/test/mock_actor.js';
+import { MockActor } from 'entities/test/mock_actor.js';
 import { MockArea } from 'entities/test/mock_area.js';
-import MockClock from 'base/test/mock_clock.js';
+import { MockClock } from 'base/test/mock_clock.js';
 import { MockGameObject } from 'entities/test/mock_game_object.js';
 import { MockMapIcon } from 'entities/test/mock_map_icon.js';
-import MockNpc from 'entities/test/mock_npc.js';
-import MockPawnInvoke from 'base/test/mock_pawn_invoke.js';
+import { MockNpc } from 'entities/test/mock_npc.js';
+import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 import { MockPickup } from 'entities/test/mock_pickup.js';
 import { MockPlayer } from 'entities/test/mock_player.js';
 import { MockTextLabel } from 'entities/test/mock_text_label.js';
@@ -33,6 +34,7 @@ import { MockVehicle } from 'entities/test/mock_vehicle.js';
 import Abuse from 'features/abuse/abuse.js';
 import Account from 'features/account/account.js';
 import AccountProvider from 'features/account_provider/account_provider.js';
+import Animations from 'features/animations/animations.js';
 import Announce from 'features/announce/announce.js';
 import Collectables from 'features/collectables/collectables.js';
 import Communication from 'features/communication/communication.js';
@@ -42,15 +44,18 @@ import Finance from 'features/finance/finance.js';
 import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
 import Haystack from 'features/haystack/haystack.js';
+import Leaderboard from 'features/leaderboard/leaderboard.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
+import PlayerStats from 'features/player_stats/player_stats.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
+import Teleportation from 'features/teleportation/teleportation.js';
 import Vehicles from 'features/vehicles/vehicles.js';
 
 // The MockServer is a mocked implementation of the Server class that creates a mocked environment
@@ -63,6 +68,7 @@ class MockServer {
         this.pawnInvoke_ = new MockPawnInvoke();
 
         this.commandManager_ = new CommandManager();
+        this.deferredEventManager_ = new MockDeferredEventManager();
         this.featureManager_ = new FeatureManager();
 
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
@@ -88,6 +94,7 @@ class MockServer {
             account: Account,
             account_provider: AccountProvider,
             announce: Announce,  // TODO: Move functionality to |communication|. See #309.
+            animations: Animations,
             collectables: Collectables,
             communication: Communication,
             communication_commands: CommunicationCommands,
@@ -96,15 +103,18 @@ class MockServer {
             games: Games,
             gangs: Gangs,
             haystack: Haystack,
+            leaderboard: Leaderboard,
             nuwani: MockNuwani,
             player_commands: PlayerCommands,
             player_settings: PlayerSettings,
+            player_stats: PlayerStats,
             playground: MockPlayground,
             punishments: Punishments,
             radio: Radio,
             reaction_tests: ReactionTests,
             settings: Settings,
             streamer: Streamer,
+            teleportation: Teleportation,
             vehicles: Vehicles
         });
 
@@ -135,6 +145,9 @@ class MockServer {
 
     // Gets the command manager. This is a real instance.
     get commandManager() { return this.commandManager_; }
+
+    // Gets the deferred event manager, which dispatches deferred events.
+    get deferredEventManager() { return this.deferredEventManager_; }
 
     // Gets the feature manager. This is a real instance.
     get featureManager() { return this.featureManager_; }
@@ -196,6 +209,7 @@ class MockServer {
     // Disposes the MockServer and uninitializes all owned objects.
     async dispose() {
         this.featureManager_.dispose();
+        this.deferredEventManager_.dispose();
         this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();

@@ -1,0 +1,35 @@
+{
+    "type": "message",
+    "data":
+    [
+      "{00FF00}Las Venturas Playground offers you the following extra features being a VIP:",
+      "{B4CCE8}VIP Room",
+      "{FF8E02}As VIP you can enter the VIP Room, and find some free surprises inside.",
+      "{B4CCE8}Custom Time",
+      "{FF8E02}Using the \"/my time\" command, you can set your own time.",
+      "{B4CCE8}Custom Weather",
+      "{FF8E02}Using the \"/my weather\" command, you can set your weather.",
+      "{B4CCE8}Spawn Armour",
+      "{FF8E02}You receive armor every time you spawn.",
+      "{B4CCE8}Personal Look",
+      "{FF8E02}Use the \"/my look\" command to set your funny look.",
+      "{B4CCE8}Admin Vehicles",
+      "{FF8E02}As VIP you can enter the Admin Vehicles (Hydra and Hunter).",
+      "{B4CCE8}RC Vehicles",
+      "{FF8E02}Enter the RC vehicles in front of the VIP Room.",
+      "{B4CCE8}Spawn Cruise Vehicles",
+      "{FF8E02}When participating in a cruise, use \"/cruise car\" to spawn your vehicle.",
+      "{B4CCE8}Disable Teleporting",
+      "{FF8E02}Disable the ability for other players to teleport to you.",
+      "{B4CCE8}Extra Money",
+      "{FF8E02}Idling on The Ship will give you $50 per second, instead of the normal $25 per second.",
+      "{B4CCE8}Unlimited Properties",
+      "{FF8E02}As standard, players can own 25 properties at once. VIP's don't have this limit.",
+      "{B4CCE8}Extra Houses",
+      "{FF8E02}As standard, players can own one house. VIPs can own up to three.",
+      "{B4CCE8}Change Player Color",
+      "{FF8E02}You can permanently change your player color with the \"/my color\" command.",
+      "",
+      "{00FF00}And much more IRC & forum features! Check out https://sa-mp.nl/donate"    
+    ]
+  } 

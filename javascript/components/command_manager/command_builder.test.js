@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import CommandGameDelegate from 'components/command_manager/command_game_delegate.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandGameDelegate } from 'components/command_manager/command_game_delegate.js';
+
+import { format } from 'base/format.js';
 
 describe('CommandBuilder', (it, beforeEach) => {
   let command = null,
@@ -15,8 +17,8 @@ describe('CommandBuilder', (it, beforeEach) => {
   beforeEach(() => {
     player = server.playerManager.getById(0);
     player.sendMessage = (message, ...args) => {
-      if (message instanceof Message)
-        lastMessage = Message.format(message, ...args);
+      if (args.length)
+        lastMessage = format(message, ...args);
       else
         lastMessage = message;
     };

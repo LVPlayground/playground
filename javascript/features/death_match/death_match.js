@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { DeathMatchCommands } from "features/death_match/death_match_commands.js";
 import { DeathMatchManger } from 'features/death_match/death_match_manager.js';
 

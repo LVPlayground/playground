@@ -2,9 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlayerSyncedData from 'entities/player_synced_data.js';
+import { PlayerSyncedData } from 'entities/player_synced_data.js';
 import { Supplementable } from 'base/supplementable.js';
 
+import { format } from 'base/format.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 import { toFloat } from 'base/float.js';
 
@@ -346,12 +347,12 @@ export class Player extends Supplementable {
     }
 
     sendMessage(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
         // Escape all percentage signs with double percentage signs, as the |message| parameter of
         // SendClientMessage is ran through vsprintf within the SA-MP server, which could crash.
-        const escapedMessage = String(message).replace(/%/g, '%%');
+        const escapedMessage = message.replace(/%/g, '%%');
 
         pawnInvoke('SendClientMessage', 'iis', this.#id_, 0xFFFFFFFF, escapedMessage);
     }

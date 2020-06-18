@@ -2,13 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 // List of PawnConfig settings with their unique values and settings. Must be synced with Pawn. The
 // settings can be in any category, of any type, as long as the identifier is a valid one.
-// Next ID: 6
+// Next ID: 7
 const kSynchronizedSettings = new Map([
     [ 'abuse/ignore_sole_passenger_damage', { id: 5 } ],
+    [ 'abuse/kick_reason_public', { id: 6 } ],
     [ 'vehicles/drifting_enabled', { id: 1 } ],
     [ 'vehicles/drifting_max_angle', { id: 2 } ],
     [ 'vehicles/drifting_min_angle', { id: 3 } ],

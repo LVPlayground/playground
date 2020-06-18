@@ -12,29 +12,7 @@ class VeryImportantPlayersCommands {
     /**
      * This command can be used by VIPs to list all their features and extras, allowing them to quickly
      * see what they have earned for donating.
-     * 
-     * @param playerId Id of the player who executed this command.
-     * @param params Any further text that the player passed to the command. Unused.
-     * @command /vip
-     */
-    @command("vip")
-    public onVipCommand(playerId, params[]) {
-        if (Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false) {
-            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
-            return 1;
-        }
-
-        SendClientMessage(playerId, Color::Success, "Las Venturas Playground offers you the following extra features:");
-        SendClientMessage(playerId, Color::Information, "  - {40CCFF}Change player color/weather/teleportation settings, spawn armor");
-        SendClientMessage(playerId, Color::Information, "  - {40CCFF}Various IRC extras like IRC <-> ingame PM'ing and VIP channel");
-        SendClientMessage(playerId, Color::Information, "  - {40CCFF}VIP status on site and forum, access to ingame VIP room");
-        SendClientMessage(playerId, Color::Information, "And much more! Check https://sa-mp.nl/donate");
-
-        return 1;
-        #pragma unused params
-    }
-
-    /**
+    
      * Having a little influence on your own environment can really help out in some situations. Hence
      * Las Venturas Playground offers its VIPs to change their own weather at free will. We've also
      * added a funny weathertype called 'drugs'.
@@ -43,7 +21,7 @@ class VeryImportantPlayersCommands {
      * @param subjectId Id of the player who this command should be applied to.
      * @param weatherType Type of weather.
      * @command /my weather [day/evening/hot/storm/foggy/drugs]
-     */
+     **/
     @switch(PlayerCommand, "weather")
     public onPlayerWeatherCommand(playerId, subjectId, params[]) {
         if (playerId != subjectId)

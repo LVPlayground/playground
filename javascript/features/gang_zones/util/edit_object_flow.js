@@ -5,7 +5,7 @@
 
 import { VisualBoundingBox } from 'features/gang_zones/util/visual_bounding_box.js';
 
-import confirm from 'components/dialogs/confirm.js';
+import { confirm } from 'components/dialogs/confirm.js';
 
 // Flow that allows a player to edit a given |object| within the boundaries of the |zone|. A
 // bounding box will be drawn around the zone to illustrate their reach.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import Feature from 'components/feature_manager/feature.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 import InteriorList from 'features/debug/interiors.js';
 

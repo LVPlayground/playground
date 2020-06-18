@@ -15,7 +15,7 @@ const modelsByCategory = new Map();
 
 // An instance of the VehicleModel class represents the data available for a particular model. There
 // are static methods available on the function to conveniently get access to them.
-class VehicleModel {
+export class VehicleModel {
     // Returns an iterator to all known vehicle models.
     static* getAll() {
         yield* modelsById.values();
@@ -188,6 +188,3 @@ VehicleModel.CATEGORY_UNKNOWN = 255;
 
 // Synchronously initialise the VehicleModel data whilst loading the script.
 VehicleModel.initialise(PrivateSymbol);
-
-// Export the VehicleModel class on the global scope.
-global.VehicleModel = VehicleModel;

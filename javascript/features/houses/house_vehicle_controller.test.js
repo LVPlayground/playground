@@ -11,8 +11,11 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
     let streamer = null;
 
     beforeEach(() => {
+        server.featureManager.loadFeature('settings');
+
         streamer = server.featureManager.loadFeature('streamer');
         controller = new HouseVehicleController(
+            server.featureManager.createDependencyWrapperForFeature('settings'),
             server.featureManager.createDependencyWrapperForFeature('streamer'));
     });
 
@@ -53,6 +56,10 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
 
         assert.equal(controller.count, 10);
         assert.equal(streamer.sizeForTesting, streamerVehicleSize + 10);
+
+        // All the vehicles should be created as persistent vehicles.
+        for (const streamableVehicle of controller.streamableVehicles_.values())
+            assert.isTrue(streamableVehicle.isPersistent());
 
         // The controller should clean up after itself.
         controller.dispose();
@@ -115,8 +122,9 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
         assert.isTrue(await server.featureManager.liveReload('streamer'));
 
         const newStreamer = server.featureManager.loadFeature('streamer');
-
         assert.notStrictEqual(newStreamer, oldStreamer);
+
+        assert.equal(controller.count, 10);
         assert.equal(newStreamer.sizeForTesting, 10);
     });
 });

@@ -15,7 +15,7 @@ class FreeVip {
         if (player.isVip())
             return;  // the player already has VIP rights
 
-        await seconds(5);
+        await wait(5000);
         if (!player.isConnected())
             return;  // the player disconnected while awaiting the delay
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import TextDraw from 'components/text_draw/text_draw.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 describe('TextDraw', it => {
   it('should validate the options dictionary', assert => {

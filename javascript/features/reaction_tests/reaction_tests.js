@@ -3,13 +3,13 @@
 // be found in the LICENSE file.
 
 import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 
 import * as achievements from 'features/collectables/achievements.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
@@ -95,6 +95,9 @@ export default class ReactionTests extends Feature {
     // Picks a reaction test strategy. In essense this picks a random reaction tests which meets the
     // requirements to be ran at the current time, which is player-based.
     createReactionTestStrategy() {
+        if (this.communication_().isCommunicationMuted())
+            return null;  // all communication is muted, skip this test
+
         let candidateStrategies = [];
         let onlinePlayerCount = 0;
 
@@ -111,7 +114,7 @@ export default class ReactionTests extends Feature {
 
         if (!candidateStrategies.length)
             return null;  // none of the strategies wishes to be ran at this time
-        
+
         const index = Math.floor(Math.random() * candidateStrategies.length);
         return new candidateStrategies[index](this.settings_);
     }
@@ -167,15 +170,14 @@ export default class ReactionTests extends Feature {
         if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
             // Do nothing, the player's just repeating themselves. Cocky!
         } else if (this.activeTestWinnerName_) {
-            const difference = Math.round((currentTime - this.activeTestWinnerTime_) / 10) / 100;
             player.sendMessage(
-                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_, difference);
+                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_,
+                (currentTime - this.activeTestWinnerTime_) / 1000);
 
         } else {
             const previousWins = player.account.reactionTests;
             const differenceOffset = this.activeTest_.answerOffsetTimeMs;
-            const difference =
-                Math.round((currentTime - (this.activeTestStart_ + differenceOffset)) / 10) / 100;
+            const difference = (currentTime - this.activeTestStart_ - differenceOffset) / 1000;
 
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
             if (previousWins <= 1) {

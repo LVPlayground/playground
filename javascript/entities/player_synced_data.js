@@ -4,12 +4,13 @@
 
 // Bridges between Pawn and JavaScript for a number of player-related settings. Changes to any of
 // these values will be reflected in the Pawn code, and vice versa.
-class PlayerSyncedData {
+export class PlayerSyncedData {
     constructor(playerId) {
         this.playerId_ = playerId;
 
         this.collectables_ = 0;
         this.isolated_ = false;
+        this.lagCompensationMode_ = 2;
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
         this.skipDamage_ = false;
@@ -36,6 +37,13 @@ class PlayerSyncedData {
 
         this.isolated_ = value;
         this.sync(PlayerSyncedData.ISOLATED, value);
+    }
+
+    // Gets or sets the lag compensation mode for this player.
+    get lagCompensationMode() { return this.lagCompensationMode_; }
+    set lagCompensationMode(value) {
+        this.lagCompensationMode_ = value;
+        this.sync(PlayerSyncedData.LAG_COMPENSATION_MODE, value);
     }
 
     // Gets or sets the name of the game that the player is currently engaged with. This will tell
@@ -92,10 +100,11 @@ class PlayerSyncedData {
         if (server.isTest())
             return;  // nothing to sync when running a test
 
-        await milliseconds(1);  // avoid call re-entrancy
+        await wait(1);  // avoid call re-entrancy
         switch (property) {
             // Integral properties.
             case PlayerSyncedData.COLLECTABLES:
+            case PlayerSyncedData.LAG_COMPENSATION_MODE:
             case PlayerSyncedData.VEHICLE_KEYS:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property, value,
                            0.0 /* invalid float */, '' /* empty string */);
@@ -141,13 +150,11 @@ class PlayerSyncedData {
 }
 
 // Setting keys for the individual properties.
-// Next ID: 6
+// Next ID: 7
 PlayerSyncedData.COLLECTABLES = 3;
 PlayerSyncedData.ISOLATED = 1;
+PlayerSyncedData.LAG_COMPENSATION_MODE = 6;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
 PlayerSyncedData.SKIP_DAMAGE = 5;
 PlayerSyncedData.VEHICLE_KEYS = 4;
-
-
-export default PlayerSyncedData;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PriorityQueue from 'base/priority_queue.js';
+import { PriorityQueue } from 'base/priority_queue.js';
 
 describe('PriorityQueue', it => {
     // Comparator that can be used when the order of values does not matter.

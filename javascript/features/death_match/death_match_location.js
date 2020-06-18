@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { VirtualWorld } from 'entities/virtual_world.js';
+
 // Private symbol ensuring that the DeathMatchLocation constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 

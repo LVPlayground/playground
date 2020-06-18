@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { VehicleEventListener } from 'features/streamer/vehicle_event_listener.js';
 import { VehicleRespawnManager } from 'features/streamer/vehicle_respawn_manager.js';
 
@@ -68,8 +68,13 @@ export class VehicleSelectionManager {
     // Gets the total number of vehicles that are currently on the respawn queue.
     get respawnQueueVehicles() { return this.respawnManager_.size; }
 
-    // Gets the StreamableVehicle instance for the given |vehicle|.
-    getStreamableVehicle(vehicle) { return this.streamableVehicles_.get(vehicle); }
+    // Gets the StreamableVehicle instance for the given |vehicle|. We require the |vehicle| to be
+    // a streamed-in vehicle for this function to return the instance, to ensure that |this| and
+    // the VehicleRespawnManager stay in sync.
+    getStreamableVehicle(vehicle) {
+        const streamableVehicle = this.streamableVehicles_.get(vehicle);
+        return this.vehicles_.has(streamableVehicle) ? streamableVehicle : null;
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -81,8 +86,13 @@ export class VehicleSelectionManager {
             if (this.disposed_)
                 break;  // |this| got disposed of whilst streaming was in progress
 
-            // Updates the vehicle selection based on the selected results.
-            this.updateSelection(new Set([ ...results ]));
+            // Updates the vehicle selection based on the selected results. This is done in a try/
+            // catch block because issues shouldn't be fatal for vehicles on the server.
+            try {
+                this.updateSelection(new Set([ ...results ]));
+            } catch (exception) {
+                console.log(exception);
+            }
 
             // Wait for the interval period again before repeating this dance.
             await wait(this.settings_().getValue('vehicles/streamer_interval_ms'));

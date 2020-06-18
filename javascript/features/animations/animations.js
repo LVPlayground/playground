@@ -1,0 +1,192 @@
+// Copyright 2020 Las Venturas Playground. All rights reserved.
+// Use of this source code is governed by the MIT license, a copy of which can
+// be found in the LICENSE file.
+
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { DanceAnimation } from 'features/animations/dance_animation.js';
+import { Feature } from 'components/feature_manager/feature.js';
+import { Menu } from 'components/menu/menu.js';
+import { PlayerAnimation } from 'features/animations/player_animation.js';
+
+// Configuration file that declaratively details how an animation should be executed.
+const kConfigurationFile = 'data/animations.json';
+
+// Contains a series of commands that enables players to animate themselves. The actual animations
+// are defined in a JSON file for convenience, all the other code and commands are generated.
+export default class Animations extends Feature {
+    abuse_ = null;
+    animations_ = null;
+    announce_ = null;
+    settings_ = null;
+
+    constructor() {
+        super();
+
+        // Use of the animation commands is subject to abuse mitigations.
+        this.abuse_ = this.defineDependency('abuse');
+
+        // Shares announcements about animations being forced on other players.
+        this.announce_ = this.defineDependency('announce');
+
+        // Certain announcement settings about animations are configurable.
+        this.settings_ = this.defineDependency('settings');
+
+        // Map from all animation command names to their PlayerAnimation instances.
+        this.animations_ = new Map();
+
+        // /animations
+        server.commandManager.buildCommand('animations')
+            .build(Animations.prototype.onAnimationsCommand.bind(this));
+
+        // /dance [1-4] [player]?
+        server.commandManager.buildCommand('dance')
+            .parameters([
+                { name: 'style', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
+                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true } ])
+            .build(Animations.prototype.onDanceCommand.bind(this));
+
+        if (!server.isTest())
+            this.loadAnimations();
+    }
+
+    // Loads the animations from the |kConfigurationFile|. Not executed for tests unless explicitly
+    // requested, when the actual animations are required.
+    loadAnimations() {
+        const configuration = JSON.parse(readFile(kConfigurationFile));
+        for (const animationConfiguration of configuration) {
+            const animation = new PlayerAnimation(animationConfiguration);
+
+            // (1) Store the animation command name in the local set.
+            this.animations_.set(animation.command, animation);
+
+            // (2) Create a command for the given animation.
+            server.commandManager.buildCommand(animation.command)
+                .sub(CommandBuilder.PLAYER_PARAMETER)
+                    .restrict(Player.LEVEL_ADMINISTRATOR)
+                    .build(Animations.prototype.executeAnimation.bind(this, animation))
+                .build(Animations.prototype.executeAnimation.bind(this, animation));
+        }
+    }
+
+    // Called when a player wants to execute the given |animation|. Will do a variety of checks,
+    // including their state and whether they're recently been in a fight.
+    executeAnimation(animation, currentPlayer, targetPlayer) {
+        const player = targetPlayer ?? currentPlayer;
+        const pronoun = player === currentPlayer ? 'You' : 'They';
+
+        // (1a) Animations can only be started when the player is on-foot.
+        if (player.state !== Player.kStateOnFoot) {
+            player.sendMessage(Message.ANIMATIONS_NOT_ON_FOOT, pronoun);
+            return;
+        }
+
+        // (1b) Animations can only been started when the player hasn't recently been fighting.
+        if (!this.abuse_().canAnimate(player).allowed) {
+            player.sendMessage(Message.ANIMATIONS_NOT_IDLE, pronoun);
+            return;
+        }
+
+        // (2) Execute the animation for the |player|.
+        animation.execute(player);
+
+        // (3) Unless |currentPlayer| and the |targetPlayer| are the same, be transparent.
+        if (!targetPlayer || currentPlayer === targetPlayer)
+            return;
+        
+        currentPlayer.sendMessage(
+            Message.ANIMATIONS_EXECUTED, animation.command, targetPlayer.name, targetPlayer.id);
+
+        targetPlayer.sendMessage(
+            Message.ANIMATIONS_EXECUTE_BY_ADMIN, currentPlayer.name, currentPlayer.id,
+            animation.command);
+        
+        // (4) When required, announce that an animation was forced on a player.
+        if (!this.settings_().getValue('abuse/announce_admin_animation'))
+            return;
+        
+        this.announce_().announceToAdministrators(
+            Message.ANIMATIONS_ADMIN_NOTICE, currentPlayer.name, currentPlayer.id,
+            animation.command, targetPlayer.name, targetPlayer.id);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| types /animations, which will show them a dialog with all the
+    // available animations on Las Venturas Playground.
+    async onAnimationsCommand(player) {
+        const dialog = new Menu('Animations', [
+            'Command',
+            'Description',
+        ]);
+
+        // (1) Populate an array with behaviour for the /dance command, which is special cased.
+        const commands = [
+            [
+                'dance [1-4]',
+                'Makes your character dance!',
+                Animations.prototype.onDanceCommand.bind(this, player, /* style= */ 1)
+            ]
+        ];
+
+        // (2) Add all the predefined animations to the dialog.
+        for (const [ command, animation ] of this.animations_) {
+            commands.push([
+                command,
+                animation.description,
+                Animations.prototype.executeAnimation.bind(this, animation, player)
+            ]);
+        }
+    
+        // Sort the |commands| alphabetically. Someone will mess up our JSON file.
+        commands.sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
+
+        for (const [ command, description, listener ] of commands)
+            dialog.addItem('/' + command, description, listener);
+        
+        await dialog.displayForPlayer(player);
+    }
+
+    // Called when a player executes the "/dance" command. The |style| is optional, and a usage
+    // message should be shown when omitted. The |targetPlayer| should only be available to admins.
+    onDanceCommand(player, style = null, targetPlayer = null) {
+        const kDanceSpecialActions = new Map([
+            [ 1, Player.kSpecialActionDance1 ],
+            [ 2, Player.kSpecialActionDance2 ],
+            [ 3, Player.kSpecialActionDance3 ],
+            [ 4, Player.kSpecialActionDance4 ],
+        ]);
+
+        // Show a usage message if the passed |style| is not valid.
+        if (!kDanceSpecialActions.has(style)) {
+            if (player.isAdministrator())
+                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE_ADMIN);
+            else
+                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE);
+            return;
+        }
+
+        // If the |player| is not an administrator, force-remove any passed players.
+        if (!player.isAdministrator())
+            targetPlayer = null;
+
+        this.executeAnimation(
+            new DanceAnimation(kDanceSpecialActions.get(style)), player, targetPlayer);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {
+        server.commandManager.removeCommand('dance');
+        server.commandManager.removeCommand('animations');
+
+        for (const command of this.animations_.keys())
+            server.commandManager.removeCommand(command);
+        
+        this.animations_.clear();
+        this.animations_ = null;
+
+        this.abuse_ = null;
+        this.announce_ = null;
+        this.settings_ = null;
+    }
+}

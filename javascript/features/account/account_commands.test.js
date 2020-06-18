@@ -2,10 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { AccountCommands } from 'features/account/account_commands.js';
-import { MockAccountDatabase } from 'features/account/test/mock_account_database.js';
-
-describe('AccountCommands', (it, beforeEach, afterEach) => {
+describe('AccountCommands', (it, beforeEach) => {
     let commands = null;
     let database = null;
 
@@ -15,9 +12,9 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
     let settings = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        const account = server.featureManager.loadFeature('account');
         
-        database = new MockAccountDatabase();
+        database = account.database_;
         database.setPasswordSalt('s4lt$');
 
         gunther = server.playerManager.getById(0 /* Gunther */);
@@ -26,13 +23,11 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
         settings = server.featureManager.loadFeature('settings');
 
         // Create the commands so that the server is aware of them.
-        commands = new AccountCommands(() => announce, () => playground, () => settings, database);
+        commands = account.commands_;
 
         // Give |russell| administrator rights.
         russell.level = Player.LEVEL_ADMINISTRATOR;
     });
-
-    afterEach(() => commands.dispose());
 
     it('should not work if the player is not registered', async (assert) => {
         assert.isFalse(russell.account.isRegistered());
@@ -512,7 +507,7 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
             ],
             [
                 'Donations',
-                '1,235 euro',
+                '1,234 euro',
             ],
             [
                 '----------',
@@ -667,6 +662,51 @@ describe('AccountCommands', (it, beforeEach, afterEach) => {
                 '0:03:54',
                 '37.48.87.211',
             ],
+        ]);
+    });
+
+    it('should be able to find player identifies when they are undercover', async (assert) => {
+        await russell.identify();
+
+        playground.access.addException('whois', russell);
+
+        gunther.setIpForTesting('37.48.87.211');
+        gunther.setSerialForTesting(1337);  // no results
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whois Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Who is Gunther?!');
+        assert.includes(russell.lastDialog, 'their first playing session');
+
+        gunther.setSerialForTesting(9001);  // results
+        
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whois Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Who is Gunther?!');
+
+        const result = russell.getLastDialogAsTable();
+        assert.equal(result.rows.length, 3);
+        assert.deepEqual(result.rows, [
+            [
+                '[BB]Joe {90A4AE}(27x)',
+                '{FFEE58}37.48.87.211',
+                '{FFEE58}match',
+                '14 days ago',
+            ],
+            [
+                'TotallyNotJoe',
+                '37.48.*.*',
+                '{BEC7CC}no match',
+                '6 months ago',
+            ],
+            [
+                '{BEC7CC}MaybeJoe {90A4AE}(12x)',
+                '{BEC7CC}no match',
+                '{FFEE58}match {FF7043}(common)',
+                '4 days ago',
+            ]
         ]);
     });
 

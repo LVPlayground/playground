@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
 // Responsible for providing players with the ability to interact with the financial regulator and

@@ -18,20 +18,18 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
     let commands = null;
 
     beforeEach(() => {
-        const database = new MockAccountDatabase();
+        const account = server.featureManager.loadFeature('account');
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
 
         commandManager = nuwani.commandManager;
-        commands = new AccountNuwaniCommands(commandManager, database);
-        database.setPasswordSalt('s4lt');
+        commands = account.nuwaniCommands_;
+
+        account.database_.setPasswordSalt('s4lt');
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     const kFieldAccessibleByAdmins = 'skin_id';
     const kFieldNotAccessibleByAdmins = 'online_time';
@@ -528,6 +526,48 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
 
         assert.equal(undercoverResult.length, 1);
         assert.doesNotInclude(undercoverResult[0], 'is currently playing on the server');
+    });
 
+    it('should be able to find player identifies when they are undercover', async (assert) => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+
+        gunther.setIpForTesting('37.48.87.211');
+        gunther.setSerialForTesting(1337);  // no results
+
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const usageResults = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whois',
+        });
+
+        assert.equal(usageResults.length, 1);
+        assert.includes(usageResults[0], '!whois');
+
+        const noResults = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whois Gunther',
+        });
+
+        assert.equal(noResults.length, 1);
+        assert.includes(noResults[0], 'No results were found');
+
+        gunther.setSerialForTesting(9001);  // results
+        
+        const results = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whois Gunther',
+        });
+
+        assert.equal(results.length, 1);
+        assert.includes(results[0], '[BB]Joe');
+
+        const explicitResults = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whois 37.48.87.211 9001',
+        });
+
+        assert.equal(explicitResults.length, 1);
+        assert.includes(explicitResults[0], 'TotallyNotJoe');
     });
 });

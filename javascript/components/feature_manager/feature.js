@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // The Feature class must be the base class of all features.
-class Feature {
+export class Feature {
     constructor() {
         this.foundationalFeature_ = false;
         this.liveReloadEnabled_ = true;
@@ -37,5 +37,3 @@ class Feature {
     // will be disposed and removed from the gamemode as well.
     dispose() {}
 }
-
-export default Feature;

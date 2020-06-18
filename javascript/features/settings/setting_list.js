@@ -2,23 +2,20 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
-// Boolean indicating whether we're currently in the month December. Months are
-// zero-based in JavaScript for some reason.
-const isDecember = (new Date()).getMonth() == 11;
-
-export default [
+export const kSettingList = [
     /** Abuse related settings */
+    new Setting('abuse', 'announce_admin_animation', Setting.TYPE_BOOLEAN, true, 'Announce when admins force animations on other players.'),
     new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
     new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
     new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
-    
     new Setting('abuse', 'detector_cleo_dmage', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Dmage detector be enabled?'),
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
     new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
     new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
+    new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
     new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
     new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
@@ -43,7 +40,8 @@ export default [
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */
-    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
+    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, false, 'Should The Strip be in a Christmas-y mood?'),
+    new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
     new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
@@ -93,12 +91,18 @@ export default [
     new Setting('playground', 'collectable_map_icons_distance', Setting.TYPE_NUMBER, 500, 'Distance from which collectable map icons will be visible.'),
     new Setting('playground', 'collectable_reset_require_complete', Setting.TYPE_BOOLEAN, true, 'Only allow resetting collectables when you collected all?'),
     new Setting('playground', 'gunther_help_interval_sec', Setting.TYPE_NUMBER, 300, 'At which interval should Gunther issue helpful /show commands?'),
+    new Setting('playground', 'leaderboard_default_view', Setting.TYPE_STRING, 'none', 'Default view to show when someone uses the /top command.'),
+    new Setting('playground', 'leaderboard_limit_days', Setting.TYPE_NUMBER, 4, 'Number of days of history the leaderboards should consider.'),
+    new Setting('playground', 'leaderboard_limit_entries', Setting.TYPE_NUMBER, 25, 'Number of entries that should be shown on the leaderboard.'),
+    new Setting('playground', 'leaderboard_page_count', Setting.TYPE_NUMBER, 25, 'Number of entries to show per page on the leaderboard.'),
     new Setting('playground', 'notification_display_time_sec', Setting.TYPE_NUMBER, 5, 'Number of seconds for which a notification should be displayed.'),
     new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
     new Setting('playground', 'reaction_test_expire_sec', Setting.TYPE_NUMBER, 300, 'After how many seconds does a reaction test expire?'),
     new Setting('playground', 'reaction_test_jitter_sec', Setting.TYPE_NUMBER, 150, 'Jitter to apply to the delay to reduce predictability.'),
     new Setting('playground', 'reaction_test_prize', Setting.TYPE_NUMBER, 5000, 'How much money will a player get for winning a reaction test?'),
+    new Setting('playground', 'reaction_test_random_length_max', Setting.TYPE_NUMBER, 11, 'Maximum length of random-string reaction tests.'),
+    new Setting('playground', 'reaction_test_random_length_min', Setting.TYPE_NUMBER, 7, 'Minimum length of random-string reaction tests.'),
     new Setting('playground', 'reaction_test_remember_delay_sec', Setting.TYPE_NUMBER, 150, 'How much delay should the remember tests wait for?'),
     new Setting('playground', 'reaction_test_remember_jitter_sec', Setting.TYPE_NUMBER, 90, 'How much jitter should be applied to the remember tests?'),
 

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import EconomyCalculator from 'features/economy/economy_calculator.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import ResidentialValueMap from 'features/economy/residential_value_map.js';
 import VehicleValueMap from 'features/economy/vehicle_value_map.js';
 

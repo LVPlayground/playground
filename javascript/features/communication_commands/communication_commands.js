@@ -3,9 +3,9 @@
 // be found in the LICENSE file.
 
 import { CallCommands } from 'features/communication_commands/call_commands.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { DirectCommunicationCommands } from 'features/communication_commands/direct_communication_commands.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 import { IgnoreCommands } from 'features/communication_commands/ignore_commands.js';
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 import { NuwaniCommands } from 'features/communication_commands/nuwani_commands.js';

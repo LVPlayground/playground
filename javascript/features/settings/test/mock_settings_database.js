@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // Mocked implementation of the settings database.
-class MockSettingsDatabase {
+export class MockSettingsDatabase {
     constructor() {
         this.loadCalls_ = 0;
         this.writeCalls_ = 0;
@@ -24,5 +24,3 @@ class MockSettingsDatabase {
 
     async deleteSetting(setting) { ++this.deleteCalls_; }
 }
-
-export default MockSettingsDatabase;

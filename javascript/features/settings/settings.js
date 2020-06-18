@@ -2,17 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
+import { MockSettingsDatabase } from 'features/settings/test/mock_settings_database.js';
 import { PawnConfig } from 'features/settings/pawn_config.js';
-import Setting from 'entities/setting.js';
-import SettingList from 'features/settings/setting_list.js';
-import SettingsDatabase from 'features/settings/settings_database.js';
+import { Setting } from 'entities/setting.js';
+import { SettingsDatabase } from 'features/settings/settings_database.js';
 
-import MockSettingsDatabase from 'features/settings/test/mock_settings_database.js';
+import { kSettingList } from 'features/settings/setting_list.js';
 
 // Provides the ability to get and set settings that should persist between server restarts. Values
 // that have been changed from their defaults will be stored in the database.
-class Settings extends Feature {
+export default class Settings extends Feature {
     constructor() {
         super();
 
@@ -32,8 +32,8 @@ class Settings extends Feature {
         // The PawnConfig instance, which magically synchronizes any setting with Pawn.
         this.pawnConfig_ = new PawnConfig();
 
-        // Import the settings from the |SettingList| in to the local state.
-        for (const setting of SettingList)
+        // Import the settings from the |kSettingList| in to the local state.
+        for (const setting of kSettingList)
             this.settings_.set(setting.identifier, setting);
 
         // Load the existing persistent values from the database, and apply them to the local state.
@@ -176,5 +176,3 @@ class Settings extends Feature {
         this.settings_ = null;
     }
 }
-
-export default Settings;

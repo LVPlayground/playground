@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // The text label manager is in control of all text labels created on Las Venturas Playground.
-export default class TextLabelManager {
+export class TextLabelManager {
     constructor(textLabelConstructor = TextLabel) {
         this.textLabelConstructor_ = textLabelConstructor;
         this.textLabels_ = new Set();

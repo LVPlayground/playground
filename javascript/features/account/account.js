@@ -5,7 +5,7 @@
 import { AccountCommands } from 'features/account/account_commands.js';
 import { AccountDatabase } from 'features/account/account_database.js';
 import { AccountNuwaniCommands } from 'features/account/account_nuwani_commands.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 import { MockAccountDatabase } from 'features/account/test/mock_account_database.js';
 

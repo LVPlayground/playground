@@ -3,14 +3,14 @@
 // be found in the LICENSE file.
 
 import { AccountDatabase } from 'features/account/account_database.js';
-import CommandBuilder from 'components/command_manager/command_builder.js';
-import Menu from 'components/menu/menu.js';
-import Question from 'components/dialogs/question.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Menu } from 'components/menu/menu.js';
+import { Question } from 'components/dialogs/question.js';
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
-import { formatDate } from 'base/time.js';
-import { format } from 'base/string_formatter.js';
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
+import { formatDate, fromNow } from 'base/time.js';
+import { format } from 'base/format.js';
 import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.
@@ -31,13 +31,14 @@ export class AccountCommands {
 
     constructor(announce, playground, settings, database) {
         this.announce_ = announce;
-        this.playground_ = playground;
+        this.database_ = database;
         this.settings_ = settings;
 
-        this.database_ = database;
+        this.playground_ = playground;
+        this.playground_.addReloadObserver(
+            this, AccountCommands.prototype.registerTrackedCommands);
 
-        // Register the command so that access is controlled by `/lvp access`.
-        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
+        this.registerTrackedCommands();
 
         // /account
         // /account [player]
@@ -51,7 +52,21 @@ export class AccountCommands {
         // /register
         server.commandManager.buildCommand('register')
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
+        
+        // /whois [player]
+        server.commandManager.buildCommand('whois')
+            .restrict(player => this.playground_().canAccessCommand(player, 'whois'))
+            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .build(AccountCommands.prototype.onWhoisCommand.bind(this));
     }
+
+    // Registers the commands with configurable access with the Playground feature.
+    registerTrackedCommands() {
+        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
+        this.playground_().registerCommand('whois', Player.LEVEL_MANAGEMENT);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // /account
     // /account [player]
@@ -756,6 +771,62 @@ export class AccountCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Enables administrators to quickly look up if the |targetPlayer| might be another player who's
+    // recently been on the server. Results will be displayed with a level of certainty.
+    async onWhoisCommand(player, targetPlayer) {
+        const results = await this.database_.whois(targetPlayer.ip, targetPlayer.serial);
+        if (!results.length) {
+            return await alert(player, {
+                title: `Who is ${targetPlayer.name}?!`,
+                message: `No results were found for ${targetPlayer.name}. This might be their ` +
+                         `first playing session, or they're really good at hiding.`
+            });
+        }
+
+        const dialog = new Menu(`Who is ${targetPlayer.name}?!`, [
+            'Nickname',
+            'IP match',
+            'Serial match',
+            'Last seen',
+        ]);
+
+        for (const result of results) {
+            let nickname = '';
+            if (!result.registered)
+                nickname += `{BEC7CC}${result.nickname}`;
+            else
+                nickname += result.nickname;
+
+            if (result.hits > 1)
+                nickname += ` {90A4AE}(${format('%d', result.hits)}x)`;
+            
+            let ip = '';
+            if (result.ipDistance < 3)
+                ip += `{FFEE58}`;
+            else if (result.ipDistance === 4)
+                ip += `{BEC7CC}`;
+            
+            ip += result.ipMatch;
+
+            let serial = '';
+            if (result.serial === targetPlayer.serial)
+                serial += `{FFEE58}match`;
+            else
+                serial += `{BEC7CC}no match`;
+            
+            if (result.serialCommon)
+                serial += ` {FF7043}(common)`;
+            
+            const lastSeen = fromNow({ date: result.lastSeen });
+
+            dialog.addItem(nickname, ip, serial, lastSeen);
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Returns a formatted version of the duration, which is assumed to be no longer than ~hours.
     formatDuration(duration) {
         const hours = Math.floor(duration / 3600);
@@ -795,12 +866,16 @@ export class AccountCommands {
 
 
     dispose() {
+        this.playground_().unregisterCommand('whois');
         this.playground_().unregisterCommand('account');
 
         this.announce_ = null;
         this.database_ = null;
         this.playground_ = null;
+        this.playerIdentifier_ = null;
 
+        server.commandManager.removeCommand('whois');
+        server.commandManager.removeCommand('register');
         server.commandManager.removeCommand('account');
     }
 }

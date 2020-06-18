@@ -34,6 +34,9 @@ export class VehicleRegistry {
     // It will be removed from the streamer as well, and, when it exists, will immediately be
     // removed from the game. Any player within it will be ejected.
     deleteVehicle(vehicle) {
+        if (!this.vehicles_.has(vehicle))
+            return;  // the |vehicle| already was destroyed, probably ephemeral
+
         this.streamer_.delete(vehicle);
         this.vehicles_.delete(vehicle);
     }
@@ -48,18 +51,10 @@ export class VehicleRegistry {
         const vehicles = new Set();
         const models = new Set();
 
-        let closestStreamableVehicleDistance = Number.MAX_SAFE_INTEGER;
-        let closestStreamableVehicle = null;
-
         for (const streamableVehicle of this.vehicles_) {
             const distance = streamableVehicle.position.distanceTo2D(position);
             if (distance > maxDistance)
                 continue; // the |streamableVehicle| is outside of streaming range
-            
-            if (distance < closestStreamableVehicleDistance) {
-                closestStreamableVehicleDistance = distance;
-                closestStreamableVehicle = streamableVehicle;
-            }
             
             vehicles.add(streamableVehicle);
             models.add(streamableVehicle.modelId);
@@ -68,8 +63,6 @@ export class VehicleRegistry {
         return {
             vehicles: vehicles.size,
             models: models.size,
-
-            closestStreamableVehicle,
         };
     }
 

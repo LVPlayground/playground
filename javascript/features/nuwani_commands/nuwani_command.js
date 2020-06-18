@@ -2,10 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Menu from 'components/menu/menu.js';
+import { Menu } from 'components/menu/menu.js';
 
-import alert from 'components/dialogs/alert.js';
-import confirm from 'components/dialogs/confirm.js';
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
 
 // The `/nuwani` command enables in-game staff to understand, control and manage the Nuwani IRC
 // system. Access to this command is controlled per `/lvp access`.

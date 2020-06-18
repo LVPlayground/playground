@@ -63,7 +63,7 @@ function substituteValue(prefix, value, index) {
 //
 // Executing a query requires the SQL to be passed, optionally with any number of parameters that
 // should safely be substituted within the query.
-class Database {
+export class Database {
   constructor(driver = MySQL) {
     let configuration = JSON.parse(readFile('database.json'));
 
@@ -115,5 +115,3 @@ class Database {
     }));
   }
 };
-
-export default Database;

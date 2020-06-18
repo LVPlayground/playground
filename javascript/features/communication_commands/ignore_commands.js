@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import CommandBuilder from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Encapsulates a series of commands to do with the ability to ignore other players.
 export class IgnoreCommands {

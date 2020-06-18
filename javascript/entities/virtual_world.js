@@ -21,7 +21,7 @@ let acquiredVirtualWorlds = {};
 
 // A virtual world is a separated dimension in the San Andreas world, featuring its own entities,
 // environment (weather, time) and other properties.
-class VirtualWorld {
+export class VirtualWorld {
   // Returns the private virtual world Id for this |player|.
   static forPlayer(player) {
     return player.id + PRIVATE_VIRTUAL_WORLD_BASE;
@@ -75,6 +75,3 @@ class VirtualWorld {
     delete acquiredVirtualWorlds[worldId];
   }
 };
-
-// Expose the VirtualWorld object as a global.
-global.VirtualWorld = VirtualWorld;

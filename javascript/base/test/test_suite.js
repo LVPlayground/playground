@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Assert from 'base/test/assert.js';
-import AssertionFailedError from 'base/test/assertion_failed_error.js';
+import { Assert } from 'base/test/assert.js';
+import { AssertionFailedError } from 'base/test/assertion_failed_error.js';
 import MockServer from 'mock_server.js';
-import UnexpectedExceptionError from 'base/test/unexpected_exception_error.js';
+import { UnexpectedExceptionError } from 'base/test/unexpected_exception_error.js';
 
 // A test suite represents a series of one or more individual tests. The test suite not only
 // registers individual tests and suite capabilities, but also provides the required functionality
 // to asynchronously execute the test suites.
-class TestSuite {
+export class TestSuite {
   constructor(description, fn) {
     this.description_ = description;
     this.tests_ = [];
@@ -152,5 +152,3 @@ class TestSuite {
   }
 
 };
-
-export default TestSuite;

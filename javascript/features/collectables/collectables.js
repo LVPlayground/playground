@@ -5,7 +5,7 @@
 import { CollectableCommands } from 'features/collectables/collectable_commands.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { CollectableManager } from 'features/collectables/collectable_manager.js';
-import Feature from 'components/feature_manager/feature.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 import * as achievements from 'features/collectables/achievements.js';
 import * as benefits from 'features/collectables/collectable_benefits.js';
@@ -35,12 +35,15 @@ export default class Collectables extends Feature {
         // Allows us to take money from the player for collectable location hints.
         const finance = this.defineDependency('finance');
 
+        // Achievements should be announced to people watching through Nuwani as well.
+        const nuwani = this.defineDependency('nuwani');
+
         // Certain behaviour of the Collectables feature is configurable as settings.
         const settings = this.defineDependency('settings');
 
         // The manager is responsible for keeping track which collectables have been collected by
         // which players, and enables creation of new "rounds" of collectables.
-        this.manager_ = new CollectableManager(this, settings);
+        this.manager_ = new CollectableManager(this, nuwani, settings);
 
         // The commands are the player's interfaces towards being able to control their collectables
         // and achievements, as well as seeing other player's statistics.

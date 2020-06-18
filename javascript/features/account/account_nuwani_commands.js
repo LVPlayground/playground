@@ -4,8 +4,10 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { fromNow } from 'base/time.js';
+import { isIpAddress } from 'features/nuwani_commands/ip_utilities.js';
+import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
 
 // Time durations, in seconds, for the named periods of time.
 const kMinuteSeconds = 60;
@@ -101,6 +103,13 @@ export class AccountNuwaniCommands {
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(AccountNuwaniCommands.prototype.onSetValueCommand.bind(this));
+        
+        // !whois [[player] | [ip] [serial]]
+        this.commandManager_.buildCommand('whois')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'ip', type: CommandBuilder.WORD_PARAMETER, optional: true },
+                          { name: 'serial', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
+            .build(AccountNuwaniCommands.prototype.onWhoisCommand.bind(this));
     }
 
     // !addalias [nickname] [alias]
@@ -472,8 +481,8 @@ export class AccountNuwaniCommands {
 
             let ratio = '';
             if (summary.kill_count > 0 && summary.death_count > 0) {
-                ratio = ', giving them a ratio of %d';
-                params.push(Math.round((summary.kill_count / summary.death_count) * 100) / 100);
+                ratio = ', giving them a ratio of %.2f';
+                params.push(summary.kill_count / summary.death_count);
             }
 
             deathmatchFormat = killFormat + join + deathFormat + ratio + '. ';
@@ -520,6 +529,79 @@ export class AccountNuwaniCommands {
         context.respond(format(messageFormat, ...params));
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Enables administrators to quickly look up which players are known for the given |ip| and
+    // |serial|, based on results of recent playing sessions.
+    async onWhoisCommand(context, param0, param1) {
+        let ip = null;
+        let serial = null;
+
+        if (isIpAddress(param0) && isSafeInteger(param1)) {
+            ip = param0;
+            serial = toSafeInteger(param1);
+        } else if (typeof param0 === 'string') {
+            const player = server.playerManager.find({ nameOrId: param0 });
+            if (player) {
+                ip = player.ip;
+                serial = player.serial;
+            }
+        }
+
+        if (!ip || !serial) {
+            context.respondWithUsage('!whois [ [player] | [ [ip] [serial] ]]');
+            return;
+        }
+
+        const results = await this.database_.whois(ip, serial);
+        if (!results.length) {
+            context.respond('4Error: No results were found in the database.');
+            return;
+        }
+
+        const displayResults = results.splice(0, 5);
+
+        const matches = [];
+        for (const result of displayResults) {
+            let text = '';
+
+            if (result.registered)
+                text += `${result.nickname} 14(`;
+            else
+                text += `14${result.nickname} (`;
+            
+            const metadata = [];
+
+            if (result.hits > 1)
+                metadata.push(format('%dx', result.hits));
+
+            switch (result.ipDistance) {
+                case 1:
+                case 2:
+                    metadata.push(`05${result.ipMatch}14`);
+                    break;
+                case 3:
+                    metadata.push(result.ipMatch);
+                    break;
+            }
+
+            if (result.serial === serial) {
+                const warning = result.serialCommon ? ' 4(common!)' : '';
+                metadata.push(`05${result.serial}${warning}14`)
+            }
+
+            metadata.push(fromNow({ date: result.lastSeen }));
+            matches.push(text + metadata.join(', ') + ')');
+        }
+
+        const suffix = results.length ? ' 15[' + results.length + ' omitted...]'
+                                      : '';
+
+        context.respond('3Results: ' + matches.join(', ') + suffix);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Explodes the given |time| in seconds to a structure containing hours, minutes and seconds.
     explodeOnlineTime(time) {
         const hours = Math.floor(time / kHourSeconds);
@@ -530,6 +612,7 @@ export class AccountNuwaniCommands {
     }
 
     dispose() {
+        this.commandManager_.removeCommand('whois');
         this.commandManager_.removeCommand('setvalue');
         this.commandManager_.removeCommand('getvalue');
         this.commandManager_.removeCommand('supported');

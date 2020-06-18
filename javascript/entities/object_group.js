@@ -2,14 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Private symbol ensuring that the ColorPicker constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 
 // An object group is an immutable group of objects, loaded from a JSON file, that is tied to a
 // given interior and virtual world. The group can easily be disposed of again.
-class ObjectGroup {
+export class ObjectGroup {
     // Creates a new object group based on |filename| for the |virtualWorld| in |interiorId|. Will
     // return an ObjectGroup instance when successful, or throw an exception in case of failure.
     static create(filename, virtualWorld, interiorId) {
@@ -41,5 +41,3 @@ class ObjectGroup {
         this.entities_ = null;
     }
 }
-
-export default ObjectGroup;

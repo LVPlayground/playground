@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import Channel from 'features/radio/channel.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
-import TextDraw from 'components/text_draw/text_draw.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
+import { TextDraw } from 'components/text_draw/text_draw.js';
 
 // Manager for the radio feature that's responsible for determining whether and when the radio
 // should start playing for players.
@@ -71,7 +71,7 @@ class RadioManager {
     // automatically disappear after another three seconds.
     async displayRadioChannelName(player, channel, initialWait) {
         if (initialWait)
-            await seconds(3);
+            await wait(3000);
 
         {
             if (!player.isConnected() || !this.isListening(player))
@@ -94,7 +94,7 @@ class RadioManager {
             text.displayForPlayer(player);
         }
 
-        await seconds(3);
+        await wait(3000);
         {
             const text = this.displayTextDraw_.get(player);
             if (!player.isConnected() || !text)
@@ -108,7 +108,7 @@ class RadioManager {
             text.displayForPlayer(player);
         }
 
-        await seconds(3);
+        await wait(3000);
         {
             const text = this.displayTextDraw_.get(player);
             if (!player.isConnected() || !text)

@@ -6,7 +6,7 @@ import { GameActivity } from 'features/games/game_activity.js';
 import { GameDescription } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { Game } from 'features/games/game.js';
-import Setting from 'entities/setting.js';
+import { Setting } from 'entities/setting.js';
 
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;

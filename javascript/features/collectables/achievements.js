@@ -69,13 +69,16 @@ export const kAchievements = new Map([
 // Implements tracking and collecting of achievements for each of the players. They cannot be drawn
 // on the map, but fit in with other collectables reasonably well otherwise.
 export class Achievements extends CollectableBase {
+    collectables_ = null;
     manager_ = null;
+    nuwani_ = null;
 
-    constructor(collectables, manager) {
+    constructor(collectables, manager, nuwani) {
         super({ name: 'Achievements' });
 
         this.collectables_ = collectables;
         this.manager_ = manager;
+        this.nuwani_ = nuwani;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -180,6 +183,8 @@ export class Achievements extends CollectableBase {
             
             recipient.sendMessage(formattedMessage);
         }
+
+        this.nuwani_().echo('achievement', player.name, player.id, name);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 // @ts-check
 
-import ScopedEntities from 'entities/scoped_entities.js';
+import { ScopedEntities } from 'entities/scoped_entities.js';
 import { ZoneDecorationRegistry } from 'features/gang_zones/zone_decoration_registry.js';
 
 // Responsible for managing decorations that gangs have added to their zones. They are able to add

@@ -110,12 +110,15 @@ class Statistics {
         format(totalOnlineTime, sizeof(totalOnlineTime), "%d hours and %d minutes",
             gameplayhours[playerId], gameplayminutes[playerId]);
 
+        new const killCount = GetPlayerKillCountJS(playerId);
+        new const deathCount = GetPlayerDeathCountJS(playerId);
+
         // Kill/death ratio.
         new Float: kdRatio;
-        if (MyDeaths[playerId] != 0)
-            kdRatio = floatdiv(MyKills[playerId], MyDeaths[playerId]);
+        if (deathCount != 0)
+            kdRatio = floatdiv(killCount, deathCount);
         else
-            kdRatio = MyKills[playerId];
+            kdRatio = killCount;
 
         new fightclubKills = 0;
         new fightclubDeaths = 0;
@@ -141,8 +144,8 @@ class Statistics {
         // Time to format our dialog message.
         format(dialogMessage, sizeof(dialogMessage),
             "{B4CCE8}Level: {FF8E02}%s\r\n{B4CCE8}Session time: {FF8E02}%s\r\n{B4CCE8}Online time: {FF8E02}%s\r\n{B4CCE8}Bank balance: {FF8E02}%s\r\n{B4CCE8}Kills: {FF8E02}%d\r\n{B4CCE8}Deaths: {FF8E02}%d\r\n{B4CCE8}Ratio: {FF8E02}%.2f\r\n",
-            playerLevel, sessionTime, totalOnlineTime, bankBalance, MyKills[playerId],
-            MyDeaths[playerId], kdRatio);
+            playerLevel, sessionTime, totalOnlineTime, bankBalance, killCount,
+            deathCount, kdRatio);
 
         format(dialogMessage, sizeof(dialogMessage),
             "%s{B4CCE8}Drive-by kills: {FF8E02}%d\r\n{B4CCE8}Heli kills: {FF8E02}%d\r\n{B4CCE8}Fightclub kills: {FF8E02}%d\r\n{B4CCE8}Fightclub deaths: {FF8E02}%d\r\n{B4CCE8}Fightclub K/D ratio: {FF8E02}%.2f\r\n",

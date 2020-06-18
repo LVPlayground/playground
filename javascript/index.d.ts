@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Assert from 'base/test/assert.js';
+import { Assert } from 'base/test/assert.js';
 import { Player } from 'entities/player.js';
 import { PlayerAccountSupplement } from 'features/account_provider/player_account_supplement.js';
 import { PlayerSettingsSupplement } from 'features/player_settings/player_settings_supplement.js';

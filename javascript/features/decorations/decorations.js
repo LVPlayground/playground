@@ -3,8 +3,7 @@
 // be found in the LICENSE file.
 
 import { DecorationSet } from 'features/decorations/decoration_set.js';
-import Feature from 'components/feature_manager/feature.js';
-import ScopedEntities from 'entities/scoped_entities.js';
+import { Feature } from 'components/feature_manager/feature.js';
 
 // Directory in which all the decorations have been written.
 const kDecorationDirectory = 'data/decorations/';
@@ -12,6 +11,7 @@ const kDecorationDirectory = 'data/decorations/';
 // The list of decorations available on Las Venturas Playground. Don't forget to add the setting.
 export const kDecorations = new Set([
     { filename: 'christmas_decorations.json', setting: 'decorations/christmas_decorations' },
+    { filename: 'fantasy_island.json', setting: 'decorations/fantasy_island' },
     { filename: 'gunther.json', setting: 'decorations/gunther' },
     { filename: 'los_santos_winter.json', setting: 'decorations/los_santos_winter' },
     { filename: 'pilots.json', setting: 'decorations/pilots' },

@@ -32,7 +32,7 @@ OnPlayerLVPDisconnect(playerId, reason) {
             g_LastSlappedBy[i] = INVALID_PLAYER_ID;
     }  
 
-    if (!BanManager->wasAutomaticallyBanned(playerId) && !Player(playerId)->isNonPlayerCharacter()) {
+    if (!Player(playerId)->isNonPlayerCharacter()) {
         Announcements->announcePlayerDisconnected(
             playerId, BanManager->wasUndercoverKicked(playerId) ? 1 /* left */
                                                                 : reason);

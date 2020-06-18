@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { ColorPickerManager } from 'components/dialogs/color_picker_manager.js';
-import ScopedCallbacks from 'base/scoped_callbacks.js';
+import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The dialog manager manages allocation of the dialog ids to individual dialogs that should be
 // shown to users. The SA-MP server imposes a maximum of 32767 dialogs to exist at any given time,

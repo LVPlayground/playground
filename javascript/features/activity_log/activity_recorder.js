@@ -51,7 +51,14 @@ const FINALIZE_PLAYER_SESSION_QUERY = `
     UPDATE
         sessions
     SET
-        sessions.session_duration = TIMESTAMPDIFF(SECOND, session_date, NOW())
+        sessions.session_duration = TIMESTAMPDIFF(SECOND, session_date, NOW()),
+        sessions.session_death_count = ?,
+        sessions.session_kill_count = ?,
+        sessions.session_damage_given = ?,
+        sessions.session_damage_taken = ?,
+        sessions.session_shots_hit = ?,
+        sessions.session_shots_missed = ?,
+        sessions.session_shots_taken = ?
     WHERE
         sessions.session_id = ?`;
 
@@ -106,10 +113,15 @@ export class ActivityRecorder {
 
     // Finalizes a player's session in the database. This makes sure that the session's duration is
     // updated appropriately, for statistical purposes.
-    async finalizePlayerSession(sessionId) {
+    async finalizePlayerSession(player, sessionId) {
         if (sessionId === ActivityRecorder.kInvalidSessionId)
             return;  // the session could not be created when they connected
 
-        server.database.query(FINALIZE_PLAYER_SESSION_QUERY, sessionId);
+        const sessionStats = player.stats.session;
+
+        server.database.query(FINALIZE_PLAYER_SESSION_QUERY, 
+            sessionStats.deathCount, sessionStats.killCount, sessionStats.damageGiven,
+            sessionStats.damageTaken, sessionStats.shotsHit, sessionStats.shotsMissed,
+            sessionStats.shotsTaken, sessionId);
     }
 }

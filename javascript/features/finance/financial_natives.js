@@ -4,7 +4,7 @@
 
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Wrapper for any native Pawn function calls the disposition monitor has to make, to make sure that
 // these can be overridden by the JavaScript testing routines.

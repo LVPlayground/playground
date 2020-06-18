@@ -86,9 +86,6 @@ class BanManager {
     // The query used for creating a new entry in the logs table.
     new m_createEntryQuery;
 
-    // Maintain a boolean indicating whether the player was banned automatically.
-    new bool: m_automaticallyBanned[MAX_PLAYERS];
-
     // Maintain a boolean indicating whether the player was kicked by an undercover administrator.
     new bool: m_undercoverKicked[MAX_PLAYERS];
 
@@ -147,7 +144,6 @@ class BanManager {
      */
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
-        m_automaticallyBanned[playerId] = false;
         m_undercoverKicked[playerId] = false;
     }
 
@@ -258,10 +254,8 @@ class BanManager {
         SendClientMessage(playerId, Color::Information, "You may appeal this ban on our forums (http://forum.sa-mp.nl) or on our IRC channel,");
         SendClientMessage(playerId, Color::Information, "available at https://sa-mp.nl/chat, or through Discord at https://sa-mp.nl/discord.");
 
-        m_automaticallyBanned[playerId] = true;
-
         // The Player class has the functionality required to actually kick this player.
-        Player(playerId)->scheduleKick();
+        Player(playerId)->scheduleKick(AutoBannedKickReason, "");
     }
 
     /**
@@ -338,16 +332,6 @@ class BanManager {
         format(banIpAddress, sizeof(banIpAddress), Player(playerId)->ipAddressString());
 
         this->createDatabaseEntry("ban", administratorId, playerId, reason, banIpAddress, expirationTime);
-    }
-
-    /**
-     * Returns a boolean indicating whether this player has been automatically banned by the Ban
-     * Manager. If so, we may not want to display an announcement for their leaving.
-     *
-     * @param playerId Id of the player to check this for.
-     */
-    public bool: wasAutomaticallyBanned(playerId) {
-        return m_automaticallyBanned[playerId];
     }
 
     public setUndercoverKicked(playerId, bool: undercover) {

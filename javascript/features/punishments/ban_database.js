@@ -141,19 +141,30 @@ const RECENT_IP_COUNT_QUERY = `
 // MySQL queries to find the serial numbers that have (recently) been used by a particular nickname.
 const RECENT_SERIAL_QUERY = `
     SELECT
-        gpci_hash,
-        COUNT(session_id) AS total
+        sessions.gpci_hash,
+        IFNULL(sessions_common_gpci.hits, 0) AS hits,
+        COUNT(sessions.session_id) AS total
     FROM
         sessions
+    LEFT JOIN
+        sessions_common_gpci ON sessions_common_gpci.gpci_hash = sessions.gpci_hash
     WHERE
-        nickname = ? AND
-        DATEDIFF(NOW(), session_date) < ?
+        sessions.nickname = ? AND
+        DATEDIFF(NOW(), sessions.session_date) < ?
     GROUP BY
-        gpci_hash
+        sessions.gpci_hash
     ORDER BY
-        session_date DESC
+        sessions.session_date DESC
     LIMIT
         10`;
+
+const FREQUENT_SERIAL_QUERY = `
+    SELECT
+        sessions_common_gpci.hits
+    FROM
+        sessions_common_gpci
+    WHERE
+        gpci_hash = ?`
 
 const RECENT_SERIAL_COUNT_QUERY = `
     SELECT
@@ -477,7 +488,13 @@ export class BanDatabase {
 
     // Finds the nicknames that have (recently) been used by the given |serial|.
     async findNicknamesForSerial({ serial, ...options } = {}) {
-        return this._findNicknamesQuery({ serial, ...options });
+        const [ results, serialHits ] = await Promise.all([
+            this._findNicknamesQuery({ serial, ...options }),
+            this._isCommonSerialQuery(serial),
+        ]);
+
+        results.commonSerial = serialHits > 250;
+        return results;
     }
 
     // Actually runs the queries necessary to determine the active nicknames for either an IP
@@ -491,7 +508,8 @@ export class BanDatabase {
 
         const results = {
             total: 0,
-            entries: []  
+            entries: [],
+            commonSerial: false,
         };
 
         if (totalResults && totalResults.rows.length === 1)
@@ -503,6 +521,12 @@ export class BanDatabase {
         }
 
         return results;
+    }
+
+    // Returns a boolean indicating whether the given |serial| is considered common or not.
+    async _isCommonSerialQuery(serial) {
+        const result = await server.database.query(FREQUENT_SERIAL_QUERY, serial);
+        return result && result.rows.length ? result.rows[0].hits : 0;
     }
 
     // Finds the IP addresses that have (recently) been used by the given |nickname|.
@@ -544,8 +568,13 @@ export class BanDatabase {
             results.total = totalResults.rows[0].total;
         
         if (topResults && topResults.rows.length) {
-            for (const row of topResults.rows)
-                results.entries.push({ text: row.gpci_hash, sessions: row.total });
+            for (const row of topResults.rows) {
+                results.entries.push({
+                    text: row.gpci_hash,
+                    common: row.hits > 250,
+                    sessions: row.total
+                });
+            }
         }
 
         return results;

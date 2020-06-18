@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { MockZoneDatabase } from 'features/gang_zones/test/mock_zone_database.js';
+import { Rect } from 'base/rect.js';
 import { Vector } from 'base/vector.js';
 import { ZoneDecorations } from 'features/gang_zones/zone_decorations.js';
 

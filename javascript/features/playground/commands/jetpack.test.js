@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
+import { VirtualWorld } from 'entities/virtual_world.js';
 
 describe('JetpackCommand', (it, beforeEach, afterEach) => {
     let commands = null;

@@ -6,6 +6,7 @@ import { MockVehicle } from 'entities/test/mock_vehicle.js';
 import { Player } from 'entities/player.js';
 import { Vector } from 'base/vector.js';
 
+import { format } from 'base/format.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 
 // MockPlayer
@@ -58,6 +59,8 @@ export class MockPlayer extends Player {
     #streamUrl_ = null;
     #soundId_ = null;
 
+    #lastAnimation_ = null;
+
     #hasBeenSerializedForTesting_ = false;
     #isSurfingVehicle_ = false;
 
@@ -105,7 +108,9 @@ export class MockPlayer extends Player {
 
     kick() { this.disconnectForTesting(/* reason= */ 2); }
 
+    setIpForTesting(ip) { this.#ipAddress_ = ip; }
     setIsNonPlayerCharacterForTesting(value) { this.#isNpc_ = value; }
+    setSerialForTesting(serial) { this.#serial_ = serial; }
 
     updateName() { this.#name_ += 'a'; /* any change will do */ }
 
@@ -304,8 +309,8 @@ export class MockPlayer extends Player {
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
         if (message.length <= 144) // SA-MP-implementation does not send longer messages
             this.#messages_.push(message.toString());
@@ -334,7 +339,7 @@ export class MockPlayer extends Player {
     // Section: Visual
     // ---------------------------------------------------------------------------------------------
 
-    animate(options) {}
+    animate(options) { this.#lastAnimation_ = options.library + ':' + options.name; }
 
     get animationIndex() { return 0; }
 
@@ -350,6 +355,8 @@ export class MockPlayer extends Player {
     setCamera(position, target) {}
 
     setSpectating(value) {}
+
+    getLastAnimationForTesting() { return this.#lastAnimation_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Vehicles

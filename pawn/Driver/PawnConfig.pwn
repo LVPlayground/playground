@@ -7,6 +7,7 @@
 
 // Section: abuse
 new bool: g_abuseIgnoreSolePassengerDamage = true;
+new bool: g_abuseKickReasonsPublic = true;
 
 // Section: drifting
 new bool: g_driftingEnabled = false;
@@ -16,9 +17,10 @@ new Float: g_driftingMinSpeed = 50.0;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 6
+// Next ID: 7
 enum PawnConfigProperty {
     kAbuseIgnoreSolePassengerDamage = 5,
+    kAbuseKickReasonPublic = 6,
     kVehiclesDriftingEnabled = 1,
     kVehiclesDriftingMaxAngle = 2,
     kVehiclesDriftingMinAngle = 3,
@@ -35,6 +37,9 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
         // Section: boolean properties
         case kAbuseIgnoreSolePassengerDamage:
             g_abuseIgnoreSolePassengerDamage = !!intValue;
+
+        case kAbuseKickReasonPublic:
+            g_abuseKickReasonsPublic = !!intValue;
 
         case kVehiclesDriftingEnabled:
             g_driftingEnabled = !!intValue;
@@ -55,3 +60,6 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
             printf("[PawnConfig][warning] Invalid property in update: %d", _: property);
     }
 }
+
+// Functions to allow legacy parts of the gamemode to access the values. Only when needed.
+AreKickReasonsPublic() { return g_abuseKickReasonsPublic ? 1 : 0; }

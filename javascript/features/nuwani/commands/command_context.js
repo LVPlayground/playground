@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Private symbol to make sure that the CommandContext constructor can only be used by the static
 // `createForMessage` function.
@@ -103,12 +103,18 @@ export class CommandContext {
 
     // Responds to this command with the given |message|. Will bypass echo distribution.
     respond(message, ...params) {
-        this.bot_.write(`PRIVMSG ${this.target} :${format(message, ...params)}`);
+        if (params.length)
+            message = format(message, ...params);
+
+        this.bot_.write(`PRIVMSG ${this.target} :${message}`);
     }
 
     // Responds to this command with information regarding its |usage|.
     respondWithUsage(usage, ...params) {
-        this.bot_.write(`PRIVMSG ${this.target} :10Usage: ${format(usage, ...params)}`);
+        if (params.length)
+            usage = format(usage, ...params);
+
+        this.bot_.write(`PRIVMSG ${this.target} :10Usage: ${usage}`);
     }
 
     // Writes the raw |message| to the network. Will bypass echo distribution.

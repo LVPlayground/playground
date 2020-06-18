@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+// Represents a rectangle.
 export class Rect {
     constructor(minX, minY, maxX, maxY) {
         this.minX_ = minX || 0;
@@ -92,5 +93,3 @@ export class Rect {
         return `x: ${this.minX_}, y: ${this.minY_}, width: ${this.width}, height: ${this.height}`;
     }
 };
-
-global.Rect = Rect;

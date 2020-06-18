@@ -44,8 +44,8 @@
     "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",
     "kill-no-reason": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d)",
 
-    "buy": "<color:10>*** %s (Id:%d) has bought the %{3}s property for %{2}$.",
-    "sell": "<color:10>*** %s (Id:%d) has sold the %{3}s property for %{2}$.",
+    "buy": "<color:10>*** %{0}s (Id:%{1}d) has bought the %{3}s property for %{2}$.",
+    "sell": "<color:10>*** %{0}s (Id:%{1}d) has sold the %{3}s property for %{2}$.",
     "sell-all": "<color:10>*** %s (Id:%d) has sold all their properties for %$.",
 
     "fightclub-start": "<color:13>*** %s (Id:%d) and %d (Id:%d) have started a fight!",

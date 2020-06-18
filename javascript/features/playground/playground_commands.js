@@ -77,6 +77,7 @@ class PlaygroundCommands {
             'features/playground/commands/indicators.js',
             'features/playground/commands/jetpack.js',
             'features/playground/commands/kickflip.js',
+            'features/playground/commands/lagcompmode.js',
             'features/playground/commands/player_settings.js',
             'features/playground/commands/isolate.js',
             'features/playground/commands/rampcar.js',

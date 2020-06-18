@@ -23,7 +23,7 @@ export default class LagCompModeCommand extends Command {
         if (mode >= 0 && mode <= 2) {
             target.syncedData.lagCompensationMode = mode;
             player.sendMessage(
-                Message.COMMAND_SUCCESS, subject.name + ' their lag compensation mode has been ' +
+                Message.COMMAND_SUCCESS, target.name + ' their lag compensation mode has been ' +
                 'updated to: ' + mode);
             
         } else {

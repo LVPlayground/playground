@@ -136,15 +136,14 @@ class TeleportationCommands {
      */
     @switch(PlayerCommand, "teleport")
     public onPlayerTeleportCommand(playerId, subjectId, params[]) {
-        if (playerId == subjectId && Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false
-            && (Player(playerId)->isRegular() == true || Player(playerId)->isRegistered() == false)) {
-            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
-            return 1;
-        }
+        new const bool: isNoRegularButRegistered = Player(playerId)->isRegular() == false && 
+            Player(playerId)->isRegistered() == true;
 
-        if (playerId != subjectId && Player(subjectId)->isVip() == false 
-            && (Player(playerId)->isRegular() == true || Player(playerId)->isRegistered() == false)) {
-            SendClientMessage(playerId, Color::Error, "Error: This player has no VIP status.");
+        if (Player(playerId)->isVip() == false && isNoRegularButRegistered == false) {
+            if(playerId == subjectId)
+                SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
+            else                
+                SendClientMessage(playerId, Color::Error, "Error: This player has no VIP status.");
             return 1;
         }
 
@@ -176,8 +175,7 @@ class TeleportationCommands {
                 "{33AA33}enabled"));
         SendClientMessage(playerId, Color::Success, message);
 
-        if(playerId == subjectId && Player(playerId)->isRegular() == false &&
-            Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false)
+        if(playerId == subjectId && Player(playerId)->isVip() == false && isNoRegularButRegistered == true )
             SendClientMessage(playerId, Color::Information, "This is a VIP only command but enabled for new players. check out \"/donate\"!");
 
         return 1;

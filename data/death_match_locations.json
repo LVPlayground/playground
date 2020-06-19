@@ -1,41 +1,13 @@
 [
     {
         "id": 1,
-        "name": "LV RW FightClub (skin hit)",
+        "name": "LV RW FightClub",
         "weather": 10,
         "time": 12,
 
         "player_health" : 100,
         "player_armour" : 100,
 
-        "weapons" : [
-            { "weapon_id" : 26, "ammo": 1337 },
-            { "weapon_id" : 28, "ammo": 80085 }
-        ],
-    
-        "interior_id": 0,
-        "spawn_positions": [
-            { "position": [ 2096.18, 2186.78, 10.82 ], "rotation": 136.84 },
-            { "position": [ 2068.54, 2157.53, 10.82 ], "rotation": 311.35 },
-            { "position": [ 2068.54, 2186.78, 10.82 ], "rotation": 222.67 },
-            { "position": [ 2096.18, 2157.53, 10.82 ], "rotation":  33.75 },
-            { "position": [ 2068.54, 2172.16, 10.82 ], "rotation": 270.00 },
-            { "position": [ 2082.36, 2186.78, 10.82 ], "rotation": 180.00 },
-            { "position": [ 2082.36, 2157.53, 10.82 ], "rotation":   0.00 },
-            { "position": [ 2096.18, 2172.16, 10.82 ], "rotation":  90.00 }
-        ],
-        "boundaries": [ 2110.8208, 2055.1360, 2200.4045, 2144.6980 ]
-    },
-    {
-        "id": 6,
-        "name": "LV RW FightClub (lag shot)",
-        "weather": 10,
-        "time": 12,
-
-        "player_health" : 100,
-        "player_armour" : 100,
-
-        "lag_shot": true,
         "weapons" : [
             { "weapon_id" : 26, "ammo": 1337 },
             { "weapon_id" : 28, "ammo": 80085 }
@@ -110,33 +82,6 @@
         "boundaries": [ 1392, 1304, 2193, 2106 ]
     },
     {
-        "id": 7,
-        "name": "Baseball field RW (lag shot)",
-        "weather": 10,
-        "time": 12,
-
-        "player_health" : 100,
-        "player_armour" : 100,
-
-        "lag_shot": true,
-        "weapons" : [
-            { "weapon_id" : 26, "ammo": 1337 },
-            { "weapon_id" : 28, "ammo": 80085 }
-        ],
-    
-        "interior_id": 0,
-        "spawn_positions": [
-            { "position": [ 1305.4459, 2107.5073, 11.0156 ], "rotation": 326 },
-            { "position": [ 1306.3177, 2154.8152, 11.0234 ], "rotation": 274 },
-            { "position": [ 1305.3868, 2191.5332, 11.0234 ], "rotation": 214 },
-            { "position": [ 1390.2855, 2191.9712, 11.0234 ], "rotation": 131 },
-            { "position": [ 1390.3672, 2107.3330, 11.0156 ], "rotation": 41 },
-            { "position": [ 1349.7422, 2107.3530, 11.0156 ], "rotation": 358 },
-            { "position": [ 1372, 2149.5, 11.02 ], "rotation": 0 }
-        ],
-        "boundaries": [ 1392, 1304, 2193, 2106 ]
-    },
-    {
         "id": 4,
         "name": "Baseball field Rockets",
         "weather": 10,
@@ -163,13 +108,79 @@
     },
     {
         "id": 5,
-        "name": "SF military RW",
+        "name": "SF military RW (skin hit)",
         "weather": 10,
         "time": 10,
 
         "player_health" : 100,
         "player_armour" : 100,
 
+        "weapons" : [
+            { "weapon_id" : 26, "ammo": 1337 },
+            { "weapon_id" : 28, "ammo": 80085 }
+        ],
+    
+        "interior_id": 0,
+        "spawn_positions": [
+            { "position": [ -1471, 412, 32 ], "rotation": 0 },
+            { "position": [ -1479, 413, 32 ], "rotation": 0 },
+            { "position": [ -1404, 370, 32 ], "rotation": 0 },
+            { "position": [ -1385, 375, 32 ], "rotation": 0 },
+            { "position": [ -1428, 355, 32 ], "rotation": 0 },
+            { "position": [ -1454, 369, 32 ], "rotation": 0 },
+            { "position": [ -1405, 359, 32 ], "rotation": 0 },
+            { "position": [ -1400, 386, 32 ], "rotation": 0 },
+            { "position": [ -1467, 399, 32 ], "rotation": 0 },
+            { "position": [ -1430, 394, 32 ], "rotation": 0 },
+            { "position": [ -1431, 371, 32 ], "rotation": 0 },
+            { "position": [ -1445, 388, 32 ], "rotation": 0 },
+            { "position": [ -1429, 417, 32 ], "rotation": 0 },
+            { "position": [ -1448, 345, 32 ], "rotation": 0 },
+            { "position": [ -1453, 393, 32 ], "rotation": 0 },
+            { "position": [ -1405, 413, 32 ], "rotation": 0 },
+            { "position": [ -1443, 347, 32 ], "rotation": 0 },
+            { "position": [ -1453, 365, 32 ], "rotation": 0 },
+            { "position": [ -1453, 389, 32 ], "rotation": 0 }
+        ],
+        "boundaries": [ -1343.2637, -1485.9154, 447.1273, 334.7642 ]
+    },
+    {
+        "id": 6,
+        "name": "Baseball field RW (lag shot)",
+        "weather": 10,
+        "time": 12,
+
+        "player_health" : 100,
+        "player_armour" : 100,
+
+        "lag_shot": true,
+        "weapons" : [
+            { "weapon_id" : 26, "ammo": 1337 },
+            { "weapon_id" : 28, "ammo": 80085 }
+        ],
+    
+        "interior_id": 0,
+        "spawn_positions": [
+            { "position": [ 1305.4459, 2107.5073, 11.0156 ], "rotation": 326 },
+            { "position": [ 1306.3177, 2154.8152, 11.0234 ], "rotation": 274 },
+            { "position": [ 1305.3868, 2191.5332, 11.0234 ], "rotation": 214 },
+            { "position": [ 1390.2855, 2191.9712, 11.0234 ], "rotation": 131 },
+            { "position": [ 1390.3672, 2107.3330, 11.0156 ], "rotation": 41 },
+            { "position": [ 1349.7422, 2107.3530, 11.0156 ], "rotation": 358 },
+            { "position": [ 1372, 2149.5, 11.02 ], "rotation": 0 }
+        ],
+        "boundaries": [ 1392, 1304, 2193, 2106 ]
+    },
+    {
+        "id": 7,
+        "name": "SF military RW (lag shot)",
+        "weather": 10,
+        "time": 10,
+
+        "player_health" : 100,
+        "player_armour" : 100,
+
+        "lag_shot": true,
         "weapons" : [
             { "weapon_id" : 26, "ammo": 1337 },
             { "weapon_id" : 28, "ammo": 80085 }

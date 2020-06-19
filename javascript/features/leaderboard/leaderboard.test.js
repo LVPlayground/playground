@@ -227,4 +227,34 @@ describe('Leaderboard', (it, beforeEach) => {
             ]
         });
     });
+
+    it('is able to display an overview of the leaderboards', async (assert) => {
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/top'));
+        assert.deepEqual(gunther.getLastDialogAsTable(), {
+            columns: [
+                'Leaderboard',
+                'Leader',
+            ],
+            rows: [
+                [
+                    'Accuracy{9E9E9E} (/top accuracy)',
+                    '{384BCA}Ds]_ch1r4q_{9E9E9E} (57.81%)',
+                ],
+                [
+                    'Damage{9E9E9E} (/top damage)',
+                    '{FF8C13}[BB]Ricky92{9E9E9E} (149.61k damage)',
+                ],
+                [
+                    'Gangs{9E9E9E} (/top gangs)',
+                    '{4EFF00}Cheap People{9E9E9E} (1,636 kills)',
+                ],
+                [
+                    'Kills{9E9E9E} (/top kills)',
+                    '{FF8C13}[BB]Ricky92{9E9E9E} (891 kills)',
+                ],
+            ]
+        });
+    });
 });

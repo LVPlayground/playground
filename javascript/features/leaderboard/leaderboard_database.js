@@ -34,7 +34,8 @@ const kAccuracyLeaderboardQuery = `
     GROUP BY
         sessions.user_id
     HAVING
-        shots_hit > 500
+        shots_hit > 1000 AND
+        shots_missed > 100
     ORDER BY
         accuracy DESC
     LIMIT

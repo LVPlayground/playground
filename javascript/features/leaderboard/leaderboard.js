@@ -69,7 +69,7 @@ export default class Leaderboard extends Feature {
                 break;
 
             default:
-                return this.displayLeaderboardDialog(player, settings);
+                return this.displayLeaderboardDialog(player);
         }
 
         // Display the |data| in a simple menu. All display is standardized.
@@ -241,8 +241,113 @@ export default class Leaderboard extends Feature {
 
     // Displays the leaderboard dialog, which shows an overview of all the available lists, together
     // with the player who currently tops that ranking.
-    async displayLeaderboardDialog(player, settings) {
+    async displayLeaderboardDialog(player) {
+        const settings = {
+            days: this.settings_().getValue('playground/leaderboard_limit_days'),
 
+            // Only the #1 will be displayed, but it's possible for the database rankings to be
+            // amended based on in-game statistics. Allow for that to happen.
+            limit: 5,
+        };
+
+        // Collect results for all the leaderboards in parallel. This will take ~.25-.3 seconds,
+        // but because our MySQL usage is asynchronous, we can afford to wait that period of time.
+        const results = await Promise.all([
+            this.database_.getAccuracyLeaderboard(settings),
+            this.database_.getDamageLeaderboard(settings),
+            this.database_.getGangsLeaderboard(settings),
+            this.database_.getKillsLeaderboard(settings),
+        ]);
+
+        const dialog = new Menu('Las Venturas Playground', [
+            'Leaderboard',
+            'Leader',
+        ]);
+
+        // (1) Accuracy leaderboard
+        {
+            const label = 'Accuracy{9E9E9E} (/top accuracy)';
+            const listener =
+                Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'accuracy');
+            
+            let leader = '-';
+            if (results[0].length) {
+                const topResult = results[0][0];
+
+                if (topResult.color)
+                    leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
+                else
+                    leader = topResult.nickname;
+                
+                leader += format('{9E9E9E} (%.2f%%)', topResult.accuracy * 100);
+            }
+
+            dialog.addItem(label, leader, listener);
+        }
+
+        // (2) Damage leaderboard
+        {
+            const label = 'Damage{9E9E9E} (/top damage)';
+            const listener =
+                Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'damage');
+            
+            let leader = '-';
+            if (results[1].length) {
+                const topResult = results[1][0];
+
+                if (topResult.color)
+                    leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
+                else
+                    leader = topResult.nickname;
+                
+                leader += format('{9E9E9E} (%s damage)',
+                    this.toFormattedQuantityUnit(topResult.damageGiven));
+            }
+
+            dialog.addItem(label, leader, listener);
+        }
+
+        // (3) Gangs leaderboard
+        {
+            const label = 'Gangs{9E9E9E} (/top gangs)';
+            const listener = Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'gangs');
+            
+            let leader = '-';
+            if (results[2].length) {
+                const topResult = results[2][0];
+
+                if (topResult.color)
+                    leader = `{${topResult.color.toHexRGB()}}${topResult.name}`;
+                else
+                    leader = topResult.name;
+                
+                leader += format('{9E9E9E} (%d kills)', topResult.killCount);
+            }
+
+            dialog.addItem(label, leader, listener);
+        }
+
+        // (4) Kills leaderboard
+        {
+            const label = 'Kills{9E9E9E} (/top kills)';
+            const listener = Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'kills');
+            
+            let leader = '-';
+            if (results[3].length) {
+                const topResult = results[3][0];
+
+                if (topResult.color)
+                    leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
+                else
+                    leader = topResult.nickname;
+                
+                leader += format('{9E9E9E} (%d kills)', topResult.killCount);
+            }
+
+            dialog.addItem(label, leader, listener);
+        }
+
+        await dialog.displayForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

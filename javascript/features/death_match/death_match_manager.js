@@ -56,8 +56,8 @@ export class DeathMatchManger {
 
         if (player.syncedData.lagCompensationMode !== targetLagCompensationMode)
             player.syncedData.lagCompensationMode = targetLagCompensationMode;
-        else
-            this.spawnPlayer(player, zone);
+        
+        this.spawnPlayer(player, zone);
 
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_STATS);

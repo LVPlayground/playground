@@ -7,8 +7,8 @@
  * incrementing this version. Significant changes justify a new Major release, use your gut feel.
  */
 class Version {
-    public const Major = 48;
-    public const Minor = 5;
+    public const Major = 49;
+    public const Minor = 0;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects

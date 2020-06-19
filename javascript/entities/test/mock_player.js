@@ -42,6 +42,7 @@ export class MockPlayer extends Player {
 
     #drunkLevel_ = 0;
     #fightingStyle_ = Player.kFightingStyleNormal;
+    #gravity_ = 0.008;
     #score_ = 0;
     #team_ = 255;  // NO_TEAM
     #time_ = [0, 0];
@@ -232,6 +233,9 @@ export class MockPlayer extends Player {
 
     get fightingStyle() { return this.#fightingStyle_; }
     set fightingStyle(value) { this.#fightingStyle_ = value; }
+
+    get gravity() { return this.#gravity_; }
+    set gravity(value) { this.#gravity_ = value; }
 
     get score() { return this.#score_; }
     set score(value) { this.#score_ = value; }

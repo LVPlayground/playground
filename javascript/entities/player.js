@@ -280,6 +280,9 @@ export class Player extends Supplementable {
     get fightingStyle() { return pawnInvoke('GetPlayerFightingStyle', 'i', this.#id_); }
     set fightingStyle(value) { pawnInvoke('SetPlayerFightingStyle', 'ii', this.#id_, value); }
 
+    get gravity() { return undefined; }
+    set gravity(value) { pawnInvoke('SetPlayerGravity', 'if', this.#id_, value); }
+
     get score() { return pawnInvoke('GetPlayerScore', 'i', this.#id_); }
     set score(value) { pawnInvoke('SetPlayerScore', 'ii', this.#id_, value); }
 

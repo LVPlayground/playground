@@ -476,7 +476,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
 #if Feature::EnableServerSideWeaponConfig == 0
-    if (issuerid != Player::InvalidId) {
+    if (issuerid != INVALID_PLAYER_ID) {
         g_lastTakenDamageIssuerId[playerid] = issuerid;
         g_lastTakenDamageTime[playerid] = GetTickCount();
     }

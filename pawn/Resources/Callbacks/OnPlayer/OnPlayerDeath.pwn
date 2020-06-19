@@ -137,7 +137,7 @@ LegacyPlayerDeath(playerid, killerid, reason) {
 
     // ---- VALID KILLER CASES ---------------------------------------------------------------------
 
-    if (killerid != Player::InvalidId && Player(killerid)->isConnected() == true && !hiddenKill[playerid]) {
+    if (killerid != Player::InvalidId && Player(killerid)->isConnected() == true) {
         iPlayerSesKills[killerid]++;
 
         // Handle wanted levels.
@@ -150,7 +150,7 @@ LegacyPlayerDeath(playerid, killerid, reason) {
 
     // ---- KILLBOARD & IRC DEATH MESSAGE PROCESS --------------------------------------------------
 
-    if (hiddenKill[playerid])
+    if (hiddenKill[playerid] && killerid == INVALID_PLAYER_ID)
         hiddenKill[playerid] = 0;
     else
         CallLocalFunction("OnPlayerResolvedDeath", "iii", playerid, killerid, reason);  // SendDeathMessage through JavaScript.

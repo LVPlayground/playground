@@ -377,13 +377,18 @@ UpdatePlayerIngameTime(playerId) {
     return 1;
 }
 
-Admin(senderId, text[]) {
+Admin(senderId, text[], bool: excludeTemp = false) {
     new notice[256];
     format(notice, sizeof(notice), "* Admin notice: {FFFFFF}%s", text);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-        if (Player(playerId)->isAdministrator() == true && playerId != senderId)
-            SendClientMessage(playerId, Color::AdministratorColor, notice);
+        if (!Player(playerId)->isAdministrator() || playerId == senderId)
+            continue;
+
+        if (excludeTemp && tempLevel[playerId] == 2)
+            continue;
+
+        SendClientMessage(playerId, Color::AdministratorColor, notice);
     }
 
     EchoMessage("notice-admin", "z", text);

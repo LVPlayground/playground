@@ -97,7 +97,7 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
         // TODO: Add individual settings which should be enabled by default here.
         this->toggleSetting(AccountUpdatedForSettingsSettingKey, true);
 
-        if(Player(playerId)->isVip() == false && Player(playerId)->isAdministrator() == false)
+        if(Player(playerId)->isVip() == false)
             this->setTeleportationDisabled(false);
 
         if(Player(playerId)->isAdministrator() == false)

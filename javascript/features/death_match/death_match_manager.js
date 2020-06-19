@@ -55,7 +55,7 @@ export class DeathMatchManger {
         const targetLagCompensationMode = zoneInfo.lagShot ? 0 : 2;
 
         if (player.syncedData.lagCompensationMode !== targetLagCompensationMode)
-            player.syncedData.lagCompensationMode = 0;  // this will respawn the |player|
+            player.syncedData.lagCompensationMode = targetLagCompensationMode;
         else
             this.spawnPlayer(player, zone);
 

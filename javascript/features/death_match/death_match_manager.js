@@ -51,7 +51,11 @@ export class DeathMatchManger {
 
         this.playersInDeathMatch_.set(player.id, zone);
         this.playerStats_.set(player.id, player.stats.snapshot());
-        this.spawnPlayer(player, zone);
+
+        if (zone.lagShot)
+            player.syncedData.lagCompensationMode = 0;  // this will respawn the |player|
+        else
+            this.spawnPlayer(player, zone);
 
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_STATS);
@@ -61,9 +65,10 @@ export class DeathMatchManger {
     // The player decided to leave so we will make him re-spawn. The player will be killed so that 
     // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
-        if (!this.playersInDeathMatch_.has(player.id)) {
+        if (!this.playersInDeathMatch_.has(player.id))
             return;
-        }
+
+        const zone = this.playersInDeathMatch_.get(player.id);
 
         this.playersInDeathMatch_.delete(player.id);
         player.activity = Player.PLAYER_ACTIVITY_NONE;
@@ -74,6 +79,8 @@ export class DeathMatchManger {
         if (!teleportStatus.allowed) {
             player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
             player.health = 0;
+        } else if (zone.lagShot) {
+            player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
         } else {
             player.respawn();
         }

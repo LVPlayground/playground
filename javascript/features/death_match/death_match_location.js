@@ -79,6 +79,7 @@ export class DeathMatchLocation {
         this.playerHealth_ = locationInfo.player_health ?? 100;
         this.playerArmour_ = locationInfo.player_armour ?? 0;
 
+        this.lagShot_ = locationInfo.lagShot ?? false;
         this.weapons_ = new Set();
 
         locationInfo.weapons.forEach(weaponInfo => {
@@ -117,6 +118,7 @@ export class DeathMatchLocation {
     get playerHealth() { return this.playerHealth_; }
     get playerArmour() { return this.playerArmour_; }
 
+    get lagShot() { return this.lagShot_; }
     get weapons() { return this.weapons_.values(); }
 
     // Gets an iterator with the spawn positions to use. These also determine the maximum amount of

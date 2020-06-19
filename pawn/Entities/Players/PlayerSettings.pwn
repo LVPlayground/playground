@@ -97,7 +97,9 @@ class PlayerSettings <playerId (MAX_PLAYERS)> {
         // TODO: Add individual settings which should be enabled by default here.
         this->toggleSetting(AccountUpdatedForSettingsSettingKey, true);
 
-        if(Player(playerId)->isVip() == false)
+        new const bool: isNoRegularButRegistered = Player(playerId)->isRegular() == false && 
+            Player(playerId)->isRegistered() == true;
+        if(Player(playerId)->isVip() == false && isNoRegularButRegistered == false)
             this->setTeleportationDisabled(false);
 
         if(Player(playerId)->isAdministrator() == false)

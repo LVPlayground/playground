@@ -126,6 +126,58 @@ describe('Leaderboard', (it, beforeEach) => {
         });
     });
 
+    it('should be able to display the gangs leaderboard', async (assert) => {
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        // (1) Have the Legendary Warrior Russell be part of The Outlaws for this exercise.
+        await russell.identify();
+
+        russell.gangId = 9003;
+        russell.stats.session.deathCount = 100;
+        russell.stats.session.killCount = 280;
+        russell.stats.session.damageGiven = 25000; 
+        russell.stats.session.damageTaken = 5000;
+        russell.stats.session.shotsHit = 10000;
+        russell.stats.session.shotsMissed = 0;
+
+        // (2) Have |gunther| see the damage leaderboard dialog.
+        assert.isTrue(await gunther.issueCommand('/top gangs'));
+        assert.deepEqual(gunther.getLastDialogAsTable(), {
+            columns: [
+                'Gang',
+                'Kills',
+                'Damage',
+                'Accuracy',
+            ],
+            rows: [
+                [
+                    '1. {4EFF00}Cheap People{9E9E9E} (x16)',
+                    '1,636{BDBDBD} / 1,406 (1.16)',
+                    '453.49k{BDBDBD} / 426.51k (1.06)',
+                    '36.02%{BDBDBD} (128.45k shots)',
+                ],
+                [
+                    '2. {8952EB}Anonymous Game{9E9E9E} (x5)',
+                    '1,447{BDBDBD} / 1,375 (1.05)',
+                    '396.93k{BDBDBD} / 384.59k (1.03)',
+                    '42.73%{BDBDBD} (80.2k shots)',
+                ],
+                [
+                    '3. {C1F7EC}The Outlaws{9E9E9E} (x5)',  // gang is online, stats & rank amended
+                    '1,441{BDBDBD} / 807 (1.79)',
+                    '321.36k{BDBDBD} / 233.1k (1.38)',
+                    '51.46%{BDBDBD} (73.91k shots)',
+                ],
+                [
+                    '4. {0FD9FA}Camin Bulevar{9E9E9E} (x8)',
+                    '1,431{BDBDBD} / 2,073 (0.69)',
+                    '422.63k{BDBDBD} / 523.23k (0.81)',
+                    '33.33%{BDBDBD} (123.31k shots)',
+                ],
+            ]
+        });
+    });
+
     it('should be able to display the kills leaderboard', async (assert) => {
         gunther.respondToDialog({ response: 0 /* Dismiss */ });
 

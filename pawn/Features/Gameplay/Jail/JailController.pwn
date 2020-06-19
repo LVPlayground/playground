@@ -269,9 +269,13 @@ class JailController {
             // for potential minimizing of Grand Theft Auto: San Andreas now.
             if (remainingTime < 0 && !IsPlayerMinimized(playerId)) {
                 SendClientMessage(playerId, Color::Success, "You have been released from jail because your punishment is over.");
-                format(message, sizeof(message), "%s(%d) has been released from jail because his/her punishment time was over.",Player(playerId)->nicknameString(), playerId);
-                Admin(playerId, message); 
                 this->unjailPlayer(playerId);
+
+                new message[128];
+                format(message, sizeof(message), "%s (Id: %d) has been released from jail.",
+                    Player(playerId)->nicknameString(), playerId);
+
+                Admin(playerId, message);
                 continue;
             }
 

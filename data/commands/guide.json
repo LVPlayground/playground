@@ -1,18 +1,17 @@
 { 
     "type": "message",
     "data": [
-      "{CEEE30}As a temporary administrator, there are some key points you should keep in mind:",  
-      "{EE7530}1. {CEEE30}Be nice, be respectful, and more importantly, stay calm in all situations.",
-      "{EE7530}2. {CEEE30}Useful commands: /watch, /stopwatch, /p, /mute, /jail, /kick, /ban, /fix, /weapons, /v, /vr, /flip, /cruise.",
-      "{EE7530}3. {CEEE30}Utilize verbal warnings, /mute, /jail, and /kick more often over /ban. Remember, GTA is all about chaos and breaking the rules.",
-      "{EE7530}4. {CEEE30}Avoid banning for minor offenses such as ship-nading, interior-nading, fake timeouts, command abusing in fights, and swearing when not done excessively.",
-      "{EE7530}5. {CEEE30}Always test for health hacks using /p handofgod and /fix. If they don't work on de-synced players, use /reconnect. DO NOT ban based on the outcomes of /p burn and /p nuke alone.",
-      "{EE7530}6. {CEEE30}Recording & submitting video evidence in case of suspected aimbot, no-recoil, dmg.cs, and other cheats of such nature is mandatory. The crew shall review it and take appropriate actions.",
-      "{EE7530}7. {CEEE30}Use {FF0000}/crew [message] {CEEE30}to send messages to the LVP Crew IRC channel, if you require any assistance.Always feel free to reach out to us.",
-      "{CEEE30}Please visit https://administrator.guide/ for a general overview.",
-      "{CEEE30}Remember, this is only a game — don't take things personally. Stay unbiased at all times.",
-      "",
-      "{CEEE30}Thank you for volunteering to assist the Las Venturas Playground crew. We sincerely appreciate your efforts!"
-
+        "{CEEE30}As a temporary administrator, there are some key points you should keep in mind:",  
+        "{EE7530}1. {CEEE30}Be nice, be respectful, and more importantly, stay calm in all situations.",
+        "{EE7530}2. {CEEE30}Useful commands: /watch, /stopwatch, /p, /mute, /jail, /kick, /ban, /fix, /weapons, /v, /vr, /flip, /cruise.",
+        "{EE7530}3. {CEEE30}Utilize verbal warnings, /mute, /jail, and /kick more often over /ban. Remember, GTA is all about chaos and breaking the rules.",
+        "{EE7530}4. {CEEE30}Avoid banning for minor offenses such as ship-nading, interior-nading, fake timeouts, command abusing in fights, and swearing when not done excessively.",
+        "{EE7530}5. {CEEE30}Always test for health hacks using /p handofgod and /fix. If they don't work on de-synced players, use /reconnect. DO NOT ban based on the outcomes of /p burn and /p nuke alone.",
+        "{EE7530}6. {CEEE30}Recording & submitting video evidence in case of suspected aimbot, no-recoil, dmg.cs, and other cheats of such nature is mandatory. The crew shall review it and take appropriate actions.",
+        "{EE7530}7. {CEEE30}Use {FF0000}/crew [message] {CEEE30}to send messages to the LVP Crew IRC channel, if you require any assistance.Always feel free to reach out to us.",
+        "{CEEE30}Please visit https://administrator.guide/ for a general overview.",
+        "{CEEE30}Remember, this is only a game — don't take things personally. Stay unbiased at all times.",
+        "",
+        "{CEEE30}Thank you for volunteering to assist the Las Venturas Playground crew. We sincerely appreciate your efforts!"
     ]
-  } 
+}

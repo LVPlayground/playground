@@ -72,6 +72,39 @@ const kDamageLeaderboardQuery = `
     LIMIT
         ?`;
 
+// Query to compute the leaderboard entries based on gang activity.
+const kGangsLeaderboardQuery = `
+    SELECT
+        gangs.gang_id,
+        gangs.gang_name,
+        IFNULL(gangs.gang_color, 0) AS color,
+        COUNT(DISTINCT sessions.user_id) AS member_count,
+        SUM(sessions.session_death_count) AS death_count,
+        SUM(sessions.session_kill_count) AS kill_count,
+        SUM(sessions.session_damage_given) AS damage_given,
+        SUM(sessions.session_damage_taken) AS damage_taken,
+        SUM(sessions.session_shots_hit) AS shots_hit,
+        SUM(sessions.session_shots_missed) AS shots_missed
+    FROM
+        sessions
+    LEFT JOIN
+        users ON users.user_id = sessions.user_id
+    LEFT JOIN
+        users_gangs ON users_gangs.user_id = sessions.user_id AND users_gangs.left_gang IS NULL
+    LEFT JOIN
+        gangs ON gangs.gang_id = users_gangs.gang_id AND gangs.gang_color IS NOT NULL
+    WHERE
+        session_date >= DATE_SUB(NOW(), INTERVAL ? DAY) AND
+        users.username IS NOT NULL AND
+        users_gangs.gang_id IS NOT NULL AND
+        gangs.gang_name IS NOT NULL
+    GROUP BY
+        users_gangs.gang_id
+    ORDER BY
+        kill_count DESC
+    LIMIT
+        ?`;
+
 // Query to compute the leaderboard entries based on kill & death statistics.
 const kKillLeaderboardQuery = `
     SELECT
@@ -199,6 +232,86 @@ export class LeaderboardDatabase {
     // Actually executes the query for getting the damage-based leaderboard.
     async _getDamageLeaderboardQuery({ days, limit }) {
         const results = await server.database.query(kDamageLeaderboardQuery, days, limit);
+        return results && results.rows ? results.rows : [];
+    }
+
+    // Gets the leaderboard data for ruling gangs. This works a little bit differently from the
+    // other leaderboards, as this is tied to gangs rather than individual players.
+    async getGangsLeaderboard({ days, limit }) {
+        const results = await this._getGangsLeaderboardQuery({ days, limit });
+        const statistics = new Map();
+
+        // Get the session statistics of in-game players, grouped by the gang they're part of.
+        for (const player of server.playerManager) {
+            if (!player.account.isIdentified() || !player.gangId)
+                continue;
+            
+            if (statistics.has(player.gangId))
+                statistics.get(player.gangId).add(player.stats.session);
+            else
+                statistics.set(player.gangId, new Set([ player.stats.session ]));
+        }
+
+        const leaderboard = [];
+
+        for (const result of results) {
+            let sessionKillCount = 0, sessionDeathCount = 0;
+            let sessionDamageGiven = 0, sessionDamageTaken = 0;
+            let sessionShotsHit = 0, sessionShotsMissed = 0;
+
+            for (const stats of statistics.get(result.gang_id) || []) {
+                sessionDeathCount += stats.deathCount;
+                sessionKillCount += stats.killCount;
+                
+                sessionDamageGiven += stats.damageGiven;
+                sessionDamageTaken += stats.damageTaken;
+
+                sessionShotsHit += stats.shotsHit;
+                sessionShotsMissed = stats.shotsMissed;
+            }
+
+            // Total number of shots that were fired by this gang.
+            const totalShots =
+                result.shots_hit + sessionShotsHit + result.shots_missed + sessionShotsMissed;
+
+            leaderboard.push({
+                name: result.gang_name,
+                color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
+                members: result.member_count,
+
+                // (1) Kill / death statistics
+                deathCount: result.death_count + sessionDeathCount,
+                killCount: result.kill_count + sessionKillCount,
+                ratio: (result.kill_count + sessionKillCount) /
+                            (result.death_count + sessionDeathCount),
+
+                // (2) Damage statistics
+                damageGiven: result.damage_given + sessionDamageGiven,
+                damageTaken: result.damage_taken + sessionDamageTaken,
+                damageRatio: (result.damage_given + sessionDamageGiven) /
+                                (result.damage_taken + sessionDamageTaken),
+
+                // (3) Accuracy statistics
+                shots: totalShots,
+                accuracy: (result.shots_hit + sessionShotsHit) / totalShots
+            });
+        }
+
+        // Re-sort the |leaderboard| now that live session statistics have been considered, which
+        // may influence the positioning of certain gangs.
+        leaderboard.sort((lhs, rhs) => {
+            if (lhs.killCount === rhs.killCount)
+                return 0;
+            
+            return lhs.killCount > rhs.killCount ? -1 : 1;
+        });
+
+        return leaderboard;
+    }
+
+    // Actually executes the query for getting the gangs-based leaderboard.
+    async _getGangsLeaderboardQuery({ days, limit }) {
+        const results = await server.database.query(kGangsLeaderboardQuery, days, limit);
         return results && results.rows ? results.rows : [];
     }
 

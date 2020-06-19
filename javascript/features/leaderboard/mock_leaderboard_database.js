@@ -93,6 +93,59 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
         ];
     }
 
+    async _getGangsLeaderboardQuery({ days, limit }) {
+        return [
+            {
+                gang_id: 9000,
+                gang_name: 'Cheap People',
+                color: 1325334698,
+                member_count: 16,
+                death_count: 1406,
+                kill_count: 1636,
+                damage_given: 453485.1510,
+                damage_taken: 426507.2329,
+                shots_hit: 46267,
+                shots_missed: 82186,
+            },
+            {
+                gang_id: 9001,
+                gang_name: 'Anonymous Game',
+                color: -1991054422,
+                member_count: 5,
+                death_count: 1375,
+                kill_count: 1447,
+                damage_given: 396929.6855,
+                damage_taken: 384587.6379,
+                shots_hit: 34265,
+                shots_missed: 45930,
+            },
+            {
+                gang_id: 9002,
+                gang_name: 'Camin Bulevar',
+                color: 265943722,
+                member_count: 8,
+                death_count: 2073,
+                kill_count: 1431,
+                damage_given: 422628.0353,
+                damage_taken: 523225.8597,
+                shots_hit: 41106,
+                shots_missed: 82207,
+            },
+            {
+                gang_id: 9003,
+                gang_name: 'The Outlaws',
+                color: -1040716630,
+                member_count: 5,
+                death_count: 707,
+                kill_count: 1161,
+                damage_given: 296363.3175,
+                damage_taken: 228101.2331,
+                shots_hit: 28035,
+                shots_missed: 35871,
+            },
+        ];
+    }
+
     async _getKillsLeaderboardQuery({ days, limit }) {
         return [
             {

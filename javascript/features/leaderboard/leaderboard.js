@@ -60,6 +60,10 @@ export default class Leaderboard extends Feature {
                 data = await this.getDamageLeaderboardData(settings);
                 break;
 
+            case 'gangs':
+                data = await this.getGangsLeaderboardData(settings);
+                break;
+
             case 'kills':
                 data = await this.getKillsLeaderboardData(settings);
                 break;
@@ -152,6 +156,47 @@ export default class Leaderboard extends Feature {
                     result.damageGiven / result.shots) + '{9E9E9E} / shot';
 
                 return [ player, stats, online, shots ];
+            }),
+        };
+    }
+
+    // Composes and returns the leaderboard data for the Gangs display, which focuses on gangs
+    // rather than individual players. Combines a different subset of statistics.
+    async getGangsLeaderboardData(settings) {
+        const leaderboard = await this.database_.getGangsLeaderboard(settings);
+        const headers = [ 'Gang', 'Kills', 'Damage', 'Accuracy' ];
+
+        return {
+            title: 'Gang Statistics',
+            headers,
+            leaderboard: leaderboard.map((result, index) => {
+                let gang, kills, damage, accuracy;
+
+                // (1) Rank and player identifier
+                gang = (index + 1) + '. ';
+
+                if (result.color)
+                    gang += `{${result.color.toHexRGB()}}${result.name}`;
+                else
+                    gang += result.name;
+
+                if (result.members > 1)
+                    gang += `{9E9E9E} (x${result.members})`;
+
+                // (2) Kills, deaths and ratio
+                kills = format('%d{BDBDBD} / %d (%.2f)',
+                    result.killCount, result.deathCount, result.ratio);
+
+                // (3) Damage statistics & ratio
+                damage = format('%s{BDBDBD} / %s (%.2f)',
+                    this.toFormattedQuantityUnit(result.damageGiven),
+                    this.toFormattedQuantityUnit(result.damageTaken), result.damageRatio);
+
+                // (4) Shot statistics & accuracy
+                accuracy = format('%.2f%%{BDBDBD} (%s shots)',
+                    result.accuracy * 100, this.toFormattedQuantityUnit(result.shots));
+
+                return [ gang, kills, damage, accuracy ];
             }),
         };
     }

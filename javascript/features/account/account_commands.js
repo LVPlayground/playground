@@ -73,7 +73,7 @@ export class AccountCommands {
     //
     // Opens the account management flow for either the |player| or |targetPlayer|, when set. The
     // availability of options is dependent on server configuration, as well as the player's rights
-    // on the server in general. Certain options are limited to VIPs.
+    // on the server in general. Certain options are limited to VIPs like alias feature.
     async onAccountCommand(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
 

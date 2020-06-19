@@ -352,7 +352,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         // However we don't let them know, because it's tradition.
         return 0;
     }
-
+    
     if(PlayerHandOfGod[playerid] == 1)
     {
     //  SendClientMessage(playerid, Color::Red, "Commands are temporary disabled for you!");

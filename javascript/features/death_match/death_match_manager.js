@@ -141,6 +141,9 @@ export class DeathMatchManger {
         if (!location.hasTeams)
             return;
 
+        if (!this.teamScore_.has(zone))
+            this.teamScore_.set(zone, new DeathMatchTeamScore());
+
         if (!this.zoneTextDraws_.has(zone)) {
             this.zoneTextDraws_.set(zone, -1);
             const textDraw = new TextDraw({
@@ -158,15 +161,12 @@ export class DeathMatchManger {
 
             this.zoneTextDraws_.set(zone, textDraw);
             textDraw.displayForPlayer(player);
-            this.updateTextDraw(zone);
         } else {
             const textDraw = this.zoneTextDraws_.get(zone);
             textDraw.displayForPlayer(player);
-            this.updateTextDraw(zone);
         }
 
-        if (!this.teamScore_.has(zone))
-            this.teamScore_.set(zone, new DeathMatchTeamScore());
+        this.updateTextDraw(zone);
 
         if (!isNaN(team) && team < 2) {
             this.playerTeam_.set(player, { zone: zone, team: team });

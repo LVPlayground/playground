@@ -274,8 +274,7 @@ export class DeathMatchManger {
         const zone = this.playersInDeathMatch_.get(player.id);
         const playerTeam = this.playerTeam_.get(player.id);
         const teamScore = this.teamScore_.get(zone);
-        if (zone === null || zone === undefined || playerTeam === null || playerTeam === undefined
-            || teamScore === null || teamScore === undefined)
+        if (zone === undefined || playerTeam === undefined || teamScore === undefined)
             return;
 
         if (playerTeam.team === RED_TEAM)
@@ -327,6 +326,7 @@ export class DeathMatchManger {
         const zone = this.playersInDeathMatch_.get(event.playerid);
         if(zone !== null && zone !== undefined)
             this.resetTeamScoreIfZoneEmpty(zone);
+
         this.playersInDeathMatch_.delete(event.playerid);
         this.playerStats_.delete(event.playerid);
         this.playerTeam_.delete(event.playerid);

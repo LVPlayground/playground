@@ -57,6 +57,10 @@ export class Player extends Supplementable {
     static LEVEL_ADMINISTRATOR = 1;
     static LEVEL_MANAGEMENT = 2;
 
+    // Default value for not being in a tam = 255 
+    // https://wiki.sa-mp.com/wroot/index.php?title=SetPlayerTeam
+    static kNoTeam = 255;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only
@@ -504,10 +508,6 @@ export class Player extends Supplementable {
     isVip() { return this.#vip_; }
     setVip(value) { this.#vip_ = value; }
 };
-
-// Default value for not being in a tam = 255 
-// https://wiki.sa-mp.com/wroot/index.php?title=SetPlayerTeam
-Player.NO_TEAM = 255;
 
 // DO NOT ADD NEW VALUES TO THIS ENUMERATION WITHOUT ALSO ADDING THEM TO PAWN.
 //     //pawn/Entities/Players/PlayerActivity.pwn

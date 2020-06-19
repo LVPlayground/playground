@@ -115,8 +115,7 @@ export class TextDraw {
     this.text_ = value;
   }
 
-  // Updates the text of the text draw to |value|. If the text draw is being displayed to |player|,
-  // the visible state on their screen will be updated as well.
+  // Updates the text of the text draw to |value|. 
   updateTextForPlayer(player, text) {
     let textDrawId = server.textDrawManager.getForPlayer(player, this);
     if (textDrawId !== null)

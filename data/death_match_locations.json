@@ -250,5 +250,47 @@
             { "position": [ -1453, 389, 32 ], "rotation": 0 }
         ],
         "boundaries": [ -1343.2637, -1485.9154, 447.1273, 334.7642 ]
+    },
+    {
+        "id": 9,
+        "name": "SF military RW Teams (Lagshot)",
+        "weather": 10,
+        "time": 10,
+
+        "has_teams": true,
+        "no_team_damage": true,
+
+        "player_health" : 100,
+        "player_armour" : 100,
+
+        "lag_shot": true,
+        "weapons" : [
+            { "weapon_id" : 26, "ammo": 1337 },
+            { "weapon_id" : 28, "ammo": 80085 }
+        ],
+    
+        "interior_id": 0,
+        "spawn_positions": [
+            { "position": [ -1471, 412, 32 ], "rotation": 0 },
+            { "position": [ -1479, 413, 32 ], "rotation": 0 },
+            { "position": [ -1404, 370, 32 ], "rotation": 0 },
+            { "position": [ -1385, 375, 32 ], "rotation": 0 },
+            { "position": [ -1428, 355, 32 ], "rotation": 0 },
+            { "position": [ -1454, 369, 32 ], "rotation": 0 },
+            { "position": [ -1405, 359, 32 ], "rotation": 0 },
+            { "position": [ -1400, 386, 32 ], "rotation": 0 },
+            { "position": [ -1467, 399, 32 ], "rotation": 0 },
+            { "position": [ -1430, 394, 32 ], "rotation": 0 },
+            { "position": [ -1431, 371, 32 ], "rotation": 0 },
+            { "position": [ -1445, 388, 32 ], "rotation": 0 },
+            { "position": [ -1429, 417, 32 ], "rotation": 0 },
+            { "position": [ -1448, 345, 32 ], "rotation": 0 },
+            { "position": [ -1453, 393, 32 ], "rotation": 0 },
+            { "position": [ -1405, 413, 32 ], "rotation": 0 },
+            { "position": [ -1443, 347, 32 ], "rotation": 0 },
+            { "position": [ -1453, 365, 32 ], "rotation": 0 },
+            { "position": [ -1453, 389, 32 ], "rotation": 0 }
+        ],
+        "boundaries": [ -1343.2637, -1485.9154, 447.1273, 334.7642 ]
     }
 ]

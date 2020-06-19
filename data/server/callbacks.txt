@@ -13,10 +13,6 @@ forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
 [Deferred] forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId);
-forward OnSetPlayerSkinId(playerId, skinId, bool: uponNextSpawn);
-forward OnGiveWeapon(playerId, weaponId, ammo);
-forward OnResetPlayerWeapons(playerId);
-forward OnRemovePlayerWeapon(playerId, weaponId);
 
 # Streamer callbacks
 [Deferred] forward OnDynamicObjectMoved(objectid);

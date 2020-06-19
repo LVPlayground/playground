@@ -155,3 +155,13 @@ class SpawnWeaponManager <playerId (MAX_PLAYERS)> {
         return true;
     }
 };
+
+forward OnGiveSpawnWeapon(playerId, weaponId, multiplier);
+public OnGiveSpawnWeapon(playerId, weaponId, multiplier) {
+    SpawnWeaponManager(playerId)->giveSpawnWeapon(weaponId, multiplier);
+}
+
+forward OnGiveSpawnArmour(playerId);
+public OnGiveSpawnArmour(playerId) {
+    SpawnWeaponManager(playerId)->giveSpawnArmour();
+}

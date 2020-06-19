@@ -75,6 +75,7 @@ Feature                                          | Code Health | Description
 [Leaderboard](leaderboard/)                      | ❓ 2020     | The `/leaderboard` command, and database routines to calculate it.
 [Location](location/)                            | ❓ 2020     | -
 [NuwaniCommands](nuwani_commands/)               | ❓ 2020     | The `/nuwani` command, enabling Management to control the bot system.
+[PlayerCommands](player_commands/)               | ✅ 2020    | Provides commands for the player also useable for admins. E.g. to buy weapons.
 [PlayerFavours](player_favours/)                 | ❓ 2020     | -
 [PlayerSettings](player_settings/)               | ❓ 2020     | -
 [Playground](playground/)                        | ❓ 2020     | -

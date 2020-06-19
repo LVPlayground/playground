@@ -47,6 +47,7 @@ import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerStats from 'features/player_stats/player_stats.js';
 import Punishments from 'features/punishments/punishments.js';
@@ -104,6 +105,7 @@ class MockServer {
             haystack: Haystack,
             leaderboard: Leaderboard,
             nuwani: MockNuwani,
+            player_commands: PlayerCommands,
             player_settings: PlayerSettings,
             player_stats: PlayerStats,
             playground: MockPlayground,

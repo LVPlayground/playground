@@ -71,8 +71,8 @@ testRunner.run('.*\.test\.js').then(time => {
         'punishments', 'radio', 'report', 'vehicles',
 
         // Player-related features
-        'account', 'animations', 'player_favours', 'player_settings', 'leaderboard',
-        'teleportation',
+        'account', 'animations', 'player_commands', 'player_favours', 'player_settings', 
+        'leaderboard', 'teleportation',
 
         // Communication features
         'communication_commands', 'reaction_tests',

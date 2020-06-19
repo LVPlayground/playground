@@ -12,6 +12,23 @@ export class PlayerStatsView {
         'accuracy', 'damageRatio', 'ratio', 'shots', 'shotsRatio'
     ]);
 
+    #onlineTimeBase_ = 0;
+    #onlineTimeStart_ = server.clock.monotonicallyIncreasingTime();
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets or sets the online time. This is decided based on a base value, and a start time to be
+    // able to return live values without having to update data all the time.
+    get onlineTime() {
+        const difference = server.clock.monotonicallyIncreasingTime() - this.#onlineTimeStart_;
+        return this.#onlineTimeBase_ + Math.floor(difference / 1000);
+    }
+
+    set onlineTime(value) {
+        this.#onlineTimeBase_ = value;
+        this.#onlineTimeStart_ = server.clock.monotonicallyIncreasingTime();
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     deathCount = 0;

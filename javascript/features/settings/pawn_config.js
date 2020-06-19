@@ -6,10 +6,11 @@ import { Setting } from 'entities/setting.js';
 
 // List of PawnConfig settings with their unique values and settings. Must be synced with Pawn. The
 // settings can be in any category, of any type, as long as the identifier is a valid one.
-// Next ID: 7
+// Next ID: 8
 const kSynchronizedSettings = new Map([
     [ 'abuse/ignore_sole_passenger_damage', { id: 5 } ],
     [ 'abuse/kick_reason_public', { id: 6 } ],
+    [ 'abuse/kill_attribution_time_sec', { id: 7 } ],
     [ 'vehicles/drifting_enabled', { id: 1 } ],
     [ 'vehicles/drifting_max_angle', { id: 2 } ],
     [ 'vehicles/drifting_min_angle', { id: 3 } ],

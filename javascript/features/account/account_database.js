@@ -160,7 +160,7 @@ const PLAYER_ALIASES_QUERY = `
                 sessions.user_id = users_nickname.user_id AND
                 sessions.nickname COLLATE latin1_general_ci = users_nickname.nickname
         ) AS last_seen,
-        IF(users.username = users_nickname.nickname, 1, 0) AS is_primary
+        IF(BINARY users.username = users_nickname.nickname, 1, 0) AS is_primary
     FROM
         users_nickname
     LEFT JOIN
@@ -580,6 +580,7 @@ export class AccountDatabase {
             'money_cash',
             'money_debt',
             'money_spawn',
+            'muted',
             'skin_id',
             'validated',
         ];
@@ -616,6 +617,7 @@ export class AccountDatabase {
             stats_minigame: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_packages: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_reaction: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
+            muted: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             validated: { table: 'users', type: AccountDatabase.kTypeNumber },
         };
     }

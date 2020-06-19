@@ -1,0 +1,144 @@
+[
+    {
+        "command": "fu",
+        "description": "Makes your character give someone the finger.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "PED",
+            "animname": "FUCKU",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    },
+    {
+        "command": "haha",
+        "description": "Makes your character laugh extravagantly.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "RAPPING",
+            "animname": "LAUGH_01",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    },
+    {
+        "command": "handsup",
+        "description": "Makes your character put their hands in the air.",
+
+        "type": "special-action",
+        "action": 10
+    },
+    {
+        "command": "kiss",
+        "description": "Makes your character give someone a kiss.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "BD_FIRE",
+            "animname": "Grlfrd_Kiss_03",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    },
+    {
+        "command": "lay",
+        "description": "Makes your character lay down.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "SUNBATHE",
+            "animname": "batherdown",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": true,
+            "time": 1
+        }
+    },
+    {
+        "command": "piss",
+        "description": "Makes your character take a leak.",
+
+        "type": "special-action",
+        "action": 68
+    },
+    {
+        "command": "sit",
+        "description": "Makes your character sit down, as if on a chair.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "MISC",
+            "animname": "SEAT_LR",
+            "delta": 4.1,
+            "loop": false,
+            "lock": false,
+            "freeze": true,
+            "time": 1
+        }
+    },
+    {
+        "command": "smoke",
+        "description": "Makes your character take a smoke.",
+
+        "type": "special-action",
+        "action": 21
+    },
+    {
+        "command": "vomit",
+        "description": "Makes your character throw up.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "FOOD",
+            "animname": "EAT_VOMIT_P",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    },
+    {
+        "command": "wank",
+        "description": "Makes your character.. well, choke the chicken.",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "PAULNMAC",
+            "animname": "wank_loop",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    },
+    {
+        "command": "wave",
+        "description": "Makes your character wave at someone else.",
+        "prepare": "turn-around",
+
+        "type": "animation",
+        "animation": {
+            "animlib": "KISSING",
+            "animname": "BD_GF_Wave",
+            "delta": 4.1,
+            "loop": false,
+            "lock": true,
+            "freeze": false,
+            "time": 0
+        }
+    }
+]

@@ -29,6 +29,8 @@
       "{FF8E02}As standard, players can own one house. VIPs can own up to three.",
       "{B4CCE8}Change Player Color",
       "{FF8E02}You can permanently change your player color with the \"/my color\" command.",
+      "{B4CCE8}IRC PM",
+      "{FF8E02}As VIP you can PM someone on IRC using \"/ircpm\" command.",
       "",
       "{00FF00}And much more IRC & forum features! Check out https://sa-mp.nl/donate"    
     ]

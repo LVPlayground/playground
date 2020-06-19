@@ -8,6 +8,7 @@
 // Section: abuse
 new bool: g_abuseIgnoreSolePassengerDamage = true;
 new bool: g_abuseKickReasonsPublic = true;
+new g_abuseKillAttributionTimeSec = 10;
 
 // Section: drifting
 new bool: g_driftingEnabled = false;
@@ -17,10 +18,11 @@ new Float: g_driftingMinSpeed = 50.0;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 7
+// Next ID: 8
 enum PawnConfigProperty {
     kAbuseIgnoreSolePassengerDamage = 5,
     kAbuseKickReasonPublic = 6,
+    kAbuseKillAttributionTimeSec = 7,
     kVehiclesDriftingEnabled = 1,
     kVehiclesDriftingMaxAngle = 2,
     kVehiclesDriftingMinAngle = 3,
@@ -34,17 +36,18 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
     new const intValue = floatround(numberValue, floatround_tozero);
 
     switch (property) {
-        // Section: boolean properties
         case kAbuseIgnoreSolePassengerDamage:
             g_abuseIgnoreSolePassengerDamage = !!intValue;
 
         case kAbuseKickReasonPublic:
             g_abuseKickReasonsPublic = !!intValue;
 
+        case kAbuseKillAttributionTimeSec:
+            g_abuseKillAttributionTimeSec = intValue;
+
         case kVehiclesDriftingEnabled:
             g_driftingEnabled = !!intValue;
 
-        // Section: floating point properties
         case kVehiclesDriftingMaxAngle:
             g_driftingMaxAngle = numberValue;
 

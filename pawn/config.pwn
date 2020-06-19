@@ -7,7 +7,7 @@
  * incrementing this version. Significant changes justify a new Major release, use your gut feel.
  */
 class Version {
-    public const Major = 48;
+    public const Major = 49;
     public const Minor = 0;
 };
 

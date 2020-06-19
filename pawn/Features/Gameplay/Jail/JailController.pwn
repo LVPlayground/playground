@@ -270,6 +270,12 @@ class JailController {
             if (remainingTime < 0 && !IsPlayerMinimized(playerId)) {
                 SendClientMessage(playerId, Color::Success, "You have been released from jail because your punishment is over.");
                 this->unjailPlayer(playerId);
+
+                new message[128];
+                format(message, sizeof(message), "%s (Id: %d) has been released from jail.",
+                    Player(playerId)->nicknameString(), playerId);
+
+                Admin(playerId, message);
                 continue;
             }
 

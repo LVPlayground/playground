@@ -10,7 +10,7 @@ import { Question } from 'components/dialogs/question.js';
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { formatDate, fromNow } from 'base/time.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.
@@ -73,7 +73,7 @@ export class AccountCommands {
     //
     // Opens the account management flow for either the |player| or |targetPlayer|, when set. The
     // availability of options is dependent on server configuration, as well as the player's rights
-    // on the server in general. Certain options are limited to VIPs.
+    // on the server in general. Certain options are limited to VIPs like alias feature.
     async onAccountCommand(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
 

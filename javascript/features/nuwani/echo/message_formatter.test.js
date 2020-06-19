@@ -13,7 +13,7 @@ describe('MessageFormatter', it => {
         assert.throws(() => formatter.format('invalidTag'));
         assert.equal(
             formatter.format('test', 'Joe', 12.945, 14),
-            'PRIVMSG #echo :Hello Joe, I have $13 for 14 days!');
+            'PRIVMSG #echo :Hello Joe, I have $12 for 14 days!');
         
         assert.throws(() => formatter.format('test_color_invalid'));
         assert.equal(formatter.format('test_color'), 'PRIVMSG #echo :\x03031 \x0315yo \x03test');
@@ -78,14 +78,15 @@ describe('MessageFormatter', it => {
         assert.equal(formatter.formatPawn('test_int', 'f', 'FF2'), 'PRIVMSG #echo :NaN');
 
         // Test word (string) parsing.
-        assert.throws(() => formatter.formatPawn('test_int', 's', ''));
-        assert.equal(formatter.formatPawn('test_int', 's', 'hello'), 'PRIVMSG #echo :hello');
-        assert.equal(formatter.formatPawn('test_int', 's', 'world :o'), 'PRIVMSG #echo :world');
+        assert.throws(() => formatter.formatPawn('test_string', 's', ''));
+        assert.equal(formatter.formatPawn('test_string', 's', 'hello'), 'PRIVMSG #echo :hello');
+        assert.equal(formatter.formatPawn('test_string', 's', 'world :o'), 'PRIVMSG #echo :world');
 
         // Test sentence (string) parsing.
-        assert.throws(() => formatter.formatPawn('test_int', 'z', ''));
-        assert.equal(formatter.formatPawn('test_int', 'z', 'hello'), 'PRIVMSG #echo :hello');
-        assert.equal(formatter.formatPawn('test_int', 'z', 'world :o'), 'PRIVMSG #echo :world :o');
+        assert.throws(() => formatter.formatPawn('test_string', 'z', ''));
+        assert.equal(formatter.formatPawn('test_string', 'z', 'hello'), 'PRIVMSG #echo :hello');
+        assert.equal(
+            formatter.formatPawn('test_string', 'z', 'world :o'), 'PRIVMSG #echo :world :o');
 
         // Ignoring excess whitepsace
         assert.equal(

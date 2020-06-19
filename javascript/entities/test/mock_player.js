@@ -6,6 +6,7 @@ import { MockVehicle } from 'entities/test/mock_vehicle.js';
 import { Player } from 'entities/player.js';
 import { Vector } from 'base/vector.js';
 
+import { format } from 'base/format.js';
 import { murmur3hash } from 'base/murmur3hash.js';
 
 // MockPlayer
@@ -41,6 +42,7 @@ export class MockPlayer extends Player {
 
     #drunkLevel_ = 0;
     #fightingStyle_ = Player.kFightingStyleNormal;
+    #gravity_ = 0.008;
     #score_ = 0;
     #team_ = 255;  // NO_TEAM
     #time_ = [0, 0];
@@ -57,6 +59,8 @@ export class MockPlayer extends Player {
 
     #streamUrl_ = null;
     #soundId_ = null;
+
+    #lastAnimation_ = null;
 
     #hasBeenSerializedForTesting_ = false;
     #isSurfingVehicle_ = false;
@@ -123,17 +127,25 @@ export class MockPlayer extends Player {
     // ---------------------------------------------------------------------------------------------
 
     // Give a player a certain weapon with ammo.
+    giveSpawnWeapon(weaponId, multiplier) {
+        pawnInvoke('OnGiveSpawnWeapon', 'iii', this.id, weaponId, multiplier);
+    }
+
+    giveSpawnArmour() {
+        pawnInvoke('OnGiveSpawnArmour', 'i', this.id);
+    }
+
     giveWeapon(weaponId, ammo) {
-        pawnInvoke('OnGiveWeapon', 'iii', this.id_, weaponId, ammo);
+        pawnInvoke('OnGiveWeapon', 'iii', this.id, weaponId, ammo);
     }
 
     removeWeapon(weaponId) {
-        pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id_, weaponId);
+        pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id, weaponId);
     }
 
     // Resets all the weapons a player has.
     resetWeapons() {
-        pawnInvoke('OnResetPlayerWeapons', 'i', this.id_);
+        pawnInvoke('OnResetPlayerWeapons', 'i', this.id);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -230,6 +242,9 @@ export class MockPlayer extends Player {
     get fightingStyle() { return this.#fightingStyle_; }
     set fightingStyle(value) { this.#fightingStyle_ = value; }
 
+    get gravity() { return this.#gravity_; }
+    set gravity(value) { this.#gravity_ = value; }
+
     get score() { return this.#score_; }
     set score(value) { this.#score_ = value; }
 
@@ -298,8 +313,8 @@ export class MockPlayer extends Player {
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
         if (message.length <= 144) // SA-MP-implementation does not send longer messages
             this.#messages_.push(message.toString());
@@ -328,7 +343,7 @@ export class MockPlayer extends Player {
     // Section: Visual
     // ---------------------------------------------------------------------------------------------
 
-    animate(options) {}
+    animate(options) { this.#lastAnimation_ = options.library + ':' + options.name; }
 
     get animationIndex() { return 0; }
 
@@ -344,6 +359,8 @@ export class MockPlayer extends Player {
     setCamera(position, target) {}
 
     setSpectating(value) {}
+
+    getLastAnimationForTesting() { return this.#lastAnimation_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Vehicles

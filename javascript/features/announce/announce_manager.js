@@ -4,6 +4,8 @@
 
 import { PlayerSetting } from 'entities/player_setting.js';
 
+import { format } from 'base/format.js';
+
 // Tag to be used for regular player-visible announcements.
 const AnnounceTag = 'notice-announce';
 
@@ -27,7 +29,7 @@ class AnnounceManager {
 
     // Announces that the |name| has started. Players can join by typing |command|.
     announceMinigame(player, name, command) {
-        const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command);
+        const formattedMessage = format(Message.ANNOUNCE_MINIGAME, name, command);
 
         server.playerManager.forEach(onlinePlayer =>
             onlinePlayer.sendMessage(formattedMessage));
@@ -37,7 +39,7 @@ class AnnounceManager {
     // |command| themselves to participate in the minigame as well.
     announceMinigameParticipation(player, name, command) {
         const formattedMessage =
-            Message.format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
+            format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
 
         // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
 
@@ -50,10 +52,10 @@ class AnnounceManager {
     // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
     // is an instance of the Message class, which is common infrastructure for user-visible text.
     announceToPlayers(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
-        const formattedMessage = Message.format(Message.ANNOUNCE_ALL, message);
+        const formattedMessage = format(Message.ANNOUNCE_ALL, message);
 
         server.playerManager.forEach(player =>
             player.sendMessage(formattedMessage));
@@ -72,10 +74,10 @@ class AnnounceManager {
     // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
     // which is common infrastructure for user-visible text.
     announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
-        const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
+        const formattedMessage = format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
         const generalIdentifier = 
             `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
@@ -102,7 +104,7 @@ class AnnounceManager {
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
     // administrators. It uses the ReportTag for the IRC-message.
     announceReportToAdministrators(player, reportedPlayer, reason) {
-        const formattedMessage = Message.format(
+        const formattedMessage = format(
             Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, 
             reportedPlayer.id, reason);
 

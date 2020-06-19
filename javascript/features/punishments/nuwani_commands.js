@@ -5,7 +5,7 @@
 import { BanDatabase } from 'features/punishments/ban_database.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { fromNow, relativeTime } from 'base/time.js';
 import { isIpAddress, isIpRange, isPartOfRangeBan } from 'features/nuwani_commands/ip_utilities.js';
 

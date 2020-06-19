@@ -34,6 +34,13 @@ bool: IsCommandAvailableForLimitedFunctionality(command[]) {
     return false;
 }
 
+forward OnPlayerCommand(playerid, cmdtext[]);
+public OnPlayerCommand(playerid, cmdtext[]) {
+    lvp_command(My, 2, PlayerLevel);
+    lvp_command(p, 1, AdministratorLevel);
+    return 1;
+}
+
 // All commands entered by players will end up in this callback.
 public OnPlayerCommandText(playerid, cmdtext[]) {
     if (strlen(cmdtext) == 1)
@@ -352,7 +359,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         // However we don't let them know, because it's tradition.
         return 0;
     }
-
+    
     if(PlayerHandOfGod[playerid] == 1)
     {
     //  SendClientMessage(playerid, Color::Red, "Commands are temporary disabled for you!");
@@ -482,7 +489,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(stats,          5, PlayerLevel);
     lvp_command(jump,           4, PlayerLevel);
     lvp_command(tune,           4, PlayerLevel);
-    lvp_command(My,             2, PlayerLevel);
     lvp_command(Robbery,        7, PlayerLevel);
 #if Feature::DisableFights == 0
     lvp_command(Wwtw,           4, PlayerLevel);
@@ -491,7 +497,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(minigaming,    10, PlayerLevel);
 
     // Commands for administrators:
-    lvp_command(p,              1, AdministratorLevel);
     lvp_command(t,              1, AdministratorLevel);
     lvp_command(hasfix,         6, AdministratorLevel);
 
@@ -711,95 +716,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
     }
 
-    if(strcmp(cmd, "/animations", true) == 0)
-    {
-        SendClientMessage(playerid, COLOR_YELLOW, "These are the animation commands:");
-        SendClientMessage(playerid, Color::White, "/fu, /smoke, /haha, /wank, /vomit, /handsup, /sit, /kiss,");
-        SendClientMessage(playerid, Color::White, "/bitchslap, /piss, /wave, /lay, /dance.");
-        SendClientMessage(playerid, Color::White, "To end an animation, press the enter/leave vehicle key.");
-
-        return 1;
-    }
-
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) { // To make sure they can do the anim
-        if(strcmp(cmd, "/dance", true) == 0) {
-
-            if(DamageManager(playerid)->isPlayerFighting() == true)
-            {
-                SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a gun fight.");
-                return 1;
-            }
-
-            new tmp[256];
-
-            // Get the dance style param
-            tmp = strtok(cmdtext, idx);
-            if(!tmp[0]) {
-                SendClientMessage(playerid,0xFF0000FF,"Usage: /dance [style 1-4]");
-                return 1;
-            }
-
-            new dancestyle = strval(tmp);
-            if(dancestyle < 1 || dancestyle > 4) {
-                SendClientMessage(playerid,0xFF0000FF,"Usage: /dance [style 1-4]");
-                return 1;
-            }
-
-            if(dancestyle == 1) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE1);
-            } else if(dancestyle == 2) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE2);
-            } else if(dancestyle == 3) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE3);
-            } else if(dancestyle == 4) {
-                SetPlayerSpecialAction(playerid,SPECIAL_ACTION_DANCE4);
-            }
-            return 1;
-        }
-
-        if (strcmp("/sit", cmdtext, true, 4) == 0) {
-            // Small overhaul to use SA-MP's own Sit functions.
-            ApplyAnimation(playerid,"MISC","SEAT_LR",4.1,0,0,0,1,1);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-
-        if(strcmp(cmd, "/handsup", true) == 0) {
-            SetPlayerSpecialAction( playerid, SPECIAL_ACTION_HANDSUP );
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-
-        if (strcmp(cmd, "/fu", true ) == 0)
-        {
-            ApplyAnimation( playerid,"ped", "fucku", 4.1, 0, 1, 1, 0, 0 );
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/smoke", true ) == 0)
-        {
-            SetPlayerSpecialAction(playerid, 21);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/haha", true ) == 0)
-        {
-            ApplyAnimation(playerid,"RAPPING","Laugh_01",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/wank", true ) == 0 || strcmp(cmd, "/fap", true, 4) == 0)
-        {
-            ApplyAnimation(playerid,"PAULNMAC","wank_loop",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/vomit", true ) == 0)
-        {
-            ApplyAnimation(playerid,"FOOD","EAT_Vomit_P",4.1,0,1,1,0,0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
         if(strcmp(cmd, "/bitchslap", true) == 0)
         {
             new Target, tName[2][MAX_PLAYER_NAME+1], Float:tCoord[3], sNear[MAX_PLAYERS];
@@ -854,34 +771,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             g_LastSlapTime[playerid] = Time->currentTime();
             g_LastSlappedBy[Target] = playerid;
 
-            return 1;
-        }
-
-        if (strcmp(cmd, "/piss", true ) == 0)
-        {
-            SetPlayerSpecialAction(playerid,68);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/wave", true ) == 0)
-        {
-            ApplyAnimation(playerid,"KISSING","BD_GF_Wave",4.1,0,1,1,0,0);
-            new Float: pAngle;
-            GetPlayerFacingAngle(playerid, pAngle);
-            SetPlayerFacingAngle(playerid, pAngle + 180);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/kiss", true ) == 0)
-        {
-            ApplyAnimation(playerid, "BD_FIRE", "Grlfrd_Kiss_03", 4.1, 0, 1, 1, 0, 0);
-            iPlayerAnimation[playerid] = true;
-            return 1;
-        }
-        if (strcmp(cmd, "/lay", true ) == 0)
-        {
-            ApplyAnimation(playerid,"SUNBATHE","batherdown",4.1,0,1,1,1,1, 1);
-            iPlayerAnimation[playerid] = true;
             return 1;
         }
     }

@@ -279,7 +279,6 @@ ResetPlayerStats(playerId) {
     playerVehExp[playerId] = 0;
     WonMinigame[playerId] = 0;
     ClearPlayer(playerId);
-    iPlayerAnimation[playerId] = 0;
     ResetWeaponCheatCount(playerId);
     playerArmour[playerId] = 0.0;
     iPlayerSawnoffWeapon[playerId] = 0;
@@ -378,13 +377,18 @@ UpdatePlayerIngameTime(playerId) {
     return 1;
 }
 
-Admin(senderId, text[]) {
+Admin(senderId, text[], bool: excludeTemp = false) {
     new notice[256];
     format(notice, sizeof(notice), "* Admin notice: {FFFFFF}%s", text);
 
     for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); playerId++) {
-        if (Player(playerId)->isAdministrator() == true && playerId != senderId)
-            SendClientMessage(playerId, Color::AdministratorColor, notice);
+        if (!Player(playerId)->isAdministrator() || playerId == senderId)
+            continue;
+
+        if (excludeTemp && tempLevel[playerId] == 2)
+            continue;
+
+        SendClientMessage(playerId, Color::AdministratorColor, notice);
     }
 
     EchoMessage("notice-admin", "z", text);

@@ -68,6 +68,7 @@ export class PlayerAccountSupplement extends Supplement {
             this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
 
         // Statistics that will be stored by the PlayerStatsSupplement instead.
+        player.stats.enduring.onlineTime = databaseRow.online_time;
         player.stats.enduring.deathCount = databaseRow.death_count;
         player.stats.enduring.killCount = databaseRow.kill_count;
         player.stats.enduring.damageGiven = databaseRow.stats_damage_given;
@@ -88,6 +89,7 @@ export class PlayerAccountSupplement extends Supplement {
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
+            // TODO: include |online_time|
             kill_count: player.stats.enduring.killCount,
             death_count: player.stats.enduring.deathCount,
             money_bank: this.bankAccountBalance_,

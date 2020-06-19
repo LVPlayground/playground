@@ -17,8 +17,8 @@
     "chat-call": "<prefix:%><color:7>Call from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-from-irc": "<color:2>[IRC] <color:7>%s:<color> %s",
     "chat-gang": "<prefix:%><color:2>*** <color:7>Gang %s (Id:%d) <color:2>[%d] <color:7>%s:<color> %s",
-    "chat-irc": "<target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color> %s{3}",
-    "chat-irc-notice": "<command:NOTICE><target:{0}><color:7>Message from <color:5>%s{1} <color:7>(Id:%d{2}):<color> %s{3}",
+    "chat-irc": "<target:{0}><color:7>Message from <color:5>%{1}s <color:7>(Id:%{2}d):<color> %{3}s",
+    "chat-irc-notice": "<command:NOTICE><target:{0}><color:7>Message from <color:5>%{1}s <color:7>(Id:%{2}d):<color> %{3}s",
     "chat-private": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(Id:%d):<color> %s",
     "chat-private-to-irc": "<prefix:%><color:7>PM from <color:5>%s <color:7>(Id:%d) to <color:5>%s <color:7>(IRC):<color> %s",
     "chat-private-irc": "<prefix:%><color:7>PM from <color:5>%s <color:7>(IRC) to <color:5>%s <color:7>(Id:%d):<color> %s",
@@ -44,11 +44,11 @@
     "kill": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d): %s",
     "kill-no-reason": "<color:4>*** %s (Id:%d) has been killed by %s (Id:%d)",
 
-    "buy": "<color:10>*** %s (Id:%d) has bought the %s{3} property for %${2}.",
-    "sell": "<color:10>*** %s (Id:%d) has sold the %s{3} property for %${2}.",
+    "buy": "<color:10>*** %{0}s (Id:%{1}d) has bought the %{3}s property for %{2}$.",
+    "sell": "<color:10>*** %{0}s (Id:%{1}d) has sold the %{3}s property for %{2}$.",
     "sell-all": "<color:10>*** %s (Id:%d) has sold all their properties for %$.",
 
-    "fightclub-start": "<color:13>*** %s (Id:%d) and %d (Id:%d) have started a fight!",
+    "fightclub-start": "<color:13>*** %s (Id:%d) and %s (Id:%d) have started a fight!",
     "fightclub-winner": "<color:13>*** %s (Id:%d) has won the fight against %s (Id:%d) with a score of %d : %d.",
     "fightclub-draw": "<color:13>*** The fight between %s (Id:%d) and %s (Id:%d) ended in a draw.",
 
@@ -58,5 +58,5 @@
     "reaction-calculate": "<color:6>*** First player to calculate %s wins %$!",
     "reaction-result": "<color:6>*** %s (Id:%d) has won the reaction test in %d seconds!",
 
-    "merchant": "<color:3>*** The merchant wants to purchase a %s{1} for %${0}."
+    "merchant": "<color:3>*** The merchant wants to purchase a %{1}s for %{0}$."
 }

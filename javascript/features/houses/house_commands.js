@@ -162,6 +162,13 @@ class HouseCommands {
     async onHouseCreateCommand(player) {
         const position = player.position;
 
+        // SA-MP pickups are limited to [-4096, 4096] due to the compression being applied when
+        // packing their coordinates. This, sadly, places quite a restriction on where they can be.
+        if (position.x < -4096 || position.x > 4096 || position.y < -4096 || position.y > 4096) {
+            player.sendMessage(Message.HOUSE_CREATE_OUT_OF_BOUNDS);
+            return;
+        }
+
         // Certain areas are considered to be of high strategic value, and only allow for limited
         // residential activity. Houses should be maintained by players elsewhere.
         if (this.economy_().isResidentialExclusionZone(position)) {

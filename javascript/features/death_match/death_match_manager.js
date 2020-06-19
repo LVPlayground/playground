@@ -44,13 +44,13 @@ export class DeathMatchManger {
         }
 
         if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE &&
-            player.activity !== Player.PLAYER_ACTIVITY_NONE) {
-
+                player.activity !== Player.PLAYER_ACTIVITY_NONE) {
             player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity.");
             return;
         }
 
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const zoneInfo = DeathMatchLocation.getById(zone);
 
         // Bail out if the |player| is not currently allowed to teleport.
         if (!teleportStatus.allowed) {
@@ -63,6 +63,12 @@ export class DeathMatchManger {
         this.playersInDeathMatch_.set(player.id, zone);
         this.playerStats_.set(player.id, player.stats.snapshot());
         this.setPlayerTeam(player, zone);
+
+        const targetLagCompensationMode = zoneInfo.lagShot ? 0 : 2;
+
+        if (player.syncedData.lagCompensationMode !== targetLagCompensationMode)
+            player.syncedData.lagCompensationMode = targetLagCompensationMode;
+        
         this.spawnPlayer(player, zone);
 
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
@@ -73,9 +79,8 @@ export class DeathMatchManger {
     // The player decided to leave so we will make him re-spawn. The player will be killed so that 
     // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
-        if (!this.playersInDeathMatch_.has(player.id)) {
+        if (!this.playersInDeathMatch_.has(player.id))
             return;
-        }
 
         const zone = this.playersInDeathMatch_.get(player.id);
         this.playersInDeathMatch_.delete(player.id);
@@ -90,6 +95,8 @@ export class DeathMatchManger {
         if (!teleportStatus.allowed) {
             player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
             player.health = 0;
+        } else if (player.syncedData.lagCompensationMode !== 2) {
+            player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
         } else {
             player.respawn();
         }
@@ -121,11 +128,10 @@ export class DeathMatchManger {
 
         player.sendMessage(
             Message.DEATH_MATCH_KILL_DEATH, statistics.killCount, statistics.deathCount,
-            Math.round(statistics.ratio * 100) / 100);
+            statistics.ratio);
 
         player.sendMessage(
-            Message.DEATH_MATCH_DAMAGE_ACCURACY, Math.round(statistics.damageGiven),
-            Math.round(statistics.accuracy * 100));
+            Message.DEATH_MATCH_DAMAGE_ACCURACY, statistics.damageGiven, statistics.accuracy * 100);
     }
 
     // If this DM has teams we'll set the player in a team.

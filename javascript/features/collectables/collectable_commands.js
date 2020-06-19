@@ -11,7 +11,7 @@ import { kAchievements } from 'features/collectables/achievements.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { getAreaNameForPosition } from 'components/gameplay/area_names.js';
 
 // Size of a chunk in regards to the collectable hint distance calculations.

@@ -11,6 +11,7 @@ export class MockAccountProviderDatabase extends AccountProviderDatabase {
     async loadAccountData(userId) {
         return {
             user_id: userId,
+            online_time: 0,
             kill_count: 0,
             death_count: 0,
             money_bank: 0,

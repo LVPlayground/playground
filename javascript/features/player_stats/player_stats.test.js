@@ -226,6 +226,27 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(russell.stats.session.damageRatio, 2);
     });
 
+    it('is able to calculate and update player online times', async (assert) => {
+        assert.equal(russell.stats.enduring.onlineTime, 0);
+        assert.equal(russell.stats.session.onlineTime, 0);
+
+        await server.clock.advance(60000);
+
+        assert.closeTo(russell.stats.enduring.onlineTime, 60, 2);
+        assert.closeTo(russell.stats.session.onlineTime, 60, 2);
+
+        russell.stats.enduring.onlineTime = 1000;
+        russell.stats.session.onlineTime = 1000;
+
+        assert.equal(russell.stats.enduring.onlineTime, 1000);
+        assert.equal(russell.stats.session.onlineTime, 1000);
+
+        await server.clock.advance(60000);
+
+        assert.closeTo(russell.stats.enduring.onlineTime, 1060, 2);
+        assert.closeTo(russell.stats.session.onlineTime, 1060, 2);
+    });
+
     it('is able to create snapshots and differentiate them with current statistics', assert => {
         const properties = new Map();
         let index = 0;

@@ -25,7 +25,7 @@ const DELETE_SETTING_QUERY = `
 
 // Class that provides interaction with the database for reading, writing and removing setting
 // overrides. All methods in this class are asynchronous since they communicate with MySQL.
-class SettingsDatabase {
+export class SettingsDatabase {
     // Loads all known setting overrides from the database.
     async loadSettings() {
         const settings = new Map();
@@ -47,9 +47,6 @@ class SettingsDatabase {
 
     // Delets the previously overridden value for the |setting| from the database.
     async deleteSetting(setting) {
-        await server.database.query(
-            DELETE_SETTING_QUERY, setting.identifier);
+        await server.database.query(DELETE_SETTING_QUERY, setting.identifier);
     }
 }
-
-export default SettingsDatabase;

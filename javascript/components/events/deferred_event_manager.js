@@ -32,6 +32,11 @@ export class DeferredEventManager {
                         server.objectManager.onObjectMoved(event);
                         break;
 
+                    case 'OnPlayerChecksumAvailable':
+                        const feature = server.featureManager.loadFeature('nuwani_commands');
+                        feature.playerCommands_.onChecksumResponse(event);
+                        break;
+
                     case 'OnPlayerEditDynamicObject':
                         server.objectManager.onObjectEdited(event);
                         break;

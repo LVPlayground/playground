@@ -507,7 +507,7 @@ describe('AccountCommands', (it, beforeEach) => {
             ],
             [
                 'Donations',
-                '1,235 euro',
+                '1,234 euro',
             ],
             [
                 '----------',

@@ -5,7 +5,8 @@
 import { Setting } from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
+import { formatTime } from 'base/time.js';
 
 // The default number of maximum players who can participate in a game.
 export const kDefaultMaximumPlayers = 4;
@@ -132,9 +133,9 @@ export class GameDescription {
                 else if (score < 60)
                     return format('in %d seconds', score);
                 else if (score < 3600)
-                    return 'in ' + format('%t', score).replace(/^0/, '') + ' minutes';
+                    return 'in ' + formatTime(score).replace(/^0/, '') + ' minutes';
                 else if (score < 24 * 3600)
-                    return 'in ' + format('%t', score).substring(0, 5).replace(/^0/, '') + ' hours';
+                    return 'in ' + formatTime(score).substring(0, 5).replace(/^0/, '') + ' hours';
                 else
                     return 'in a silly amount of time';
         }

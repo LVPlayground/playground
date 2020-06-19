@@ -4,7 +4,7 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { fromNow } from 'base/time.js';
 import { isIpAddress } from 'features/nuwani_commands/ip_utilities.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
@@ -481,8 +481,8 @@ export class AccountNuwaniCommands {
 
             let ratio = '';
             if (summary.kill_count > 0 && summary.death_count > 0) {
-                ratio = ', giving them a ratio of %d';
-                params.push(Math.round((summary.kill_count / summary.death_count) * 100) / 100);
+                ratio = ', giving them a ratio of %.2f';
+                params.push(summary.kill_count / summary.death_count);
             }
 
             deathmatchFormat = killFormat + join + deathFormat + ratio + '. ';

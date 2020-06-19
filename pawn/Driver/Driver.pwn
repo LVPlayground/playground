@@ -29,6 +29,10 @@ new const kSprayTagTimeMs = 2000;
 // Number of milliseconds between marking a vehicle as having moved due to unoccupied sync.
 new const kUnoccupiedSyncMarkTimeMs = 185000;
 
+// Keeps track of the last time a player was hit, and who hit them.
+new g_lastTakenDamageIssuerId[MAX_PLAYERS] = { -1, ... };
+new g_lastTakenDamageTime[MAX_PLAYERS];
+
 // Keeps track of the last vehicle they entered, and hijacked, to work around "ninja jack" kills.
 new g_ninjaJackCurrentVehicleId[MAX_PLAYERS];
 new g_ninjaJackLastAttemptTime[MAX_PLAYERS];
@@ -84,6 +88,8 @@ EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
 
 public OnPlayerConnect(playerid) {
     g_aimbotSuspicionCount[playerid] = 0;
+    g_lastTakenDamageIssuerId[playerid] = -1;
+    g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
 
     // Proceed with legacy processing.
@@ -92,6 +98,19 @@ public OnPlayerConnect(playerid) {
 
 public OnPlayerDisconnect(playerid, reason) {
     StopBlinking(playerid);
+
+    // The player might be using /q to avoid being killed by their opponent. In that case we make
+    // sure that the kill gets attributed to their opponent after all.
+    if (g_lastTakenDamageTime[playerid] > 0 && g_lastTakenDamageIssuerId[playerid] != -1) {
+        new const millisecondDifference = GetTickCount() - g_lastTakenDamageTime[playerid];
+        if (millisecondDifference < g_abuseKillAttributionTimeSec * 1000)
+            OnPlayerDeath(playerid, g_lastTakenDamageIssuerId[playerid], 24);
+    }
+
+    for (new i = 0; i < MAX_PLAYERS; ++i) {
+        if (g_lastTakenDamageIssuerId[i] == playerid)
+            g_lastTakenDamageIssuerId[i] = -1;
+    }
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerDisconnect(reason);
@@ -205,8 +224,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
         // Vehicle keys (2): colour change
         if (HOLDING(VEHICLE_KEYS_BINDING_COLOUR) && (vehicleKeys & VEHICLE_KEYS_COLOUR)) {
-            new primaryColour = random(126);
-            new secondaryColour = random(126);
+            new primaryColour = 128 + random(122);  // [128, 250]
+            new secondaryColour = 128 + random(122);  // [128, 250]
 
             ChangeVehicleColor(vehicleId, primaryColour, secondaryColour);
         }
@@ -398,6 +417,21 @@ public OnPlayerDeath(playerid, killerid, reason) {
         }
     }
 
+    // If the |playerid| has killed themselves, or through other means wants to avoid getting an
+    // attributed kill from their opponent, we'll make sure we do it for them.
+    if (killerid == INVALID_PLAYER_ID && g_lastTakenDamageTime[playerid] > 0 &&
+            g_lastTakenDamageIssuerId[playerid] != -1) {
+        new const millisecondDifference = GetTickCount() - g_lastTakenDamageTime[playerid];
+        if (millisecondDifference < g_abuseKillAttributionTimeSec * 1000) {
+            killerid = g_lastTakenDamageIssuerId[playerid];
+            reason = 24;
+        }
+    }
+
+    // Reset the last damage statistics for the |player| now that all's been set.
+    g_lastTakenDamageIssuerId[playerid] = -1;
+    g_lastTakenDamageTime[playerid] = 0;
+
     return LegacyPlayerDeath(playerid, killerid, reason);
 }
 
@@ -440,6 +474,19 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
     return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }
 
+public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
+#if Feature::EnableServerSideWeaponConfig == 0
+    if (issuerid != INVALID_PLAYER_ID) {
+        g_lastTakenDamageIssuerId[playerid] = issuerid;
+        g_lastTakenDamageTime[playerid] = GetTickCount();
+    }
+
+    return LVPPlayerTakeDamage(playerid, issuerid, amount, weaponid, bodypart);
+#else
+    return 1;
+#endif
+}
+
 // Zone management, powered by the streamer.
 public OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
     ShipManager->onPlayerEnterShip(playerid, areaid);
@@ -473,6 +520,9 @@ public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, respons
 public OnPlayerPickUpDynamicPickup(playerid, STREAMER_TAG_PICKUP:pickupid) {}
 public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, modelid, Float:x, Float:y, Float:z) {}
 public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
+
+forward OnPlayerChecksumAvailable(playerid, address, checksum);
+public OnPlayerChecksumAvailable(playerid, address, checksum) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
 public OnPlayerUpdate(playerid) {

@@ -358,6 +358,16 @@ export class DeathMatchManger {
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;
+
+        for(const textDraw of this.zoneTextDraws_) {
+            const playersInZone = [...this.playersInDeathMatch_]
+                .filter(item => item[1] === textDraw[0])
+                .map(item => item[0]);
+    
+            for(const player of playersInZone) {
+                textDraw[1].hideForPlayer(player);
+            }
+        }
     }
 }
 

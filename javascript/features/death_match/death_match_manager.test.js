@@ -4,7 +4,7 @@
 
 import AbuseConstants from 'features/abuse/abuse_constants.js';
 import DeathMatch from 'features/death_match/death_match.js';	 
-import { DeathMatchTeamScore } from 'features/death_match/death_match_manager.js';
+import { DeathMatchTeamScore, DeathMatchManger } from 'features/death_match/death_match_manager.js';
 import { TextDraw } from 'components/text_draw/text_draw.js';
 
 describe('DeathMatchManager', (it, beforeEach) => {
@@ -303,5 +303,20 @@ describe('DeathMatchManager', (it, beforeEach) => {
         // (5) Leave it.
         manager.leave(gunther);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+    });
+
+    it('should dispose text draws for players', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);        
+        const textDraw = new TextDraw();
+
+        const managerForDisposal = new DeathMatchManger(null, null);
+        managerForDisposal.zoneTextDraws_.set(1, textDraw);
+        managerForDisposal.playersInDeathMatch_.set(gunther, 1);
+
+        textDraw.displayForPlayer(gunther);
+        
+        managerForDisposal.dispose();
+
+        assert.equal(server.textDrawManager.getForPlayer(gunther, textDraw), null);
     });
 });

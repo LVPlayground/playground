@@ -261,7 +261,7 @@ public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart
  * @param weaponid Id of the weapon/reason for the damage.
  * @param bodypart Id of the body part that was hit.
  */
-public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
+LVPPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
     if (!Player(playerid)->isConnected() || Player(playerid)->isNonPlayerCharacter())
         return 0;
 

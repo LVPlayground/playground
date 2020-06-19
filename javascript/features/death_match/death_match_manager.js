@@ -143,30 +143,26 @@ export class DeathMatchManger {
 
         if (!this.zoneTextDraws_.has(zone)) {
             this.zoneTextDraws_.set(zone, -1);
-            wait(1).then(() => {
-                const textDraw = new TextDraw({
-                    position: [482, 311],
-                    text: '_',
+            const textDraw = new TextDraw({
+                position: [482, 311],
+                text: '_',
 
-                    color: Color.fromNumberRGBA(-1),
-                    shadowColor: Color.fromRGBA(0, 0, 0, 255),
-                    font: 2,
-                    letterSize: [0.33, 1.5],
-                    outlineSize: 1,
-                    proportional: true,
-                });
-
-
-                this.zoneTextDraws_.set(zone, textDraw);
-                textDraw.displayForPlayer(player);
-                this.updateTextDraw(zone);
+                color: Color.fromNumberRGBA(-1),
+                shadowColor: Color.fromRGBA(0, 0, 0, 255),
+                font: 2,
+                letterSize: [0.33, 1.5],
+                outlineSize: 1,
+                proportional: true,
             });
+
+
+            this.zoneTextDraws_.set(zone, textDraw);
+            textDraw.displayForPlayer(player);
+            this.updateTextDraw(zone);
         } else {
-            wait(2).then(() => {
-                const textDraw = this.zoneTextDraws_.get(zone);
-                textDraw.displayForPlayer(player);
-                this.updateTextDraw(zone);
-            });
+            const textDraw = this.zoneTextDraws_.get(zone);
+            textDraw.displayForPlayer(player);
+            this.updateTextDraw(zone);
         }
 
         if (!this.teamScore_.has(zone))

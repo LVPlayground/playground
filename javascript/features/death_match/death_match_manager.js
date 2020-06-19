@@ -35,13 +35,13 @@ export class DeathMatchManger {
         }
 
         if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE &&
-            player.activity !== Player.PLAYER_ACTIVITY_NONE) {
-
+                player.activity !== Player.PLAYER_ACTIVITY_NONE) {
             player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity.");
             return;
         }
 
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const zoneInfo = DeathMatchLocation.getById(zone);
 
         // Bail out if the |player| is not currently allowed to teleport.
         if (!teleportStatus.allowed) {
@@ -52,7 +52,9 @@ export class DeathMatchManger {
         this.playersInDeathMatch_.set(player.id, zone);
         this.playerStats_.set(player.id, player.stats.snapshot());
 
-        if (zone.lagShot)
+        const targetLagCompensationMode = zoneInfo.lagShot ? 0 : 2;
+
+        if (player.syncedData.lagCompensationMode !== targetLagCompensationMode)
             player.syncedData.lagCompensationMode = 0;  // this will respawn the |player|
         else
             this.spawnPlayer(player, zone);
@@ -68,8 +70,6 @@ export class DeathMatchManger {
         if (!this.playersInDeathMatch_.has(player.id))
             return;
 
-        const zone = this.playersInDeathMatch_.get(player.id);
-
         this.playersInDeathMatch_.delete(player.id);
         player.activity = Player.PLAYER_ACTIVITY_NONE;
 
@@ -79,7 +79,7 @@ export class DeathMatchManger {
         if (!teleportStatus.allowed) {
             player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
             player.health = 0;
-        } else if (zone.lagShot) {
+        } else if (player.syncedData.lagCompensationMode !== 2) {
             player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
         } else {
             player.respawn();

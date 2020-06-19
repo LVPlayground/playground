@@ -204,4 +204,30 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(russell.health, 100);
         assert.equal(russell.armour, 100);
     });
+
+    it('should enable lag compensation mode to be toggled per zone', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);
+
+        // (1) Teleport to a Lag Shot DM zone.
+        manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
+        assert.equal(gunther.syncedData.lagCompensationMode, 0);
+
+        // (2) Leave it.
+        manager.leave(gunther);
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);
+
+        // (3) Teleport to a Skin Hit DM zone.
+        manager.goToDmZone(gunther, /* Baseball field RW (skin hit)= */ 3);
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);
+
+        // (4) Teleport directly to a Lag Shot DM zone.
+        manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
+        assert.equal(gunther.syncedData.lagCompensationMode, 0);
+
+        // (5) Leave it.
+        manager.leave(gunther);
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);
+    });
 });

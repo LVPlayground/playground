@@ -79,7 +79,7 @@ export class DeathMatchLocation {
         this.playerHealth_ = locationInfo.player_health ?? 100;
         this.playerArmour_ = locationInfo.player_armour ?? 0;
 
-        this.lagShot_ = locationInfo.lagShot ?? false;
+        this.lagShot_ = locationInfo.lag_shot ?? false;
         this.weapons_ = new Set();
 
         locationInfo.weapons.forEach(weaponInfo => {

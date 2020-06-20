@@ -74,6 +74,7 @@ class PlaygroundCommands {
             'features/playground/commands/fancy.js',
             'features/playground/commands/flap.js',
             'features/playground/commands/fly.js',
+            'features/playground/commands/gravity_key.js',
             'features/playground/commands/indicators.js',
             'features/playground/commands/jetpack.js',
             'features/playground/commands/kickflip.js',

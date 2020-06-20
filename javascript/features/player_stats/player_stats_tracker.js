@@ -56,8 +56,14 @@ export class PlayerStatsTracker extends PlayerEventObserver {
                 victim.stats.session.shotsTaken++;
             }
         } else if (hitType === /* vehicle */ 2) {
-            player.stats.enduring.shotsHit++;
-            player.stats.session.shotsHit++;
+            const vehicle = server.vehicleManager.getById(hitId);
+            if (vehicle && vehicle.isOccupied()) {
+                player.stats.enduring.shotsHit++;
+                player.stats.session.shotsHit++;
+            } else {
+                player.stats.enduring.shotsMissed++;
+                player.stats.session.shotsMissed++;
+            }
         } else {
             player.stats.enduring.shotsMissed++;
             player.stats.session.shotsMissed++;

@@ -83,9 +83,10 @@
     },
     {
         "id": 4,
-        "name": "Baseball field Rockets",
+        "name": "Baseball, Rockets, Low gravity",
         "weather": 10,
         "time": 12,
+        "gravity": 0.002,
 
         "player_health" : 100,
         "player_armour" : 100,

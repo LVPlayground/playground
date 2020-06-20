@@ -93,7 +93,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         manager.leave(gunther);
 
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 1);
         assert.equal(manager.playersInDeathMatch_.size, 0);
     });
 
@@ -161,16 +161,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(manager.playerTeam_.get(gunther).team, 0);
         assert.equal(manager.playerTeam_.get(lucy).team, 0);
 
-    });
-
-    it('should not show stats if player hasn\'t done a death match', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        manager.showStats(gunther);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], Message.DEATH_MATCH_NO_STATS);
-    });
+    }); 
 
     it('should not do death match spawn if player not in death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -318,5 +309,27 @@ describe('DeathMatchManager', (it, beforeEach) => {
         managerForDisposal.dispose();
 
         assert.equal(server.textDrawManager.getForPlayer(gunther, textDraw), null);
+    });
+
+    it('should set gravity upon joining low gravity zone', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const zone = 4;
+
+        manager.goToDmZone(gunther, zone);
+        
+        assert.equal(gunther.gravity, 0.002);
+    });
+
+    it('should restore gravity upon leaving', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const zone = 4;
+
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther, zone);
+        gunther.gravity = 0.002;
+
+        manager.leave(gunther);
+
+        assert.equal(gunther.gravity, Player.kDefaultGravity);
     });
 });

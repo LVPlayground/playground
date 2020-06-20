@@ -59,8 +59,8 @@ export class DeathMatchManger {
             return;
         }
 
-        this.playerTeam_.delete(player);
-        this.removeTextDrawForPlayer(player);
+        this.restoreDefaultPlayerStatus(player);
+    
         this.playersInDeathMatch_.set(player, zone);
         this.playerStats_.set(player, player.stats.snapshot());
         this.setPlayerTeam(player, zone);
@@ -80,16 +80,8 @@ export class DeathMatchManger {
     // The player decided to leave so we will make him re-spawn. The player will be killed so that 
     // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
-        if (!this.playersInDeathMatch_.has(player))
-            return;
+        this.restoreDefaultPlayerStatus(player);
 
-        const zone = this.playersInDeathMatch_.get(player);
-        this.playersInDeathMatch_.delete(player);
-        this.playerTeam_.delete(player);
-        player.activity = Player.PLAYER_ACTIVITY_NONE;
-        player.team = Player.kNoTeam;
-
-        this.removeTextDrawForPlayer(player, zone);
         // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
         // way.
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
@@ -102,9 +94,26 @@ export class DeathMatchManger {
             player.respawn();
         }
 
-        this.resetTeamScoreIfZoneEmpty(zone);
-
         this.showStats(player);
+    }
+
+    restoreDefaultPlayerStatus(player) {
+        if (!this.playersInDeathMatch_.has(player))
+            return;
+        
+        const zone = this.playersInDeathMatch_.get(player);
+        const location = DeathMatchLocation.getById(zone);
+
+        this.playersInDeathMatch_.delete(player);
+        this.playerTeam_.delete(player);
+        
+        player.activity = Player.PLAYER_ACTIVITY_NONE;
+        player.team = Player.kNoTeam;
+        if(!isNaN(location.gravity)) 
+            player.gravity = Player.kDefaultGravity;
+
+        this.removeTextDrawForPlayer(player, zone);        
+        this.resetTeamScoreIfZoneEmpty(zone);
     }
 
     resetTeamScoreIfZoneEmpty(zone) {
@@ -117,10 +126,8 @@ export class DeathMatchManger {
     }
 
     showStats(player) {
-        if (!this.playerStats_.has(player)) {
-            player.sendMessage(Message.DEATH_MATCH_NO_STATS);
+        if (!this.playerStats_.has(player)) 
             return;
-        }
 
         player.sendMessage(Message.DEATH_MATCH_STATS);
 
@@ -197,6 +204,8 @@ export class DeathMatchManger {
         player.armour = location.playerArmour;
         player.weather = location.weather;
         player.time = [location.time, 0];
+        if(!isNaN(location.gravity))
+            player.gravity = location.gravity;
 
         if (this.playerTeam_.has(player)) {
             const team = this.playerTeam_.get(player).team;
@@ -337,13 +346,8 @@ export class DeathMatchManger {
         if (!player)
             return;  // invalid |player| given for the |event|
 
-        const zone = this.playersInDeathMatch_.get(player);
-        if (zone !== null && zone !== undefined)
-            this.resetTeamScoreIfZoneEmpty(zone);
-
-        this.playersInDeathMatch_.delete(player);
+        this.restoreDefaultPlayerStatus(player);
         this.playerStats_.delete(player);
-        this.playerTeam_.delete(player);
     }
 
     // Returns the identifiers of all the death match locations.

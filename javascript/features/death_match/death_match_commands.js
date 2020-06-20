@@ -25,7 +25,7 @@ export class DeathMatchCommands {
     // The death match command is being used.
     async onDmCommand(player, zone) { 
         if(isNaN(zone)) {
-            const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'lag shot']);
+            const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'Lag shot']);
             for(const zoneId of this.manager_.validDmZones()) {
                 const location = DeathMatchLocation.getById(zoneId);  
                 dialog.addItem(location.id, location.name, location.hasTeams, location.lagShot, 

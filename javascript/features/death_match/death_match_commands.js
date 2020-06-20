@@ -3,13 +3,15 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { DeathMatchLocation } from 'features/death_match/death_match_location.js';
+import { Menu } from 'components/menu/menu.js';
 
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
 export class DeathMatchCommands {    
 
     constructor(manager) {
         server.commandManager.buildCommand('deathmatch')
-            .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .sub('leave')
                 .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))
             .sub('stats')
@@ -21,9 +23,19 @@ export class DeathMatchCommands {
     }
 
     // The death match command is being used.
-    onDmCommand(player, zone) { 
-        if(zone === null || zone === undefined || typeof zone !== 'number') {
-            player.sendMessage(Message.DEATH_MATCH_INVALID_ZONE, zone);
+    async onDmCommand(player, zone) { 
+        if(isNaN(zone)) {
+            const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'lag shot']);
+            for(const zoneId of this.manager_.validDmZones()) {
+                const location = DeathMatchLocation.getById(zoneId);  
+                dialog.addItem(location.id, location.name, location.hasTeams, location.lagShot, 
+                    (player) => {
+                        this.manager_.goToDmZone(player, zoneId);
+                    });
+            }
+            
+            await dialog.displayForPlayer(player);
+            return;
         }
 
         this.manager_.goToDmZone(player, zone);

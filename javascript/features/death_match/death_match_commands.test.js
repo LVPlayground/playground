@@ -47,4 +47,16 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/deathmatch leave'));
     });
+
+    it('should show menu and teleport to zone if done without zone', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);        
+
+        gunther.respondToDialog({ listitem: 0 /* Assumed `zone 1` */ });
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[0], 
+            Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
+    });
 });

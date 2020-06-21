@@ -500,6 +500,7 @@
   "REACTION_TEST_ANNOUNCE_REMEMBER": "{FFFF00}You've been asked to remember the number %d...",
   "REACTION_TEST_ANNOUNCE_REMEMBER_2": "{FFFF00}The first one to repeat the number you had to remember wins %$!",
   "REACTION_TEST_ANNOUNCE_REPEAT": "{FFFF00}The first one who repeats \"%s\" wins %$!",
+  "REACTION_TEST_ANNOUNCE_UNSCRAMBLE": "{FFFF00}The first one who unscrambles \"%s\" wins %$!",
   "REACTION_TEST_ANNOUNCE_WINNER_FIRST": "{FFFF00}%s has won the reaction test in %.2f seconds. This is their first win!",
   "REACTION_TEST_ANNOUNCE_WINNER_SECOND": "{FFFF00}%s has won the reaction test in %.2f seconds. They've won once before.",
   "REACTION_TEST_ANNOUNCE_WINNER": "{FFFF00}%s has won the reaction test in %.2f seconds. They've won %d times before.",

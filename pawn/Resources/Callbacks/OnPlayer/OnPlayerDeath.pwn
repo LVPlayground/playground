@@ -143,6 +143,10 @@ LegacyPlayerDeath(playerid, killerid, reason) {
     else
         CallLocalFunction("OnPlayerResolvedDeath", "iii", playerid, killerid, reason);  // SendDeathMessage through JavaScript.
 
+    // Send the death message right now, as JavaScript won't be able to do it anymore.
+    if (g_isDisconnecting[playerid])
+        SendDeathMessage(playerid, killerid, reason);
+
     new message[256];
     if (killerid == Player::InvalidId) {
         EchoMessage("death", "s", Player(playerid)->nicknameString());

@@ -91,12 +91,15 @@ public OnPlayerConnect(playerid) {
     g_lastTakenDamageIssuerId[playerid] = -1;
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
+    g_isDisconnecting[playerid] = false;
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
 }
 
 public OnPlayerDisconnect(playerid, reason) {
+    g_isDisconnecting[playerid] = true;
+
     StopBlinking(playerid);
 
     // The player might be using /q to avoid being killed by their opponent. In that case we make

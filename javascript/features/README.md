@@ -55,8 +55,8 @@ May depend on any other feature as long as there are no circular dependencies.
 Feature                                          | Code Health | Description
 -------------------------------------------------|-------------|------------------------------------------------------------------
 [Abuse](abuse/)                                  | ❓ 2020     | -
-[Account](account/)                              | ❓ 2020     | Provides account-related commands to in-game players
-[CommunicationCommands](communication_commands/) | ❓ 2020     | Provides commands related to communication, e.g. `/pm`, `/mute` etc.
+[Account](account/)                              | ✔ 2020     | Provides account-related commands to in-game players
+[CommunicationCommands](communication_commands/) | ✔ 2020     | Provides commands related to communication, e.g. `/pm`, `/mute` etc.
 [Cruise](cruise/)                                | ❓ 2020     | -
 [DeathFeed](death_feed/)                         | ❓ 2020     | -
 [DeathMatch](death_match/)                       | ❓ 2020     | -
@@ -64,7 +64,7 @@ Feature                                          | Code Health | Description
 [Derbies](derbies/)                              | ❓ 2020     | -
 [Economy](economy/)                              | ❓ 2020     | -
 [Fights](fights/)                                | ❓ 2020     | -
-[Friends](friends/)                              | ❓ 2020     | -
+[Friends](friends/)                              | ✔ 2020     | -
 [Games](games/)                                  | ❓ 2020     | Driver for all sorts of interactive games on the server.
 [Gangs](gangs/)                                  | ❓ 2020     | -
 [GangChat](gang_chat/)                           | ❓ 2020     | Extends [Gangs](gangs/) with a private communication channel.

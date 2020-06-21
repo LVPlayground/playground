@@ -4,7 +4,7 @@
 
 // Mock implementation of the friends database functions. Has identical public methods to the
 // actual FriendsDatabase class, but is intended to be used for testing.
-class MockFriendsDatabase {
+export class MockFriendsDatabase {
     async loadFriends(player) {
         if (player.account.userId != 50)
             return [];
@@ -26,5 +26,3 @@ class MockFriendsDatabase {
 
     async removeFriend(player, friendUserId) {}
 }
-
-export default MockFriendsDatabase;

@@ -6,7 +6,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Implementation of the commands available as part of the friends feature, all under the entry
 // point of /friends. See the README.md file for better documentation on the usage.
-class FriendsCommands {
+export class FriendsCommands {
     constructor(manager) {
         this.manager_ = manager;
 
@@ -122,5 +122,3 @@ class FriendsCommands {
         server.commandManager.removeCommand('friends');
     }
 }
-
-export default FriendsCommands;

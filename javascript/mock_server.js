@@ -41,6 +41,7 @@ import Communication from 'features/communication/communication.js';
 import CommunicationCommands from 'features/communication_commands/communication_commands.js';
 import Decorations from 'features/decorations/decorations.js';
 import Finance from 'features/finance/finance.js';
+import Friends from 'features/friends/friends.js';
 import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
 import Haystack from 'features/haystack/haystack.js';
@@ -100,6 +101,7 @@ class MockServer {
             communication_commands: CommunicationCommands,
             decorations: Decorations,
             finance: Finance,
+            friends: Friends,
             games: Games,
             gangs: Gangs,
             haystack: Haystack,

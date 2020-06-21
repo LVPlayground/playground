@@ -147,9 +147,9 @@ describe('HouseEntranceController', (it, beforeEach) => {
             location.settings.access = HouseSettings.ACCESS_FRIENDS;
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
-            friendsFeature.addFriend(russell, gunther);
+            await friendsFeature.addFriendForTesting(russell, gunther);
             assert.isTrue(await controller.hasAccessToHouse(location, gunther));
-            friendsFeature.removeFriend(russell, gunther);
+            await friendsFeature.removeFriendForTesting(russell, gunther);
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
         }
 
@@ -160,7 +160,7 @@ describe('HouseEntranceController', (it, beforeEach) => {
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
 
             // Being friends with the owner does not matter.
-            friendsFeature.addFriend(russell, gunther);
+            await friendsFeature.addFriendForTesting(russell, gunther);
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
 

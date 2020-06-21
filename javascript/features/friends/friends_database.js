@@ -48,7 +48,7 @@ const REMOVE_QUERY = `
         users_friends.friend_id = ?`;
 
 // Responsible for database interactions of the friends feature. Does not contain any other logic.
-class FriendsDatabase {
+export class FriendsDatabase {
     // Asynchronously loads the friends for |player| from the database.
     async loadFriends(player) {
         const results = await server.database.query(LOAD_QUERY, player.account.userId);
@@ -86,5 +86,3 @@ class FriendsDatabase {
         await server.database.query(REMOVE_QUERY, player.account.userId, friendUserId);
     }
 }
-
-export default FriendsDatabase;

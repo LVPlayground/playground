@@ -417,6 +417,14 @@ public OnPlayerDeath(playerid, killerid, reason) {
         }
     }
 
+    // If `/kill` was used, it's possible that the death might be attributed to an invalid player
+    // due to a SA-MP bug. Reset the |killerid| when this happens. Kill attribution for command
+    // abuse will still be able to set the |killerid| to another player Id, however.
+    if (preventKillLamers[playerid]) {
+        killerid = INVALID_PLAYER_ID;
+        preventKillLamers[playerid] = 0;
+    }
+
     // If the |playerid| has killed themselves, or through other means wants to avoid getting an
     // attributed kill from their opponent, we'll make sure we do it for them.
     if (killerid == INVALID_PLAYER_ID && g_lastTakenDamageTime[playerid] > 0 &&

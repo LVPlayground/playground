@@ -9,10 +9,11 @@ forward OnPlayerActivityChange(playerid, activity);
 [Deferred] forward OnPlayerChecksumAvailable(playerid, address, checksum);
 forward OnPlayerLeaveActivity(playerid);
 forward OnPlayerLevelChange(playerid, newlevel, temporary);
-forward OnPlayerLogin(playerid, userid, vip, gangid, undercover);
+forward OnPlayerLogin(playerid, userid, vip, gangid);
 [Deferred] forward OnPlayerResolvedDeath(playerid, killerid, reason);
 forward OnSetiOwnershipChange(playerid);
 forward OnPlayerGuestLogin(playerId);
+forward OnPlayerModLogin(playerid, level, vip);
 
 # Streamer callbacks
 [Deferred] forward OnDynamicObjectMoved(objectid);

@@ -103,7 +103,7 @@ class VehicleDatabase {
             vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
             vehicleSettings.secondaryColor, vehicleSettings.numberPlate);
         
-        return new PersistentVehicleInfo(settings, {
+        return new PersistentVehicleInfo(vehicleSettings, {
             vehicleId: data.insertId
         });
     }

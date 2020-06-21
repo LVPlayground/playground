@@ -260,6 +260,7 @@
   "GBANK_NOT_IN_GANG": "@error You need to be in a gang in order to access its bank account.",
   "GBANK_NO_AVAILABLE_CASH": "@error You cannot carry more than %$ in cash.",
   "GBANK_NO_AVAILABLE_BALANCE": "@error The bank is not willing to store more than %$ for your gang.",
+  "GBANK_NO_EMPTY_TRANSACTIONS": "@error You need to choose a positive amount of money for this transaction.",
   "GBANK_BALANCE": "{2196F3}* %s's account balance is {BBDEFB}%${2196F3}. Your bank is willing to store up to {BBDEFB}%${2196F3}.",
   "GBANK_STORED": "{2196F3}* You have deposited {BBDEFB}%${2196F3}. %s's new account balance is {BBDEFB}%${2196F3}.",
   "GBANK_WITHDRAWN": "{2196F3}* You have withdrawn {BBDEFB}%${2196F3}. %s's new account balance is {BBDEFB}%${2196F3}.",

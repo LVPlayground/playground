@@ -44,8 +44,7 @@ const UPDATE_VEHICLE_QUERY = `
         paintjob = ?,
         primary_color = ?,
         secondary_color = ?,
-        number_plate = ?,
-        interior_id = ?
+        number_plate = ?
     WHERE
         vehicle_id = ?`;
 

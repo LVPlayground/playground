@@ -172,10 +172,12 @@ export class PlayerManager {
                 player.level = Player.LEVEL_MANAGEMENT;
                 player.levelIsTemporary = false;
                 break;
+
             case 2:  // Administrator
                 player.level = Player.LEVEL_ADMINISTRATOR;
                 player.levelIsTemporary = !!event.temporary;
                 break;
+
             default:
                 player.level = Player.LEVEL_PLAYER;
                 player.levelIsTemporary = false;

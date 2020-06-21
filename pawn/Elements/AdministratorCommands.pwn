@@ -813,6 +813,8 @@ GodHelp:
         Player(subjectId)->setIsVip(true);
         Player(subjectId)->setLevel(AdministratorLevel, /* isTemporary= */ true);
 
+        CallRemoteFunction("OnPlayerLevelChange", "iii", playerId, _: AdministratorLevel, /* temporary= */ 1);
+
         tempLevel[subjectId] = 2;
         format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());
 
@@ -850,7 +852,24 @@ GodHelp:
             return 1;
         }
 
-        TakeTempAdministratorRightsFromPlayer(subjectId, true /** fromInGame **/);
+        CallRemoteFunction("OnPlayerLevelChange", "iii", playerId, _: PlayerLevel, /* temporary= */ 0);
+
+        new const bool: wasVip = Player(playerId)->isLoggedIn() ? (AccountData(playerId)->isVip())
+                                                            : false;
+
+        Player(playerId)->setLevel(PlayerLevel, /* isTemporary= */ false);
+        Player(playerId)->setIsVip(wasVip);
+
+        UndercoverAdministrator(playerId)->setIsUndercoverAdministrator(false);
+
+        tempLevel[playerId] = 0;
+        UserTemped[playerId] = "";
+        PlayerSettings(playerId)->setMapTeleportationEnabled(false);
+
+        if (!wasVip)
+            PlayerSettings(playerId)->setTeleportationDisabled(false);
+
+        ColorManager->restorePreviousPlayerCustomColor(playerId);
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is no admin anymore.",
             Player(subjectId)->nicknameString(), subjectId);

@@ -115,12 +115,12 @@ describe('ReactionTests', (it, beforeEach) => {
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
 
-        await gunther.issueMessage(driver.activeTest_.answer);
+        await gunther.issueMessage(driver.activeTest_.answer.toLowerCase());
 
         assert.equal(gunther.messages.length, 4);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
-        assert.includes(gunther.messages[3], driver.activeTest_.answer);
+        assert.includes(gunther.messages[3], driver.activeTest_.answer.toLowerCase());
 
         assert.equal(gunther.account.reactionTests, 1);
         assert.equal(finance.getPlayerCash(gunther), prize);

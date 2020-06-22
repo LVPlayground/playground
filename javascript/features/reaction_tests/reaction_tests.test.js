@@ -96,7 +96,7 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(candidates.size, driver.strategies_.length);
     });
 
-        it('should enable players to win reaction tests', async (assert) => {
+    it('should enable players to win reaction tests', async (assert) => {
         const finance = server.featureManager.loadFeature('finance');
 
         const delay = settings.getValue('playground/reaction_test_delay_sec');

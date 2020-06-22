@@ -44,9 +44,11 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define VEHICLE_KEYS_NOS 32
 #define VEHICLE_KEYS_BLINKER_RIGHT 64
 #define VEHICLE_KEYS_BLINKER_LEFT 128
+#define VEHICLE_KEYS_GRAVITY 256
 
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);
+native SetPlayerGravity(playerid, Float:value);
 
 // -------------------------------------------------------------------------------------------------
 // We override the GivePlayerMoney native as it's used to record intentional changes in a player's

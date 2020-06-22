@@ -977,6 +977,11 @@ class GangCommands {
             return;
         }
 
+        if (amount <= 0) {
+            player.sendMessage(Message.GBANK_NO_EMPTY_TRANSACTIONS);
+            return;
+        }
+
         const balance = await this.manager_.finance.getAccountBalance(gang.id);
         const availableBalance = GangFinance.kMaximumBankAmount - balance;
 
@@ -1031,6 +1036,11 @@ class GangCommands {
 
         if (amount > balance) {
             player.sendMessage(Message.GBANK_NOT_ENOUGH_FUNDS, gang.name, amount);
+            return;
+        }
+
+        if (amount <= 0) {
+            player.sendMessage(Message.GBANK_NO_EMPTY_TRANSACTIONS);
             return;
         }
 

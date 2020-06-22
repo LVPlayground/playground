@@ -474,7 +474,7 @@ export class AccountCommands {
         if (server.playerManager.getByName(alias.nickname) !== null) {
             return alert(player, {
                 title: 'Alias management',
-                message: `The alias ${newAlias} is currently in use, and cannot be deleted.`
+                message: `The alias ${alias.nickname} is currently in use, and cannot be deleted.`
             });
         }
 

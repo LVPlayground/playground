@@ -78,6 +78,7 @@ new g_RivershellState;
 new g_RivershellPlayer[MAX_PLAYERS];
 new isPlayerBrief[MAX_PLAYERS];
 new briefStatus;
+new bool: g_isDisconnecting[MAX_PLAYERS] = { false, ... };
 
 enum ePlayerPosition {
     Float:fSavedPosX,

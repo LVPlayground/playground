@@ -117,8 +117,14 @@ describe('format', it => {
         assert.equal(format('[%b]', 25), '[11001]');
         assert.equal(format('[%o]', 25), '[31]');
         assert.equal(format('[%X]', 16776960), '[FFFF00]');
+        assert.equal(format('[%%%s]', 25), '[%25]');
         assert.equal(format('[%s%%]', 25), '[25%]');
         assert.equal(format('[%d%d]', 1, 5), '[15]');
+
+        // Multi-parameter formats
+        assert.equal(format('%d %s', 255, 'Foo Bar'), '255 Foo Bar');
+        assert.equal(format('%{0}d %{1}s', 255, 'Foo Bar'), '255 Foo Bar');
+        assert.equal(format('%{1}d %{0}s', 'Foo Bar', 255), '255 Foo Bar');
     });
 
     it('it able to parse messages to formatting lists', assert => {
@@ -185,6 +191,14 @@ describe('format', it => {
                 precision: 5
             },
             { type: '📝', text: 'b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{1}s b %{0}$ c`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', index: 1 },
+            { type: '📝', text: ' b ' },
+            { type: '$', index: 0 },
+            { type: '📝', text: ' c' },
         ]);
     });
 });

@@ -44,8 +44,7 @@ const UPDATE_VEHICLE_QUERY = `
         paintjob = ?,
         primary_color = ?,
         secondary_color = ?,
-        number_plate = ?,
-        interior_id = ?
+        number_plate = ?
     WHERE
         vehicle_id = ?`;
 
@@ -103,7 +102,7 @@ class VehicleDatabase {
             vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
             vehicleSettings.secondaryColor, vehicleSettings.numberPlate);
         
-        return new PersistentVehicleInfo(settings, {
+        return new PersistentVehicleInfo(vehicleSettings, {
             vehicleId: data.insertId
         });
     }

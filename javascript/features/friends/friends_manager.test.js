@@ -2,10 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import FriendsManager from 'features/friends/friends_manager.js';
-import MockFriendsDatabase from 'features/friends/test/mock_friends_database.js';
+import { FriendsManager } from 'features/friends/friends_manager.js';
 
-describe('FriendsManager', (it, beforeEach, afterEach) => {
+describe('FriendsManager', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
 
@@ -16,11 +15,9 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        friendsManager = new FriendsManager();
-        friendsManager.database_ = new MockFriendsDatabase();
+        const feature = server.featureManager.loadFeature('friends');
+        friendsManager = feature.manager_;
     });
-
-    afterEach(() => friendsManager.dispose());
 
     it('should load the list of friends when a player logs in', async(assert) => {
         await russell.identify({ userId: 1337 });
@@ -63,7 +60,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.isTrue(friendsManager.friends_.has(gunther));
         assert.isTrue(friendsManager.loadPromises_.has(gunther));
         assert.isTrue(friendsManager.lastActive_.hasOwnProperty(gunther.account.userId));
-        assert.equal(friendsManager.lastActive_[gunther.account.userId], FriendsManager.CURRENTLY_ONLINE);
+        assert.equal(friendsManager.lastActive_[gunther.account.userId], FriendsManager.kCurrentlyOnline);
 
         const guntherUserId = gunther.account.userId;
 
@@ -73,7 +70,7 @@ describe('FriendsManager', (it, beforeEach, afterEach) => {
         assert.isFalse(friendsManager.loadPromises_.has(gunther));
         assert.isTrue(friendsManager.lastActive_.hasOwnProperty(guntherUserId));
         assert.notEqual(
-            friendsManager.lastActive_[guntherUserId], FriendsManager.CURRENTLY_ONLINE);
+            friendsManager.lastActive_[guntherUserId], FriendsManager.kCurrentlyOnline);
     });
 
     it('should by able to tell if one friended one without them being online', async(assert) => {

@@ -48,6 +48,6 @@ export class RandomStrategy extends Strategy {
 
     // Verifies whether the |message| is, or contains, the answer to this reaction test.
     verify(message) {
-        return message.toUpperCase() === this.answer_;
+        return message.toUpperCase().startsWith(this.answer_);
     }
 }

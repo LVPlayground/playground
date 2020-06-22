@@ -209,8 +209,10 @@ class RaceMinigame extends Minigame {
         this.updateTicker();
 
         // Unfreeze all players and allow them to begin racing.
-        for (const player of this.activePlayers)
-            player.vehicle.toggleEngine(true);
+        for (const player of this.activePlayers) {
+            if (player.vehicle)
+                player.vehicle.toggleEngine(true);
+        }
 
         this.startTime_ = highResolutionTime();
 

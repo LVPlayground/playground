@@ -332,10 +332,10 @@ export class AccountNuwaniCommands {
             
             const name = player.name;
             const registered = player.account.isRegistered();
-            const vip = player.isVip();
+            const vip = player.account.isVip();
             const minimized = isPlayerMinimized(player.id);
             const temporary = player.isTemporaryAdministrator();
-            const level = player.isUndercover() ? Player.LEVEL_PLAYER
+            const level = player.isUndercover() ? player.account.level
                                                 : player.level;
 
             players.push({ name, registered, vip, temporary, level, minimized });

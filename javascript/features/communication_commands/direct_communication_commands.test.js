@@ -158,6 +158,19 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);  // unchanged
     });
 
+    it('cannot send to muted targets unless sender is an admin', async (assert) => {
+        const playground = server.featureManager.loadFeature('playground');
+
+        // Set up by Russell muting themselves
+        assert.isTrue(await russell.issueCommand('/mute Russell 5'));
+
+        // (1) It should not be possible for Gunther to PM Russell who's muted
+        assert.isTrue(await gunther.issueCommand('/pm Russell Hello world'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0],Message.format(Message.COMMUNICATION_PM_TARGET_MUTED,
+                     russell.name, russell.id, "5 minutes"));
+    });
+
     it('should be able to send secret private messages', async (assert) => {
         const playground = server.featureManager.loadFeature('playground');
 

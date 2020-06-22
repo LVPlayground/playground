@@ -107,6 +107,7 @@
   "COMMUNICATION_PM_RECEIVER": "{FFDC18}* PM from %s (Id:%d): {FFFFFF}%s",
   "COMMUNICATION_PM_SELF": "@error You cannot send messages to yourself.",
   "COMMUNICATION_PM_SENDER": "{FCF545}* PM to %s (Id:%d): {FFFFFF}%s",
+  "COMMUNICATION_PM_TARGET_MUTED": "@error Your message has been blocked because %s (Id: %d) is muted for another %s.",
   "COMMUNICATION_PSAY_SENT": "@success The message has been sent, but mind that it's still subject to filters.",
   "COMMUNICATION_REPLY_DISCONNECTED": "@error %s has disconnected from the server.",
   "COMMUNICATION_REPLY_NONE": "@error You haven't received messages you can respond to yet.",

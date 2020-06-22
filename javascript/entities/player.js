@@ -61,6 +61,9 @@ export class Player extends Supplementable {
     // https://wiki.sa-mp.com/wroot/index.php?title=SetPlayerTeam
     static kNoTeam = 255;
 
+    // Default gravity value
+    static kDefaultGravity = 0.008;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only

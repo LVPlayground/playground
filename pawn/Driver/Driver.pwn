@@ -22,6 +22,7 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 #define VEHICLE_KEYS_BINDING_NOS            KEY_FIRE
 #define VEHICLE_KEYS_BINDING_BLINKER_RIGHT  KEY_LOOK_RIGHT
 #define VEHICLE_KEYS_BINDING_BLINKER_LEFT   KEY_LOOK_LEFT
+#define VEHICLE_KEYS_BINDING_GRAVITY        KEY_ANALOG_UP
 
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
@@ -52,6 +53,9 @@ new g_vehicleTrailerId[MAX_VEHICLES];
 
 // The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
 new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
+
+// The current player gravity (positive or negative)
+new Float: g_playerGravity[MAX_PLAYERS];
 
 // Returns whether the given |modelId| is a remote controllable vehicle.
 IsModelRemoteControlVehicle(modelId) {
@@ -91,6 +95,7 @@ public OnPlayerConnect(playerid) {
     g_lastTakenDamageIssuerId[playerid] = -1;
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
+    g_playerGravity[playerid] = 0.008;
     g_isDisconnecting[playerid] = false;
 
     // Proceed with legacy processing.
@@ -281,6 +286,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 AddVehicleComponent(vehicleId, 1010);
         }
 
+        // Vehicle keys (7): Blinkers
         new const bool: pressedBlinkerRight =
             PRESSED(VEHICLE_KEYS_BINDING_BLINKER_RIGHT) && vehicleKeys & VEHICLE_KEYS_BLINKER_RIGHT;
         new const bool: pressedBlinkerLeft = 
@@ -294,6 +300,12 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             new const bool: leftBlinker = pressedBlinkerLeft ? !blinkingOnLeft : blinkingOnLeft;
 
             SetBlinker(playerid, vehicleId, leftBlinker, rightBlinker);
+        }
+
+        // Vehicle keys (8): Gravity
+        if(PRESSED(VEHICLE_KEYS_BINDING_GRAVITY) && vehicleKeys & VEHICLE_KEYS_GRAVITY) {
+            g_playerGravity[playerid] *= -1;
+            SetPlayerGravity(playerid, g_playerGravity[playerid]);    
         }
     }
 

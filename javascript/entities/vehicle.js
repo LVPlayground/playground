@@ -26,6 +26,7 @@ export class Vehicle extends Supplementable {
     static kVehicleKeysNos = 32;
     static kVehicleKeysBlinkerRight = 64;
     static kVehicleKeysBlinkerLeft = 128;
+    static kVehicleKeysGravity = 256;
 
     // Constants that indicate the seat a player is occupying in the vehicle. Values above 1 are
     // possible. They indicate passenger seats in the rear seat or further beyond. (E.g. for a bus.)

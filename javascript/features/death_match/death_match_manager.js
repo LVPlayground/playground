@@ -29,11 +29,11 @@ export class DeathMatchManger {
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
-            'playerresolveddeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
-        this.callbacks_.addEventListener(
-            'playerspawn', DeathMatchManger.prototype.onPlayerSpawn.bind(this));
-        this.callbacks_.addEventListener(
-            'playerdisconnect', DeathMatchManger.prototype.onPlayerDisconnect.bind(this));
+            'playerdeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
+
+        // Observes the PlayerManager, to be informed of changes in player events.
+        // Before e.g. the player has fully disconnected.
+        server.playerManager.addObserver(this);
     }
 
     // The player wants to join the death match.
@@ -303,11 +303,7 @@ export class DeathMatchManger {
     }
 
     // When a player spawns while in the mini game we want to teleport him back.
-    onPlayerSpawn(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // invalid |player| given for the |event|
-
+    onPlayerSpawn(player) {
         // The player is playing in a death match
         if (this.playersInDeathMatch_.has(player)) {
             // Remove the player if he's not in the DM_ZONE activity
@@ -321,11 +317,7 @@ export class DeathMatchManger {
     }
 
     // Called when a player disconnects from the server. Clears out all state for the player.
-    onPlayerDisconnect(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // invalid |player| given for the |event|
-
+    onPlayerDisconnect(player) {
         this.restoreDefaultPlayerStatus(player);
         this.playerStats_.delete(player);
     }
@@ -338,6 +330,8 @@ export class DeathMatchManger {
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;
+
+        server.playerManager.removeObserver(this);
 
         for(const textDraw of this.zoneTextDraws_) {
             const playersInZone = [...this.playersInDeathMatch_]

@@ -142,7 +142,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         gunther.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         manager.playersInDeathMatch_.set(gunther, 1);
 
-        manager.onPlayerSpawn({ playerid: gunther.id });
+        gunther.respawn();
 
         assert.equal(gunther.health, 100);
     });
@@ -154,7 +154,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 8);
         manager.playerTeam_.set(gunther, { zone: 8, team: 0 });
 
-        manager.onPlayerSpawn({ playerid: gunther.id });
+        gunther.respawn();
 
         assert.equal(gunther.team, 0);
     });
@@ -186,7 +186,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         gunther.identify();
         manager.playersInDeathMatch_.set(gunther, 1);
 
-        manager.onPlayerDisconnect({ playerid: gunther.id });
+        gunther.disconnectForTesting();
 
         assert.equal(manager.playersInDeathMatch_.has(gunther), false);
     });
@@ -204,7 +204,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 1);
         manager.playersInDeathMatch_.set(russell, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
+        gunther.die(russell);
 
         assert.equal(russell.health, 100);
         assert.equal(russell.armour, 90);
@@ -224,7 +224,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 1);
         manager.playersInDeathMatch_.set(russell, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
+        gunther.die(russell);
 
         assert.equal(russell.health, 100);
         assert.equal(russell.armour, 100);
@@ -302,5 +302,23 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.leave(gunther);
 
         assert.equal(gunther.gravity, Player.kDefaultGravity);
+    });
+
+    it('should remove the players team if he disconnects', assert => {        
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const zone = 9;
+
+        // (1) Gunther joins and disconnects. Player team should be set to 0.
+        manager.goToDmZone(gunther, zone);
+        gunther.disconnectForTesting();
+
+        assert.equal(manager.playerTeam_.size, 0);
+        assert.equal(gunther.team, Player.kNoTeam);
+
+        // (2) Now Russell joins too. He should be in the first team as gunther is gone.
+        manager.goToDmZone(russell, zone);
+
+        assert.equal(russell.team, 0);
     });
 });

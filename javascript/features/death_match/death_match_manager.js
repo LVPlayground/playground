@@ -62,18 +62,16 @@ export class DeathMatchManger {
     // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
         this.restoreDefaultPlayerStatus(player);
-
+        if (player.syncedData.lagCompensationMode !== 2) 
+            player.syncedData.lagCompensationMode = 2;  // This will respawn the |player|
+        
         // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
         // way.
         const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
         if (!teleportStatus.allowed) {
             player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
             player.health = 0;
-        } else if (player.syncedData.lagCompensationMode !== 2) {
-            player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
-        } else {
-            player.respawn();
-        }
+        } 
 
         this.showStats(player);
     }

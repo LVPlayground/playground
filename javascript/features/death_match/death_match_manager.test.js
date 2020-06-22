@@ -256,6 +256,17 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
     });
 
+    it('should set lag compensation mode to default if leaving while shot', async (assert) => {        
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        gunther.syncedData.lagCompensationMode = 0;
+        gunther.shoot({ target: russell });
+        
+        manager.leave(gunther);
+
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);    
+    });
+
     it('should dispose text draws for players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);        
         const textDraw = new TextDraw();

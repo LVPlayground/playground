@@ -72,7 +72,9 @@ export class DeathMatchManger {
         if (!teleportStatus.allowed) {
             player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
             player.health = 0;
-        } 
+        } else {
+            player.respawn();
+        }
 
         this.showStats(player);
     }

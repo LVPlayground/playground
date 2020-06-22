@@ -60,6 +60,7 @@ export class Player extends Supplementable {
     // Default value for not being in a tam = 255 
     // https://wiki.sa-mp.com/wroot/index.php?title=SetPlayerTeam
     static kNoTeam = 255;
+
     // Default gravity value
     static kDefaultGravity = 0.008;
 

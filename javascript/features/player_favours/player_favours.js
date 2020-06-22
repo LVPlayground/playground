@@ -87,6 +87,34 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // PigBenis (https://forum.sa-mp.nl/user-7697.html)
+
+        this.PigBenisActors_ = new ScopedEntities();
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1708.6381, -2102.4609, 13.5469),
+            rotation: 178.9437
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1714.1179, -2102.8254, 13.5469),
+            rotation: 186.9586
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1710.8010, -2100.5366, 19.1346),
+            rotation: 182.8069
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 71,
+            position: new Vector(1696.9012, 1453.5201, 10.7615),
+            rotation: 270
+        });
+        
+        // -----------------------------------------------------------------------------------------
         // TheMightyQ (https://forum.sa-mp.nl/user-16597.html)
 
         this.objectGroups_.push(ObjectGroup.create('data/favours/tmq_house_objects.json', 0, 0));
@@ -164,6 +192,9 @@ class PlayerFavours extends Feature {
 
         this.lukaAndToxicccokieActors_.dispose();
         this.lukaAndToxicccokieActors_ = null;
+
+        this.PigBenisActors_.dispose();
+        this.PigBenisActors_ = null;
 
         for (const objectGroup of this.objectGroups_)
             objectGroup.dispose();

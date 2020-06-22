@@ -51,11 +51,11 @@ export class DeathMatchManger {
         if (player.syncedData.lagCompensationMode !== targetLagCompensationMode)
             player.syncedData.lagCompensationMode = targetLagCompensationMode;
 
-        this.spawnPlayer(player, zone);
-
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_STATS);
         this.announce_().announceToPlayers(Message.DEATH_MATCH_TELEPORTED, player.name, zone);
+
+        player.respawn(); // This will call onPlayerSpawn and spawn the player on the right spot.
     }
 
     // The player decided to leave so we will make him re-spawn. The player will be killed so that 

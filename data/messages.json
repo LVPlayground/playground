@@ -384,6 +384,10 @@
   "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
   "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 
+  "LIMITS_DEATHMATCH_DAMAGE_ISSUED": "you've recently issued damage",
+  "LIMITS_DEATHMATCH_DAMAGE_TAKEN": "you've recently taken damage",
+  "LIMITS_DEATHMATCH_WEAPON_FIRED": "you've recently fired your weapon",
+
   "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because you %s!",
 
   "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has %s the %s option.",

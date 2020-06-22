@@ -37,7 +37,7 @@ export class MockDeferredEventManager {
         const player = server.playerManager.getById(event.playerid);
         const issuer = server.playerManager.getById(event.issuerid);
 
-        if (player && issuer) {
+        if (player) {
             for (const observer of this.observers_) {
                 observer.onPlayerTakeDamage(
                     player, issuer, event.amount, event.weaponid, event.bodypart);

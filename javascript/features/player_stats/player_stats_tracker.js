@@ -40,8 +40,10 @@ export class PlayerStatsTracker extends PlayerEventObserver {
         player.stats.enduring.damageTaken += amount;
         player.stats.session.damageTaken += amount;
 
-        issuer.stats.enduring.damageGiven += amount;
-        issuer.stats.session.damageGiven += amount;
+        if (issuer) {
+            issuer.stats.enduring.damageGiven += amount;
+            issuer.stats.session.damageGiven += amount;
+        }
     }
 
     // Called when a player has issued a shot.

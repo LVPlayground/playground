@@ -172,10 +172,12 @@ export class PlayerManager {
                 player.level = Player.LEVEL_MANAGEMENT;
                 player.levelIsTemporary = false;
                 break;
+
             case 2:  // Administrator
                 player.level = Player.LEVEL_ADMINISTRATOR;
                 player.levelIsTemporary = !!event.temporary;
                 break;
+
             default:
                 player.level = Player.LEVEL_PLAYER;
                 player.levelIsTemporary = false;
@@ -220,9 +222,23 @@ export class PlayerManager {
 
         player.userId = event.userid;
         player.setVip(!!event.vip);
-        player.setUndercover(!!event.undercover);
 
         this.notifyObservers('onPlayerLogin', player, event);
+    }
+
+    // Called when a player logs in to their account whilst undercover. This will mark them as such,
+    // without overriding their account information to protect their identity.
+    onPlayerModLogin(event) {
+        const player = this.players_.get(event.playerid);
+        if (!player)
+            return;  // the event has been received for an invalid player
+
+        player.level = event.level;
+
+        player.setUndercover(true);
+        player.setVip(!!event.vip);
+
+        this.notifyObservers('onPlayerModLogin', player, event);
     }
 
     // Called when a player has selected an object.

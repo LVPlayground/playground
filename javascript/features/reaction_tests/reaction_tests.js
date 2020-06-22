@@ -6,6 +6,7 @@ import { CalculationStrategy } from 'features/reaction_tests/strategies/calculat
 import { Feature } from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
+import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscramble_strategy.js';
 
 import * as achievements from 'features/collectables/achievements.js';
 
@@ -65,6 +66,7 @@ export default class ReactionTests extends Feature {
             CalculationStrategy,
             RandomStrategy,
             RememberStrategy,
+            UnscrambleStrategy,
         ];
 
         // Immediately schedule the first reaction test to start.

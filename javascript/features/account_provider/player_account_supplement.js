@@ -4,6 +4,18 @@
 
 import { Supplement } from 'base/supplementable.js';
 
+// Converts the database-bound level string to a Player.LEVEL_* constant.
+function toPlayerLevel(level) {
+    switch (level) {
+        case 'Management':
+            return Player.LEVEL_MANAGEMENT;
+        case 'Administrator':
+            return Player.LEVEL_ADMINISTRATOR;
+    }
+
+    return Player.LEVEL_PLAYER;
+}
+
 // Supplements the Player object with an `account` accessor, giving other features access to the
 // information associated with a player's account. This supplement will be created for players who
 // are registered on the server, as well as players who are visiting us as a guest.
@@ -14,6 +26,9 @@ export class PlayerAccountSupplement extends Supplement {
     hasRequestedUpdate_ = false;
 
     userId_ = null;
+    level_ = null;
+    isVip_ = false;
+
     bankAccountBalance_ = 0;
     cashBalance_ = 0;
     reactionTests_ = 0;
@@ -21,6 +36,12 @@ export class PlayerAccountSupplement extends Supplement {
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
+
+    // Gets the level of this player as associated with their account. Read-only.
+    get level() { return this.level_; }
+
+    // Gets whether this player is a VIP, as set in their account. Read-only.
+    isVip() { return this.isVip_; }
 
     // Gets or sets the balance this user has on their bank account. Writes will be processed as
     // high priority, because 
@@ -58,6 +79,9 @@ export class PlayerAccountSupplement extends Supplement {
     // data transformations to make the data types appropriate for JavaScript. (E.g. colours.)
     initializeFromDatabase(player, databaseRow) {
         this.userId_ = databaseRow.user_id;
+        this.level_ = toPlayerLevel(databaseRow.level);
+        this.isVip_ = !!databaseRow.is_vip;
+
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.cashBalance_ = databaseRow.money_cash;
         this.reactionTests_ = databaseRow.stats_reaction;

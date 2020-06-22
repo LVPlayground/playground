@@ -884,23 +884,3 @@ GetPlayerIngameHours(playerId) {
 
 forward OnPlayerLeaveActivity(playerid);
 public OnPlayerLeaveActivity(playerid) {}
-
-TakeTempAdministratorRightsFromPlayer(playerId, bool: fromInGame = false) {
-    new const bool: wasVip = Player(playerId)->isLoggedIn() ? (AccountData(playerId)->isVip())
-                                                            : false;
-
-    Player(playerId)->setLevel(PlayerLevel, /* isTemporary= */ false);
-    Player(playerId)->setIsVip(wasVip);
-
-    if (fromInGame)
-        UndercoverAdministrator(playerId)->setIsUndercoverAdministrator(false);
-
-    tempLevel[playerId] = 0;
-    UserTemped[playerId] = "";
-    PlayerSettings(playerId)->setMapTeleportationEnabled(false);
-
-    if (!wasVip)
-        PlayerSettings(playerId)->setTeleportationDisabled(false);
-
-    ColorManager->restorePreviousPlayerCustomColor(playerId);
-}

@@ -2,16 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { MockPlayer } from 'entities/test/mock_player.js';
-import { PlayerManager } from 'entities/player_manager.js';
-
-describe('PlayerManager', (it, beforeEach, afterEach) => {
+describe('PlayerManager', (it, beforeEach) => {
     let manager = null;
 
-    beforeEach(() => manager = new PlayerManager(MockPlayer /* playerConstructor */));
-    afterEach(() => manager.dispose());
+    beforeEach(() => manager = server.playerManager);
 
     it('should deduplicate attached observers', assert => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+
         let counter = 0;
 
         class MyObserver {
@@ -21,17 +19,17 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         const myObserver = new MyObserver();
 
         manager.addObserver(myObserver);
-        manager.notifyObservers('onPlayerConnect');
+        manager.notifyObservers('onPlayerConnect', gunther);
 
         assert.equal(counter, 1);
 
         manager.addObserver(myObserver);  // second add
-        manager.notifyObservers('onPlayerConnect');
+        manager.notifyObservers('onPlayerConnect', gunther);
 
         assert.equal(counter, 2);
 
         manager.removeObserver(myObserver);
-        manager.notifyObservers('onPlayerConnect');
+        manager.notifyObservers('onPlayerConnect', gunther);
 
         assert.equal(counter, 2);
     });
@@ -107,11 +105,23 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         }
 
         manager.onPlayerConnect({ playerid: 42 });
-
         manager.addObserver(new MyObserver());
-        manager.onPlayerLevelChange({ playerid: 42 });
+
+        const player = server.playerManager.getById(42);
+
+        assert.equal(player.level, Player.LEVEL_PLAYER);
+        assert.isFalse(player.isTemporaryAdministrator());
+
+        dispatchEvent('playerlevelchange', {
+            playerid: 42,
+            newlevel: Player.LEVEL_ADMINISTRATOR + /* moderator offset */ 1,
+            temporary: 1
+        });
 
         assert.equal(counter, 1);
+
+        assert.equal(player.level, Player.LEVEL_ADMINISTRATOR);
+        assert.isTrue(player.isTemporaryAdministrator());
     });
 
     it('should inform observers of logins', assert => {
@@ -140,74 +150,75 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
     });
 
     it('should be able to find players by name', assert => {
-        assert.isNull(manager.getByName('Russell'));
+        assert.isNull(manager.getByName('Russellx'));
 
-        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
+        manager.onPlayerConnect({ playerid: 42, name: 'Russellx' });
 
-        assert.isNotNull(manager.getByName('Russell'));
-        assert.isNull(manager.getByName('RUSSELL'));
-        assert.isNull(manager.getByName('uSSel'));
+        assert.isNotNull(manager.getByName('Russellx'));
+        assert.isNull(manager.getByName('RUSSELLx'));
+        assert.isNull(manager.getByName('uSSelx'));
 
-        assert.isNotNull(manager.getByName('Russell', true /* fuzzy */));
-        assert.isNotNull(manager.getByName('RUSSELL', true /* fuzzy */));
-        assert.isNotNull(manager.getByName('uSSel', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('Russellx', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('RUSSELLx', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('uSSellx', true /* fuzzy */));
 
         manager.onPlayerDisconnect({ playerid: 42, reason: 0 });
 
-        assert.isNull(manager.getByName('Russell'));
+        assert.isNull(manager.getByName('Russellx'));
         assert.isNull(manager.getById(42));
     });
 
     // TODO(Russell): Properly test the find() method.
 
     it('should do some sensible number verification in the find() function', assert => {
-        assert.equal(manager.count, 0);
+        assert.equal(manager.count, 3);
 
-        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
+        manager.onPlayerConnect({ playerid: 42, name: 'Barry' });
 
-        assert.equal(manager.count, 1);
+        assert.equal(manager.count, 4);
 
         assert.isNull(manager.find({ nameOrId: '42.11.41.128' }));
 
-        assert.equal(manager.find({ nameOrId: '42' }).name, 'Russell');
-        assert.equal(manager.find({ nameOrId: 'Russell' }).id, 42);
+        assert.equal(manager.find({ nameOrId: '42' }).name, 'Barry');
+        assert.equal(manager.find({ nameOrId: 'Barry' }).id, 42);
     });
 
     it('should know about the number of connected players', assert => {
-        assert.equal(manager.count, 0);
+        assert.equal(manager.count, 3);
 
         manager.onPlayerConnect({ playerid: 42 });
         manager.onPlayerConnect({ playerid: 15 });
-        manager.onPlayerConnect({ playerid: 0 });
+        manager.onPlayerConnect({ playerid: 11 });
 
-        assert.equal(manager.count, 3);
+        assert.equal(manager.count, 6);
 
         manager.onPlayerDisconnect({ playerid: 15, reason: 0 });
-        assert.equal(manager.count, 2);
+        assert.equal(manager.count, 5);
 
         manager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(manager.count, 1);
+        assert.equal(manager.count, 4);
     });
 
     it('should be able to iterate over the connected players', assert => {
         let count = 0;
 
         manager.forEach(player => ++count);
-        assert.equal(count, 0);
+        assert.equal(count, 3);
 
         manager.onPlayerConnect({ playerid: 42 });
         manager.onPlayerConnect({ playerid: 10 });
         manager.onPlayerConnect({ playerid: 5 });
 
+        count = 0;
         manager.forEach(player => ++count);
-        assert.equal(count, 3);
+        assert.equal(count, 6);
 
-        const expectedIds = [42, 10, 5];
+        const expectedIds = [0, 1, 2, 42, 10, 5];
         let actualIds = [];
 
         manager.forEach((player, playerId) => actualIds.push(playerId));
 
-        assert.equal(actualIds.length, 3);
+        assert.equal(actualIds.length, 6);
         assert.deepEqual(actualIds, expectedIds);
     });
 

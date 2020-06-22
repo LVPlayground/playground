@@ -99,7 +99,7 @@ export class VehicleManager {
             return;  // the vehicle isn't owned by the JavaScript code
 
         if (vehicle.trailer)
-            this.detachTrailer(vehicle);
+            vehicle.trailer = null;
 
         this.notifyObservers('onVehicleSpawn', vehicle);
     }

@@ -96,12 +96,15 @@ public OnPlayerConnect(playerid) {
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
     g_playerGravity[playerid] = 0.008;
+    g_isDisconnecting[playerid] = false;
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
 }
 
 public OnPlayerDisconnect(playerid, reason) {
+    g_isDisconnecting[playerid] = true;
+
     StopBlinking(playerid);
 
     // The player might be using /q to avoid being killed by their opponent. In that case we make
@@ -427,6 +430,14 @@ public OnPlayerDeath(playerid, killerid, reason) {
             killerid = currentDriverId;
             reason = WEAPON_VEHICLE;
         }
+    }
+
+    // If `/kill` was used, it's possible that the death might be attributed to an invalid player
+    // due to a SA-MP bug. Reset the |killerid| when this happens. Kill attribution for command
+    // abuse will still be able to set the |killerid| to another player Id, however.
+    if (preventKillLamers[playerid]) {
+        killerid = INVALID_PLAYER_ID;
+        preventKillLamers[playerid] = 0;
     }
 
     // If the |playerid| has killed themselves, or through other means wants to avoid getting an

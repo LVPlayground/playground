@@ -26,6 +26,9 @@ export class DirectCommunicationCommands {
     // WeakMap from |player| to a struct of {type, id, name} of last received message.
     previousMessage_ = new WeakMap();
 
+    // Gets the MuteManager from the Communication feature, which we service.
+    get muteManager() { return this.communication_().muteManager_; }
+
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
 
@@ -143,14 +146,16 @@ export class DirectCommunicationCommands {
         
         // Check if the recieving |target| is muted and not allowed to recieved PMs.
         // And that the sending |player| is NOT an administrator.
-        let muteTime = this.communication_().muteManager_.getPlayerRemainingMuteTime(target);
+        const muteTime = this.muteManager.getPlayerRemainingMuteTime(target);
         if (muteTime !== null && !player.isAdministrator()) {
             const durationText = relativeTime({
                 date1: new Date(),
                 date2: new Date(Date.now() + muteTime * 1000)
             }).text;
-            player.sendMessage(Message.COMMUNICATION_PM_TARGET_MUTED, target.name, target.id,
-                               durationText);
+
+            player.sendMessage(
+                Message.COMMUNICATION_PM_TARGET_MUTED, target.name, target.id, durationText);
+
             return;
         }
         

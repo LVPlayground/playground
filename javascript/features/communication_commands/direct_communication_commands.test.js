@@ -167,8 +167,10 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         // (1) It should not be possible for Gunther to PM Russell who's muted
         assert.isTrue(await gunther.issueCommand('/pm Russell Hello world'));
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],Message.format(Message.COMMUNICATION_PM_TARGET_MUTED,
-                     russell.name, russell.id, "5 minutes"));
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_PM_TARGET_MUTED, russell.name, russell.id,
+                           '5 minutes'));
     });
 
     it('should be able to send secret private messages', async (assert) => {

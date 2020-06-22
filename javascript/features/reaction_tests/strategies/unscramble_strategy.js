@@ -92,7 +92,7 @@ export class UnscrambleStrategy extends Strategy {
                     fixed.add(index);
             }
 
-            // (1) Collect all the characters in the |word|.
+            // (2) Collect all the characters in the |word|.
             for (let index = 0; index < word.length; ++index) {
                 if (!shouldScramble(word.charCodeAt(index)) || fixed.has(index))
                     continue;
@@ -103,7 +103,7 @@ export class UnscrambleStrategy extends Strategy {
             const shuffled = this.shuffle(characters);
             const composed = [];
 
-            // (2) Re-compose the scrambled word.
+            // (3) Re-compose the scrambled word.
             for (let index = 0; index < word.length; ++index) {
                 if (shouldScramble(word.charCodeAt(index)) && !fixed.has(index))
                     composed.push(shuffled.shift());

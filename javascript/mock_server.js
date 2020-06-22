@@ -46,6 +46,7 @@ import Games from 'features/games/games.js';
 import Gangs from 'features/gangs/gangs.js';
 import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
+import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
@@ -106,6 +107,7 @@ class MockServer {
             gangs: Gangs,
             haystack: Haystack,
             leaderboard: Leaderboard,
+            limits: Limits,
             nuwani: MockNuwani,
             player_commands: PlayerCommands,
             player_settings: PlayerSettings,

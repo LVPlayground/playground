@@ -42,6 +42,7 @@ export class DeathMatchManger {
     
         this.restoreDefaultPlayerStatus(player);
     
+        player.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         this.playersInDeathMatch_.set(player, zone);
         this.playerStats_.set(player, player.stats.snapshot());
         this.setPlayerTeam(player, zone);

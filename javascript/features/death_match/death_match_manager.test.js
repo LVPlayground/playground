@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import DeathMatch from 'features/death_match/death_match.js';	 
 import { DeathMatchTeamScore, DeathMatchManger } from 'features/death_match/death_match_manager.js';
 import { TextDraw } from 'components/text_draw/text_draw.js';
@@ -19,45 +18,6 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         const deathMatch = server.featureManager.getFeatureForTests('death_match');
         manager = deathMatch.manager_;
-    });
-
-    it('should show message for player if using invalid dm zone', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        manager.goToDmZone(gunther, 0);
-
-        assert.equal(gunther.messages.length, 2);
-        assert.includes(gunther.messages[0], Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
-        assert.includes(gunther.messages[1], Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES,
-            manager.validDmZones().join(', ')));
-    });
-
-    it('should not enable players to go to a DM zone when they might abuse it', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        gunther.identify({ userId: 42 });
-        gunther.shoot({ target: russell });
-
-        manager.goToDmZone(gunther, 1);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED,
-                AbuseConstants.REASON_FIRED_WEAPON));
-    });
-
-    it('should not allow players to go to a death match if they are in another activity', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
-
-        manager.goToDmZone(gunther, 1);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity."));
     });
 
     it('should set player settings if going to dm zone', async (assert) => {

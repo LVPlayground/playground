@@ -38,27 +38,8 @@ export class DeathMatchManger {
 
     // The player wants to join the death match.
     goToDmZone(player, zone) {
-        if (!DeathMatchLocation.hasLocation(zone)) {
-            player.sendMessage(Message.DEATH_MATCH_INVALID_ZONE, zone);
-            player.sendMessage(Message.DEATH_MATCH_AVAILABLE_ZONES, this.validDmZones().join(', '));
-            return;
-        }
-
-        if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE &&
-                player.activity !== Player.PLAYER_ACTIVITY_NONE) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity.");
-            return;
-        }
-
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
         const zoneInfo = DeathMatchLocation.getById(zone);
-
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus.reason);
-            return;
-        }
-
+    
         this.restoreDefaultPlayerStatus(player);
     
         this.playersInDeathMatch_.set(player, zone);

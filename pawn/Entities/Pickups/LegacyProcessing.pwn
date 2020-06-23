@@ -95,7 +95,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
         playerVipRoomEntryTime[playerid] = 0;
 
-        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerid)) {
             SendClientMessage(playerid, Color::Red, "You cannot use this command because you have recently been in a fight.");
             return 1;
         }

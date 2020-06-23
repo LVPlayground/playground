@@ -12,7 +12,7 @@ class VeryImportantPlayersCommands {
     /**
      * This command can be used by VIPs to list all their features and extras, allowing them to quickly
      * see what they have earned for donating.
-    
+
      * Having a little influence on your own environment can really help out in some situations. Hence
      * Las Venturas Playground offers its VIPs to change their own weather at free will. We've also
      * added a funny weathertype called 'drugs'.
@@ -166,7 +166,7 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while fighting.");
             return 1;
         }

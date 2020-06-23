@@ -359,7 +359,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         // However we don't let them know, because it's tradition.
         return 0;
     }
-    
+
     if(PlayerHandOfGod[playerid] == 1)
     {
     //  SendClientMessage(playerid, Color::Red, "Commands are temporary disabled for you!");
@@ -1000,7 +1000,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerid)) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
@@ -1032,7 +1032,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if (position[2] > 750)
             position[2] = 750;
 
-        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+        ReportPlayerTeleport(playerid);
 
         ClearPlayerMenus(playerid);
         SetVehiclePos(vehicleId, position[0], position[1], position[2]+500);
@@ -1052,7 +1052,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
 
-        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerid)) {
             SendClientMessage(playerid, Color::Error, "Error: You can't use this command because you have recently been in a gun fight.");
             return 1;
         }
@@ -1081,7 +1081,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         if (position[2] > 750)
             position[2] = 750;
 
-        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+        ReportPlayerTeleport(playerid);
 
         ClearPlayerMenus(playerid);
         SetPlayerPos(playerid, position[0], position[1], position[2]+500);

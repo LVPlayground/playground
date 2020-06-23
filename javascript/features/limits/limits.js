@@ -64,13 +64,18 @@ export default class Limits extends Feature {
 
     // Decides whether the given |player| is allowed to teleport. By default this is allowed once
     // per three minutes, as long as the player hasn't engaged in a fight. Reset on respawn.
-    canTeleport(player) {
+    canTeleport(player, disableThrottle = false) {
+        const throttles = [];
+
+        if (!disableThrottle)
+            throttles.push(throttles.kTeleportationThrottle);
+
         return this.decider_.decide(player, {
             requirements: [
                 requirements.kNoDeathmatchRequirement,
                 requirements.kNoMinigameRequirement,
             ],
-            throttles: [ throttles.kTeleportationThrottle ],
+            throttles
         });
     }
 

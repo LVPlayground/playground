@@ -12,12 +12,11 @@ describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends
     let locationFeature = null;  // MockLocation
 
-    let abuse = null;  // Abuse
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
     beforeEach(async(assert) => {
-        ({ abuse, manager } = await createTestEnvironment());
+        ({ manager } = await createTestEnvironment());
 
         friendsFeature = server.featureManager.getFeatureForTests('friends');
         locationFeature = server.featureManager.getFeatureForTests('location');

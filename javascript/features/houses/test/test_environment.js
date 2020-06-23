@@ -16,7 +16,6 @@ export default async function createTestEnvironment() {
 
     server.featureManager.loadFeature('houses');
 
-    const abuse = server.featureManager.getFeatureForTests('abuse');
     const gangs = server.featureManager.getFeatureForTests('gangs');
     const houses = server.featureManager.getFeatureForTests('houses');
     const streamer = server.featureManager.getFeatureForTests('streamer');
@@ -24,7 +23,6 @@ export default async function createTestEnvironment() {
     await houses.manager_.ready;
 
     return {
-        abuse: abuse,
         commands: houses.commands_,
         gangs: gangs,
         manager: houses.manager_,

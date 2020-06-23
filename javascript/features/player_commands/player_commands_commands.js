@@ -10,10 +10,10 @@ const COMMAND_BASE_PATH = 'features/player_commands/commands'
 
 // This registers all player commands handled in JavaScript
 export class PlayerCommandsCommands {
-    constructor(abuse, announce, finance) {
-        this.abuse_ = abuse;
+    constructor(announce, finance, limits) {
         this.announce_ = announce;
         this.finance_ = finance;
+        this.limits_ = limits;
     }
 
     async buildCommands() {
@@ -46,7 +46,7 @@ export class PlayerCommandsCommands {
         if (!CommandImplementation instanceof PlayerCommand)
             throw new Error(fileLocation + ' does not contain a player command.');
 
-        const command = new CommandImplementation(this.abuse_, this.announce_, this.finance_);
+        const command = new CommandImplementation(this.announce_, this.finance_, this.limits_);
 
         command.build(parentCommand.sub(command.name));
         command.buildAdmin(parentAdminCommand.sub(command.name));

@@ -4,7 +4,6 @@
 
 import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
@@ -508,8 +507,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED,
-                           AbuseConstants.REASON_FIRED_WEAPON));
+            Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED, `you've recently issued damage`));
     });
 
     it('should enable administrators to list houses owned by another player', async(assert) => {

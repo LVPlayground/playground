@@ -9,11 +9,11 @@ export default class PlayerCommands extends Feature {
     constructor() {
         super();
 
-        const abuse = this.defineDependency('abuse');
         const announce = this.defineDependency('announce');
         const finance = this.defineDependency('finance');
+        const limits = this.defineDependency('limits');
 
-        this.commands_ = new PlayerCommandsCommands(abuse, announce, finance);
+        this.commands_ = new PlayerCommandsCommands(announce, finance, limits);
         this.commands_.buildCommands();
     }
 

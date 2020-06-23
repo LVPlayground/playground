@@ -18,9 +18,6 @@ class Houses extends Feature {
     constructor() {
         super();
 
-        // Determines whether a player is allowed to teleport into a house right now.
-        const abuse = this.defineDependency('abuse');
-
         // Various actions will result in announcements being made to administrators.
         const announce = this.defineDependency('announce');
 
@@ -33,6 +30,9 @@ class Houses extends Feature {
         // Friends and gangs can influence the access rules of particular houses.
         const friends = this.defineDependency('friends');
         const gangs = this.defineDependency('gangs');
+
+        // Determines whether a player is allowed to teleport to their house.
+        const limits = this.defineDependency('limits');
 
         // Portals from the Location feature will be used for house entrances and exits.
         const location = this.defineDependency('location');
@@ -47,7 +47,7 @@ class Houses extends Feature {
         const streamer = this.defineDependency('streamer');
 
         this.manager_ = new HouseManager(
-            abuse, announce, economy, friends, gangs, location, settings, streamer);
+            announce, economy, friends, gangs, limits, location, settings, streamer);
 
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new Pickups(this.manager_, economy, finance));
@@ -56,7 +56,7 @@ class Houses extends Feature {
         this.manager_.loadHousesFromDatabase();
 
         this.commands_ = new HouseCommands(
-            this.manager_, abuse, announce, economy, finance, location, playground);
+            this.manager_, announce, economy, finance, limits, location, playground);
 
         this.natives_ = new HouseNatives(this.manager_);
     }

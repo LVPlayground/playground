@@ -44,8 +44,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED,
-                AbuseConstants.REASON_FIRED_WEAPON));
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
     });
 
     it('should not allow players to go to a death match if they are in another activity', async (assert) => {
@@ -283,26 +282,32 @@ describe('DeathMatchManager', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
 
         // (1) Teleport to a Lag Shot DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
         assert.equal(gunther.syncedData.lagCompensationMode, 0);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 7);
 
         // (2) Leave it.
         manager.leave(gunther);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
 
         // (3) Teleport to a Skin Hit DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (skin hit)= */ 3);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 3);
 
         // (4) Teleport directly to a Lag Shot DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
         assert.equal(gunther.syncedData.lagCompensationMode, 0);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 7);
 
         // (5) Leave it.
         manager.leave(gunther);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
     });
 
     it('should dispose text draws for players', assert => {

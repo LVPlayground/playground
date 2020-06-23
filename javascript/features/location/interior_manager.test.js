@@ -9,9 +9,9 @@ describe('InteriorManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
     beforeEach(() => {
-        const abuse = server.featureManager.loadFeature('abuse');
+        const limits = server.featureManager.loadFeature('limits');
 
-        manager = new InteriorManager(() => abuse);
+        manager = new InteriorManager(() => limits);
         manager.loadPortalFile('data/portals/ammunation.json');
     });
 

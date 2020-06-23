@@ -12,7 +12,7 @@ describe('Settings', (it, beforeEach) => {
         assert.throws(() => settings.getValue('invalid/value'));
         assert.throws(() => settings.getValue(42));
 
-        const numberValue = settings.getValue('abuse/blocker_damage_issued_time');
+        const numberValue = settings.getValue('account/nickname_limit_days');
         assert.equal(typeof numberValue, 'number');
 
         const booleanValue = settings.getValue('abuse/announce_admin_animation');
@@ -26,16 +26,16 @@ describe('Settings', (it, beforeEach) => {
 
         // Numbers
         {
-            const numberValue = settings.getValue('abuse/blocker_damage_issued_time');
+            const numberValue = settings.getValue('account/nickname_limit_days');
             assert.equal(typeof numberValue, 'number');
 
-            assert.throws(() => settings.setValue('abuse/blocker_damage_issued_time', true));
-            assert.throws(() => settings.setValue('abuse/blocker_damage_issued_time', 'yesplz'));
-            assert.throws(() => settings.setValue('abuse/blocker_damage_issued_time', [ 123 ]));
+            assert.throws(() => settings.setValue('account/nickname_limit_days', true));
+            assert.throws(() => settings.setValue('account/nickname_limit_days', 'yesplz'));
+            assert.throws(() => settings.setValue('account/nickname_limit_days', [ 123 ]));
 
-            settings.setValue('abuse/blocker_damage_issued_time', numberValue + 42);
+            settings.setValue('account/nickname_limit_days', numberValue + 42);
 
-            const updatedValue = settings.getValue('abuse/blocker_damage_issued_time');
+            const updatedValue = settings.getValue('account/nickname_limit_days');
             assert.equal(typeof updatedValue, 'number');
 
             assert.equal(updatedValue, numberValue + 42);
@@ -85,7 +85,7 @@ describe('Settings', (it, beforeEach) => {
 
         class MyObserver {
             onDamageIssuedTimeChange(identifier, inNewValue, inOldValue, inDefaultValue) {
-                assert.equal(identifier, 'abuse/blocker_damage_issued_time');
+                assert.equal(identifier, 'account/nickname_limit_days');
 
                 ++invocations;
 
@@ -97,32 +97,32 @@ describe('Settings', (it, beforeEach) => {
 
         const observer = new MyObserver();
 
-        settings.addSettingObserver('abuse/blocker_damage_issued_time', observer,
+        settings.addSettingObserver('account/nickname_limit_days', observer,
                                     MyObserver.prototype.onDamageIssuedTimeChange);
 
         assert.equal(invocations, 0);
 
-        const original = settings.getValue('abuse/blocker_damage_issued_time');
+        const original = settings.getValue('account/nickname_limit_days');
         assert.equal(typeof original, 'number');
 
         assert.equal(invocations, 0);
 
-        settings.setValue('abuse/blocker_damage_issued_time', 42);
+        settings.setValue('account/nickname_limit_days', 42);
 
         assert.equal(invocations, 1);
         assert.equal(newValue, 42);
         assert.equal(oldValue, original);
         assert.equal(defaultValue, original);
 
-        settings.setValue('abuse/blocker_damage_issued_time', 1337);
+        settings.setValue('account/nickname_limit_days', 1337);
 
         assert.equal(invocations, 2);
         assert.equal(newValue, 1337);
         assert.equal(oldValue, 42);
         assert.equal(defaultValue, original);
 
-        settings.removeSettingObserver('abuse/blocker_damage_issued_time', observer);
-        settings.setValue('abuse/blocker_damage_issued_time', original);
+        settings.removeSettingObserver('account/nickname_limit_days', observer);
+        settings.setValue('account/nickname_limit_days', original);
 
         assert.equal(invocations, 2);
     });
@@ -132,7 +132,7 @@ describe('Settings', (it, beforeEach) => {
 
         assert.equal(settings.database_.loadCalls, 1);
 
-        const original = settings.getValue('abuse/blocker_damage_issued_time');
+        const original = settings.getValue('account/nickname_limit_days');
         assert.equal(typeof original, 'number');
 
         assert.equal(settings.database_.writeCalls, 0);
@@ -140,7 +140,7 @@ describe('Settings', (it, beforeEach) => {
 
         // (1) Update a setting to something that's not its default value.
         {
-            settings.setValue('abuse/blocker_damage_issued_time', 42);
+            settings.setValue('account/nickname_limit_days', 42);
 
             await Promise.resolve();
 
@@ -150,7 +150,7 @@ describe('Settings', (it, beforeEach) => {
 
         // (2) Update a setting back to its default value.
         {
-            settings.setValue('abuse/blocker_damage_issued_time', original);
+            settings.setValue('account/nickname_limit_days', original);
 
             await Promise.resolve();
 

@@ -11,9 +11,9 @@ class MockLocation extends Feature {
         super();
 
         // Used to determine whether a player is able to teleport or not.
-        const abuse = this.defineDependency('abuse');
+        const limits = this.defineDependency('limits');
 
-        this.interiorManager_ = new InteriorManager(abuse);
+        this.interiorManager_ = new InteriorManager(limits);
     }
 
     // ---------------------------------------------------------------------------------------------

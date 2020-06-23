@@ -13,9 +13,10 @@ const BLUE_TEAM = 1;
 export class DeathMatchManger {
     lastQuarterUsedLocationsQueue = [];
 
-    constructor(abuse, announce) {
-        this.abuse_ = abuse;
+    constructor(announce, limits) {
         this.announce_ = announce;
+        this.limits_ = limits;
+
         this.playersInDeathMatch_ = new Map();
 
         // Stats of the player. Will not be cleared upon leaving the death match.
@@ -50,12 +51,12 @@ export class DeathMatchManger {
             return;
         }
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const teleportStatus = this.limits_().canTeleport(player);
         const zoneInfo = DeathMatchLocation.getById(zone);
 
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus.reason);
+        if (!teleportStatus.isApproved() && player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE) {
+            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus);
             return;
         }
 
@@ -92,18 +93,25 @@ export class DeathMatchManger {
         this.removeTextDrawForPlayer(player, zone);
         // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
         // way.
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
-            player.health = 0;
-        } else if (player.syncedData.lagCompensationMode !== 2) {
+        const teleportStatus = this.limits_().canTeleport(player);
+        if (!teleportStatus.isApproved()) {
+            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus);
+            
+            // Manually trigger a death event, because their death should count.
+            this.onPlayerDeath({
+                playerid: player.id,
+                killerid: Player.kInvalidId,
+                reason: 0,
+            });
+        }
+        
+        if (player.syncedData.lagCompensationMode !== 2) {
             player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
         } else {
             player.respawn();
         }
 
         this.resetTeamScoreIfZoneEmpty(zone);
-
         this.showStats(player);
     }
 

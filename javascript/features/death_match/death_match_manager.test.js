@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import DeathMatch from 'features/death_match/death_match.js';	 
 import { DeathMatchTeamScore, DeathMatchManger } from 'features/death_match/death_match_manager.js';
 import { TextDraw } from 'components/text_draw/text_draw.js';

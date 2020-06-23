@@ -7,33 +7,19 @@ import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 // The event listener is responsible for listening to server events and propagating those to other
 // parts of the Abuse feature, including the detectors.
 export class AbuseEventListener {
-    constructor(mitigator, detectors) {
+    constructor(detectors) {
         this.detectors_ = detectors;
-        this.mitigator_ = mitigator;
 
         this.callbacks_ = new ScopedCallbacks();
-        this.callbacks_.addEventListener(
-            'playergivedamage', AbuseEventListener.prototype.onPlayerGiveDamage.bind(this));
         this.callbacks_.addEventListener(
             'playertakedamage', AbuseEventListener.prototype.onPlayerTakeDamage.bind(this));
         this.callbacks_.addEventListener(
             'playerweaponshot', AbuseEventListener.prototype.onPlayerWeaponShot.bind(this));
-        this.callbacks_.addEventListener(
-            'playerdeath', AbuseEventListener.prototype.onPlayerDeath.bind(this));
         
         server.playerManager.addObserver(this);
     }
 
     // ---------------------------------------------------------------------------------------------
-
-    // Called when the player the |event| describes has given damage to somebody.
-    onPlayerGiveDamage(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |event| was not received for a valid player
-
-        this.mitigator_.reportDamageIssued(player);
-    }
 
     // Called when the player the |event| describes has taken damage from somebody. This event is
     // sent by the player who took damage, and thus cannot be entirely trusted.
@@ -42,8 +28,6 @@ export class AbuseEventListener {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
             return;  // the |event| was not received for a valid player
-
-        this.mitigator_.reportDamageTaken(player);
 
         const issuer = server.playerManager.getById(event.issuerid);
 
@@ -59,8 +43,6 @@ export class AbuseEventListener {
         const player = server.playerManager.getById(event.playerid);
         if (!player)
             return;  // the |event| was not received for a valid |player|
-
-        this.mitigator_.reportWeaponFire(player);
 
         const weaponId = event.weaponid;
         const hitPosition = new Vector(event.fX, event.fY, event.fZ);
@@ -79,16 +61,6 @@ export class AbuseEventListener {
 
         for (const detector of this.detectors_.activeDetectors)
             detector.onPlayerWeaponShot(player, weaponId, hitPosition, { hitPlayer, hitVehicle });
-    }
-
-    onPlayerDeath(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |event| was not received for a valid |player|
-
-        this.mitigator_.resetDamageIssued(player);
-        this.mitigator_.resetDamageTaken(player);
-        this.mitigator_.resetWeaponFire(player);
     }
 
     // Called when a player has entered vehicle. This is similar to the OnPlayerEnterVehicle event

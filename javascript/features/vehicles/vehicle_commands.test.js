@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 

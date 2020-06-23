@@ -28,6 +28,7 @@ function mapEquals(left, right) {
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
     finance_ = null;
+    limits_ = null;
     nuwani_ = null;
     settings_ = null;
 
@@ -39,8 +40,9 @@ export class GameCommands {
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, nuwani, settings, manager, registry) {
+    constructor(finance, limits, nuwani, settings, manager, registry) {
         this.finance_ = finance;
+        this.limits_ = limits;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
 
@@ -139,22 +141,9 @@ export class GameCommands {
         if (!settings)
             return;  // the |player| aborted out of the flow
 
-        const activity = this.manager_.getPlayerActivity(player);
-        if (activity) {
-            let message = null;
-
-            switch (activity.getActivityState()) {
-                case GameActivity.kStateRegistered:
-                    message = Message.GAME_REGISTRATION_ALREADY_REGISTERED;
-                    break;
-                case GameActivity.kStateEngaged:
-                    message = Message.GAME_REGISTRATION_ALREADY_ENGAGED;
-                    break;
-                default:
-                    throw new Error(`Unknown activity: ${activity}`)
-            }
-
-            player.sendMessage(message, activity.getActivityName());
+        const decision = this.limits_().canStartMinigame(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.GAME_REGISTRATION_REJECTED, decision);
             return;
         }
 

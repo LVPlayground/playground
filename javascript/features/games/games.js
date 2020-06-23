@@ -22,6 +22,9 @@ export default class Games extends Feature {
         // Participating in a game costs some money, but can also reward a prize.
         const finance = this.defineDependency('finance');
 
+        // Decides whether a player is in a state right now to join a minigame.
+        const limits = this.defineDependency('limits');
+
         // The Nuwani framework allows us to broadcast participation and results to other places.
         const nuwani = this.defineDependency('nuwani');
 
@@ -37,7 +40,8 @@ export default class Games extends Feature {
         this.registry_ = new GameRegistry(this.manager_);
         
         // Implements the commands with which players can start and stop games.
-        this.commands_ = new GameCommands(finance, nuwani, settings, this.manager_, this.registry_);
+        this.commands_ = new GameCommands(
+            finance, limits, nuwani, settings, this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------

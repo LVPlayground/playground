@@ -153,8 +153,6 @@
   "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
   "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
-  "GAME_REGISTRATION_ALREADY_ENGAGED": "@error Sorry, but you are already engaged in the %s game.",
-  "GAME_REGISTRATION_ALREADY_REGISTERED": "@error Sorry, but you have already registered for the %s game.",
   "GAME_REGISTRATION_ANNOUNCEMENT": "{CCD782}Sign up for the {838F31}%s game{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",
   "GAME_REGISTRATION_INVALID_ID": "@error Sorry, but the game you're trying to join isn't taking registrations anymore.",
@@ -163,6 +161,7 @@
   "GAME_REGISTRATION_NOT_ENOUGH_MONEY": "@error Sorry, you need %$ to join the %s game.",
   "GAME_REGISTRATION_NOT_ENOUGH_PLAYERS": "@error Sorry, the %s game requires at least %d participants, but only %d are available right now.",
   "GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS": "{CCD782}The {838F31}%s game{CCD782} has been cancelled because not enough players registered.",
+  "GAME_REGISTRATION_REJECTED": "@error Sorry, you can't start a game right now because %s.",
   "GAME_REGISTRATION_RELOAD": "{CCD782}You have been removed from the {838F31}%s game{CCD782} because a Management member reloaded it.",
   "GAME_REGISTRATION_STARTED": "{CCD782}You have signed up for the {838F31}%s game{CCD782}, which started immediately. Enjoy!",
   "GAME_REGISTRATION_UNAVAILABLE": "@error Sorry, the %s game is currently unavailable.",

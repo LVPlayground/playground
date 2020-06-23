@@ -42,8 +42,6 @@ export class GameManager {
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerresolveddeath', GameManager.prototype.onPlayerDeath.bind(this));
-        this.callbacks_.addEventListener(
-            'playerspawn', GameManager.prototype.onPlayerSpawn.bind(this));
 
         this.registrationIds_ = new CircularReadOnlyBuffer(...range(1, 99));
         this.worlds_ = new CircularReadOnlyBuffer(...range(...kGameVirtualWorldRange));
@@ -140,11 +138,7 @@ export class GameManager {
 
     // Called when a player spawn in the world. If they're part of an engaged game, the event will
     // be owned by the game and it's expected to do something with it.
-    onPlayerSpawn(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |player| couldn't be found, this is an invalid death
-        
+    onPlayerSpawn(player) {
         const activity = this.activity_.get(player);
         if (!activity || activity.getActivityState() != GameActivity.kStateEngaged)
             return;  // the |player| isn't in a game, or the game hasn't started yet

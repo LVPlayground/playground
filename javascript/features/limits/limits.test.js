@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { format } from 'base/format.js';
+
 describe('Limits', (it, beforeEach) => {
     let decider = null;
     let feature = null;
@@ -98,5 +100,37 @@ describe('Limits', (it, beforeEach) => {
 
         assert.isNull(decider.processDeathmatchRequirement(
             gunther, server.clock.monotonicallyIncreasingTime()));
+    });
+
+    it('should properly support the minigame requirements', assert => {
+        assert.isNull(decider.processMinigameRequirement(gunther));
+
+        // (1) JavaScript `Games`-feature driven games
+        gunther.syncedData.minigameName = 'Haystack Extreme';
+        {
+            const decision = decider.processMinigameRequirement(gunther);
+
+            assert.isNotNull(decision);
+            assert.equal(
+                decision.toString(), format(Message.LIMITS_OCCUPIED_MINIGAME, 'Haystack Extreme'));
+            
+            gunther.syncedData.minigameName = null;
+        }
+
+        assert.isNull(decider.processMinigameRequirement(gunther));
+
+        // (2) Deprecated Activity-based games
+        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
+        {
+            const decision = decider.processMinigameRequirement(gunther);
+
+            assert.isNotNull(decision);
+            assert.equal(
+                decision.toString(), format(Message.LIMITS_OCCUPIED_MINIGAME, 'a race'));
+            
+            gunther.activity = Player.PLAYER_ACTIVITY_NONE;
+        }
+
+        assert.isNull(decider.processMinigameRequirement(gunther));
     });
 });

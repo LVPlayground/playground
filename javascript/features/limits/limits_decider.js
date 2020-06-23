@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlayerEventObserver } from 'components/events/player_event_observer.js';
 import { LimitsDecision } from 'features/limits/limits_decision.js';
+import { PlayerEventObserver } from 'components/events/player_event_observer.js';
+
+import { format } from 'base/format.js';
 
 import * as requirements from 'features/limits/requirements.js';
 
@@ -42,7 +44,7 @@ export class LimitsDecider extends PlayerEventObserver {
                     break;
                 
                 case requirements.kNoMinigameRequirement:
-                    decision = this.processMinigameRequirement(player, currentTime);
+                    decision = this.processMinigameRequirement(player);
                     break;
                 
                 default:
@@ -98,7 +100,24 @@ export class LimitsDecider extends PlayerEventObserver {
 
     // Processes the minigame requirement for the |player|, and returns a decision iff the
     // requirement cannot be met, for example because the player is playing a minigame.
-    processMinigameRequirement(player, currentTime) {}
+    processMinigameRequirement(player) {
+        if (player.syncedData.minigameName.length) {
+            return LimitsDecision.createRejection(format(
+                Message.LIMITS_OCCUPIED_MINIGAME, player.syncedData.minigameName));
+        }
+
+        switch (player.activity) {
+            case Player.PLAYER_ACTIVITY_JS_RACE:
+                return LimitsDecision.createRejection(format(
+                    Message.LIMITS_OCCUPIED_MINIGAME, 'a race'));
+
+            case Player.PLAYER_ACTIVITY_JS_DM_ZONE:
+                return LimitsDecision.createRejection(format(
+                    Message.LIMITS_OCCUPIED_MINIGAME, 'in a deathmatch zone'));
+        }
+
+        return null;
+    }
 
     // ---------------------------------------------------------------------------------------------
 

@@ -78,6 +78,8 @@ export default class Finance extends Feature {
     // Gives the |player| the given |amount|. Returns whether the money has been given to them,
     // which only fails when limits would be exceeded.
     givePlayerCash(player, amount) {
+        amount = Math.floor(amount);
+
         if (amount < 0)
             throw new Error('This method may only be used to issue money to a player.');
 
@@ -92,6 +94,8 @@ export default class Finance extends Feature {
     // Takes the given |amount| from the |player|. This is able to put them in debt. Returns whether
     // the money was taken from them, which only fails when limits would be exceeded.
     takePlayerCash(player, amount) {
+        amount = Math.floor(amount);
+
         if (amount < 0)
             throw new Error('This method may only be used to take money from a player.');
 

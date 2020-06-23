@@ -55,7 +55,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity."));
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you're playing a race`));
     });
 
     it('should set player settings if going to dm zone', async (assert) => {

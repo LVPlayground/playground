@@ -45,20 +45,21 @@ export class DeathMatchManger {
             return;
         }
 
-        if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE &&
-                player.activity !== Player.PLAYER_ACTIVITY_NONE) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity.");
+        let decision = null;
+
+        // If the |player| is switching to a new deathmatch zone, we allow them to switch when they
+        // haven't been shot recently. Otherwise we need to meet the full minigame criteria.
+        if (player.activity === Player.PLAYER_ACTIVITY_JS_DM_ZONE)
+            decision = this.limits_().canLeaveDeathmatchZone(player);
+        else
+            decision = this.limits_().canStartMinigame(player);
+
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, decision);
             return;
         }
 
-        const teleportStatus = this.limits_().canTeleport(player);
         const zoneInfo = DeathMatchLocation.getById(zone);
-
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.isApproved() && player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus);
-            return;
-        }
 
         this.playerTeam_.delete(player);
         this.removeTextDrawForPlayer(player);
@@ -91,11 +92,11 @@ export class DeathMatchManger {
         player.team = Player.kNoTeam;
 
         this.removeTextDrawForPlayer(player, zone);
-        // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
-        // way.
-        const teleportStatus = this.limits_().canTeleport(player);
-        if (!teleportStatus.isApproved()) {
-            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus);
+
+        // To avoid abuse we'll kill the player if they had recently fought.
+        const decision = this.limits_().canLeaveDeathmatchZone(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, decision);
             
             // Manually trigger a death event, because their death should count.
             this.onPlayerDeath({

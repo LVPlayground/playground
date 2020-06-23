@@ -48,6 +48,16 @@ export default class Limits extends Feature {
         });
     }
 
+    // Decides whether the |player| is able to leave a deathmatch zone right now. They're not able
+    // to do this whilst in the middle of a fight, where it would be unfair.
+    canLeaveDeathmatchZone(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+            ]
+        });
+    }
+
     // Decides whether the given |player| is allowed to spawn a car. By default they must be outside
     // in the main world, not be fighting, and can only do this once per minutes.
     canSpawnVehicle(player) {
@@ -59,6 +69,17 @@ export default class Limits extends Feature {
                 requirements.kOutsideRequirement,
             ],
             throttles: [ throttles.kSpawnVehicleThrottle ],
+        });
+    }
+
+    // Decides whether the |player| is able to start a minigame. There are no time limits, but we do
+    // require them to not be in a fight, nor engaged in another activity.
+    canStartMinigame(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+            ]
         });
     }
 

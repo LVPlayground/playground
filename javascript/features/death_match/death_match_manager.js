@@ -330,7 +330,7 @@ export class DeathMatchManger {
 
         // The player is playing in a death match
         if (this.playersInDeathMatch_.has(player)) {
-            // Remove the player if he's not in the DM_ZONE activity
+            // Remove the player if they're not in the DM_ZONE activity
             if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE) {
                 this.playersInDeathMatch_.delete(player);
                 return;

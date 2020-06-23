@@ -520,7 +520,7 @@ describe('HouseCommands', (it, beforeEach) => {
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
 
-        // (1) Try to get the houses owned by |gunther| before he has logged in.
+        // (1) Try to get the houses owned by |gunther| before they has logged in.
         assert.isTrue(await russell.issueCommand('/house goto ' + gunther.id));
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], Message.HOUSE_GOTO_NONE_FOUND);
@@ -528,7 +528,7 @@ describe('HouseCommands', (it, beforeEach) => {
         await gunther.identify({ userId: 42 });
         russell.clearMessages();
 
-        // (2) Try to get the houses owned by |gunther| now that he has logged in.
+        // (2) Try to get the houses owned by |gunther| now that they has logged in.
         gunther.respondToDialog({ listitem: 0 /* first owned house */ });
 
         assert.isTrue(await gunther.issueCommand('/house goto ' + gunther.id));
@@ -546,8 +546,8 @@ describe('HouseCommands', (it, beforeEach) => {
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
 
-        // Select Gunther from the list of house owners (he's not logged in), then teleport to the
-        // first house listed in the subsequent dialog.
+        // Select Gunther from the list of house owners (they're not logged in), then teleport to
+        // the first house listed in the subsequent dialog.
         russell.respondToDialog({ listitem: 0 /* Gunther's houses */ }).then(
             () => russell.respondToDialog({ listitem: 0 /* first owned house */ }));
 

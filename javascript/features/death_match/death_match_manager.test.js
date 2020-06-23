@@ -227,7 +227,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(teamScore.blueTeamKills, 1);
     });
 
-    it('should remove player if he disconnects', async (assert) => {
+    it('should remove player if they disconnect', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.identify();
@@ -263,7 +263,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         await gunther.identify();
         await russell.identify();
         russell.health = 90;
-        russell.armour = 40; // He regenerated armour from properties or such
+        russell.armour = 40; // They regenerated armour from properties or such
 
         manager.playerStats_.set(gunther, gunther.stats.snapshot());
         manager.playerStats_.set(russell, russell.stats.snapshot());

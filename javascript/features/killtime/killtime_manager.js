@@ -66,7 +66,7 @@ class KilltimeManager {
         server.playerManager.forEach(player => this.givePlayerWeapon(player));
     }
 
-    // Give player entity a weapon if he's supposed to.
+    // Give player entity a weapon if they're supposed to.
     givePlayerWeapon(player) {
         if (player.isNonPlayerCharacter())
             return;

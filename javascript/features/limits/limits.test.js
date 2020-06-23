@@ -102,6 +102,37 @@ describe('Limits', (it, beforeEach) => {
             gunther, server.clock.monotonicallyIncreasingTime()));
     });
 
+    it('should properly support the main world and outside requirements', assert => {
+        assert.isNull(decider.processMainWorldRequirement(gunther));
+        assert.isNull(decider.processOutsideRequirement(gunther));
+
+        // (1) Rejection will be issued when the player is not in the main world.
+        gunther.virtualWorld = 1337;
+        {
+            const decision = decider.processMainWorldRequirement(gunther);
+
+            assert.isNotNull(decision);
+            assert.equal(decision.toString(), Message.LIMITS_NOT_IN_MAIN_WORLD);
+
+            gunther.virtualWorld = 0;
+        }
+
+        assert.isNull(decider.processMainWorldRequirement(gunther));
+
+        // (2) Rejection will be issued when the player is not outside.
+        gunther.interiorId = 6;
+        {
+            const decision = decider.processOutsideRequirement(gunther);
+
+            assert.isNotNull(decision);
+            assert.equal(decision.toString(), Message.LIMITS_NOT_OUTSIDE);
+
+            gunther.interiorId = 0;
+        }
+
+        assert.isNull(decider.processOutsideRequirement(gunther));
+    });
+
     it('should properly support the minigame requirements', assert => {
         assert.isNull(decider.processMinigameRequirement(gunther));
 
@@ -132,5 +163,10 @@ describe('Limits', (it, beforeEach) => {
         }
 
         assert.isNull(decider.processMinigameRequirement(gunther));
+    });
+
+    it('should be able to run through each of the public API methods', assert => {
+        assert.isTrue(feature.canSpawnVehicle(gunther).isApproved());
+        assert.isTrue(feature.canTeleport(gunther).isApproved());
     });
 });

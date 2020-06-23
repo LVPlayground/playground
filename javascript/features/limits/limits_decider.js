@@ -39,6 +39,10 @@ export class LimitsDecider extends PlayerEventObserver {
             let decision = null;
 
             switch (requirement) {
+                case requirements.kMainWorldRequirement:
+                    decision = this.processMainWorldRequirement(player);
+                    break;
+
                 case requirements.kNoDeathmatchRequirement:
                     decision = this.processDeathmatchRequirement(player, currentTime);
                     break;
@@ -47,6 +51,10 @@ export class LimitsDecider extends PlayerEventObserver {
                     decision = this.processMinigameRequirement(player);
                     break;
                 
+                case requirements.kOutsideRequirement:
+                    decision = this.processOutsideRequirement(player);
+                    break;
+
                 default:
                     throw new Error(`Invalid requirement: ${requirement}`);
             }
@@ -67,6 +75,15 @@ export class LimitsDecider extends PlayerEventObserver {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Processes the main world requirement, which verifies that the |player| is in one of the
+    // virtual worlds that make up Las Venturas Playground's main world.
+    processMainWorldRequirement(player) {
+        if (player.virtualWorld !== 0)
+            return LimitsDecision.createRejection(Message.LIMITS_NOT_IN_MAIN_WORLD);
+
+        return null;
+    }
 
     // Processes the deathmatch requirement for the |player|, and returns a decision iff the
     // requirement cannot be met for any reason, e.g. because they're fighting.
@@ -115,6 +132,15 @@ export class LimitsDecider extends PlayerEventObserver {
                 return LimitsDecision.createRejection(format(
                     Message.LIMITS_OCCUPIED_MINIGAME, 'in a deathmatch zone'));
         }
+
+        return null;
+    }
+
+    // Processes the outside requirement, which verifies that the |player| is not currently in an
+    // interior. Certain actions, such as spawning vehicles, often don't make sense there.
+    processOutsideRequirement(player) {
+        if (player.interiorId !== 0)
+            return LimitsDecision.createRejection(Message.LIMITS_NOT_OUTSIDE);
 
         return null;
     }

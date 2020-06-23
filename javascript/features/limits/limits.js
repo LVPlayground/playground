@@ -37,6 +37,20 @@ export default class Limits extends Feature {
     // Public API of the Limits feature
     // ---------------------------------------------------------------------------------------------
 
+    // Decides whether the given |player| is allowed to spawn a car. By default they must be outside
+    // in the main world, not be fighting, and can only do this once per minutes.
+    canSpawnVehicle(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kMainWorldRequirement,
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+                requirements.kOutsideRequirement,
+            ],
+            throttles: [ throttles.kSpawnVehicleThrottle ],
+        });
+    }
+
     // Decides whether the given |player| is allowed to teleport. By default this is allowed once
     // per three minutes, as long as the player hasn't engaged in a fight. Reset on respawn.
     canTeleport(player) {
@@ -50,6 +64,11 @@ export default class Limits extends Feature {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Reports that the given |player| has spawned a vehicle.
+    reportSpawnVehicle(player) {
+        this.decider_.reportThrottle(player, throttles.kSpawnVehicleThrottle);
+    }
 
     // Reports that the given |player| has used a teleportation capability.
     reportTeleportation(player) {

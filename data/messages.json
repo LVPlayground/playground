@@ -384,10 +384,12 @@
   "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
   "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 
-  "LIMITS_OCCUPIED_MINIGAME": "you're playing %s",
   "LIMITS_DEATHMATCH_DAMAGE_ISSUED": "you've recently issued damage",
   "LIMITS_DEATHMATCH_DAMAGE_TAKEN": "you've recently taken damage",
   "LIMITS_DEATHMATCH_WEAPON_FIRED": "you've recently fired your weapon",
+  "LIMITS_NOT_IN_MAIN_WORLD": "you're not in the main world",
+  "LIMITS_NOT_OUTSIDE": "you're not outside",
+  "LIMITS_OCCUPIED_MINIGAME": "you're playing %s",
 
   "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because you %s!",
 

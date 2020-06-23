@@ -69,7 +69,7 @@ export default class CommunicationCommands extends Feature {
             new CallCommands(this.communication_),
             new DirectCommunicationCommands(this.communication_, this.nuwani_, this.playground_),
             new IgnoreCommands(this.communication_),
-            new MuteCommands(this.announce_, this.communication_),
+            new MuteCommands(this.announce_, this.communication_, this.nuwani_),
         ];
 
         this.initializeIrcCommands();

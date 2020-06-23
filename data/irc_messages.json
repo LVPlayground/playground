@@ -59,5 +59,8 @@
     "reaction-result": "<color:6>*** %s (Id:%d) has won the reaction test in %d seconds!",
     "reaction-unscramble": "<color:6>*** First player to unscramble \"%s\" wins %$!",
 
+    "mute-echo": "<command:MODE>+m",
+    "unmute-echo": "<command:MODE>-m",
+
     "merchant": "<color:3>*** The merchant wants to purchase a %{1}s for %{0}$."
 }

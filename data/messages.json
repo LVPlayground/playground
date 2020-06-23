@@ -72,6 +72,7 @@
   "CRUISE_STOPPED": "{DC143C}Cruise{FFFFFF}: The cruise has stopped, see you next time!",
   "CRUISE_USAGE": "@usage {DC143C}Cruise{FFFFFF}: /cruise [start/stop]",
 
+  "COMMUNICATION_ADMIN_IRC_MUTE": "%s (Id:%d) has %s unregistered people on IRC.",
   "COMMUNICATION_ADMIN_MESSAGE": "{FFFF00}* %s %s (Id:%d): %s",
   "COMMUNICATION_ADMIN_SENT": "@success Your message has been sent to the administrators.",
   "COMMUNICATION_CALL_CONNECTED": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has been established. Use {DC143C}/hangup{FFFFFF} to hang up.",
@@ -100,6 +101,8 @@
   "COMMUNICATION_MESSAGE": "{%s}[%d] %s:{FFFFFF} %s",
   "COMMUNICATION_ME": "{%s}* %s %s",
   "COMMUNICATION_MUTE_BLOCKED": "@error Your message has been blocked because you're muted for another %s.",
+  "COMMUNICATION_MUTE_IRC_DISABLED": "@success Messages from unregistered people on IRC will be allowed again.",
+  "COMMUNICATION_MUTE_IRC_ENABLED": "@success Messages from unregistered people on IRC will now be ignored.",
   "COMMUNICATION_PM_IRC_RECEIVER": "{FFDC18}PM from %s (IRC): {FFFFFF}%s",
   "COMMUNICATION_PM_IRC_SENDER": "{FCF545}* PM to %s (IRC): {FFFFFF}%s",
   "COMMUNICATION_PM_ADMIN": "{FF9900}* PM: %s (Id:%d) to %s (Id:%d):{FFFFFF} %s",

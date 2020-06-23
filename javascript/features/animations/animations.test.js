@@ -35,6 +35,26 @@ describe('Animations', (it, beforeEach) => {
         assert.equal(gunther.rotation, 180);
     });
 
+    it('should disallow animations when they recently shot a weapon', async (assert) => {
+        await russell.identify();
+
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
+
+        gunther.shoot();
+
+        assert.isTrue(await russell.issueCommand('/piss Gunther'));
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
+
+        assert.equal(russell.messages.length, 1);
+        assert.includes(russell.messages[0], `they've recently fired their weapon`);
+
+        assert.isTrue(await gunther.issueCommand('/piss'));
+        assert.equal(gunther.specialAction, Player.kSpecialActionNone);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(gunther.messages[0], `you've recently fired your weapon`);
+    });
+
     it('should be able to force animations on other players, with a message', async (assert) => {
         await russell.identify();
 

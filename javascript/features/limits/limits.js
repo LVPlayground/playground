@@ -37,6 +37,17 @@ export default class Limits extends Feature {
     // Public API of the Limits feature
     // ---------------------------------------------------------------------------------------------
 
+    // Decides whether the given |player| is allowed to start an animation right now. By default
+    // this is fine, as long as they haven't recently been in a fight and aren't playing a game.
+    canAnimate(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+            ]
+        });
+    }
+
     // Decides whether the given |player| is allowed to spawn a car. By default they must be outside
     // in the main world, not be fighting, and can only do this once per minutes.
     canSpawnVehicle(player) {

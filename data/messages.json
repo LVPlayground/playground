@@ -29,8 +29,8 @@
   "ANIMATIONS_DANCE_USAGE": "@usage /dance [1-4]",
   "ANIMATIONS_EXECUTE_BY_ADMIN": "{E0E0E0}* %s (Id:%d) has started the /%s animation for you.",
   "ANIMATIONS_EXECUTED": "@success The /%s animation has started for %s (Id:%d).",
-  "ANIMATIONS_NOT_IDLE": "@error %s have recently been involved in a fight, and can't start an animation.",
-  "ANIMATIONS_NOT_ON_FOOT": "@error %s need to be on foot in order to start animations.",
+  "ANIMATIONS_NOT_IDLE": "@error Unable to start an animation, because %s.",
+  "ANIMATIONS_NOT_ON_FOOT": "@error Unable to start an animation, because you're not currently on foot.",
 
   "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
   "ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has made an announcement: %s",

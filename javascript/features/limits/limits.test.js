@@ -230,6 +230,7 @@ describe('Limits', (it, beforeEach) => {
     });
 
     it('should be able to run through each of the public API methods', assert => {
+        assert.isTrue(feature.canAnimate(gunther).isApproved());
         assert.isTrue(feature.canSpawnVehicle(gunther).isApproved());
         assert.isTrue(feature.canTeleport(gunther).isApproved());
     });

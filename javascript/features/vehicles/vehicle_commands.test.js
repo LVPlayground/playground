@@ -99,7 +99,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.equal(gunther.messages.length, 1);
             assert.equal(
                 gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
-                                                    'can only do so once per 3 minutes'));
+                                                    'you can only do this once per minute'));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -144,7 +144,9 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_MAIN_WORLD);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_SPAWN_REJECTED, `you're not outside`));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -159,8 +161,10 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
-                                                             AbuseConstants.REASON_FIRED_WEAPON));
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_SPAWN_REJECTED,
+                               `you've recently fired your weapon`));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();

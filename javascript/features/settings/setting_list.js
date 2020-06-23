@@ -18,8 +18,6 @@ export const kSettingList = [
     new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
     new Setting('abuse', 'kill_attribution_time_sec', Setting.TYPE_NUMBER, 10, 'Time after last hit when deaths should be attributed for.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
-    new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
-    new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
     new Setting('abuse', 'teleportation_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override teleportation restrictions?'),
     new Setting('abuse', 'teleportation_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between teleporting twice.'),
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),

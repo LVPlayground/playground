@@ -15,7 +15,7 @@ describe('Settings', (it, beforeEach) => {
         const numberValue = settings.getValue('abuse/blocker_damage_issued_time');
         assert.equal(typeof numberValue, 'number');
 
-        const booleanValue = settings.getValue('abuse/spawn_vehicle_admin_override');
+        const booleanValue = settings.getValue('abuse/announce_admin_animation');
         assert.equal(typeof booleanValue, 'boolean');
     });
 
@@ -43,16 +43,16 @@ describe('Settings', (it, beforeEach) => {
 
         // Booleans
         {
-            const booleanValue = settings.getValue('abuse/spawn_vehicle_admin_override');
+            const booleanValue = settings.getValue('abuse/announce_admin_animation');
             assert.equal(typeof booleanValue, 'boolean');
 
-            assert.throws(() => settings.setValue('abuse/spawn_vehicle_admin_override', 424));
-            assert.throws(() => settings.setValue('abuse/spawn_vehicle_admin_override', 'yesplz'));
-            assert.throws(() => settings.setValue('abuse/spawn_vehicle_admin_override', [ true ]));
+            assert.throws(() => settings.setValue('abuse/announce_admin_animation', 424));
+            assert.throws(() => settings.setValue('abuse/announce_admin_animation', 'yesplz'));
+            assert.throws(() => settings.setValue('abuse/announce_admin_animation', [ true ]));
 
-            settings.setValue('abuse/spawn_vehicle_admin_override', !booleanValue);
+            settings.setValue('abuse/announce_admin_animation', !booleanValue);
 
-            const updatedValue = settings.getValue('abuse/spawn_vehicle_admin_override');
+            const updatedValue = settings.getValue('abuse/announce_admin_animation');
             assert.equal(typeof updatedValue, 'boolean');
 
             assert.notEqual(updatedValue, booleanValue);

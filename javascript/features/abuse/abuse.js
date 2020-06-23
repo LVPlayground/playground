@@ -69,31 +69,6 @@ class Abuse extends Feature {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Returns whether the |player| is allowed to spawn a vehicle right now. Constraints similar to
-    // teleportation apply, but the actual variables can be configured separately.
-    canSpawnVehicle(player) {
-        const time = server.clock.monotonicallyIncreasingTime();
-
-        // (1) Administrators might be able to override the vehicle spawning limitations.
-        if (player.isAdministrator() && this.getSetting('spawn_vehicle_admin_override'))
-            return { allowed: true };
-
-        const blockerUsageThrottle = this.getSetting('spawn_vehicle_throttle_time') * 1000  // ms
-
-        // (2) Might be subject to the per-player vehicle spawning throttle.
-        if (!this.mitigator_.satisfiesTimeThrottle(player, time, blockerUsageThrottle, 'vehicle'))
-            return { allowed: false, reason: AbuseConstants.REASON_TIME_LIMIT(blockerUsageThrottle) };
-
-        return this.internalProcessFightingConstraints(player, time);
-    }
-
-    // Reports that the |player| has spawned a vehicle through one of the commands.
-    reportSpawnedVehicle(player) {
-        this.mitigator_.reportTimeThrottleUsage(player, 'vehicle');
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     // Processes the common fighting-related constraints for |player|. Not to be used externally.
     internalProcessFightingConstraints(player, time) {
         const blockerWeaponFired = this.getSetting('blocker_weapon_fire_time') * 1000;  // ms

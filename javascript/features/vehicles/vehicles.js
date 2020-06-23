@@ -18,14 +18,14 @@ class Vehicles extends Feature {
     constructor() {
         super();
 
-        // Used for determining whether a player can spawn a vehicle.
-        const abuse = this.defineDependency('abuse');
-
         // Used for making announcements to administrators.
         const announce = this.defineDependency('announce');
 
         // Used to determine whether players get access to special vehicle goodies.
         const collectables = this.defineDependency('collectables');
+
+        // Used for determining whether a player can spawn a vehicle.
+        const limits = this.defineDependency('limits');
 
         // Used to add commands and vehicle access to the `/lvp access` console.
         const playground = this.defineDependency('playground');
@@ -43,7 +43,7 @@ class Vehicles extends Feature {
         // Provides the `/v` command, as well as various other commands for quick vehicle access and
         // maintenance & control of the vehicles created on the server.
         this.commands_ = new VehicleCommands(
-            this.manager_, abuse, announce, collectables, playground, streamer);
+            this.manager_, announce, collectables, limits, playground, streamer);
 
         // Able to spawn rich, decorated vehicles on the server.
         this.decorations_ = new VehicleDecorations(settings, announce);

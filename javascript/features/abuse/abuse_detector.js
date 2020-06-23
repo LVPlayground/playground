@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { PlayerEventObserver } from 'components/events/player_event_observer.js';
+
 // Base class for an abuse detector. Multiple detectors are available for specific types of abuse,
 // each of which is specifically crafted towards detecting just that. Any method can be overridden.
-export class AbuseDetector {
+export class AbuseDetector extends PlayerEventObserver {
     // Certainty levels associated with a detection. |kFunnyFeeling| means that it's something that
     // in-game administrators should monitor. |kSuspected| means that we're reasonably certain, but
     // that verification is still in place. |kDetected| is a no-doubt detection.
@@ -16,10 +18,16 @@ export class AbuseDetector {
     name_ = null;
 
     constructor(settings, monitor, name) {
+        super();
+
         this.settings_ = settings;
         this.monitor_ = monitor;
         this.name_ = name;
+
+        server.deferredEventManager.addObserver(this);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // To be called when abuse has been detected. All information regarding the report will be given
     // to the AbuseMonitor, who will take care of the rest.
@@ -35,17 +43,7 @@ export class AbuseDetector {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called after the |player| has entered the given |vehicle|.
-    onPlayerEnterVehicle(player, vehicle) {}
-
-    // Called when the |player| has reported taking damage. The |issuer| may be NULL.
-    onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {}
-
-    // Called when the |player| has fired their weapon having |weaponId|, where the hit registered
-    // at the given |hitPosition|. The |hitPlayer| or |hitVehicle| will be set when available.
-    onPlayerWeaponShot(player, weaponId, hitPosition, { hitPlayer, hitVehicle } = {}) {}
-
-    // ---------------------------------------------------------------------------------------------
-
-    dispose() {}
+    dispose() {
+        server.deferredEventManager.removeObserver(this);
+    }
 }

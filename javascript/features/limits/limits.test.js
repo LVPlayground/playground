@@ -3,6 +3,9 @@
 // be found in the LICENSE file.
 
 import { format } from 'base/format.js';
+import { formatTimeDifference } from 'features/limits/limits_decider.js';
+
+import * as throttles from 'features/limits/throttles.js';
 
 describe('Limits', (it, beforeEach) => {
     let decider = null;
@@ -46,7 +49,7 @@ describe('Limits', (it, beforeEach) => {
             assert.isNotNull(decision);
             assert.equal(decision.toString(), Message.LIMITS_DEATHMATCH_WEAPON_FIRED);
 
-            await server.clock.advance(kDamageIssuedCooldown * 1000);
+            await server.clock.advance(kWeaponFiredCooldown * 1000);
         }
 
         assert.isNull(decider.processDeathmatchRequirement(
@@ -61,7 +64,7 @@ describe('Limits', (it, beforeEach) => {
             assert.isNotNull(decision);
             assert.equal(decision.toString(), Message.LIMITS_DEATHMATCH_DAMAGE_ISSUED);
 
-            await server.clock.advance(kDamageTakenCooldown * 1000);
+            await server.clock.advance(kDamageIssuedCooldown * 1000);
         }
 
         assert.isNull(decider.processDeathmatchRequirement(
@@ -76,7 +79,7 @@ describe('Limits', (it, beforeEach) => {
             assert.isNotNull(decision);
             assert.equal(decision.toString(), Message.LIMITS_DEATHMATCH_DAMAGE_TAKEN);
 
-            await server.clock.advance(kWeaponFiredCooldown * 1000);
+            await server.clock.advance(kDamageTakenCooldown * 1000);
         }
 
         assert.isNull(decider.processDeathmatchRequirement(
@@ -163,6 +166,67 @@ describe('Limits', (it, beforeEach) => {
         }
 
         assert.isNull(decider.processMinigameRequirement(gunther));
+    });
+
+    it('should be able to process each of the throttles', async (assert) => {
+        for (const throttle of Object.values(throttles)) {
+            const kAdminCooldown = settings.getValue(`limits/throttle_${throttle}_admin_sec`);
+            const kPlayerCooldown = settings.getValue(`limits/throttle_${throttle}_sec`);
+
+            // If this assert hits, it means that there's a throttle where administrators have to
+            // wait for a longer amount of time than players. That makes no sense.
+            assert.isBelowOrEqual(kAdminCooldown, kPlayerCooldown);
+
+            // Without report, the |throttle| should pass through.
+            assert.isNull(decider.processThrottle(
+                gunther, throttle, server.clock.monotonicallyIncreasingTime()));
+
+            decider.reportThrottle(gunther, throttle);
+
+            gunther.level = Player.LEVEL_ADMINISTRATOR;
+
+            // (1) Process the admin throttling, which we can only do when there is a cooldown set.
+            // Not setting a cooldown will disable all throttling.
+            if (kAdminCooldown > 0) {
+                const decision = decider.processThrottle(
+                    gunther, throttle, server.clock.monotonicallyIncreasingTime());
+                
+                assert.isNotNull(decision);
+                assert.equal(
+                    decision.toString(),
+                    format(Message.LIMITS_THROTTLED, formatTimeDifference(kAdminCooldown)));
+                
+                await server.clock.advance(kAdminCooldown * 1000);
+
+                assert.isNull(decider.processThrottle(
+                    gunther, throttle, server.clock.monotonicallyIncreasingTime()));
+                
+            } else {
+                // (2) Otherwise, verify that the throttle is just ignored. No decision should be
+                // returned even though a usage report has just been issued.
+                assert.isNull(decider.processThrottle(
+                    gunther, throttle, server.clock.monotonicallyIncreasingTime()));
+            }
+            
+            gunther.level = Player.LEVEL_PLAYER;
+
+            // (3) Repeat the same for players, but only if the |kPlayerCooldown| is different from
+            // the |kAdminCooldown|, otherwise we're just repeating the same test.
+            if (kPlayerCooldown > kAdminCooldown) {
+                const decision = decider.processThrottle(
+                    gunther, throttle, server.clock.monotonicallyIncreasingTime());
+
+                assert.isNotNull(decision);
+                assert.equal(
+                    decision.toString(),
+                    format(Message.LIMITS_THROTTLED, formatTimeDifference(kPlayerCooldown)));
+
+                await server.clock.advance((kPlayerCooldown - kAdminCooldown) * 1000);
+
+                assert.isNull(decider.processThrottle(
+                    gunther, throttle, server.clock.monotonicallyIncreasingTime()));
+            }
+        }
     });
 
     it('should be able to run through each of the public API methods', assert => {

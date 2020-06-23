@@ -85,9 +85,13 @@ export const kSettingList = [
     new Setting('gangs', 'zones_area_viable_shape_adjust', Setting.TYPE_NUMBER, 22, 'Percentage of area to shift w/h to maintain area shape.'),
 
     /** Limits-related settings */
-    new Setting('limits', 'deathmatch_damage_issued_cooldown', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
-    new Setting('limits', 'deathmatch_damage_taken_cooldown', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
-    new Setting('limits', 'deathmatch_weapon_fired_cooldown', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
+    new Setting('limits', 'deathmatch_damage_issued_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after issuing damage.'),
+    new Setting('limits', 'deathmatch_damage_taken_cooldown', Setting.TYPE_NUMBER, 25, 'Number of seconds to block actions after having taken damage.'),
+    new Setting('limits', 'deathmatch_weapon_fired_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after firing your weapon.'),
+    new Setting('limits', 'throttle_spawn_vehicle_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_spawn_vehicle_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds players have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_teleportation_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between teleportations.'),
+    new Setting('limits', 'throttle_teleportation_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds players have to wait between teleportations.'),
 
     /** Playground related settings */
     new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),

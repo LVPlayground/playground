@@ -390,6 +390,7 @@
   "LIMITS_NOT_IN_MAIN_WORLD": "you're not in the main world",
   "LIMITS_NOT_OUTSIDE": "you're not outside",
   "LIMITS_OCCUPIED_MINIGAME": "you're playing %s",
+  "LIMITS_THROTTLED": "you can only do this once per %s",
 
   "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because you %s!",
 

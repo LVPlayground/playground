@@ -6,8 +6,19 @@ import { LimitsDecision } from 'features/limits/limits_decision.js';
 import { PlayerEventObserver } from 'components/events/player_event_observer.js';
 
 import { format } from 'base/format.js';
+import { timeDifferenceToString } from 'base/time.js';
 
 import * as requirements from 'features/limits/requirements.js';
+
+// Formats the difference in |seconds| to a string. On top of `timeDifferenceToString`, we'll also
+// remove leading "1"s to say "once per minute" instead of "once per 1 minute".
+export function formatTimeDifference(seconds) {
+    const differenceString = timeDifferenceToString(seconds);
+    if (differenceString.startsWith('1 '))
+        return differenceString.substring(2);
+    
+    return differenceString;
+}
 
 // Makes decisions based on given requirements, throttles and player state. Observes the deferred
 // event manager to be informed about player fighting activity.
@@ -17,6 +28,8 @@ export class LimitsDecider extends PlayerEventObserver {
     deathmatchDamageIssuedTime_ = new WeakMap();
     deathmatchDamageTakenTime_ = new WeakMap();
     deathmatchWeaponShotTime_ = new WeakMap();
+
+    throttles_ = new WeakMap();
 
     constructor(settings) {
         super();
@@ -149,12 +162,40 @@ export class LimitsDecider extends PlayerEventObserver {
 
     // Processes the given |throttle| for the |player|, and returns a decision iff the throttle
     // cannot be met, usually because the |player| has done it too recently.
-    processThrottle(player, throttle, currentTime) {}
+    processThrottle(player, throttle, currentTime) {
+        if (!this.throttles_.has(player))
+            return null;  // the |player| hasn't used any throttle before
+
+        const throttles = this.throttles_.get(player);
+        if (!throttles.has(throttle))
+            return null;  // the |player| hasn't used the |throttle| before
+
+        // Administrators have different throttle values. They can be set to zero to disable any
+        // form of throttling completely, but they will still be subject to other requirements.
+        const extension = player.isAdministrator() ? '_admin' : '';
+
+        // Get the cooldown period, in seconds, for the given |throttle|.
+        const kCooldownPeriod = this.getSettingValue(`throttle_${throttle}${extension}_sec`);
+
+        // If the difference is smaller than the |kCooldownPeriod|, they're using the feature too
+        // quickly and we'll block their usage. The cooldown period will be included.
+        if ((currentTime - throttles.get(throttle)) < kCooldownPeriod * 1000) {
+            return LimitsDecision.createRejection(format(
+                Message.LIMITS_THROTTLED, formatTimeDifference(kCooldownPeriod)));
+        }
+
+        return null;
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     // Reports that the |player| has used the given |throttle|.
-    reportThrottle(player, throttle) {}
+    reportThrottle(player, throttle) {
+        if (!this.throttles_.has(player))
+            this.throttles_.set(player, new Map());
+        
+        this.throttles_.get(player).set(throttle, server.clock.monotonicallyIncreasingTime());
+    }
 
     // ---------------------------------------------------------------------------------------------
     // PlayerEventObserver listeners
@@ -183,6 +224,7 @@ export class LimitsDecider extends PlayerEventObserver {
         this.deathmatchDamageIssuedTime_.delete(player);
         this.deathmatchDamageTakenTime_.delete(player);
         this.deathmatchWeaponShotTime_.delete(player);
+        this.throttles_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

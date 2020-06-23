@@ -86,53 +86,59 @@ export function relativeTime({ date1, date2 }) {
     // Whether |date1| happened before |date2|.
     const isPast = difference < 0;
 
-    // (1) Current time and seconds of difference
+    return { isCurrent, isPast, text: timeDifferenceToString(absoluteDifferenceSeconds) };
+}
+
+// Converts the |difference|, in seconds, to a string representing that value.
+export function timeDifferenceToString(difference) {
+    const absoluteDifferenceSeconds = Math.abs(difference);
+
     if (absoluteDifferenceSeconds === 0)
-        return { isCurrent, isPast, text: 'now' };
+        return 'now';
     else if (absoluteDifferenceSeconds === 1)
-        return { isCurrent, isPast, text: '1 second' };
+        return '1 second';
     else if (absoluteDifferenceSeconds < 60)
-        return { isCurrent, isPast, text: `${absoluteDifferenceSeconds} seconds` };
+        return `${absoluteDifferenceSeconds} seconds`;
 
     const absoluteDifferenceMinutes = Math.floor(absoluteDifferenceSeconds / 60);
 
     // (2) Difference in minutes
     if (absoluteDifferenceMinutes === 1)
-        return { isCurrent, isPast, text: '1 minute' };
+        return '1 minute';
     else if (absoluteDifferenceMinutes < 60)
-        return { isCurrent, isPast, text: `${absoluteDifferenceMinutes} minutes` };
+        return `${absoluteDifferenceMinutes} minutes`;
     
     const absoluteDifferenceHours = Math.floor(absoluteDifferenceMinutes / 60);
 
     // (3) Difference in hours
     if (absoluteDifferenceHours === 1)
-        return { isCurrent, isPast, text: '1 hour' };
+        return '1 hour';
     else if (absoluteDifferenceHours < 24)
-        return { isCurrent, isPast, text: `${absoluteDifferenceHours} hours` };
+        return `${absoluteDifferenceHours} hours`;
     
     const absoluteDifferenceDays = absoluteDifferenceHours / 24;
 
     // (4) Difference in days
     if (absoluteDifferenceDays < 1.5)
-        return { isCurrent, isPast, text: '1 day' };
+        return '1 day';
     else if (absoluteDifferenceDays <= 30)
-        return { isCurrent, isPast, text: `${Math.round(absoluteDifferenceDays)} days` };
+        return `${Math.round(absoluteDifferenceDays)} days`;
     
     const absoluteDifferenceMonths = Math.max(1, Math.floor(absoluteDifferenceDays / 30.41));
 
     // (5) Difference in months
     if (absoluteDifferenceMonths === 1)
-        return { isCurrent, isPast, text: '1 month' };
+        return '1 month';
     else if (absoluteDifferenceMonths < 12)
-        return { isCurrent, isPast, text: `${absoluteDifferenceMonths} months` };
+        return `${absoluteDifferenceMonths} months`;
 
     const absoluteDifferenceYears = Math.max(1, Math.floor(absoluteDifferenceDays / 365));
 
     // (6) Difference in years
     if (absoluteDifferenceYears === 1)
-        return { isCurrent, isPast, text: '1 year' };
+        return '1 year';
     
-    return { isCurrent, isPast, text: `${absoluteDifferenceYears} years` };
+    return `${absoluteDifferenceYears} years`;
 }
 
 // Formats |time|. Anything under an hour will be formatted as MM:SS, whereas values over an hour

@@ -81,6 +81,12 @@ export class GameRegistration extends GameActivity {
         this.manager_.setPlayerActivity(player, /* activity= */ this);
         this.players_.set(player, contribution);
 
+        // Start the game immediately if this is a continuous game.
+        if (this.description_.continuous) {
+            this.start();
+            return;
+        }
+
         // Start the game immediately if the maximum number of players has signed up.
         if (this.players_.size === this.description_.maximumPlayers) {
             this.start();

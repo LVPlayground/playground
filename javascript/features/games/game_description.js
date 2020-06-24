@@ -49,6 +49,7 @@ export class GameDescription {
     countdownView_ = null;
 
     command_ = null;
+    continuous_ = false;
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
@@ -105,6 +106,9 @@ export class GameDescription {
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
     get command() { return this.command_; }
+
+    // Gets whether this is a continuous game, rather than one that requires sign-up.
+    get continuous() { return this.continuous_; }
 
     // Gets the maximum number of players who can participate in this game.
     get maximumPlayers() { return this.maximumPlayers_; }
@@ -244,6 +248,13 @@ export class GameDescription {
             this.command_ = options.command;
         }
 
+        if (options.hasOwnProperty('continuous')) {
+            if (typeof options.continuous !== 'boolean')
+                throw new Error(`[${this.name}] The game's continuous flag must be a boolean.`);
+            
+            this.continuous_ = options.continuous;
+        }
+
         if (options.hasOwnProperty('maximumPlayers')) {
             if (typeof options.maximumPlayers !== 'number' ||
                     !Number.isSafeInteger(options.maximumPlayers)) {
@@ -289,5 +300,12 @@ export class GameDescription {
             
             this.tick_ = options.tick;
         }
+
+        // -----------------------------------------------------------------------------------------
+        // Section: combinational validation
+        // -----------------------------------------------------------------------------------------
+
+        if (this.continuous_ && this.minimumPlayers_ >= 2)
+            throw new Error(`[${this.name}] Continuous games must accept single participants.`);
     }
 }

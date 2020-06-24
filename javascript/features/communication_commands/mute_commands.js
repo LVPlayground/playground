@@ -254,6 +254,7 @@ export class MuteCommands {
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('showreport');
         server.commandManager.removeCommand('muted');
+        server.commandManager.removeCommand('muteirc');
         server.commandManager.removeCommand('mute');
     }
 }

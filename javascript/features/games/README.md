@@ -53,6 +53,7 @@ Option              | Description
 Option              | Description
 --------------------|--------------
 `command`           | Name of the command through which the game can be started. Optional.
+`continuous`        | Whether this is a continuous game rather than one requiring sign-up. (Default is `false`.)
 `minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
 `maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)
 `price`             | The price players have to pay in order to participate. (Default is $250.)

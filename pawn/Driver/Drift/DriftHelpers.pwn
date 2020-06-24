@@ -5,12 +5,12 @@
 #define M_PI 3.141592653
 
 // Every how many updates should the drift status for a player be calculated? Given an |incar_rate|
-// of 40 in "server.cfg", this roughly equates every ((1000/40)*|value|)ms, currently ~150ms
-#define DRIFT_UPDATE_INTERVAL 6
+// of 40 in "server.cfg", this roughly equates every ((1000/40)*|value|)ms, currently ~100ms
+#define DRIFT_UPDATE_INTERVAL 4
 
 new g_playerDriftUpdateCounter[MAX_PLAYERS];
 
-new g_playerDriftPoints[MAX_PLAYERS];
+new Float: g_playerDriftPoints[MAX_PLAYERS];
 new Float: g_playerDriftPosition[MAX_PLAYERS][3];
 new g_playerDriftStartTime[MAX_PLAYERS] = { 0, ... };
 new g_playerDriftUpdateTime[MAX_PLAYERS] = { 0, ... };
@@ -103,14 +103,31 @@ CalculateDriftExpiration(driftDuration) {
 
 // Calculates the amount of drifting points to award as a bonus, given the vehicle's |pitch|, |roll|
 // and |yaw| values, each of which make for harder circumstances to maintain a drift.
-CalculateDriftBonus(timeDifference, Float: pitch, Float: roll, Float: yaw) {
-    return 0;
+Float: CalculateDriftBonus(timeDifference, Float: pitch, Float: roll, Float: yaw) {
+    return 0.0;
+    #pragma unused timeDifference, pitch, roll, yaw
 }
 
 // Calculates the amount of drifting points to award for a drift at the given |driftSpeed| and the
 // |driftAngle|, which took place in the given |timeDifference| in milliseconds.
-CalculateDriftPoints(timeDifference, Float: driftSpeed, Float: driftAngle, Float: driftDistance) {
-    return 0;
+//
+// For this function we've chosen the formula |driftSpeed| * |driftAngle| ^ 0.4, which, using normal
+// parameters, will yield a number of points in range of [143.5, 759.49] based on complexity of the
+// drift. In the future we might want to factor in continuous drifting as well.
+Float: CalculateDriftPoints(timeDifference, Float: driftSpeed, Float: driftAngle) {
+    return floatmul(driftSpeed, floatpower(driftAngle, 0.4));
+    #pragma unused timeDifference
+}
+
+// Calculates the drift score for the current drift that the given |playerId| is engaged in. This
+// takes the duration of their drift, the amount of points awarded, and a multiplier thereof.
+//
+// Right now we divide the total amount of drift points (~1.5k - 7.5k per second) with a configured
+// divider, to make a more sensible value out of it. Ideally drift scores would cap around 20k for
+// most people, Luce and Lithirm excluded.
+CalculateDriftScore(playerId) {
+    new const Float: score = floatdiv(g_playerDriftPoints[playerId], g_driftPointDivider);
+    return floatround(score);
 }
 
 // Processes drift updates for the given |playerId|. Only works when they're in a vehicle, and only
@@ -152,8 +169,6 @@ ProcessDriftUpdateForPlayer(playerId) {
             vehicleId, g_playerDriftPosition[playerId][0], g_playerDriftPosition[playerId][1],
             g_playerDriftPosition[playerId][2]);
 
-        printf("Distance: %.2f", distance);
-
         // If the maximum distance for a single-tick update has been exceeded, we abort the drift as
         // they might have teleported. No score is awarded for that.
         if (distance > g_driftingMaxDistance) {
@@ -167,9 +182,9 @@ ProcessDriftUpdateForPlayer(playerId) {
         g_playerDriftUpdateTime[playerId] = currentTime;
         g_playerDriftPoints[playerId] +=
             CalculateDriftBonus(difference, pitch, roll, yaw) +
-            CalculateDriftPoints(difference, driftSpeed, driftAngle, distance);
+            CalculateDriftPoints(difference, driftSpeed, driftAngle);
 
-        OnDriftUpdate(playerId, g_playerDriftPoints[playerId]);
+        OnDriftUpdate(playerId, CalculateDriftScore(playerId));
 
     } else if (g_playerDriftStartTime[playerId] == 0 && isDrifting) {
         // (2) The player is currently drifting, but wasn't yet drifting during their previous tick.
@@ -187,7 +202,7 @@ ProcessDriftUpdateForPlayer(playerId) {
         // If the |difference| is larger than the expiration we'd award for this moment in the drift
         // then we'll mark the drift as having finished.
         if (difference > CalculateDriftExpiration(duration)) {
-            OnDriftFinished(playerId, duration, g_playerDriftPoints[playerId]);
+            OnDriftFinished(playerId, duration, CalculateDriftScore(playerId));
 
             g_playerDriftPoints[playerId] = 0;
             g_playerDriftStartTime[playerId] = 0;

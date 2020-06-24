@@ -220,6 +220,9 @@ export class PlayerManager {
         if (!player)
             return;  // the event has been received for an invalid player
 
+        if (!server.isTest())
+            player.level = player.account.level;
+
         player.userId = event.userid;
         player.setVip(!!event.vip);
 

@@ -117,9 +117,10 @@ export const kSettingList = [
     /** Vehicle related settings */
     new Setting('vehicles', 'drifting_enabled', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),
     new Setting('vehicles', 'drifting_max_angle', Setting.TYPE_NUMBER, 82.5, 'Maximum drifting angle to award points for, to ignore spins.'),
-    new Setting('vehicles', 'drifting_max_distance', Setting.TYPE_NUMBER, 15, 'Maximum single-tick distance after which a drift will be aborted.'),
+    new Setting('vehicles', 'drifting_max_distance', Setting.TYPE_NUMBER, 23, 'Maximum single-tick distance after which a drift will be aborted.'),
     new Setting('vehicles', 'drifting_min_angle', Setting.TYPE_NUMBER, 14, 'Minimum drifting angle to award points for.'),
     new Setting('vehicles', 'drifting_min_speed', Setting.TYPE_NUMBER, 50, 'Minimum speed in km/h before awarding points for a drift.'),
+    new Setting('vehicles', 'drifting_point_divider', Setting.TYPE_NUMBER, 2, 'Divider for displaying drifting points to players.'),
     new Setting('vehicles', 'respawn_death_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds a vehicle should respawn after its death.'),
     new Setting('vehicles', 'respawn_ephemeral_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds after which ephemeral vehicles should respawn.'),
     new Setting('vehicles', 'respawn_persistent_delay_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds after last usage for vehicles to respawn.'),

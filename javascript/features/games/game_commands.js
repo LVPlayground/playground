@@ -5,6 +5,7 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
+import { GameRuntime } from 'features/games/game_runtime.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
@@ -186,6 +187,32 @@ export class GameCommands {
 
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
+            return;
+        }
+
+        // If the |description| accepts continuous participation, players can join and leave as they
+        // please. We need to handle this case in the sign-up logic as well.
+        const activeRuntimes = this.manager_.getActiveGameRuntimes(description);
+
+        for (const activeRuntime of activeRuntimes) {
+            if (activeRuntime.state != GameRuntime.kStateRunning)
+                continue;
+            
+            // TODO: We might want to support settings and custom options for continuous games, in
+            // which case joining the first one is not the right thing to do. This requires a
+            // `mapEquals` and private/public check like the block above.
+
+            // Take the registration fee from the |player|.
+            this.finance_().takePlayerCash(player, description.price);
+
+            player.sendMessage(
+                Message.GAME_REGISTRATION_JOINED, activeRuntime.getActivityName());
+            
+            this.nuwani_().echo(
+                'notice-minigame', player.name, player.id, activeRuntime.getActivityName());
+            
+            // Actually have the |player| join the |activeRuntime|, and we're done here.
+            await activeRuntime.addPlayer(player, description.price);
             return;
         }
 

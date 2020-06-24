@@ -307,7 +307,7 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.equal(
             manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateEngaged);
         
-        assert.equal(runtime.stateForTesting, GameRuntime.kStateRunning);
+        assert.equal(runtime.state, GameRuntime.kStateRunning);
 
         assert.isNotNull(vehicles[0]);
         assert.equal(vehicles[0].virtualWorld, runtime.virtualWorld);
@@ -329,7 +329,7 @@ describe('GameRuntime', (it, beforeEach) => {
         await runGameLoop();
 
         // Both players have been told to leave the game, so it should now have been finalized.
-        assert.equal(runtime.stateForTesting, GameRuntime.kStateFinalized);
+        assert.equal(runtime.state, GameRuntime.kStateFinalized);
         assert.equal(manager.runtimes_.size, 0);
 
         assert.equal(gunther.messages.length, 3);
@@ -390,6 +390,81 @@ describe('GameRuntime', (it, beforeEach) => {
 
             } while (testCase.players.length > 0)
         }
+    });
+
+    it('should enable players to join continuous games at any time', async (assert) => {
+        const feature = server.featureManager.loadFeature('games');
+        const finance = server.featureManager.loadFeature('finance');
+
+        let activePlayers = 0;
+        let initialized = false;
+
+        feature.registerGame(class extends Game {
+            async onInitialized(settings) {
+                if (initialized)
+                    throw new Error('The game already has been initialized.');
+                
+                initialized = true;
+            }
+
+            async onPlayerAdded(player) { ++activePlayers; }
+            async onPlayerRemoved(player) { --activePlayers; }
+        }, {
+            name: 'Bubble',
+            goal: 'Have entities',
+
+            command: 'bubblegame',
+            price: 500,
+
+            continuous: true,
+            minimumPlayers: 1,
+            maximumPlayers: 4,
+        });
+
+        finance.givePlayerCash(gunther, 2500);
+        finance.givePlayerCash(russell, 2500);
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.isNull(manager.getPlayerActivity(russell));
+
+        // (1) The game should start immediately for |gunther|, even though other players are
+        // available. This is because it's been marked as a continuous game.
+        assert.isTrue(await gunther.issueCommand('/bubblegame'));
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(
+            manager.getPlayerActivity(gunther).getActivityState(), GameActivity.kStateEngaged);
+        
+        assert.equal(activePlayers, 1);
+
+        // (2) Have Russell join the game as well. They should be added to the active game, rather
+        // than be routed through registration and in a new game instead.
+        assert.isTrue(await russell.issueCommand('/bubblegame'));
+
+        assert.isNotNull(manager.getPlayerActivity(russell));
+        assert.equal(
+            manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateEngaged);
+        
+        assert.strictEqual(manager.getPlayerActivity(gunther), manager.getPlayerActivity(russell));
+        assert.equal(activePlayers, 2);
+
+        // (3) Have Gunther leave the game. Russell should still be playing.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+
+        assert.isNull(manager.getPlayerActivity(gunther));
+        assert.equal(activePlayers, 1);
+
+        assert.isNotNull(manager.getPlayerActivity(russell));
+        assert.equal(
+            manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateEngaged);
+
+        // (4) When Russell leaves the game as well, it should be stopped. Here we mimic that by
+        // Russell disconnecting, because we're already testing the `/leave` command above.
+        russell.disconnectForTesting();
+
+        // Wait until there are no more active runtimes, to verify state is cleaned up.
+        while (manager.activeRuntimesForTesting.size)
+            await server.clock.advance(50);
     });
 
     it('should have a sensible description when casted to a string', assert => {

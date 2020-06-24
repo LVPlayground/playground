@@ -49,6 +49,9 @@ export class GameManager {
         server.playerManager.addObserver(this);
     }
 
+    // Gets access to the active runtimes, for testing purposes only.
+    get activeRuntimesForTesting() { return this.runtimes_; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns the activity the |player| is engaged in as a `GameActivity` instance, if any.
@@ -112,6 +115,18 @@ export class GameManager {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Returns an array with the active game runtimes for the given |description|.
+    getActiveGameRuntimes(description) {
+        let runtimesForGame = [];
+
+        for (const runtime of this.runtimes_) {
+            if (runtime.description === description)
+                runtimesForGame.push(runtime);
+        }
+
+        return runtimesForGame;
+    }
 
     // Immediately stops all games that are either accepting sign-ups or in-progress because the
     // game described by |description| will no longer be available.

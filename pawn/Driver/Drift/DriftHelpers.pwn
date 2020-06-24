@@ -92,8 +92,13 @@ GetVehicleDriftValues(vehicleId, &bool: backwards, &Float: driftAngle, &Float: d
 // Calculates the expiration time of a drift, in milliseconds. The |timeDifference| details the
 // number of milliseconds since their last drift, and the |driftDuration| details the time in
 // milliseconds since the player started their drift.
-CalculateDriftExpiration(timeDifference, driftDuration) {
-    return 0;
+//
+// When starting a drift, the maximum time out of a drift is .8 seconds. As the drift goes on, this
+// allotted time will decrease by 100ms for each 1.5s the drift lasts, down to 300ms at most. This
+// means that it will become increasingly hard to maintain the drift.
+CalculateDriftExpiration(driftDuration) {
+    new multiplier = driftDuration >= 6000 ? 5 : ((driftDuration / 1500) + 1);  // [0-5]
+    return 800 - multiplier * 100;
 }
 
 // Calculates the amount of drifting points to award as a bonus, given the vehicle's |pitch|, |roll|
@@ -181,8 +186,8 @@ ProcessDriftUpdateForPlayer(playerId) {
 
         // If the |difference| is larger than the expiration we'd award for this moment in the drift
         // then we'll mark the drift as having finished.
-        if (difference > CalculateDriftExpiration(difference, duration)) {
-            OnDriftFinished(playerId, g_playerDriftPoints[playerId]);
+        if (difference > CalculateDriftExpiration(duration)) {
+            OnDriftFinished(playerId, duration, g_playerDriftPoints[playerId]);
 
             g_playerDriftPoints[playerId] = 0;
             g_playerDriftStartTime[playerId] = 0;
@@ -211,6 +216,6 @@ OnDriftAborted(playerId) {
 }
 
 // Called when a drift has finished for the |player|.
-OnDriftFinished(playerId, score) {
-    printf("[%d] Drift finished: %d", playerId, score);
+OnDriftFinished(playerId, duration, score) {
+    printf("[%d] Drift finished (%dms): %d", playerId, duration, score);
 }

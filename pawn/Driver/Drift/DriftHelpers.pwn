@@ -12,6 +12,7 @@ new g_playerDriftUpdateCounter[MAX_PLAYERS];
 
 new Float: g_playerDriftPoints[MAX_PLAYERS];
 new Float: g_playerDriftPosition[MAX_PLAYERS][3];
+new Float: g_playerDriftStartHealth[MAX_PLAYERS];
 new g_playerDriftStartTime[MAX_PLAYERS] = { 0, ... };
 new g_playerDriftUpdateTime[MAX_PLAYERS] = { 0, ... };
 
@@ -130,6 +131,15 @@ CalculateDriftScore(playerId) {
     return floatround(score);
 }
 
+// Processes the end of a drift, calls the appropriate functions and resets state.
+ProcessDriftEnd(playerId, currentTime, bool: successful) {
+    new const duration = currentTime - g_playerDriftStartTime[playerId];
+    OnDriftFinished(playerId, duration, CalculateDriftScore(playerId), successful);
+
+    g_playerDriftPoints[playerId] = 0;
+    g_playerDriftStartTime[playerId] = 0;
+}
+
 // Processes drift updates for the given |playerId|. Only works when they're in a vehicle, and only
 // processed a certain ratio of player updates as this method is called a lot.
 ProcessDriftUpdateForPlayer(playerId) {
@@ -161,6 +171,15 @@ ProcessDriftUpdateForPlayer(playerId) {
         return;
 
     new const currentTime = GetTickCount();
+    new Float: vehicleHealth;
+
+    GetVehicleHealth(vehicleId, vehicleHealth);
+
+    // (1) If the player is drifting, but the vehicle's health decreased, we nullify the attempt.
+    if (g_playerDriftStartTime[playerId] > 0 && g_playerDriftStartHealth[playerId]> vehicleHealth) {
+        ProcessDriftEnd(playerId, currentTime, /* successful= */ false);
+        return;
+    }
 
     // (1) The player is currently drifting, and was drifting during the previous tick as well.
     if (g_playerDriftStartTime[playerId] > 0 && isDrifting) {
@@ -172,10 +191,7 @@ ProcessDriftUpdateForPlayer(playerId) {
         // If the maximum distance for a single-tick update has been exceeded, we abort the drift as
         // they might have teleported. No score is awarded for that.
         if (distance > g_driftingMaxDistance) {
-            OnDriftAborted(playerId);
-
-            g_playerDriftPoints[playerId] = 0;
-            g_playerDriftStartTime[playerId] = 0;
+            ProcessDriftEnd(playerId, currentTime, /* successful= */ false);
             return;
         }
 
@@ -189,6 +205,7 @@ ProcessDriftUpdateForPlayer(playerId) {
     } else if (g_playerDriftStartTime[playerId] == 0 && isDrifting) {
         // (2) The player is currently drifting, but wasn't yet drifting during their previous tick.
         g_playerDriftPoints[playerId] = 0;
+        g_playerDriftStartHealth[playerId] = vehicleHealth;
         g_playerDriftStartTime[playerId] = currentTime;
         g_playerDriftUpdateTime[playerId] = currentTime;
 
@@ -201,12 +218,8 @@ ProcessDriftUpdateForPlayer(playerId) {
 
         // If the |difference| is larger than the expiration we'd award for this moment in the drift
         // then we'll mark the drift as having finished.
-        if (difference > CalculateDriftExpiration(duration)) {
-            OnDriftFinished(playerId, duration, CalculateDriftScore(playerId));
-
-            g_playerDriftPoints[playerId] = 0;
-            g_playerDriftStartTime[playerId] = 0;
-        }
+        if (difference > CalculateDriftExpiration(duration))
+            ProcessDriftEnd(playerId, currentTime, /* successful= */ true);
     }
 
     // Store the position so that we can calculate the moved drift distance during the next tick.
@@ -225,12 +238,7 @@ OnDriftUpdate(playerId, score) {
     printf("[%d] Drift: %d", playerId, score);
 }
 
-// Called when a drift has been aborted because invalid data was found.
-OnDriftAborted(playerId) {
-    printf("[%d] Drift aborted", playerId);
-}
-
 // Called when a drift has finished for the |player|.
-OnDriftFinished(playerId, duration, score) {
+OnDriftFinished(playerId, duration, score, bool: successful) {
     printf("[%d] Drift finished (%dms): %d", playerId, duration, score);
 }

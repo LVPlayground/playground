@@ -57,7 +57,7 @@
     },
     {
         "id": 3,
-        "name": "Baseball field RW (skin hit)",
+        "name": "Baseball field RW",
         "weather": 10,
         "time": 12,
 
@@ -83,9 +83,10 @@
     },
     {
         "id": 4,
-        "name": "Baseball field Rockets",
+        "name": "Baseball, Rockets, Low gravity",
         "weather": 10,
         "time": 12,
+        "gravity": 0.002,
 
         "player_health" : 100,
         "player_armour" : 100,
@@ -108,7 +109,7 @@
     },
     {
         "id": 5,
-        "name": "SF military RW (skin hit)",
+        "name": "SF military RW",
         "weather": 10,
         "time": 10,
 
@@ -146,7 +147,7 @@
     },
     {
         "id": 6,
-        "name": "Baseball field RW (lag shot)",
+        "name": "Baseball field RW",
         "weather": 10,
         "time": 12,
 
@@ -173,7 +174,7 @@
     },
     {
         "id": 7,
-        "name": "SF military RW (lag shot)",
+        "name": "SF military RW",
         "weather": 10,
         "time": 10,
 
@@ -212,7 +213,7 @@
     },
     {
         "id": 8,
-        "name": "SF military RW Teams",
+        "name": "SF military RW",
         "weather": 10,
         "time": 10,
 
@@ -253,7 +254,7 @@
     },
     {
         "id": 9,
-        "name": "SF military RW Teams (lag shot)",
+        "name": "SF military RW",
         "weather": 10,
         "time": 10,
 
@@ -295,7 +296,7 @@
     },
     {
         "id": 10,
-        "name": "Baseball field WW (lag shot)",
+        "name": "Baseball field WW",
         "weather": 10,
         "time": 12,
 
@@ -324,7 +325,7 @@
     },
     {
         "id": 11,
-        "name": "SF military WW Teams (lag shot)",
+        "name": "SF military WW",
         "weather": 10,
         "time": 10,
 

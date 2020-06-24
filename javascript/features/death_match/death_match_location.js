@@ -76,6 +76,7 @@ export class DeathMatchLocation {
         this.weather_ = locationInfo.weather ?? 10;
         this.time_ = locationInfo.time ?? 12;
 
+        this.gravity_ = locationInfo.gravity;
         this.hasTeams_ = locationInfo.has_teams ?? false;
         this.noTeamDamage_ = locationInfo.no_team_damage ?? false;
 
@@ -118,6 +119,7 @@ export class DeathMatchLocation {
     get weather() { return this.weather_; }
     get time() { return this.time_; }
 
+    get gravity() { return this.gravity_; }
     get hasTeams() { return this.hasTeams_; }
     get noTeamDamage() { return this.noTeamDamage_; }
 

@@ -126,7 +126,7 @@
         }
     },
     {
-        "command": "wavee",
+        "command": "wave",
         "description": "Makes your character wave at someone else.",
         "prepare": "turn-around",
 

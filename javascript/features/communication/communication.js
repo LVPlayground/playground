@@ -32,7 +32,7 @@ export default class Communication extends Feature {
         // features, as communication is a cricial part of the server.
         this.markFoundational();
 
-        // Depend on Nuwani for being able to distribute communication to non-game destinations.
+        // Depend on Nuwani for being able to distribute communication to non-game destinations. t
         const nuwani = this.defineDependency('nuwani');
 
         // The message filter, which every message on Las Venturas Playground will be subject to.

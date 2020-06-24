@@ -64,7 +64,7 @@ class TeleportationManager {
             }
         }
 
-        ReportPlayerTeleport(playerId, 0 /* timeLimited */);
+        ReportPlayerTeleport(playerId);
 
         new const bool: isIsolated = PlayerSyncedData(playerId)->isolated();
 
@@ -193,7 +193,7 @@ class TeleportationManager {
         // a player anywhere at any moment. That's why we allow them to teleport even when the player
         // is in a minigame or something.
         if (teleportType != SecretTeleport) {
-            if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+            if (!CanPlayerTeleport(playerId)) {
                 SendClientMessage(playerId, Color::Error, "Because of recent fighting activities, you aren't able to teleport.");
                 return false;
             }

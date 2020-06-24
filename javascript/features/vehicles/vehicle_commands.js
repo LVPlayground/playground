@@ -35,12 +35,12 @@ const kQuickVehicleCommands = {
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, abuse, announce, collectables, playground, streamer) {
+    constructor(manager, announce, collectables, limits, playground, streamer) {
         this.manager_ = manager;
 
-        this.abuse_ = abuse;
         this.announce_ = announce;
         this.collectables_ = collectables;
+        this.limits_ = limits;
         this.streamer_ = streamer;
 
         this.playground_ = playground;
@@ -183,15 +183,10 @@ class VehicleCommands {
             return;
         }
 
-        if (player.interiorId != 0 /* outside */ || player.virtualWorld != 0 /* main world */) {
-            player.sendMessage(Message.VEHICLE_QUICK_MAIN_WORLD);
+        const decision = this.limits_().canSpawnVehicle(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED, decision);
             return;
-        }
-
-        const spawnStatus = this.abuse_().canSpawnVehicle(player);
-        if (!spawnStatus.allowed) {
-            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED, spawnStatus.reason);
-            return false;
         }
 
         let vehicleModel = null;
@@ -238,7 +233,7 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
 
         // Report that the |player| has spawned a vehicle. This rate-limits their usage too.
-        this.abuse_().reportSpawnedVehicle(player);
+        this.limits_().reportSpawnVehicle(player);
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
         if (streamableVehicle.live)

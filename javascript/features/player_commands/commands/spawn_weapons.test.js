@@ -11,11 +11,12 @@ describe('SpawnWeapons', (it, beforeEach, afterEach) => {
     let finance = null;
 
     beforeEach(async () => {
-        const abuse = server.featureManager.loadFeature('abuse');
         const announce = server.featureManager.loadFeature('announce');
+        const limits = server.featureManager.loadFeature('limits');
+
         finance = server.featureManager.loadFeature('finance');
 
-        command = new SpawnWeapons(() => abuse, () => announce, () => finance);
+        command = new SpawnWeapons(() => announce, () => finance, () => limits);
 
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);

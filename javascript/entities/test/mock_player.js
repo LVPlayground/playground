@@ -508,6 +508,13 @@ export class MockPlayer extends Player {
                                    : Player.kInvalidId,
             reason: reason
         });
+
+        dispatchEvent('playerresolveddeath', {
+            playerid: this.id,
+            killerid: killerPlayer ? killerPlayer.id
+                                   : Player.kInvalidId,
+            reason: reason
+        });
     }
 
     // Makes this player fire a shot. All related events will be fired. The |target| may either be

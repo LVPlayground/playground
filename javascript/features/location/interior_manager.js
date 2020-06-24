@@ -23,8 +23,8 @@ const PORTAL_COLOR_MODELS = {
 // may have to be prevented because they recently were in a fight, and means that we can send them
 // to their private virtual worlds avoiding needless interior fighting restrictions.
 class InteriorManager {
-    constructor(abuse) {
-        this.abuse_ = abuse;
+    constructor(limits) {
+        this.limits_ = limits;
 
         this.portalEntities_ = new ScopedEntities();
         this.portalLoader_ = new PortalLoader();
@@ -219,11 +219,11 @@ class InteriorManager {
         if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
             return false;  // the |portal|-specific check failed
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: false });
+        const teleportStatus = this.limits_().canTeleport(player, /* disableThrottle= */ false);
 
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.LOCATION_NO_TELEPORT, teleportStatus.reason);
+        if (!teleportStatus.isApproved()) {
+            player.sendMessage(Message.LOCATION_NO_TELEPORT, teleportStatus);
             return false;
         }
 

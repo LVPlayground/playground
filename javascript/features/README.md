@@ -33,12 +33,13 @@ other foundational features, without circular dependencies.
 
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
-[AccountProvider](account_provider/) | ✔ 2020    | Provides the `Player.account` supplement, loads and saves account data.
-[Communication](communication/)      | ✔ 2020    | Provides communication abilities, chat, spam and message filters.
-[Finance](finance/)                  | ✔ 2020    | Manages player's cash, bank account balances, tax and loans.
-[Nuwani](nuwani/)                    | ✔ 2020    | Provides our ability to interact with IRC and Discord.
-[PlayerStats](player_stats/)         | ✔ 2020    | Provides the `Player.stats` supplement, tracks player metrics.
-[Settings](settings/)                | ✔ 2020    | Manages persistent settings on the server.
+[AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.account` supplement, loads and saves account data.
+[Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
+[Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
+[Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
+[Nuwani](nuwani/)                    | ✔ 2020     | Provides our ability to interact with IRC and Discord.
+[PlayerStats](player_stats/)         | ✔ 2020     | Provides the `Player.stats` supplement, tracks player metrics.
+[Settings](settings/)                | ✔ 2020     | Manages persistent settings on the server.
 
 ## 2. Low-level features
 May only depend on each other and foundational features, and are expected to be depended on by

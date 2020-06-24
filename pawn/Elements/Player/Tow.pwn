@@ -65,7 +65,7 @@ new towNames[NumberOfTowLocations][] =
     "Bayside Marina",
     "San Fierro Pier", 
     "Los Santos Beach"
-   
+
 };
 
 /**
@@ -96,7 +96,7 @@ lvp_tow(playerid, params[])
     else if (!CanPlayerUseTow(playerid))
         return SendClientMessage(playerid, Color::Red, "You already used /tow less than 3 minutes ago! You must wait a bit more.");
 
-    else if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED)
+    else if (!CanPlayerTeleport(playerid))
         return SendClientMessage(playerid, Color::Red, "You can't use /tow because you've recently been in a fight.");
 
     else if (LegacyIsPlayerInBombShop(playerid))
@@ -167,7 +167,7 @@ TowPlayer(playerid, locationid)
     format(adminNotice, sizeof(adminNotice), "%s (Id:%d) has /tow'd to %s (#%d).",PlayerName(playerid),playerid, towNames[locationid], locationid);
     Admin(playerid, adminNotice);
 
-    ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+    ReportPlayerTeleport(playerid);
 
     return 1;
 }

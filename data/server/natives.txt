@@ -26,10 +26,9 @@ MarkVehicleMoved
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
 
-# native GetPlayerTeleportStatus(playerId, timeLimited);
-GetPlayerTeleportStatus
-
-# native ReportPlayerTeleport(playerId, timeLimited);
+# native CanPlayerTeleport(playerId);
+# native ReportPlayerTeleport(playerId);
+CanPlayerTeleport
 ReportPlayerTeleport
 
 # native IsCommunicationMuted();

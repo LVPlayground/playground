@@ -13,15 +13,18 @@ const kMuteMonitorIntervalMs = 1000;
 export class MuteCommands {
     announce_ = null;
     communication_ = null;
+    nuwani_ = null;
+
     disposed_ = false;
     muted_ = new Set();
 
     // Gets the MuteManager from the Communication feature, which we service.
     get muteManager() { return this.communication_().muteManager_; }
 
-    constructor(announce, communication) {
+    constructor(announce, communication, nuwani) {
         this.announce_ = announce;
         this.communication_ = communication;
+        this.nuwani_ = nuwani;
 
         // /mute [player] [duration=3]
         server.commandManager.buildCommand('mute')
@@ -30,6 +33,12 @@ export class MuteCommands {
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 3 }])
             .build(MuteCommands.prototype.onMuteCommand.bind(this));
+
+        // /muteirc [on|off]?
+        server.commandManager.buildCommand('muteirc')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'on/off', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+            .build(MuteCommands.prototype.onMuteIrcCommand.bind(this));
 
         // /muted
         server.commandManager.buildCommand('muted')
@@ -125,6 +134,34 @@ export class MuteCommands {
         player.sendMessage(Message.MUTE_MUTED, targetPlayer.name, targetPlayer.id, proposedText);
     }
 
+    // /muteirc [on | off]?
+    //
+    // Mutes the IRC channel for unregistered people. Useful when someone from IRC is being a troll,
+    // without having to switch tabs to mIRC or another client.
+    onMuteIrcCommand(player, command) {
+        switch (command) {
+            case 'on':
+                this.nuwani_().echo('mute-echo');
+                this.announce_().announceToAdministrators(
+                    Message.COMMUNICATION_ADMIN_IRC_MUTE, player.name, player.id, 'muted');
+
+                player.sendMessage(Message.COMMUNICATION_MUTE_IRC_ENABLED);
+                break;
+            
+            case 'off':
+                this.nuwani_().echo('unmute-echo');
+                this.announce_().announceToAdministrators(
+                    Message.COMMUNICATION_ADMIN_IRC_MUTE, player.name, player.id, 'unmuted');
+
+                player.sendMessage(Message.COMMUNICATION_MUTE_IRC_DISABLED);
+                break;
+
+            default:
+                player.sendMessage(Message.COMMAND_USAGE, '/muteirc [on | off]');
+                break;
+        }
+    }
+
     // /muted
     //
     // Displays an overview of the currently muted players to |player|, and how much time they have
@@ -217,6 +254,7 @@ export class MuteCommands {
         server.commandManager.removeCommand('unmute');
         server.commandManager.removeCommand('showreport');
         server.commandManager.removeCommand('muted');
+        server.commandManager.removeCommand('muteirc');
         server.commandManager.removeCommand('mute');
     }
 }

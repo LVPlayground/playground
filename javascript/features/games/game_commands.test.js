@@ -98,7 +98,7 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 3);
         assert.equal(
             gunther.messages[2],
-            Message.format(Message.GAME_REGISTRATION_ALREADY_REGISTERED, 'Bubble'));
+            Message.format(Message.GAME_REGISTRATION_REJECTED, `you're playing Bubble`));
 
         // (4) There should be an error if Russell doesn't have enough money.
         assert.isTrue(await russell.issueCommand('/bubblegame'));

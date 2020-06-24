@@ -11,11 +11,11 @@ export default class DeathMatch extends Feature {
         super();
 
         // Determines whether a player is allowed to teleport to the mini game right now.
-        const abuse = this.defineDependency('abuse');
         const announce = this.defineDependency('announce');
+        const limits = this.defineDependency('limits');
 
-        this.manager_ = new DeathMatchManger(abuse, announce);
-        this.commands_ = new DeathMatchCommands(abuse, this.manager_);
+        this.manager_ = new DeathMatchManger(announce, limits);
+        this.commands_ = new DeathMatchCommands(this.manager_, limits);
     }
 
     dispose() {

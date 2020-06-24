@@ -438,7 +438,7 @@ describe('HouseManager', (it, beforeEach) => {
             assert.equal(houses[0].settings.ownerName, gunther.name);
         }
 
-        // (2) Make sure that the name will be updated when gunther's has, and he logs in again.
+        // (2) Make sure that the name will be updated when gunther's has, and they log in again.
         {
             gunther.name = 'Guntah';
             await gunther.identify();

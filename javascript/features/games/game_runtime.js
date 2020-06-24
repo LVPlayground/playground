@@ -12,7 +12,7 @@ import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 export class GameRuntime extends GameActivity {
     // The states in lifetime progression the game runtime supports.
     static kStateUninitialized = 0;
-    static kStateInitialized= 1;
+    static kStateInitialized = 1;
     static kStateRunning = 2;
     static kStateFinished = 3;
     static kStateFinalized = 4;
@@ -44,7 +44,7 @@ export class GameRuntime extends GameActivity {
     get players() { return this.players_; }
 
     // Getst the state the game is in. Only exposed for testing purposes.
-    get stateForTesting() { return this.state_; }
+    get state() { return this.state_; }
 
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }

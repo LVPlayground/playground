@@ -1143,7 +1143,7 @@ lvp_jump(playerid, params[]) {
     if (VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->isNitroInjectionAvailable() == false)
         return ShowBoxForPlayer(playerid, "You cannot teleport to a jumpzone in this type of vehicle!");
 
-    if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED)
+    if (!CanPlayerTeleport(playerid))
         return ShowBoxForPlayer(playerid,
             "You can't teleport to a jumpzone because you've recently been in a gunfight! Try again in a few seconds.");
 
@@ -1164,7 +1164,7 @@ lvp_jump(playerid, params[]) {
         return ShowBoxForPlayer(playerid, "This jumpzone is full! Try again later.");
     }
 
-    ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+    ReportPlayerTeleport(playerid);
     SetPlayerMapZone(playerid, jumpId);
 
     format(notice, sizeof(notice), "~r~~h~%s~w~ went to ~y~%s~w~ (~p~/jump %d~w~)", Player(playerid)->nicknameString(),

@@ -13,9 +13,10 @@ const BLUE_TEAM = 1;
 export class DeathMatchManger {
     lastQuarterUsedLocationsQueue = [];
 
-    constructor(abuse, announce) {
-        this.abuse_ = abuse;
+    constructor(announce, limits) {
         this.announce_ = announce;
+        this.limits_ = limits;
+
         this.playersInDeathMatch_ = new Map();
 
         // Stats of the player. Will not be cleared upon leaving the death match.
@@ -63,19 +64,27 @@ export class DeathMatchManger {
     // the person who last hit him will get the kill to avoid abuse.
     leave(player) {
         this.restoreDefaultPlayerStatus(player);
-        if (player.syncedData.lagCompensationMode !== 2) 
-            player.syncedData.lagCompensationMode = 2;  // This will respawn the |player|
-        
-        // To avoid abuse we'll kill the player if he had recently fought and let him re-spawn that 
-        // way.
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, teleportStatus.reason);
-            player.health = 0;
+
+        // To avoid abuse we'll kill the player if they had recently fought.
+        const decision = this.limits_().canLeaveDeathmatchZone(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.DEATH_MATCH_LEAVE_KILLED, decision);
+            
+            // Manually trigger a death event, because their death should count.
+            this.onPlayerDeath({
+                playerid: player.id,
+                killerid: Player.kInvalidId,
+                reason: 0,
+            });
+        }
+
+        if (player.syncedData.lagCompensationMode !== 2) {
+            player.syncedData.lagCompensationMode = 2;  // this will respawn the |player|
         } else {
             player.respawn();
         }
 
+        this.resetTeamScoreIfZoneEmpty(zone);
         this.showStats(player);
     }
 
@@ -308,7 +317,7 @@ export class DeathMatchManger {
     onPlayerSpawn(player) {
         // The player is playing in a death match
         if (this.playersInDeathMatch_.has(player)) {
-            // Remove the player if he's not in the DM_ZONE activity
+            // Remove the player if they're not in the DM_ZONE activity
             if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE) {
                 this.playersInDeathMatch_.delete(player);
                 return;

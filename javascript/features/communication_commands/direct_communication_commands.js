@@ -5,6 +5,8 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+import { relativeTime } from 'base/time.js';
+
 // Id of the sound to play when a player has received a message.
 const kMessageReceivedSoundId = 1058;
 
@@ -23,6 +25,9 @@ export class DirectCommunicationCommands {
 
     // WeakMap from |player| to a struct of {type, id, name} of last received message.
     previousMessage_ = new WeakMap();
+
+    // Gets the MuteManager from the Communication feature, which we service.
+    get muteManager() { return this.communication_().muteManager_; }
 
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
@@ -138,6 +143,21 @@ export class DirectCommunicationCommands {
         const message = this.communication_().processForDistribution(player, unprocessedMessage);
         if (!message)
             return;  // the message was blocked
+        
+        // Check if the recieving |target| is muted and not allowed to recieved PMs.
+        // And that the sending |player| is NOT an administrator.
+        const muteTime = this.muteManager.getPlayerRemainingMuteTime(target);
+        if (muteTime !== null && !player.isAdministrator()) {
+            const durationText = relativeTime({
+                date1: new Date(),
+                date2: new Date(Date.now() + muteTime * 1000)
+            }).text;
+
+            player.sendMessage(
+                Message.COMMUNICATION_PM_TARGET_MUTED, target.name, target.id, durationText);
+
+            return;
+        }
         
         player.sendMessage(Message.COMMUNICATION_PM_SENDER, target.name, target.id, message);
 

@@ -5,6 +5,7 @@
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameRegistration } from 'features/games/game_registration.js';
+import { GameRuntime } from 'features/games/game_runtime.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
@@ -28,6 +29,7 @@ function mapEquals(left, right) {
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
     finance_ = null;
+    limits_ = null;
     nuwani_ = null;
     settings_ = null;
 
@@ -39,8 +41,9 @@ export class GameCommands {
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, nuwani, settings, manager, registry) {
+    constructor(finance, limits, nuwani, settings, manager, registry) {
         this.finance_ = finance;
+        this.limits_ = limits;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
 
@@ -139,27 +142,20 @@ export class GameCommands {
         if (!settings)
             return;  // the |player| aborted out of the flow
 
-        const activity = this.manager_.getPlayerActivity(player);
-        if (activity) {
-            let message = null;
+        await this.startGame(player, description, settings, !!custom, registrationId);
+    }
 
-            switch (activity.getActivityState()) {
-                case GameActivity.kStateRegistered:
-                    message = Message.GAME_REGISTRATION_ALREADY_REGISTERED;
-                    break;
-                case GameActivity.kStateEngaged:
-                    message = Message.GAME_REGISTRATION_ALREADY_ENGAGED;
-                    break;
-                default:
-                    throw new Error(`Unknown activity: ${activity}`)
-            }
-
-            player.sendMessage(message, activity.getActivityName());
+    // Either starts the game described in |description|, considering the |settings|, for the given
+    // |player|, or has them join an existing game if one applied.
+    async startGame(player, description, settings, custom, registrationId = null) {
+        const decision = this.limits_().canStartMinigame(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.GAME_REGISTRATION_REJECTED, decision);
             return;
         }
 
         // Check if the player has enough money to participate in the game.
-        if (this.finance_().getPlayerCash(player) < description.price) {
+        if (!description.isFree() && this.finance_().getPlayerCash(player) < description.price) {
             player.sendMessage(
                 Message.GAME_REGISTRATION_NOT_ENOUGH_MONEY, description.price, description.name);
             return;
@@ -187,7 +183,8 @@ export class GameCommands {
             }
             
             // Take the registration fee from the |player|.
-            this.finance_().takePlayerCash(player, description.price);
+            if (!description.isFree())
+                this.finance_().takePlayerCash(player, description.price);
 
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
@@ -197,6 +194,33 @@ export class GameCommands {
 
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
+            return;
+        }
+
+        // If the |description| accepts continuous participation, players can join and leave as they
+        // please. We need to handle this case in the sign-up logic as well.
+        const activeRuntimes = this.manager_.getActiveGameRuntimes(description);
+
+        for (const activeRuntime of activeRuntimes) {
+            if (activeRuntime.state != GameRuntime.kStateRunning)
+                continue;
+            
+            // TODO: We might want to support settings and custom options for continuous games, in
+            // which case joining the first one is not the right thing to do. This requires a
+            // `mapEquals` and private/public check like the block above.
+
+            // Take the registration fee from the |player|.
+            if (!description.isFree())
+                this.finance_().takePlayerCash(player, description.price);
+
+            player.sendMessage(
+                Message.GAME_REGISTRATION_JOINED, activeRuntime.getActivityName());
+            
+            this.nuwani_().echo(
+                'notice-minigame', player.name, player.id, activeRuntime.getActivityName());
+            
+            // Actually have the |player| join the |activeRuntime|, and we're done here.
+            await activeRuntime.addPlayer(player, description.price);
             return;
         }
 
@@ -230,7 +254,8 @@ export class GameCommands {
         }
 
         // Take the registration fee from the |player|.
-        this.finance_().takePlayerCash(player, description.price);
+        if (!description.isFree())
+            this.finance_().takePlayerCash(player, description.price);
 
         // Let people watching Nuwani see that the minigame has started.
         this.nuwani_().echo(
@@ -482,7 +507,8 @@ export class GameCommands {
                 Message.GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS, registration.description.name);
 
             // (2) Refund the |player| their |contribution|.
-            this.finance_().givePlayerCash(player, contribution);
+            if (contribution > 0)
+                this.finance_().givePlayerCash(player, contribution);
 
             // (3) Remove the |player| from the |registration|.
             registration.removePlayer(player);

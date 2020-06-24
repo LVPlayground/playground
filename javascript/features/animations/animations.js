@@ -14,19 +14,19 @@ const kConfigurationFile = 'data/animations.json';
 // Contains a series of commands that enables players to animate themselves. The actual animations
 // are defined in a JSON file for convenience, all the other code and commands are generated.
 export default class Animations extends Feature {
-    abuse_ = null;
     animations_ = null;
     announce_ = null;
+    limits_ = null;
     settings_ = null;
 
     constructor() {
         super();
 
-        // Use of the animation commands is subject to abuse mitigations.
-        this.abuse_ = this.defineDependency('abuse');
-
         // Shares announcements about animations being forced on other players.
         this.announce_ = this.defineDependency('announce');
+
+        // Use of the animation commands is subject to usage limitations.
+        this.limits_ = this.defineDependency('limits');
 
         // Certain announcement settings about animations are configurable.
         this.settings_ = this.defineDependency('settings');
@@ -72,17 +72,24 @@ export default class Animations extends Feature {
     // including their state and whether they're recently been in a fight.
     executeAnimation(animation, currentPlayer, targetPlayer) {
         const player = targetPlayer ?? currentPlayer;
-        const pronoun = player === currentPlayer ? 'You' : 'They';
+
+        // Utility function to fix the pronoun in a particular message.
+        const fixPronoun = message => {
+            return player === currentPlayer ? message
+                                            : message.replace('you', 'they')
+                                                     .replace('your', 'their');
+        };
 
         // (1a) Animations can only be started when the player is on-foot.
         if (player.state !== Player.kStateOnFoot) {
-            player.sendMessage(Message.ANIMATIONS_NOT_ON_FOOT, pronoun);
+            currentPlayer.sendMessage(fixPronoun(Message.ANIMATIONS_NOT_ON_FOOT));
             return;
         }
 
         // (1b) Animations can only been started when the player hasn't recently been fighting.
-        if (!this.abuse_().canAnimate(player).allowed) {
-            player.sendMessage(Message.ANIMATIONS_NOT_IDLE, pronoun);
+        const decision = this.limits_().canAnimate(player);
+        if (!decision.isApproved()) {
+            currentPlayer.sendMessage(Message.ANIMATIONS_NOT_IDLE, fixPronoun(decision.toString()));
             return;
         }
 
@@ -185,8 +192,8 @@ export default class Animations extends Feature {
         this.animations_.clear();
         this.animations_ = null;
 
-        this.abuse_ = null;
         this.announce_ = null;
+        this.limits_ = null;
         this.settings_ = null;
     }
 }

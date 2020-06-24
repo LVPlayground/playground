@@ -19,6 +19,13 @@ describe('GameDescription', it => {
         assert.throws(() => new GameDescription(GameDescription));
         assert.throws(() => new GameDescription(GameDescription, {}));
         assert.throws(() => new GameDescription(3.14));
+        assert.throws(() => new GameDescription(Game, {
+            name: 'My game',
+            goal: 'Verify continuous and minimumPlayers alignment',
+
+            continuous: true,
+            minimumPlayers: 2,  // <-- this throws
+        }));
     });
 
     it('is able to reflect the bare minimum game with default options', assert => {

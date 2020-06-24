@@ -20,6 +20,47 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager = deathMatch.manager_;
     });
 
+<<<<<<< HEAD
+=======
+    it('should show message for player if using invalid dm zone', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        manager.goToDmZone(gunther, 0);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(gunther.messages[0], Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
+        assert.includes(gunther.messages[1], Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES,
+            manager.validDmZones().join(', ')));
+    });
+
+    it('should not enable players to go to a DM zone when they might abuse it', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+
+        manager.goToDmZone(gunther, 1);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
+    });
+
+    it('should not allow players to go to a death match if they are in another activity', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
+
+        manager.goToDmZone(gunther, 1);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you're playing a race`));
+    });
+
+>>>>>>> origin
     it('should set player settings if going to dm zone', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
@@ -180,7 +221,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(teamScore.blueTeamKills, 1);
     });
 
-    it('should remove player if he disconnects', async (assert) => {
+    it('should remove player if they disconnect', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         gunther.identify();
@@ -216,7 +257,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         await gunther.identify();
         await russell.identify();
         russell.health = 90;
-        russell.armour = 40; // He regenerated armour from properties or such
+        russell.armour = 40; // They regenerated armour from properties or such
 
         manager.playerStats_.set(gunther, gunther.stats.snapshot());
         manager.playerStats_.set(russell, russell.stats.snapshot());
@@ -234,26 +275,32 @@ describe('DeathMatchManager', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
 
         // (1) Teleport to a Lag Shot DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
         assert.equal(gunther.syncedData.lagCompensationMode, 0);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 7);
 
         // (2) Leave it.
         manager.leave(gunther);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
 
         // (3) Teleport to a Skin Hit DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (skin hit)= */ 3);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 3);
 
         // (4) Teleport directly to a Lag Shot DM zone.
         manager.goToDmZone(gunther, /* Baseball field RW (lag shot)= */ 7);
         assert.equal(gunther.syncedData.lagCompensationMode, 0);
+        assert.equal(manager.playersInDeathMatch_.get(gunther), 7);
 
         // (5) Leave it.
         manager.leave(gunther);
         assert.equal(gunther.syncedData.lagCompensationMode, 2);
+        assert.isFalse(manager.playersInDeathMatch_.has(gunther));
     });
 
     it('should set lag compensation mode to default if leaving while shot', async (assert) => {        

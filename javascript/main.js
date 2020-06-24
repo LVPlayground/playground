@@ -39,6 +39,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'account_provider',
         'communication',
         'finance',
+        'limits',
         'nuwani',
         'player_stats',
         'settings',

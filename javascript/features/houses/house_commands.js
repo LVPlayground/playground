@@ -21,13 +21,13 @@ const IdentityBeamDisplayTimeMs = 60000;
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, abuse, announce, economy, finance, location, playground) {
+    constructor(manager, announce, economy, finance, limits, location, playground) {
         this.manager_ = manager;
 
-        this.abuse_ = abuse;
         this.announce_ = announce;
         this.economy_ = economy;
         this.finance_ = finance;
+        this.limits_ = limits;
         this.location_ = location;
 
         this.playground_ = playground;
@@ -311,17 +311,17 @@ class HouseCommands {
         const houses = new Set();
         let nickname = null;
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const teleportStatus = this.limits_().canTeleport(player);
 
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, teleportStatus.reason);
+        if (!teleportStatus.isApproved()) {
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, teleportStatus);
             return;
         }
 
         // Bail out if the user is in an interior, or in a different virtual world.
         if (player.interiorId != 0 || player.virtualWorld != 0) {
-            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, 'not outside');
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, `you're not outside`);
             return;
         }
 
@@ -350,7 +350,7 @@ class HouseCommands {
             menu.addItem(location.settings.name, player => {
                 this.manager_.forceEnterHouse(player, location);
 
-                this.abuse_().reportTimeThrottledTeleport(player);
+                this.limits_().reportTeleportation(player);
 
                 // Announce creation of the location to other administrators.
                 this.announce_().announceToAdministratorsWithFilter(

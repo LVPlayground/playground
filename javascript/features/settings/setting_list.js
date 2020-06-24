@@ -7,21 +7,13 @@ import { Setting } from 'entities/setting.js';
 export const kSettingList = [
     /** Abuse related settings */
     new Setting('abuse', 'announce_admin_animation', Setting.TYPE_BOOLEAN, true, 'Announce when admins force animations on other players.'),
-    new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
-    new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
-    new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
     new Setting('abuse', 'detector_cleo_dmage', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Dmage detector be enabled?'),
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
-    new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
     new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
     new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
     new Setting('abuse', 'kill_attribution_time_sec', Setting.TYPE_NUMBER, 10, 'Time after last hit when deaths should be attributed for.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
-    new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
-    new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
-    new Setting('abuse', 'teleportation_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override teleportation restrictions?'),
-    new Setting('abuse', 'teleportation_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between teleporting twice.'),
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */
@@ -83,6 +75,15 @@ export const kSettingList = [
     new Setting('gangs', 'zones_area_viable_edge_length', Setting.TYPE_NUMBER, 50, 'Target edge length of each side of a viable area.'),
     new Setting('gangs', 'zones_area_viable_shape_threshold', Setting.TYPE_NUMBER, 50, 'Ratio threshold (*100) for maintaining an area shape.'),
     new Setting('gangs', 'zones_area_viable_shape_adjust', Setting.TYPE_NUMBER, 22, 'Percentage of area to shift w/h to maintain area shape.'),
+
+    /** Limits-related settings */
+    new Setting('limits', 'deathmatch_damage_issued_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after issuing damage.'),
+    new Setting('limits', 'deathmatch_damage_taken_cooldown', Setting.TYPE_NUMBER, 25, 'Number of seconds to block actions after having taken damage.'),
+    new Setting('limits', 'deathmatch_weapon_fired_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after firing your weapon.'),
+    new Setting('limits', 'throttle_spawn_vehicle_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_spawn_vehicle_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds players have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_teleportation_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between teleportations.'),
+    new Setting('limits', 'throttle_teleportation_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds players have to wait between teleportations.'),
 
     /** Playground related settings */
     new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),

@@ -22,6 +22,9 @@ export default class Games extends Feature {
         // Participating in a game costs some money, but can also reward a prize.
         const finance = this.defineDependency('finance');
 
+        // Decides whether a player is in a state right now to join a minigame.
+        const limits = this.defineDependency('limits');
+
         // The Nuwani framework allows us to broadcast participation and results to other places.
         const nuwani = this.defineDependency('nuwani');
 
@@ -37,7 +40,8 @@ export default class Games extends Feature {
         this.registry_ = new GameRegistry(this.manager_);
         
         // Implements the commands with which players can start and stop games.
-        this.commands_ = new GameCommands(finance, nuwani, settings, this.manager_, this.registry_);
+        this.commands_ = new GameCommands(
+            finance, limits, nuwani, settings, this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -46,6 +50,32 @@ export default class Games extends Feature {
     // |options| dictionary. An overview of the available |options| is available in README.md.
     registerGame(gameConstructor, options) {
         this.registry_.registerGame(new GameDescription(gameConstructor, options));
+    }
+
+    // Starts the |gameConstructor| game for the |player|, which must have been registered with the
+    // game registry already. When given, the |settings| must be a Map instance with the settings
+    // that should be changed. It's valid for default values to be omitted.
+    startGame(gameConstructor, player, inputSettings = null) {
+        const description = this.registry_.getDescription(gameConstructor);
+        if (!description)
+            throw new Error(`The given game (${gameConstructor}) has not yet been registered.`);
+
+        const settings = new Map();
+        for (const [ identifier, setting ] of description.settings)
+            settings.set(identifier, setting.defaultValue);
+
+        // When available, override values in the |settings| Map with the given |inputSettings|.
+        if (inputSettings !== null) {
+            for (const [ identifier, value ] of inputSettings) {
+                if (!settings.has(identifier))
+                    throw new Error(`Invalid setting given: ${identifier}.`);
+                
+                settings.set(identifier, value);
+            }
+        }
+
+        // Start the game, going through the common player requirement checks.
+        return this.commands_.startGame(player, description, inputSettings, inputSettings !== null);
     }
 
     // Removes the game previously registered with |gameConstructor| from the list of games that

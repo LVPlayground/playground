@@ -265,7 +265,7 @@ describe('PlayerStats', (it, beforeEach) => {
 
         const snapshot = gunther.stats.snapshot();
 
-        // (3) Modify |gunther|'s statistics because he's really ace at these things.
+        // (3) Modify |gunther|'s statistics because they're really ace at these things.
         for (const [ index, property ] of properties)
             gunther.stats.session[property] += Math.pow(2, index);
 

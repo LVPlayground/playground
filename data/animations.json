@@ -126,7 +126,7 @@
         }
     },
     {
-        "command": "wave",
+        "command": "wavee",
         "description": "Makes your character wave at someone else.",
         "prepare": "turn-around",
 
@@ -140,5 +140,5 @@
             "freeze": false,
             "time": 0
         }
-    },
+    }
 ]

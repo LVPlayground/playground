@@ -44,7 +44,6 @@ export class DeathMatchCommands {
     }
 
     async enterDeathMatchZone(zone, player) {
-        console.log(zone);
         let decision = null;
 
         // If the |player| is switching to a new deathmatch zone, we allow them to switch when they

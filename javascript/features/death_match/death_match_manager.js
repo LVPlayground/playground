@@ -30,7 +30,7 @@ export class DeathMatchManger {
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
-            'playerdeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
+            'playerresolveddeath', DeathMatchManger.prototype.onPlayerDeath.bind(this));
 
         // Observes the PlayerManager, to be informed of changes in player events.
         // Before e.g. the player has fully disconnected.

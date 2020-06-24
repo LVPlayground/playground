@@ -10,6 +10,11 @@
 
 new g_playerDriftUpdateCounter[MAX_PLAYERS];
 
+new g_playerDriftPoints[MAX_PLAYERS];
+new Float: g_playerDriftPosition[MAX_PLAYERS][3];
+new g_playerDriftStartTime[MAX_PLAYERS] = { 0, ... };
+new g_playerDriftUpdateTime[MAX_PLAYERS] = { 0, ... };
+
 // Calculates the vehicle's principal axes based on it's rotation quaternion, which allows us to
 // determine the vehicle's orientation during a drift. Drifts on a flat plane are great, but they
 // become a lot more interesting when exercised on e.g. a hill.
@@ -84,6 +89,25 @@ GetVehicleDriftValues(vehicleId, &bool: backwards, &Float: driftAngle, &Float: d
     return 1;
 }
 
+// Calculates the expiration time of a drift, in milliseconds. The |timeDifference| details the
+// number of milliseconds since their last drift, and the |driftDuration| details the time in
+// milliseconds since the player started their drift.
+CalculateDriftExpiration(timeDifference, driftDuration) {
+    return 0;
+}
+
+// Calculates the amount of drifting points to award as a bonus, given the vehicle's |pitch|, |roll|
+// and |yaw| values, each of which make for harder circumstances to maintain a drift.
+CalculateDriftBonus(timeDifference, Float: pitch, Float: roll, Float: yaw) {
+    return 0;
+}
+
+// Calculates the amount of drifting points to award for a drift at the given |driftSpeed| and the
+// |driftAngle|, which took place in the given |timeDifference| in milliseconds.
+CalculateDriftPoints(timeDifference, Float: driftSpeed, Float: driftAngle, Float: driftDistance) {
+    return 0;
+}
+
 // Processes drift updates for the given |playerId|. Only works when they're in a vehicle, and only
 // processed a certain ratio of player updates as this method is called a lot.
 ProcessDriftUpdateForPlayer(playerId) {
@@ -110,6 +134,50 @@ ProcessDriftUpdateForPlayer(playerId) {
         driftAngle >= g_driftingMinAngle && driftAngle <= g_driftingMaxAngle &&
         !backwards;
 
-    printf("[%d] P:[%.f4] R:[%.4f] Y:[%.f4] A:[%.4f] S:[%.f4] B:[%d] D:[%d]",
-        playerId, pitch, roll, yaw, driftAngle, driftSpeed, backwards ? 1 : 0, isDrifting ? 1 : 0);
+    // If the player wasn't drifting, and isn't currently drifting, just bail out.
+    if (g_playerDriftStartTime[playerId] == 0 && !isDrifting)
+        return;
+
+    new const currentTime = GetTickCount();
+
+    // (1) The player is currently drifting, and was drifting during the previous tick as well.
+    if (g_playerDriftStartTime[playerId] > 0 && isDrifting) {
+        new const difference = currentTime - g_playerDriftUpdateTime[playerId];
+        new const Float: distance = GetVehicleDistanceFromPoint(
+            vehicleId, g_playerDriftPosition[playerId][0], g_playerDriftPosition[playerId][1],
+            g_playerDriftPosition[playerId][2]);
+
+        g_playerDriftUpdateTime[playerId] = currentTime;
+        g_playerDriftPoints[playerId] +=
+            CalculateDriftBonus(difference, pitch, roll, yaw) +
+            CalculateDriftPoints(difference, driftSpeed, driftAngle, distance);
+
+        printf("[%d] Drift: %d", playerId, g_playerDriftPoints[playerId]);
+
+    } else if (g_playerDriftStartTime[playerId] == 0 && isDrifting) {
+        // (2) The player is currently drifting, but wasn't yet drifting during their previous tick.
+        g_playerDriftPoints[playerId] = 0;
+        g_playerDriftStartTime[playerId] = currentTime;
+        g_playerDriftUpdateTime[playerId] = currentTime;
+
+        printf("[%d] Drift started", playerId);
+
+    } else {
+        // (3) The player is currently in a drift, but missed the thresholds for this tick.
+        new const difference = currentTime - g_playerDriftUpdateTime[playerId];
+        new const duration = currentTime - g_playerDriftStartTime[playerId];
+
+        // If the |difference| is larger than the expiration we'd award for this moment in the drift
+        // then we'll mark the drift as having finished.
+        if (difference > CalculateDriftExpiration(difference, duration)) {
+            g_playerDriftStartTime[playerId] = 0;
+
+            printf("[%d] Drift finished", playerId);
+        }
+    }
+
+    // Store the position so that we can calculate the moved drift distance during the next tick.
+    GetVehiclePos(
+        vehicleId, g_playerDriftPosition[playerId][0], g_playerDriftPosition[playerId][1],
+        g_playerDriftPosition[playerId][2]);
 }

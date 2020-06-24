@@ -98,6 +98,8 @@ public OnPlayerConnect(playerid) {
     g_playerGravity[playerid] = 0.008;
     g_isDisconnecting[playerid] = false;
 
+    g_playerDriftStartTime[playerid] = 0;
+
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
 }

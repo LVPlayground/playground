@@ -8,7 +8,7 @@ describe('DerbyRegistry', it => {
     it('should be able to initialize all derbies known to the server', assert => {
         const registry = new DerbyRegistry();
 
-        // Initialize all the JSON files that exist in the //data/ directory.
+        // Initialize all the JSON files that exist in the //data/derbies/ directory.
         registry.initialize();
 
         assert.isAbove(registry.size, 0);

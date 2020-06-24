@@ -35,6 +35,10 @@ export class GameRegistry {
         this.games_.set(description.gameConstructor, description);
     }
 
+    // Gets the GameDescription instance for the given |gameConstructor|. Will return NULL when the
+    // |gameConstructor| has not yet been registered with the registry.
+    getDescription(gameConstructor) { return this.games_.get(gameConstructor) || null; }
+
     // Removes the game previously registered with |gameConstructor| from the list of games that
     // are available on the server. In-progress games will be stopped immediately.
     removeGame(gameConstructor) {

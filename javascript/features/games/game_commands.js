@@ -142,6 +142,12 @@ export class GameCommands {
         if (!settings)
             return;  // the |player| aborted out of the flow
 
+        await this.startGame(player, description, settings, !!custom, registrationId);
+    }
+
+    // Either starts the game described in |description|, considering the |settings|, for the given
+    // |player|, or has them join an existing game if one applied.
+    async startGame(player, description, settings, custom, registrationId = null) {
         const decision = this.limits_().canStartMinigame(player);
         if (!decision.isApproved()) {
             player.sendMessage(Message.GAME_REGISTRATION_REJECTED, decision);
@@ -501,7 +507,8 @@ export class GameCommands {
                 Message.GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS, registration.description.name);
 
             // (2) Refund the |player| their |contribution|.
-            this.finance_().givePlayerCash(player, contribution);
+            if (contribution > 0)
+                this.finance_().givePlayerCash(player, contribution);
 
             // (3) Remove the |player| from the |registration|.
             registration.removePlayer(player);

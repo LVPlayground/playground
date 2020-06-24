@@ -142,12 +142,6 @@ export class GameCommands {
         if (!settings)
             return;  // the |player| aborted out of the flow
 
-        await this.startGame(player, description, settings, !!custom, registrationId);
-    }
-
-    // Either starts the game described in |description|, considering the |settings|, for the given
-    // |player|, or has them join an existing game if one applied.
-    async startGame(player, description, settings, custom, registrationId = null) {
         const decision = this.limits_().canStartMinigame(player);
         if (!decision.isApproved()) {
             player.sendMessage(Message.GAME_REGISTRATION_REJECTED, decision);

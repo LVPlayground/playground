@@ -53,29 +53,14 @@ export default class Games extends Feature {
     }
 
     // Starts the |gameConstructor| game for the |player|, which must have been registered with the
-    // game registry already. When given, the |settings| must be a Map instance with the settings
-    // that should be changed. It's valid for default values to be omitted.
-    startGame(gameConstructor, player, inputSettings = null) {
+    // game registry already. When set, the |custom| flag will enable the player to customize the
+    // game's settings when available. Optionally the |registrationId| may be given as well.
+    startGame(gameConstructor, player, custom = false, registrationId = null) {
         const description = this.registry_.getDescription(gameConstructor);
         if (!description)
             throw new Error(`The given game (${gameConstructor}) has not yet been registered.`);
 
-        const settings = new Map();
-        for (const [ identifier, setting ] of description.settings)
-            settings.set(identifier, setting.defaultValue);
-
-        // When available, override values in the |settings| Map with the given |inputSettings|.
-        if (inputSettings !== null) {
-            for (const [ identifier, value ] of inputSettings) {
-                if (!settings.has(identifier))
-                    throw new Error(`Invalid setting given: ${identifier}.`);
-                
-                settings.set(identifier, value);
-            }
-        }
-
-        // Start the game, going through the common player requirement checks.
-        return this.commands_.startGame(player, description, inputSettings, inputSettings !== null);
+        return this.commands_.onCommand(description, custom, player, registrationId)
     }
 
     // Removes the game previously registered with |gameConstructor| from the list of games that

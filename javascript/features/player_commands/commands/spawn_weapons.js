@@ -15,8 +15,10 @@ export default class SpawnWeapons extends PlayerCommand {
 
     setCommandParameters(commandBuilder) {
         return commandBuilder
-            .parameters([{ name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER },
-            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER }]);
+            .parameters([
+                { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER },
+                { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER }
+            ]);
     }
 
     build(commandBuilder) {
@@ -34,18 +36,20 @@ export default class SpawnWeapons extends PlayerCommand {
         this.giveSpawnWeapon(player, player, weapon, multiplier);
     }
 
-    // Gve the |subject| his |weapon| with |multiplier| * ammunations (from config).
+    // Gve the |subject| their |weapon| with |multiplier| * ammunations (from config).
     // If |player| is not |subject| an admin gives the weapon. Costs are not applied.
     giveSpawnWeapon(player, subject, weapon, multiplier) {        
         const teleportStatus = this.limits_().canTeleport(subject);
         // Bail out if the |player| might abuse it.
         if (!teleportStatus.isApproved()) {
-            if(player.id === subject.id) {
+            if (player.id === subject.id) {
                 player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT, teleportStatus);
             } else {
-                player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET, subject.name ,teleportStatus);
-                
+                player.sendMessage(
+                    Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET, subject.name,
+                    teleportStatus);
             }
+
             return;
         }
 
@@ -76,7 +80,8 @@ export default class SpawnWeapons extends PlayerCommand {
             player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_ARMOUR);
         } else {
             subject.giveSpawnWeapon(weaponData.id, multiplier);
-            player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_WEAPON, weaponData.name, multiplier);
+            player.sendMessage(
+                Message.PLAYER_COMMANDS_SPAWN_WEAPONS_WEAPON, weaponData.name, multiplier);
         }
     }
 }

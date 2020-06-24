@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import SpawnWeapons from "features/player_commands/commands/spawn_weapons.js";
+import SpawnWeapons from 'features/player_commands/commands/spawn_weapons.js';
 
 describe('SpawnWeapons', (it, beforeEach, afterEach) => {
     let command = null;
@@ -31,42 +31,43 @@ describe('SpawnWeapons', (it, beforeEach, afterEach) => {
         command.onSpawnWeaponsCommand(gunther, 24, 1);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], 'Sorry, you can\'t get weapons now because you');
+        assert.includes(gunther.messages[0], `Sorry, you can't get weapons now because you`);
     });
 
     it('should not be able to give an invalid spawn weapon.', async assert => {
         command.giveSpawnWeapon(gunther, gunther, 35, 1);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], "Sorry, id 35 is not a valid spawn weapon.");
+        assert.includes(gunther.messages[0], 'Sorry, id 35 is not a valid spawn weapon.');
     });
 
     it('should not be able to use zero as multiplier.', async assert => {
         command.giveSpawnWeapon(gunther, gunther, 24, 0);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], "Sorry, you can only have a multiplier of 1-100.");
+        assert.includes(gunther.messages[0], 'Sorry, you can only have a multiplier of 1-100.');
     });
 
     it('should not be able to use 101 as multiplier.', async assert => {
         command.giveSpawnWeapon(gunther, gunther, 24, 101);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], "Sorry, you can only have a multiplier of 1-100.");
+        assert.includes(gunther.messages[0], 'Sorry, you can only have a multiplier of 1-100.');
     });
 
     it('should give error if player does not have enough cash.', async assert => {
         command.giveSpawnWeapon(gunther, gunther, 24, 10);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], "Sorry, you need");
+        assert.includes(gunther.messages[0], 'Sorry, you need');
     });
 
     it('should be able to give spawn armour to other player without money.', async assert => {
         command.giveSpawnWeapon(russell, gunther, 1337, 1);
 
         assert.equal(russell.messages.length, 1);
-        assert.includes(russell.messages[0], "the armour has been bought.");
+        assert.equal(
+            russell.messages[0], Message.format(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_ARMOUR));
         assert.equal(gunther.messages.length, 0);
     });
 
@@ -76,7 +77,8 @@ describe('SpawnWeapons', (it, beforeEach, afterEach) => {
         command.onSpawnWeaponsCommand(gunther, 24, 1);
 
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], "Desert Eagle with ammo multiplier '1' has been bought.");
+        assert.includes(
+            gunther.messages[0], `Desert Eagle with ammo multiplier '1' has been bought.`);
     });
 
 });

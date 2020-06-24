@@ -18,14 +18,19 @@ export class PlayerCommandsCommands {
 
     async buildCommands() {
         const commandBuilder = server.commandManager.buildCommand('my')
-            .restrict(Player.LEVEL_PLAYER)
-            .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
+            .parameters([
+                { name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+            ]);
 
         const adminCommandBuilder = server.commandManager.buildCommand('p')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }])
+            .parameters([
+                { name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+            ])
             .sub(CommandBuilder.PLAYER_PARAMETER)
-            .parameters([{ name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }]);
+                .parameters([
+                    { name: 'parameters', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+                ]);
 
         await this.loadSubCommands(commandBuilder, adminCommandBuilder);
 
@@ -37,8 +42,10 @@ export class PlayerCommandsCommands {
     }
 
     async loadSubCommands(parentCommand, parentAdminCommand) {
-        glob(COMMAND_DATA_DIRECTORY, '^((?!test).)*\.js$').forEach(
-            async file => await this.registerSubCommand(parentCommand, parentAdminCommand, (COMMAND_BASE_PATH + '/' + file)));
+        glob(COMMAND_DATA_DIRECTORY, '^((?!test).)*\.js$').forEach(async (file) => {
+            await this.registerSubCommand(
+                parentCommand, parentAdminCommand, COMMAND_BASE_PATH + '/' + file);
+        });
     }
 
     async registerSubCommand(parentCommand, parentAdminCommand, fileLocation) {
@@ -53,11 +60,13 @@ export class PlayerCommandsCommands {
     }
 
     onMyCommand(player, parameters) {
-        wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/my ' + parameters ?? ''));
+        wait(0).then(() => pawnInvoke(
+            'OnPlayerCommand', 'is', player.id, '/my ' + parameters ?? ''));
     }
 
     onAdminCommand(player, parameters) {
-        wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/p ' + parameters ?? ''));
+        wait(0).then(() => pawnInvoke(
+            'OnPlayerCommand', 'is', player.id, '/p ' + parameters ?? ''));
     }
 
     onAdminCommandWithPlayer(player, subject, parameters) {

@@ -77,6 +77,22 @@ describe('DeathMatchManager', (it, beforeEach) => {
             Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
     });
 
+    it('should not allow players to go to a DM zone from menu if they might abuse it', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+        gunther.respondToDialog({ listitem: 0 /* Assumed `zone 1` */ });
+    
+        assert.isTrue(await gunther.issueCommand('/deathmatch'));
+    
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
+    });
+
     it('should allow to use deathmatch zone 1', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 

@@ -24,22 +24,27 @@ export class DeathMatchCommands {
     }
 
     // The death match command is being used.
-    async onDmCommand(player, zone) { 
-        if(isNaN(zone) || !DeathMatchLocation.hasLocation(zone)) {
-            const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'Lag shot']);
-            for(const zoneId of this.manager_.validDmZones()) {
-                const location = DeathMatchLocation.getById(zoneId);  
-                dialog.addItem(location.id, location.name, location.hasTeams ? "Yes" : "No", 
-                                location.lagShot ? "Yes": "No", 
-                    (player) => {
-                        this.manager_.goToDmZone(player, zoneId);
-                    });
-            }
-            
-            await dialog.displayForPlayer(player);
-            return;
-        }
+    async onDmCommand(player, zone) {
+        if(DeathMatchLocation.hasLocation(zone)) 
+            return this.enterDeathMatchZone(zone, player);
 
+        const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'Lag shot']);
+        for(const zoneId of this.manager_.validDmZones()) {
+            const location = DeathMatchLocation.getById(zoneId);  
+            dialog.addItem( 
+                location.id, 
+                location.name, 
+                location.hasTeams ? "Yes" : "No", 
+                location.lagShot ? "Yes": "No", 
+                DeathMatchCommands.prototype.enterDeathMatchZone.bind(this, zoneId)
+            );
+        }
+        
+        await dialog.displayForPlayer(player);
+    }
+
+    async enterDeathMatchZone(zone, player) {
+        console.log(zone);
         let decision = null;
 
         // If the |player| is switching to a new deathmatch zone, we allow them to switch when they

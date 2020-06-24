@@ -15,7 +15,7 @@ export default class DeathMatch extends Feature {
         const limits = this.defineDependency('limits');
 
         this.manager_ = new DeathMatchManger(announce, limits);
-        this.commands_ = new DeathMatchCommands(this.manager_);
+        this.commands_ = new DeathMatchCommands(limits, this.manager_);
     }
 
     dispose() {

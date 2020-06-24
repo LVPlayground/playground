@@ -20,44 +20,6 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager = deathMatch.manager_;
     });
 
-    it('should show message for player if using invalid dm zone', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        manager.goToDmZone(gunther, 0);
-
-        assert.equal(gunther.messages.length, 2);
-        assert.includes(gunther.messages[0], Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
-        assert.includes(gunther.messages[1], Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES,
-            manager.validDmZones().join(', ')));
-    });
-
-    it('should not enable players to go to a DM zone when they might abuse it', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        gunther.identify({ userId: 42 });
-        gunther.shoot({ target: russell });
-
-        manager.goToDmZone(gunther, 1);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
-    });
-
-    it('should not allow players to go to a death match if they are in another activity', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
-
-        manager.goToDmZone(gunther, 1);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(
-            gunther.messages[0],
-            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you're playing a race`));
-    });
-
     it('should set player settings if going to dm zone', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
@@ -91,7 +53,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         manager.leave(gunther);
 
-        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages.length, 1);
         assert.equal(manager.playersInDeathMatch_.size, 0);
     });
 
@@ -159,16 +121,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(manager.playerTeam_.get(gunther).team, 0);
         assert.equal(manager.playerTeam_.get(lucy).team, 0);
 
-    });
-
-    it('should not show stats if player hasn\'t done a death match', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        manager.showStats(gunther);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], Message.DEATH_MATCH_NO_STATS);
-    });
+    }); 
 
     it('should not do death match spawn if player not in death match', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
@@ -189,7 +142,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         gunther.activity = Player.PLAYER_ACTIVITY_JS_DM_ZONE;
         manager.playersInDeathMatch_.set(gunther, 1);
 
-        manager.onPlayerSpawn({ playerid: gunther.id });
+        gunther.respawn();
 
         assert.equal(gunther.health, 100);
     });
@@ -201,7 +154,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 8);
         manager.playerTeam_.set(gunther, { zone: 8, team: 0 });
 
-        manager.onPlayerSpawn({ playerid: gunther.id });
+        gunther.respawn();
 
         assert.equal(gunther.team, 0);
     });
@@ -233,7 +186,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         gunther.identify();
         manager.playersInDeathMatch_.set(gunther, 1);
 
-        manager.onPlayerDisconnect({ playerid: gunther.id });
+        gunther.disconnectForTesting();
 
         assert.equal(manager.playersInDeathMatch_.has(gunther), false);
     });
@@ -251,7 +204,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 1);
         manager.playersInDeathMatch_.set(russell, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
+        gunther.die(russell);
 
         assert.equal(russell.health, 100);
         assert.equal(russell.armour, 90);
@@ -271,7 +224,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.playersInDeathMatch_.set(gunther, 1);
         manager.playersInDeathMatch_.set(russell, 1);
 
-        manager.onPlayerDeath({ playerid: gunther.id, killerid: russell.id });
+        gunther.die(russell);
 
         assert.equal(russell.health, 100);
         assert.equal(russell.armour, 100);
@@ -309,6 +262,17 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.isFalse(manager.playersInDeathMatch_.has(gunther));
     });
 
+    it('should set lag compensation mode to default if leaving while shot', async (assert) => {        
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        gunther.syncedData.lagCompensationMode = 0;
+        gunther.shoot({ target: russell });
+        
+        manager.leave(gunther);
+
+        assert.equal(gunther.syncedData.lagCompensationMode, 2);    
+    });
+
     it('should dispose text draws for players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);        
         const textDraw = new TextDraw();
@@ -322,5 +286,45 @@ describe('DeathMatchManager', (it, beforeEach) => {
         managerForDisposal.dispose();
 
         assert.equal(server.textDrawManager.getForPlayer(gunther, textDraw), null);
+    });
+
+    it('should set gravity upon joining low gravity zone', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const zone = 4;
+
+        manager.goToDmZone(gunther, zone);
+        
+        assert.equal(gunther.gravity, 0.002);
+    });
+
+    it('should restore gravity upon leaving', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const zone = 4;
+
+        gunther.identify({ userId: 42 });
+        manager.playersInDeathMatch_.set(gunther, zone);
+        gunther.gravity = 0.002;
+
+        manager.leave(gunther);
+
+        assert.equal(gunther.gravity, Player.kDefaultGravity);
+    });
+
+    it('should remove the players team if he disconnects', assert => {        
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        const zone = 9;
+
+        // (1) Gunther joins and disconnects. Player team should be set to 0.
+        manager.goToDmZone(gunther, zone);
+        gunther.disconnectForTesting();
+
+        assert.equal(manager.playerTeam_.size, 0);
+        assert.equal(gunther.team, Player.kNoTeam);
+
+        // (2) Now Russell joins too. He should be in the first team as gunther is gone.
+        manager.goToDmZone(russell, zone);
+
+        assert.equal(russell.team, 0);
     });
 });

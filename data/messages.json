@@ -125,9 +125,7 @@
   "COMMUNICATION_VIP_NO_ACCESS": "@error Only VIPs are allowed to use this chat. Check out {2196F3}/donate{FFFFFF} for more information!",
   "COMMUNICATION_WORLD_MESSAGE": "{%s}[%d][World: %d] %s:{FFFFFF} %s",
 
-  "DEATH_MATCH_AVAILABLE_ZONES" : "Available DM zones are: /deathmatch %s.",
   "DEATH_MATCH_DAMAGE_ACCURACY": "{CCD782}You've done {838F31}%.0f damage{CCD782} with a {838F31}%.0f percent accuracy.",
-  "DEATH_MATCH_INVALID_ZONE" : "Zone %d is not a valid zone.",
   "DEATH_MATCH_INSTRUCTION_LEAVE": "@success Use \"/deathmatch leave\" to leave the deathmatch.",
   "DEATH_MATCH_INSTRUCTION_STATS": "Use \"/deathmatch stats\" to see the stats of this session.",
   "DEATH_MATCH_KILL_DEATH": "{CCD782}You've gotten {838F31}%d kills{CCD782} and {838F31}%d deaths{CCD782}, resulting in a {838F31}KD ratio of %.2f.",

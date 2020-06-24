@@ -20,7 +20,80 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager = deathMatch.manager_;
     });
 
-    it('should allow to use gang zone 1', async(assert) => {
+    it('should not enable players to go to a DM zone when they might abuse it', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch 1'));
+    
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
+    });
+
+    it('should not allow players to go to a death match if they are in another activity', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.activity = Player.PLAYER_ACTIVITY_JS_RACE;
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch 1'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you're playing a race`));
+    });
+
+    it('should allow to use death match leave', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch leave'));
+    });
+
+    it('should show menu and teleport to zone if done without zone', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);        
+
+        gunther.respondToDialog({ listitem: 0 /* Assumed `zone 1` */ });
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[0], 
+            Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
+    });
+
+    it('should show menu if entered invalid', async(assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);        
+
+        gunther.respondToDialog({ listitem: 0 /* Assumed `zone 1` */ });
+
+        assert.isTrue(await gunther.issueCommand('/deathmatch 0'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[0], 
+            Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
+    });
+
+    it('should not allow players to go to a DM zone from menu if they might abuse it', async (assert) => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+
+        gunther.identify({ userId: 42 });
+        gunther.shoot({ target: russell });
+        gunther.respondToDialog({ listitem: 0 /* Assumed `zone 1` */ });
+    
+        assert.isTrue(await gunther.issueCommand('/deathmatch'));
+    
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.DEATH_MATCH_TELEPORT_BLOCKED, `you've recently issued damage`));
+    });
+
+    it('should allow to use deathmatch zone 1', async(assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
 
         assert.isTrue(await gunther.issueCommand('/deathmatch 1'));
@@ -28,23 +101,5 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 3);
         assert.includes(gunther.messages[0], 
             Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
-    });
-
-    it('should show message for player if using invalid dm zone', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isTrue(await gunther.issueCommand('/deathmatch 0'));
-
-        assert.equal(gunther.messages.length, 2);
-        assert.includes(gunther.messages[0], 
-            Message.format(Message.DEATH_MATCH_INVALID_ZONE, 0));
-        assert.includes(gunther.messages[1], Message.format(Message.DEATH_MATCH_AVAILABLE_ZONES, 
-            manager.validDmZones().join(', ')));
-    });
-
-    it('should allow to use death match leave', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        assert.isTrue(await gunther.issueCommand('/deathmatch leave'));
     });
 });

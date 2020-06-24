@@ -11,6 +11,7 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 #include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
 #include "Driver/Drift/DriftHelpers.pwn"
+#include "Driver/Drift/DriftUi.pwn"
 
 // The keys that have to be pressed by the player to activate certain vehicle key effects. These
 // have been carried over from the SAS gamemode by leaty, Lithirm and Kase.
@@ -100,6 +101,8 @@ public OnPlayerConnect(playerid) {
 
     g_playerDriftStartTime[playerid] = 0;
 
+    InitializePlayerDriftTextDraws(playerid);
+
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
 }
@@ -107,6 +110,7 @@ public OnPlayerConnect(playerid) {
 public OnPlayerDisconnect(playerid, reason) {
     g_isDisconnecting[playerid] = true;
 
+    DestroyPlayerDriftTextDraws(playerid);
     StopBlinking(playerid);
 
     // The player might be using /q to avoid being killed by their opponent. In that case we make

@@ -230,15 +230,17 @@ ProcessDriftUpdateForPlayer(playerId) {
 
 // Called when a drift has started for the |playerId|.
 OnDriftStart(playerId) {
-    printf("[%d] Drift started", playerId);
+    ShowDriftingUiForPlayer(playerId);
 }
 
 // Called when a drift has been updated for the given |playerId|, now at the given |score|.
 OnDriftUpdate(playerId, score) {
-    printf("[%d] Drift: %d", playerId, score);
+    UpdateDriftingUiForPlayer(playerId, score);
 }
 
 // Called when a drift has finished for the |player|.
 OnDriftFinished(playerId, duration, score, bool: successful) {
     printf("[%d] Drift finished (%dms): %d", playerId, duration, score);
+    HideDriftingUiForPlayer(playerId);
+    #pragma unused successful
 }

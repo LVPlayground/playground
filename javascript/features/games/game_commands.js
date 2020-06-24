@@ -149,7 +149,7 @@ export class GameCommands {
         }
 
         // Check if the player has enough money to participate in the game.
-        if (this.finance_().getPlayerCash(player) < description.price) {
+        if (!description.isFree() && this.finance_().getPlayerCash(player) < description.price) {
             player.sendMessage(
                 Message.GAME_REGISTRATION_NOT_ENOUGH_MONEY, description.price, description.name);
             return;
@@ -177,7 +177,8 @@ export class GameCommands {
             }
             
             // Take the registration fee from the |player|.
-            this.finance_().takePlayerCash(player, description.price);
+            if (!description.isFree())
+                this.finance_().takePlayerCash(player, description.price);
 
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
@@ -203,7 +204,8 @@ export class GameCommands {
             // `mapEquals` and private/public check like the block above.
 
             // Take the registration fee from the |player|.
-            this.finance_().takePlayerCash(player, description.price);
+            if (!description.isFree())
+                this.finance_().takePlayerCash(player, description.price);
 
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, activeRuntime.getActivityName());
@@ -246,7 +248,8 @@ export class GameCommands {
         }
 
         // Take the registration fee from the |player|.
-        this.finance_().takePlayerCash(player, description.price);
+        if (!description.isFree())
+            this.finance_().takePlayerCash(player, description.price);
 
         // Let people watching Nuwani see that the minigame has started.
         this.nuwani_().echo(

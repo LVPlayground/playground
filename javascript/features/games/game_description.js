@@ -119,6 +119,9 @@ export class GameDescription {
     // Gets the price for which someone can participate in this minigame.
     get price() { return this.price_; }
 
+    // Returns whether this minigame is free to play, which some continuous games might want to be.
+    isFree() { return this.price_ === 0; }
+
     // Gets the tick rate at which the game will receive lifetime events.
     get tick() { return this.tick_; }
 

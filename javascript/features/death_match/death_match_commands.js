@@ -9,7 +9,7 @@ import { Menu } from 'components/menu/menu.js';
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
 export class DeathMatchCommands {    
 
-    constructor(abuse, manager) {
+    constructor(limits, manager) {
         server.commandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .sub('leave')
@@ -19,8 +19,8 @@ export class DeathMatchCommands {
     
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
+        this.limits_ = limits;
         this.manager_ = manager;        
-        this.abuse_ = abuse;
     }
 
     // The death match command is being used.
@@ -39,18 +39,18 @@ export class DeathMatchCommands {
             await dialog.displayForPlayer(player);
             return;
         }
-        
-        if (player.activity !== Player.PLAYER_ACTIVITY_JS_DM_ZONE &&
-            player.activity !== Player.PLAYER_ACTIVITY_NONE) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, "you are in another activity.");
-            return;
-        }
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        let decision = null;
 
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, teleportStatus.reason);
+        // If the |player| is switching to a new deathmatch zone, we allow them to switch when they
+        // haven't been shot recently. Otherwise we need to meet the full minigame criteria.
+        if (player.activity === Player.PLAYER_ACTIVITY_JS_DM_ZONE)
+            decision = this.limits_().canLeaveDeathmatchZone(player);
+        else
+            decision = this.limits_().canStartMinigame(player);
+
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.DEATH_MATCH_TELEPORT_BLOCKED, decision);
             return;
         }
 

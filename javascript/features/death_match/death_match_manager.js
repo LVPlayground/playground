@@ -84,7 +84,6 @@ export class DeathMatchManger {
             player.respawn();
         }
 
-        this.resetTeamScoreIfZoneEmpty(zone);
         this.showStats(player);
     }
 

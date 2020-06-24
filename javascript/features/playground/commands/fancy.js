@@ -31,25 +31,28 @@ class FancyCommand extends Command {
     }
 
     onFancyCommand(player, target, type) {
-        const subject = target || player;
+        if(!player.isAdministrator() && player !== target) {
+            player.sendMessage(Message.COMMAND_ERROR, 'Only administrators can fancy other players.');
+            return;
+        }
 
         switch (type) {
             case 'none':
-                this.fancy_.delete(subject);
+                this.fancy_.delete(target);
 
-                pawnInvoke('RemovePlayerAttachedObject', 'ii', subject.id, 0);
+                pawnInvoke('RemovePlayerAttachedObject', 'ii', target.id, 0);
 
                 player.sendMessage(
-                    Message.COMMAND_SUCCESS, subject.name + ' is not fancy anymore :(.');
+                    Message.COMMAND_SUCCESS, target.name + ' is not fancy anymore :(.');
                 break;
 
             case 'parrot':
             case 'cow':
-                this.fancy_.set(subject, type);
-                this.onPlayerSpawn({ playerid: subject.id });
+                this.fancy_.set(target, type);
+                this.onPlayerSpawn({ playerid: target.id });
 
                 player.sendMessage(
-                    Message.COMMAND_SUCCESS, subject.name + ' is now a ' + type + '.');
+                    Message.COMMAND_SUCCESS, target.name + ' is now a ' + type + '.');
                 break;
 
             default:

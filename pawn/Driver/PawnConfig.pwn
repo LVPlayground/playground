@@ -13,18 +13,20 @@ new g_abuseKillAttributionTimeSec = 10;
 // Section: drifting
 new bool: g_driftingEnabled = false;
 new Float: g_driftingMaxAngle = 82.5;
+new Float: g_driftingMaxDistance = 15.0;
 new Float: g_driftingMinAngle = 14.0;
 new Float: g_driftingMinSpeed = 50.0;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 8
+// Next ID: 9
 enum PawnConfigProperty {
     kAbuseIgnoreSolePassengerDamage = 5,
     kAbuseKickReasonPublic = 6,
     kAbuseKillAttributionTimeSec = 7,
     kVehiclesDriftingEnabled = 1,
     kVehiclesDriftingMaxAngle = 2,
+    kVehiclesDriftingMaxDistance = 8,
     kVehiclesDriftingMinAngle = 3,
     kVehiclesDriftingMinSpeed = 4,
 };
@@ -50,6 +52,9 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
 
         case kVehiclesDriftingMaxAngle:
             g_driftingMaxAngle = numberValue;
+
+        case kVehiclesDriftingMaxDistance:
+            g_driftingMaxDistance = numberValue;
 
         case kVehiclesDriftingMinAngle:
             g_driftingMinAngle = numberValue;

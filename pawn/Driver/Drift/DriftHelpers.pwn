@@ -147,12 +147,24 @@ ProcessDriftUpdateForPlayer(playerId) {
             vehicleId, g_playerDriftPosition[playerId][0], g_playerDriftPosition[playerId][1],
             g_playerDriftPosition[playerId][2]);
 
+        printf("Distance: %.2f", distance);
+
+        // If the maximum distance for a single-tick update has been exceeded, we abort the drift as
+        // they might have teleported. No score is awarded for that.
+        if (distance > g_driftingMaxDistance) {
+            OnDriftAborted(playerId);
+
+            g_playerDriftPoints[playerId] = 0;
+            g_playerDriftStartTime[playerId] = 0;
+            return;
+        }
+
         g_playerDriftUpdateTime[playerId] = currentTime;
         g_playerDriftPoints[playerId] +=
             CalculateDriftBonus(difference, pitch, roll, yaw) +
             CalculateDriftPoints(difference, driftSpeed, driftAngle, distance);
 
-        printf("[%d] Drift: %d", playerId, g_playerDriftPoints[playerId]);
+        OnDriftUpdate(playerId, g_playerDriftPoints[playerId]);
 
     } else if (g_playerDriftStartTime[playerId] == 0 && isDrifting) {
         // (2) The player is currently drifting, but wasn't yet drifting during their previous tick.
@@ -160,7 +172,7 @@ ProcessDriftUpdateForPlayer(playerId) {
         g_playerDriftStartTime[playerId] = currentTime;
         g_playerDriftUpdateTime[playerId] = currentTime;
 
-        printf("[%d] Drift started", playerId);
+        OnDriftStart(playerId);
 
     } else {
         // (3) The player is currently in a drift, but missed the thresholds for this tick.
@@ -170,9 +182,10 @@ ProcessDriftUpdateForPlayer(playerId) {
         // If the |difference| is larger than the expiration we'd award for this moment in the drift
         // then we'll mark the drift as having finished.
         if (difference > CalculateDriftExpiration(difference, duration)) {
-            g_playerDriftStartTime[playerId] = 0;
+            OnDriftFinished(playerId, g_playerDriftPoints[playerId]);
 
-            printf("[%d] Drift finished", playerId);
+            g_playerDriftPoints[playerId] = 0;
+            g_playerDriftStartTime[playerId] = 0;
         }
     }
 
@@ -180,4 +193,24 @@ ProcessDriftUpdateForPlayer(playerId) {
     GetVehiclePos(
         vehicleId, g_playerDriftPosition[playerId][0], g_playerDriftPosition[playerId][1],
         g_playerDriftPosition[playerId][2]);
+}
+
+// Called when a drift has started for the |playerId|.
+OnDriftStart(playerId) {
+    printf("[%d] Drift started", playerId);
+}
+
+// Called when a drift has been updated for the given |playerId|, now at the given |score|.
+OnDriftUpdate(playerId, score) {
+    printf("[%d] Drift: %d", playerId, score);
+}
+
+// Called when a drift has been aborted because invalid data was found.
+OnDriftAborted(playerId) {
+    printf("[%d] Drift aborted", playerId);
+}
+
+// Called when a drift has finished for the |player|.
+OnDriftFinished(playerId, score) {
+    printf("[%d] Drift finished: %d", playerId, score);
 }

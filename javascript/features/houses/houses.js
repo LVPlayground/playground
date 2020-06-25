@@ -47,7 +47,7 @@ class Houses extends Feature {
         const streamer = this.defineDependency('streamer');
 
         this.manager_ = new HouseManager(
-            announce, economy, friends, gangs, limits, location, settings, streamer);
+            announce, economy, friends, gangs, location, settings, streamer);
 
         this.manager_.registerExtension(new PropertySettings(this.manager_));
         this.manager_.registerExtension(new Pickups(this.manager_, economy, finance));

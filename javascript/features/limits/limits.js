@@ -48,6 +48,17 @@ export default class Limits extends Feature {
         });
     }
 
+    // Decides whether the given |player| is allowed to enter or exit an interior right now, by
+    // means of the teleportation portals shown at doors.
+    canEnterInterior(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+            ]
+        });
+    }
+
     // Decides whether the |player| is able to leave a deathmatch zone right now. They're not able
     // to do this whilst in the middle of a fight, where it would be unfair.
     canLeaveDeathmatchZone(player) {

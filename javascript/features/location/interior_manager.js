@@ -215,15 +215,13 @@ class InteriorManager {
 
     // Determines if the |player| is allowed to enter the |portal|. Players can always exit a portal
     // that they previously entered- otherwise they would be locked inside.
-    async canPlayerTeleport(player, portal) {
+    async canPlayerEnterInterior(player, portal) {
         if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
             return false;  // the |portal|-specific check failed
 
-        const teleportStatus = this.limits_().canTeleport(player, /* disableThrottle= */ false);
-
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.isApproved()) {
-            player.sendMessage(Message.LOCATION_NO_TELEPORT, teleportStatus);
+        const decision = this.limits_().canEnterInterior(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.LOCATION_NO_TELEPORT, decision);
             return false;
         }
 
@@ -246,7 +244,7 @@ class InteriorManager {
 
         // Apply the permission check if the |player| is attempting to enter the portal.
         if (marker.type === 'entrance') {
-            if (!await this.canPlayerTeleport(player, portal))
+            if (!await this.canPlayerEnterInterior(player, portal))
                 return;  // the player is not allowed to teleport right now
         }
 

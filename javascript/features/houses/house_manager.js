@@ -17,7 +17,7 @@ import { ObjectGroup } from 'entities/object_group.js';
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(announce, economy, friends, gangs, limits, location, settings, streamer) {
+    constructor(announce, economy, friends, gangs, location, settings, streamer) {
         this.database_ = server.isTest() ? new MockHouseDatabase()
                                          : new HouseDatabase();
 
@@ -35,7 +35,7 @@ class HouseManager {
 
         // Responsible for all entrances and exits associated with the locations.
         this.entranceController_ =
-            new HouseEntranceController(this, economy, friends, gangs, limits, location);
+            new HouseEntranceController(this, economy, friends, gangs, location);
 
         // Responsible for all vehicles associated with the houses.
         this.vehicleController_ = new HouseVehicleController(settings, streamer);

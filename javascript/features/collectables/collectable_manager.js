@@ -8,6 +8,7 @@ import { CollectableNotification } from 'features/collectables/collectable_notif
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
+import { Treasures } from 'features/collectables/treasures.js';
 
 // Identifier of the setting that controls collectable map icon visibility.
 const kVisibilitySetting = 'playground/collectable_map_icons_display';
@@ -40,6 +41,7 @@ export class CollectableManager {
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
             [ CollectableDatabase.kAchievement, new Achievements(collectables, this, nuwani) ],
+            [ CollectableDatabase.kTreasures, new Treasures(collectables, this) ],
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);

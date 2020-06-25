@@ -12,6 +12,7 @@ describe('CollectableDatabase', it => {
 
         const sprayTags = results.get(CollectableDatabase.kSprayTag);
         const redBarrels = results.get(CollectableDatabase.kRedBarrel);
+        const treasures = results.get(CollectableDatabase.kTreasures);
 
         assert.equal(sprayTags.collected.size, 5);
         assert.equal(sprayTags.collectedRound.size, 2);
@@ -20,5 +21,9 @@ describe('CollectableDatabase', it => {
         assert.equal(redBarrels.collected.size, 6);
         assert.equal(redBarrels.collectedRound.size, 6);
         assert.equal(redBarrels.round, 1);
+
+        assert.equal(treasures.collected.size, 0);
+        assert.equal(treasures.collectedRound.size, 0);
+        assert.equal(treasures.round, 1);
     });
 });

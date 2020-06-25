@@ -33,6 +33,7 @@ export class CollectableDatabase {
     static kSprayTag = 0;
     static kRedBarrel = 1;
     static kAchievement = 2;
+    static kTreasures = 3;
 
     // Creates a new Collectables map. Used for both registered players and for guests.
     static createDefaultCollectableStatistics() {
@@ -51,6 +52,7 @@ export class CollectableDatabase {
             CollectableDatabase.kSprayTag,
             CollectableDatabase.kRedBarrel,
             CollectableDatabase.kAchievement,
+            CollectableDatabase.kTreasures,
         ].map(type => [ type, CollectableDatabase.createDefaultCollectableStatistics() ]));
 
         if (results && results.rows.length > 0) {

@@ -310,7 +310,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.gravity, Player.kDefaultGravity);
     });
 
-    it('should remove the players team if he disconnects', assert => {        
+    it('should remove the players team if he disconnects', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const zone = 9;
@@ -326,5 +326,32 @@ describe('DeathMatchManager', (it, beforeEach) => {
         manager.goToDmZone(russell, zone);
 
         assert.equal(russell.team, 0);
+    });
+
+    it('should throw error if getPlayersInZone is called with invalid zone', assert => {
+        assert.throws(() => manager.getPlayersInZone(null));
+        assert.throws(() => manager.getPlayersInZone(0));
+    });
+
+    it('should give 0 players if no player in zone', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        
+        manager.goToDmZone(gunther, 2);
+        
+        const players = manager.getPlayersInZone(1);
+        
+        assert.equal(players, 0);
+    });
+
+    it('should give amount of players no players in zone', assert => {
+        const gunther = server.playerManager.getById(0 /* Gunther */);
+        const russell = server.playerManager.getById(1 /* Russell */);
+        
+        manager.goToDmZone(gunther, 1);
+        manager.goToDmZone(russell, 1);
+        
+        const players = manager.getPlayersInZone(1);
+        
+        assert.equal(players, 2);
     });
 });

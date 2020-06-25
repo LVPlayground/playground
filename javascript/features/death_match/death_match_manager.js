@@ -337,6 +337,16 @@ export class DeathMatchManger {
         return DeathMatchLocation.getAllLocationIds();
     }
 
+    // Returns the amount of players in the |zone|
+    getPlayersInZone(zone) {
+        if(!DeathMatchLocation.hasLocation(zone))
+            throw new Error('Unknown zone: ' + zone);
+
+        return [...this.playersInDeathMatch_]
+            .filter(item => item[1] === zone)
+            .length;
+    }
+
     dispose() {
         this.callbacks_.dispose();
         this.callbacks_ = null;

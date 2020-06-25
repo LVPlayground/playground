@@ -28,14 +28,14 @@ export class DeathMatchCommands {
         if(DeathMatchLocation.hasLocation(zone)) 
             return this.enterDeathMatchZone(zone, player);
 
-        const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams', 'Lag shot']);
+        const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams / Lag shot', 'Players']);
         for(const zoneId of this.manager_.validDmZones()) {
             const location = DeathMatchLocation.getById(zoneId);  
             dialog.addItem( 
                 location.id, 
                 location.name, 
-                location.hasTeams ? "Yes" : "No", 
-                location.lagShot ? "Yes": "No", 
+                (location.hasTeams ? "Yes / " : "No / ") + (location.lagShot ? "Yes": "No"),
+                this.manager_.getPlayersInZone(zoneId),
                 DeathMatchCommands.prototype.enterDeathMatchZone.bind(this, zoneId)
             );
         }

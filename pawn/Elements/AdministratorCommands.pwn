@@ -7,6 +7,11 @@ new g_message[256];
 forward OnPlayerLevelChange(playerid, newlevel, temporary);
 public OnPlayerLevelChange(playerid, newlevel, temporary) {}
 
+forward DoPlayerLevelChange(playerid, newlevel, temporary);
+public DoPlayerLevelChange(playerid, newlevel, temporary) {
+    CallLocalFunction("OnPlayerLevelChange", "iii", playerid, newlevel, temporary);
+}
+
 #if Feature::DisableFights == 0
 
 lvp_resetfc(playerId, params[]) {
@@ -816,7 +821,7 @@ GodHelp:
         Player(subjectId)->setIsVip(true);
         Player(subjectId)->setLevel(AdministratorLevel, /* isTemporary= */ true);
 
-        CallLocalFunction("OnPlayerLevelChange", "iii", playerId, _: AdministratorLevel, /* temporary= */ 1);
+        SetTimerEx("DoPlayerLevelChange", 16, 0, "iii", subjectId, _: AdministratorLevel, /* temporary= */ 1);
 
         tempLevel[subjectId] = 2;
         format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());
@@ -855,7 +860,7 @@ GodHelp:
             return 1;
         }
 
-        CallLocalFunction("OnPlayerLevelChange", "iii", playerId, _: PlayerLevel, /* temporary= */ 0);
+        SetTimerEx("DoPlayerLevelChange", 16, 0, "iii", subjectId, _: AdministratorLevel, /* temporary= */ 1);
 
         new const bool: wasVip = Player(playerId)->isLoggedIn() ? (AccountData(playerId)->isVip())
                                                             : false;

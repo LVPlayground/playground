@@ -145,7 +145,7 @@ LegacyPlayerDeath(playerid, killerid, reason) {
 
     // Send the death message right now, as JavaScript won't be able to do it anymore.
     if (g_isDisconnecting[playerid])
-        SendDeathMessage(playerid, killerid, reason);
+        SendDeathMessage(killerid, playerid, reason);
 
     new message[256];
     if (killerid == Player::InvalidId) {

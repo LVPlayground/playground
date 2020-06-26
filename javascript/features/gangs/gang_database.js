@@ -102,6 +102,16 @@ const GANG_CREATE_QUERY = `
     VALUES
         (?, ?, ?)`;
 
+// Query to clear prior memberships when joining a new gang.
+const GANG_CLEAR_MEMBER_QUERY = `
+    UPDATE
+        users_gangs
+    SET
+        users_gangs.left_gang = NOW()
+    WHERE
+        users_gangs.user_id = ? AND
+        users_gangs.left_gang IS NULL`;
+
 // Query to add a member to a given gang in the database.
 const GANG_CREATE_MEMBER_QUERY = `
     INSERT INTO
@@ -348,6 +358,7 @@ class GangDatabase {
 
         gangId = results.insertId;
 
+        await server.database.query(GANG_CLEAR_MEMBER_QUERY, player.account.userId);
         await server.database.query(
             GANG_CREATE_MEMBER_QUERY, player.account.userId, results.insertId, 'Leader');
 
@@ -389,6 +400,7 @@ class GangDatabase {
         const userId = player.account.userId;
         const gangId = gang.id;
 
+        await server.database.query(GANG_CLEAR_MEMBER_QUERY, userId);
         await server.database.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
     }
 

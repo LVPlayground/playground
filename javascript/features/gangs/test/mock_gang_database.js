@@ -4,6 +4,7 @@
 
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
+import { Color } from 'base/color.js';
 
 const mockedGangInfo = {
     hko: {
@@ -89,24 +90,28 @@ class MockGangDatabase {
                     role: Gang.ROLE_LEADER,
                     userId: 42,
                     username: 'Gunther',
+                    color: Color.fromRGB(255, 255, 0),
                     lastSeen: new Date(Date.now() - 250)
                 },
                 {
                     role: Gang.ROLE_MEMBER,
                     userId: 1338,
                     username: 'Harry',
+                    color: Color.fromRGB(80, 80, 120, 180),
                     lastSeen: new Date(Date.now() - 13.75 * 86400 * 1000)
                 },
                 {
                     role: Gang.ROLE_MEMBER,
                     userId: 1337,
                     username: 'Russell',
+                    color: null,
                     lastSeen: new Date(Date.now() - 64.75 * 86400 * 1000)
                 },
                 {
                     role: Gang.ROLE_MEMBER,
                     userId: 1339,
                     username: 'Sander',
+                    color: null,
                     lastSeen: new Date(Date.now() - 720 * 86400 * 1000)
                 }
             ];

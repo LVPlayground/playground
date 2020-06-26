@@ -448,13 +448,13 @@ describe('GangCommands', (it, beforeEach) => {
         assert.equal(player.messages.length, 0);
         assert.deepEqual(player.getLastDialogAsTable(/* hasColumn= */ true).rows, [
             [
-                'Leader',
-                'Gunther',
+                '{FFFF00}Leader',
+                '{FFFF00}Gunther',
                 'now',
             ],
             [
                 'Member',
-                'Harry',
+                '{505078}Harry',
                 '14 days ago',
             ],
             [

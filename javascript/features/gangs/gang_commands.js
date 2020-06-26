@@ -415,6 +415,12 @@ class GangCommands {
                 ingame.add(otherPlayer.account.userId);
         }
 
+        const kPositionColor = new Map([
+            [ 'Leader', '{FFFF00}' ],
+            [ 'Manager', '{FF8000}' ],
+            [ 'Member', '' ],
+        ]);
+
         // Display a dialog with all the relevant information about the member(s).
         const dialog = new Menu('Gang members', [
             'Position',
@@ -425,6 +431,8 @@ class GangCommands {
 
         for (const member of members) {
             const position = GangDatabase.toRoleString(member.role);
+            const positionColor = kPositionColor.get(position);
+            const color = member.color !== null ? `{${member.color.toHexRGB()}}` : '';
             const nickname = member.nickname;
 
             if (ingame.has(member.userId))
@@ -434,7 +442,7 @@ class GangCommands {
             if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime()))
                 lastSeen = fromNow({ date: member.lastSeen });
             
-            dialog.addItem(position, nickname, lastSeen);
+            dialog.addItem(positionColor + position, color + nickname, lastSeen);
         }
 
         await dialog.displayForPlayer(player);

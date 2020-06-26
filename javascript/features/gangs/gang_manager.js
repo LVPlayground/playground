@@ -139,6 +139,7 @@ class GangManager {
             members.forEach(member => {
                 const memberInfo = {
                     nickname: member.username,
+                    color: member.color,
                     player: gangPlayers[member.userId] || null,
                     role: member.role,
                     userId: member.userId,

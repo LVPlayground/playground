@@ -25,7 +25,7 @@ export class LimitsNatives {
         if (!player)
             return 0;  // invalid |playerId|, they might've just disconnected
 
-        return this.feature_.canTeleport(player, /* disableThrottle= */ true).isAllowed() ? 1 : 0;
+        return this.feature_.canTeleport(player, /* disableThrottle= */ true).isApproved() ? 1 : 0;
     }
 
     // native ReportPlayerTeleport(playerid);

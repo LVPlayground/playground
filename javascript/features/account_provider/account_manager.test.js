@@ -41,7 +41,7 @@ describe('AccountManager', (it, beforeEach) => {
 
         dispatchEvent('playermodlogin', {
             playerid: gunther.id,
-            level: Player.LEVEL_ADMINISTRATOR,
+            level: Player.LEVEL_ADMINISTRATOR + /* pawn offset= */ 1,
             vip: true,
         });
 

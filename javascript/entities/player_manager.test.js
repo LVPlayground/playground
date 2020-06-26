@@ -97,33 +97,6 @@ describe('PlayerManager', (it, beforeEach) => {
         assert.equal(connectedPlayer.id, 42);
     });
 
-    it('should inform observers of level changes', assert => {
-        let counter = 0;
-
-        class MyObserver {
-            onPlayerLevelChange() { ++counter; }
-        }
-
-        manager.onPlayerConnect({ playerid: 42 });
-        manager.addObserver(new MyObserver());
-
-        const player = server.playerManager.getById(42);
-
-        assert.equal(player.level, Player.LEVEL_PLAYER);
-        assert.isFalse(player.isTemporaryAdministrator());
-
-        dispatchEvent('playerlevelchange', {
-            playerid: 42,
-            newlevel: Player.LEVEL_ADMINISTRATOR + /* moderator offset */ 1,
-            temporary: 1
-        });
-
-        assert.equal(counter, 1);
-
-        assert.equal(player.level, Player.LEVEL_ADMINISTRATOR);
-        assert.isTrue(player.isTemporaryAdministrator());
-    });
-
     it('should inform observers of logins', assert => {
         let counter = 0;
 

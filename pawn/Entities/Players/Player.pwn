@@ -532,8 +532,5 @@ public LVP_BanPlayer(playerId, reason[]) {
     return 1;
 }
 
-forward OnPlayerLevelChange(playerid, newlevel, temporary);
-public OnPlayerLevelChange(playerid, newlevel, temporary) {}
-
 // Include the test-suite for the Player class.
 #include "Entities/Players/Player.tests.pwn"

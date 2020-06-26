@@ -37,7 +37,7 @@ export class LimitsNatives {
         if (!player)
             return 0;  // invalid |playerId|, they might've just disconnected
         
-        this.feature_.reportTeleportation(playerId);
+        this.feature_.reportTeleportation(player);
     }
 
     dispose() {

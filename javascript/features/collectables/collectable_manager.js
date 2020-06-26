@@ -41,7 +41,7 @@ export class CollectableManager {
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
             [ CollectableDatabase.kAchievement, new Achievements(collectables, this, nuwani) ],
-            //[ CollectableDatabase.kTreasures, new Treasures(collectables, this) ],
+            [ CollectableDatabase.kTreasures, new Treasures(collectables, this) ],
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);

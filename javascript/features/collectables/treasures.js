@@ -145,6 +145,21 @@ export class Treasures extends CollectableBase {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Computes the collectableId representing the treasure that will be unlocked when the given
+    // |bookCollectableId| has been unlocked for the given |player|.
+    determineTreasureForBookForPlayer(player, bookCollectableId) {
+        const seed = player.account.isIdentified() ? player.account.userId
+                                                   : player.name;
+
+        const treasureCount = this.treasures_.size;
+        const treasureIndex = randomSeed(
+            createSeed(`treasure-${seed}-${bookCollectableId}`), treasureCount);
+
+        return [ ...this.treasures_ ][treasureIndex];
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         super.dispose();
     }

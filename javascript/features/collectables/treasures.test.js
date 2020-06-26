@@ -77,4 +77,44 @@ describe('Treasures', (it, beforeEach) => {
 
         assert.equal(server.pickupManager.count, existingPickupCount);
     });
+
+    it('should be able to determine the treasure Id for a given book Id', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
+        // (1) Results for the same player are identical, but are different for different players.
+        assert.equal(
+            delegate.determineTreasureForBookForPlayer(gunther, 10),
+            delegate.determineTreasureForBookForPlayer(gunther, 10));
+        
+        assert.equal(
+            delegate.determineTreasureForBookForPlayer(gunther, 25),
+            delegate.determineTreasureForBookForPlayer(gunther, 25));
+        
+        assert.notEqual(
+            delegate.determineTreasureForBookForPlayer(gunther, 10),
+            delegate.determineTreasureForBookForPlayer(russell, 10));
+        
+        assert.notEqual(
+            delegate.determineTreasureForBookForPlayer(gunther, 25),
+            delegate.determineTreasureForBookForPlayer(russell, 25));
+
+        // (2) Results prefer the user ID when someone is registered, rather than nickname.
+        const nameTreasure = delegate.determineTreasureForBookForPlayer(gunther, 30);
+
+        await gunther.identify({ userId: 12345 });
+
+        const userTreasure = delegate.determineTreasureForBookForPlayer(gunther, 30);
+        assert.notEqual(nameTreasure, userTreasure);
+
+        // (3) Two players signed in to the same account will get identical results.
+        assert.notEqual(
+            delegate.determineTreasureForBookForPlayer(gunther, 35),
+            delegate.determineTreasureForBookForPlayer(russell, 35));
+
+        await russell.identify({ userId: 12345 });
+            
+        assert.equal(
+            delegate.determineTreasureForBookForPlayer(gunther, 35),
+            delegate.determineTreasureForBookForPlayer(russell, 35));
+    });
 });

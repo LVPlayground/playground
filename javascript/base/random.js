@@ -5,6 +5,15 @@
 // Creates a global random seed based on which the seed-less |random| function will function.
 let globalSeed = null;
 
+// Returns a seed that can be used with the `randomSeed` function, when deterministic randomness is
+// required. The given |seed| should be a string, or be convertable to a string.
+export function createSeed(seed) {
+    if (typeof seed !== 'string')
+        seed = seed.toString();
+    
+    return UltraHighEntropyPseudoRandomNumberGenerator.createSeeded(seed);
+}
+
 // Returns a random number between [min, max]. For consistency with Pawn, if the |max| argument is
 // omitted then the |min| will be used at the maximum instead, returning a number between [0, max].
 export function random(min, max = null) {
@@ -18,6 +27,9 @@ export function random(min, max = null) {
 // the |max| argument is omitted then the |min| will be used at the maximum instead, returning a
 // number between [0, max]. The seed only has to be used when generating deterministic values.
 export function randomSeed(seed, min, max = null) {
+    if (!(seed instanceof UltraHighEntropyPseudoRandomNumberGenerator))
+        throw new Error(`The given |seed| must have been issued by createSeed()`);
+
     if (max === null) {
         if (min <= 0)
             throw new Error(`The boundary passed to random(max) may not be negative.`);
@@ -62,16 +74,34 @@ class UltraHighEntropyPseudoRandomNumberGenerator {
 
         this.mashState_ = kInitialMashState;
 
-        if (seed)
-            throw new Error('Seeded PRNG has not been implemented yet.');
-        else
-            this.initializeRandom();
+        seed ? this.initializeSeed(seed)
+             : this.initializeRandom();
     }
 
     // Initializes this instance with random data for seedless behaviour.
     initializeRandom() {
         for (let index = 0; index < kOrderValue; ++index)
             this.state_[index] = this.mash(Math.random());
+    }
+
+    // Initializes this instance with deterministic data for the given |seed|.
+    initializeSeed(seed) {
+        if (typeof seed !== 'string')
+            throw new Error(`The given seed ("${seed}") must be a string.`);
+
+        for (let index = 0; index < kOrderValue; ++index)
+            this.state_[index] = this.mash(' ');
+
+        this.mash(seed);  // initialise the |mashState_|
+
+        for (let index = 0; index < seed.length; ++index) {
+            const character = seed.charCodeAt(index);
+            for (let stateIndex = 0; stateIndex < kOrderValue; ++stateIndex) {
+                this.state_[stateIndex] -= this.mash(character);
+                if (this.state_[stateIndex] < 0)
+                    this.state_[stateIndex] += 1;
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

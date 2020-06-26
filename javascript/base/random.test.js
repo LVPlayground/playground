@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { random } from 'base/random.js';
+import { createSeed, random, randomSeed } from 'base/random.js';
 
 describe('random', it => {
     it('should be able to return random numbers within a range', assert => {
@@ -33,5 +33,18 @@ describe('random', it => {
             assert.isAboveOrEqual(value, 0);
             assert.isBelow(value, 100);
         }
+    });
+
+    it('should be able to support seeded hashes', assert => {
+        const firstSeed = createSeed('banana');
+        const secondSeed = createSeed('banana');
+        const thirdSeed = createSeed('apple');
+
+        assert.equal(randomSeed(firstSeed, 100), randomSeed(secondSeed, 100));
+        assert.equal(randomSeed(firstSeed, 10, 20), randomSeed(secondSeed, 10, 20));
+
+        assert.notEqual(
+            randomSeed(firstSeed, Number.MAX_SAFE_INTEGER),
+            randomSeed(thirdSeed, Number.MAX_SAFE_INTEGER));
     });
 });

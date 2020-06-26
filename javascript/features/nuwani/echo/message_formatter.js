@@ -138,8 +138,8 @@ export class MessageFormatter {
 
         // Allow for the type of IRC command to be changed as well.
         format = format.replace(/<command:(.+?)>/g, (_, unverifiedCommand) => {
-            if (unverifiedCommand !== 'NOTICE')
-                throw new Error('Only NOTICE commands are enabled for now.');
+            if (!['NOTICE', 'MODE'].includes(unverifiedCommand))
+                throw new Error('Only NOTICE and MODE commands are enabled for now.');
             
             command = unverifiedCommand;
             return '';

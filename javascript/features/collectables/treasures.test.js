@@ -95,8 +95,8 @@ describe('Treasures', (it, beforeEach) => {
             delegate.determineTreasureForBookForPlayer(russell, 10));
         
         assert.notEqual(
-            delegate.determineTreasureForBookForPlayer(gunther, 25),
-            delegate.determineTreasureForBookForPlayer(russell, 25));
+            delegate.determineTreasureForBookForPlayer(gunther, 26),
+            delegate.determineTreasureForBookForPlayer(russell, 26));
 
         // (2) Results prefer the user ID when someone is registered, rather than nickname.
         const nameTreasure = delegate.determineTreasureForBookForPlayer(gunther, 30);

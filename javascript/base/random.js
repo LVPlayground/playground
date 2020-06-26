@@ -56,8 +56,10 @@ export function randomSeed(seed, min = null, max = null) {
 // Initial state of the hashing function that's used for the PRNG.
 const kInitialMashState = 0xEFC8249D;
 
-// Number of entropy-holding 32-bit values to use for the generator.
-const kOrderValue = 48;
+// Number of entropy-holding 32-bit values to use for the generator. The original algorithm uses
+// 48, but because our use is largely gimicky we don't need the same quality. Distribution of the
+// randomly generated values is still well within acceptable bounds for >1M numbers.
+const kOrderValue = 8;
 
 // Implementation of the UHE PRNG algorithm created by the Gibson Research Corporation, which is a
 // stronger PRNG than the one included in most JavaScript engines, and is able to work based on a

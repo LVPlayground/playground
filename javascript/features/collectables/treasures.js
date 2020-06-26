@@ -7,6 +7,7 @@ import { Vector } from 'base/vector.js';
 
 import { createSeed, randomSeed } from 'base/random.js';
 import { intersect } from 'base/set_extensions.js';
+import { murmur3hash } from 'base/murmur3hash.js';
 
 // Title of the notification that will be shown to the player when finding a book, and another one
 // for the notification to be shown when a treasure associated with that book has been found.
@@ -32,10 +33,12 @@ export class Treasures extends CollectableBase {
 
     // Map from Player instance => Map of Pickup instance to collectable Id
     playerPickups_ = new Map();
+    playerSeeds_ = new Map();
 
     // Set of all collectable IDs, so quickly be able to initialize and diff
     books_ = new Set();
     treasures_ = new Set();
+    treasuresArray_ = [];
 
     constructor(collectables, manager) {
         super({
@@ -74,6 +77,7 @@ export class Treasures extends CollectableBase {
             });
 
             this.treasures_.add(info.id);
+            this.treasuresArray_.push(info.id);
         }
     }
 
@@ -89,6 +93,7 @@ export class Treasures extends CollectableBase {
             pickup.dispose();
         
         this.playerPickups_.delete(player);
+        this.playerSeeds_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -136,7 +141,7 @@ export class Treasures extends CollectableBase {
         if (!this.hasPlayerStatistics(player))
             return super.countCollectablesForPlayer(player);
 
-        const statistics = this.statistics_.get(player);
+        const statistics = this.getPlayerStatistics(player);
         return {
             total: intersect(this.treasures_, statistics.collected).size,
             round: intersect(this.treasures_, statistics.collectedRound).size,
@@ -148,19 +153,26 @@ export class Treasures extends CollectableBase {
     // Computes the collectableId representing the treasure that will be unlocked when the given
     // |bookCollectableId| has been unlocked for the given |player|.
     determineTreasureForBookForPlayer(player, bookCollectableId) {
-        const seed = player.account.isIdentified() ? player.account.userId
-                                                   : player.name;
+        if (!this.playerSeeds_.has(player)) {
+            this.playerSeeds_.set(player,
+                player.account.isIdentified() ? player.account.userId
+                                              : murmur3hash(player.name));
+        }
+
+        const seed = this.playerSeeds_.get(player) + bookCollectableId;
 
         const treasureCount = this.treasures_.size;
-        const treasureIndex = randomSeed(
-            createSeed(`treasure-${seed}-${bookCollectableId}`), treasureCount);
+        const treasureIndex = randomSeed(createSeed(seed.toString(24)), treasureCount);
 
-        return [ ...this.treasures_ ][treasureIndex];
+        return this.treasuresArray_[treasureIndex];
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        super.dispose();
+        super.dispose();  // will delete all entities
+
+        this.playerPickups_.clear();
+        this.playerSeeds_.clear();
     }
 }

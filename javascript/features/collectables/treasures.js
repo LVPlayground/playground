@@ -6,6 +6,7 @@ import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { Vector } from 'base/vector.js';
 
 import { createSeed, randomSeed } from 'base/random.js';
+import { intersect } from 'base/set_extensions.js';
 
 // Title of the notification that will be shown to the player when finding a book, and another one
 // for the notification to be shown when a treasure associated with that book has been found.
@@ -128,6 +129,19 @@ export class Treasures extends CollectableBase {
     // Returns the total number of collectables represented for this type. For Treasures, we only
     // count the treasures that have been collected by the player, so need to specialise.
     getCollectableCount() { return this.treasures_.size; }
+
+    // Counts the number of collectables that the player has collected already. Returns a structure
+    // in the format of { total, round }, both of which are numbers.
+    countCollectablesForPlayer(player) {
+        if (!this.hasPlayerStatistics(player))
+            return super.countCollectablesForPlayer(player);
+
+        const statistics = this.statistics_.get(player);
+        return {
+            total: intersect(this.treasures_, statistics.collected).size,
+            round: intersect(this.treasures_, statistics.collectedRound).size,
+        };
+    }
 
     // ---------------------------------------------------------------------------------------------
 

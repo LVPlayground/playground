@@ -30,6 +30,25 @@ describe('Treasures', (it, beforeEach) => {
         
         assert.equal(delegate.getCollectable(0).type, Treasures.kTypeBook);
         assert.equal(delegate.getCollectable(50).type, Treasures.kTypeTreasure);
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 0);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
+
+        const statistics = CollectableDatabase.createDefaultCollectableStatistics();
+        statistics.collected = new Set([
+            /* books= */ 0, 10, 20, 30,
+            /* treasures= */ 50, 60, 70, 
+        ]);
+
+        statistics.collectedRound = new Set([
+            /* books= */ 0, 10, 20,
+            /* treasures= */ 50, 60,
+        ]);
+
+        delegate.setPlayerStatistics(gunther, statistics);
+
+        assert.equal(delegate.countCollectablesForPlayer(gunther).total, 3);
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 2);
     });
 
     it('should either create a book, a treasure, or nothing, based on progression', assert => {

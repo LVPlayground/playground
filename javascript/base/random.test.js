@@ -35,6 +35,15 @@ describe('random', it => {
         }
     });
 
+    it('should be able to return values from [0, 1]', assert => {
+        for (let i = 0; i < 50; ++i) {
+            const value = random();
+
+            assert.isAboveOrEqual(value, 0);
+            assert.isBelow(value, 1);
+        }
+    });
+
     it('should be able to support seeded hashes', assert => {
         const firstSeed = createSeed('banana');
         const secondSeed = createSeed('banana');

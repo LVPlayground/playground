@@ -14,21 +14,33 @@ export function createSeed(seed) {
     return UltraHighEntropyPseudoRandomNumberGenerator.createSeeded(seed);
 }
 
-// Returns a random number between [min, max]. For consistency with Pawn, if the |max| argument is
-// omitted then the |min| will be used at the maximum instead, returning a number between [0, max].
-export function random(min, max = null) {
+// Returns a pseudo-random number between [min, max], using the global seed.
+//
+//   * If neither |min| nor |max| are given, a random value between 0 (inclusive) and 1 (exclusive),
+//   * If only |min| is given, a random value between 0 (inclusive) and |min| (exclusive),
+//   * If both are given, a random value between |min| (inclusive) and |max| (exclusive).
+//
+export function random(min = null, max = null) {
     if (!globalSeed)
         globalSeed = UltraHighEntropyPseudoRandomNumberGenerator.createRandom();
 
     return randomSeed(globalSeed, min, max);
 }
 
-// Returns a random number between [min, max], with the given |seed|. For consistency with Pawn, if
-// the |max| argument is omitted then the |min| will be used at the maximum instead, returning a
-// number between [0, max]. The seed only has to be used when generating deterministic values.
-export function randomSeed(seed, min, max = null) {
+// Returns a pseudo-random number between [min, max], with the given |seed|.
+//
+//   * If neither |min| nor |max| are given, a random value between 0 (inclusive) and 1 (exclusive),
+//   * If only |min| is given, a random value between 0 (inclusive) and |min| (exclusive),
+//   * If both are given, a random value between |min| (inclusive) and |max| (exclusive).
+//
+// The |seed| must be an instance of UltraHighEntropyPseudoRandomNumberGenerator, obtained through
+// the `createSeed()` method which allows you to cache the seed.
+export function randomSeed(seed, min = null, max = null) {
     if (!(seed instanceof UltraHighEntropyPseudoRandomNumberGenerator))
         throw new Error(`The given |seed| must have been issued by createSeed()`);
+
+    if (min === null && max === null)
+        return seed.random();
 
     if (max === null) {
         if (min <= 0)

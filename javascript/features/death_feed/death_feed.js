@@ -4,6 +4,7 @@
 
 import { Feature } from 'components/feature_manager/feature.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
+import { Player } from 'entities/player';
 
 // Number of death messages that are visible on the player's screens.
 const kDeathFeedVisibleMessageCount = 5;
@@ -61,6 +62,10 @@ export default class DeathFeed extends Feature {
     // the Pawn part of Las Venturas Playground, as the circumstances of the death may have to be
     // resolved prior to being presented to players.
     onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // bail out if the |killerid| has since disconnected.
+
         this.recentDeaths_.unshift({
             killee: event.playerid,
             killer: event.killerid,
@@ -71,7 +76,6 @@ export default class DeathFeed extends Feature {
 
         // TODO: This needs to live in a better place.
         {
-            const player = server.playerManager.getById(event.playerid);
             if (player && player.isSelectingObject())
                 player.cancelEdit();
         }

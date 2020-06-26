@@ -5,6 +5,8 @@
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { Vector } from 'base/vector.js';
 
+import { createSeed, randomSeed } from 'base/random.js';
+
 // Title of the notification that will be shown to the player when finding a book, and another one
 // for the notification to be shown when a treasure associated with that book has been found.
 const kBookNotificationTitle = 'uncovered!';
@@ -27,6 +29,11 @@ export class Treasures extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
+    // Map from Player instance => Map of Pickup instance to collectable Id
+    playerPickups_ = new Map();
+
+    // Set of all collectable IDs, so quickly be able to initialize and diff
+    books_ = new Set();
     treasures_ = new Set();
 
     constructor(collectables, manager) {
@@ -49,16 +56,15 @@ export class Treasures extends CollectableBase {
     initialize() {
         const data = JSON.parse(readFile(kTreasuresDataFile));
 
-        // (1) Load the books, add them as collectables.
         for (const info of data.books) {
             this.addCollectable(info.id, {
                 type: Treasures.kTypeBook,
                 position: new Vector(...info.position),
             });
+
+            this.books_.add(info.id);
         }
 
-        // (2) Load the treasures, add them as collectables as well, but also add them to the local
-        // |treasures_| set to be able to quickly count and identify them.
         for (const info of data.treasures) {
             this.addCollectable(info.id, {
                 type: Treasures.kTypeTreasure,
@@ -74,12 +80,46 @@ export class Treasures extends CollectableBase {
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
         super.clearCollectablesForPlayer(player);
+        if (!this.playerPickups_.has(player))
+            return;  // the |player| hasn't had their state initialized
+        
+        const pickups = this.playerPickups_.get(player);
+        for (const pickup of pickups.keys())
+            pickup.dispose();
+        
+        this.playerPickups_.delete(player);
+
+        // Prune the scoped entities to get rid of references to deleted objects.
+        this.entities.prune();
     }
 
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, statistics) {}
+    refreshCollectablesForPlayer(player, statistics) {
+        if (this.playerPickups_.has(player))
+            this.clearCollectablesForPlayer(player);
+        
+        this.setPlayerStatistics(player, statistics);
+
+        const pickups = new Map();
+        for (const collectableId of this.books_) {
+            if (statistics.collectedRound.has(collectableId)) {
+                // TODO: Create the treasures
+            } else {
+                const { position } = this.getCollectable(collectableId);
+                const pickup = this.entities.createPickup({
+                    modelId: kBookPickupId,
+                    position: position,
+                    playerId: player.id,
+                });
+
+                pickups.set(pickup, collectableId);
+            }
+        }
+
+        this.playerPickups_.set(player, pickups);
+    }
 
     // ---------------------------------------------------------------------------------------------
     // CollectableBase specialisations:

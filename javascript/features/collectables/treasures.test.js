@@ -5,6 +5,8 @@
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { Treasures } from 'features/collectables/treasures.js';
 
+import { range } from 'base/range.js';
+
 describe('Treasures', (it, beforeEach) => {
     let collectables = null;
     let delegate = null;
@@ -28,5 +30,32 @@ describe('Treasures', (it, beforeEach) => {
         
         assert.equal(delegate.getCollectable(0).type, Treasures.kTypeBook);
         assert.equal(delegate.getCollectable(50).type, Treasures.kTypeTreasure);
+    });
+
+    it('should either create a book, a treasure, or nothing, based on progression', assert => {
+        const existingPickupCount = server.pickupManager.count;
+
+        // Create all books, as if the player has not collected any yet.
+        const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+
+        delegate.refreshCollectablesForPlayer(gunther, emptyStatistics);
+
+        const updatedPickupCount = server.pickupManager.count;
+
+        assert.isAbove(updatedPickupCount, existingPickupCount);
+
+        // Now update the books to a situation in which half of 'em have been collected.
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(25) ]);
+
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
+
+        assert.isAbove(server.pickupManager.count, existingPickupCount);
+        assert.isBelowOrEqual(server.pickupManager.count, updatedPickupCount);
+
+        // Remove all pickups for the player, this should null them out again.
+        delegate.clearCollectablesForPlayer(gunther);
+
+        assert.equal(server.pickupManager.count, existingPickupCount);
     });
 });

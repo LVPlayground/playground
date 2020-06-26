@@ -4,6 +4,17 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+// Converts a Pawn level to a JavaScript level. These are different, because Pawn still has some
+// knowledge of Moderators which we've deprecated years ago.
+function toJavaScriptLevel(level) {
+    if (level === 3)
+        return Player.LEVEL_MANAGEMENT;
+    else if (level === 2)
+        return Player.LEVEL_ADMINISTRATOR;
+
+    return Player.LEVEL_PLAYER;
+}
+
 // The player manager keeps track of all players connected to Las Venturas Playground. Features may
 // choose to observe the manager in order to receive notifications when someone connects or
 // disconnects from the server. Non-player characters are treated identical to players.
@@ -236,7 +247,7 @@ export class PlayerManager {
         if (!player)
             return;  // the event has been received for an invalid player
 
-        player.level = event.level;
+        player.level = toJavaScriptLevel(event.level);
 
         player.setUndercover(true);
         player.setVip(!!event.vip);

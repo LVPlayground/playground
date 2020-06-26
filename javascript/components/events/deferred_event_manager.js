@@ -6,7 +6,7 @@ import { PlayerEventObserver } from 'components/events/player_event_observer.js'
 import { Vector } from 'base/vector.js';
 
 // Every how many milliseconds should pending deferred events be read from the server.
-const kDeferredEventReadIntervalMs = 50;  // 20Hz, 10% of server fps
+const kDeferredEventReadIntervalMs = 20;  // 50Hz, 20% of server fps
 
 // Responsible for pulling dispatched events from the PlaygroundJS plugin, and delivering those to
 // parts of the gamemode instead. This acts as a severe performance improvement, as it allows the

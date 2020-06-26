@@ -465,7 +465,7 @@ describe('GangCommands', (it, beforeEach) => {
             [
                 'Member',
                 'Sander',
-                '1 year ago',
+                '{9E9E9E}1 year ago',
             ]
         ]);
     });

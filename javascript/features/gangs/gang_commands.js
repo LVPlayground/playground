@@ -438,11 +438,16 @@ class GangCommands {
             if (ingame.has(member.userId))
                 member.lastSeen = new Date();
 
-            let lastSeen = '{CCCCCC}never';
-            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime()))
+            let lastSeen = 'never';
+            let lastSeenColor = '{9E9E9E}';
+
+            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime())) {
                 lastSeen = fromNow({ date: member.lastSeen });
-            
-            dialog.addItem(positionColor + position, color + nickname, lastSeen);
+                if (!lastSeen.includes('month') && !lastSeen.includes('year'))
+                    lastSeenColor = '';
+            }
+
+            dialog.addItem(positionColor + position, color + nickname, lastSeenColor + lastSeen);
         }
 
         await dialog.displayForPlayer(player);

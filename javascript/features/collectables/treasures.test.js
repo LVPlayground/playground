@@ -81,6 +81,9 @@ describe('Treasures', (it, beforeEach) => {
     it('should be able to determine the treasure Id for a given book Id', async (assert) => {
         const russell = server.playerManager.getById(/* Russell= */ 1);
 
+        delegate.createTreasureMapping(gunther);
+        delegate.createTreasureMapping(russell);
+
         // (1) Results for the same player are identical, but are different for different players.
         assert.equal(
             delegate.determineTreasureForBookForPlayer(gunther, 10),
@@ -103,6 +106,8 @@ describe('Treasures', (it, beforeEach) => {
 
         await gunther.identify({ userId: 12345 });
 
+        delegate.createTreasureMapping(gunther);
+
         const userTreasure = delegate.determineTreasureForBookForPlayer(gunther, 30);
         assert.notEqual(nameTreasure, userTreasure);
 
@@ -112,7 +117,9 @@ describe('Treasures', (it, beforeEach) => {
             delegate.determineTreasureForBookForPlayer(russell, 35));
 
         await russell.identify({ userId: 12345 });
-            
+
+        delegate.createTreasureMapping(russell);
+
         assert.equal(
             delegate.determineTreasureForBookForPlayer(gunther, 35),
             delegate.determineTreasureForBookForPlayer(russell, 35));

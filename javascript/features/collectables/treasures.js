@@ -33,12 +33,11 @@ export class Treasures extends CollectableBase {
 
     // Map from Player instance => Map of Pickup instance to collectable Id
     playerPickups_ = new Map();
-    playerSeeds_ = new Map();
+    playerTreasureMapping_ = new Map();
 
     // Set of all collectable IDs, so quickly be able to initialize and diff
     books_ = new Set();
     treasures_ = new Set();
-    treasuresArray_ = [];
 
     constructor(collectables, manager) {
         super({
@@ -77,7 +76,6 @@ export class Treasures extends CollectableBase {
             });
 
             this.treasures_.add(info.id);
-            this.treasuresArray_.push(info.id);
         }
     }
 
@@ -93,7 +91,7 @@ export class Treasures extends CollectableBase {
             pickup.dispose();
         
         this.playerPickups_.delete(player);
-        this.playerSeeds_.delete(player);
+        this.playerTreasureMapping_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
         this.entities.prune();
@@ -106,6 +104,7 @@ export class Treasures extends CollectableBase {
         if (this.playerPickups_.has(player))
             this.clearCollectablesForPlayer(player);
         
+        this.createTreasureMapping(player);
         this.setPlayerStatistics(player, statistics);
 
         const pickups = new Map();
@@ -150,21 +149,39 @@ export class Treasures extends CollectableBase {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Creates the book Id => treasure Id mapping for the given |player|. This is different for
+    // each player, because we're mean and want to stop collaboration :)
+    createTreasureMapping(player) {
+        const treasureCount = this.treasures_.size;
+        const treasures = [ ...this.treasures_ ];
+
+        const uniqueValue = player.account.isIdentified() ? player.account.userId
+                                                          : player.name;
+
+        const seed = createSeed(`TR:${uniqueValue}`);
+        const mapping = new Map();
+
+        for (const collectableId of this.books_) {
+            const index = randomSeed(seed, treasures.length);
+            const treasureId = treasures.splice(index, 1)[0];
+
+            mapping.set(collectableId, treasureId);
+        }
+
+        this.playerTreasureMapping_.set(player, mapping);
+    }
+
     // Computes the collectableId representing the treasure that will be unlocked when the given
     // |bookCollectableId| has been unlocked for the given |player|.
     determineTreasureForBookForPlayer(player, bookCollectableId) {
-        if (!this.playerSeeds_.has(player)) {
-            this.playerSeeds_.set(player,
-                player.account.isIdentified() ? player.account.userId
-                                              : murmur3hash(player.name));
-        }
+        if (!this.playerTreasureMapping_.has(player))
+            throw new Error(`Treasure mappings have not been initialized for the given ${player}`);
+        
+        const mapping = this.playerTreasureMapping_.get(player);
+        if (!mapping.has(bookCollectableId))
+            throw new Error(`The given book collectable Id (${bookCollectableId}) is not mapped.`);
 
-        const seed = this.playerSeeds_.get(player) + bookCollectableId;
-
-        const treasureCount = this.treasures_.size;
-        const treasureIndex = randomSeed(createSeed(seed.toString(24)), treasureCount);
-
-        return this.treasuresArray_[treasureIndex];
+        return mapping.get(bookCollectableId);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -173,6 +190,6 @@ export class Treasures extends CollectableBase {
         super.dispose();  // will delete all entities
 
         this.playerPickups_.clear();
-        this.playerSeeds_.clear();
+        this.playerTreasureMapping_.clear();
     }
 }

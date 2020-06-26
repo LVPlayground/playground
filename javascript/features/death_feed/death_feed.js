@@ -4,7 +4,6 @@
 
 import { Feature } from 'components/feature_manager/feature.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
-import { Player } from 'entities/player';
 
 // Number of death messages that are visible on the player's screens.
 const kDeathFeedVisibleMessageCount = 5;

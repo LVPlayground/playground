@@ -63,6 +63,9 @@ export class AbuseDetectors {
     }
 
     dispose() {
+        for (const detector of this.detectors_.values())
+            detector.dispose();
+
         this.detectors_.clear();
 
         this.settings_.removeReloadObserver();

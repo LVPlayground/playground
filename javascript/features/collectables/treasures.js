@@ -81,7 +81,7 @@ export class Treasures extends CollectableBase {
 
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
-    clearCollectablesForPlayer(player) {
+    DISABLED__clearCollectablesForPlayer(player) {
         super.clearCollectablesForPlayer(player);
         if (!this.playerPickups_.has(player))
             return;  // the |player| hasn't had their state initialized
@@ -100,7 +100,7 @@ export class Treasures extends CollectableBase {
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    refreshCollectablesForPlayer(player, statistics) {
+    DISABLED__refreshCollectablesForPlayer(player, statistics) {
         if (this.playerPickups_.has(player))
             this.clearCollectablesForPlayer(player);
         

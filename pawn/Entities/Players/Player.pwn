@@ -340,6 +340,7 @@ class Player <playerId (MAX_PLAYERS)> {
      * @param level The level this player should be updated to.
      */
     public setLevel(PlayerAccessLevel: level, bool: isTemporary) {
+        CallRemoteFunction("OnPlayerLevelChange", "iii", playerId, _: level, _: isTemporary);
         m_level = level;
         m_levelIsTemporary = isTemporary;
     }

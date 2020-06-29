@@ -2,14 +2,16 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-describe('PlayerManager', (it, beforeEach) => {
+import { MockPlayer } from 'entities/test/mock_player.js';
+import { PlayerManager } from 'entities/player_manager.js';
+
+describe('PlayerManager', (it, beforeEach, afterEach) => {
     let manager = null;
 
-    beforeEach(() => manager = server.playerManager);
+    beforeEach(() => manager = new PlayerManager(MockPlayer /* playerConstructor */));
+    afterEach(() => manager.dispose());
 
     it('should deduplicate attached observers', assert => {
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
-
         let counter = 0;
 
         class MyObserver {
@@ -19,17 +21,17 @@ describe('PlayerManager', (it, beforeEach) => {
         const myObserver = new MyObserver();
 
         manager.addObserver(myObserver);
-        manager.notifyObservers('onPlayerConnect', gunther);
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 1);
 
         manager.addObserver(myObserver);  // second add
-        manager.notifyObservers('onPlayerConnect', gunther);
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
 
         manager.removeObserver(myObserver);
-        manager.notifyObservers('onPlayerConnect', gunther);
+        manager.notifyObservers('onPlayerConnect');
 
         assert.equal(counter, 2);
     });
@@ -97,6 +99,21 @@ describe('PlayerManager', (it, beforeEach) => {
         assert.equal(connectedPlayer.id, 42);
     });
 
+    it('should inform observers of level changes', assert => {
+        let counter = 0;
+
+        class MyObserver {
+            onPlayerLevelChange() { ++counter; }
+        }
+
+        manager.onPlayerConnect({ playerid: 42 });
+
+        manager.addObserver(new MyObserver());
+        manager.onPlayerLevelChange({ playerid: 42 });
+
+        assert.equal(counter, 1);
+    });
+
     it('should inform observers of logins', assert => {
         let counter = 0;
 
@@ -123,75 +140,74 @@ describe('PlayerManager', (it, beforeEach) => {
     });
 
     it('should be able to find players by name', assert => {
-        assert.isNull(manager.getByName('Russellx'));
+        assert.isNull(manager.getByName('Russell'));
 
-        manager.onPlayerConnect({ playerid: 42, name: 'Russellx' });
+        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
 
-        assert.isNotNull(manager.getByName('Russellx'));
-        assert.isNull(manager.getByName('RUSSELLx'));
-        assert.isNull(manager.getByName('uSSelx'));
+        assert.isNotNull(manager.getByName('Russell'));
+        assert.isNull(manager.getByName('RUSSELL'));
+        assert.isNull(manager.getByName('uSSel'));
 
-        assert.isNotNull(manager.getByName('Russellx', true /* fuzzy */));
-        assert.isNotNull(manager.getByName('RUSSELLx', true /* fuzzy */));
-        assert.isNotNull(manager.getByName('uSSellx', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('Russell', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('RUSSELL', true /* fuzzy */));
+        assert.isNotNull(manager.getByName('uSSel', true /* fuzzy */));
 
         manager.onPlayerDisconnect({ playerid: 42, reason: 0 });
 
-        assert.isNull(manager.getByName('Russellx'));
+        assert.isNull(manager.getByName('Russell'));
         assert.isNull(manager.getById(42));
     });
 
     // TODO(Russell): Properly test the find() method.
 
     it('should do some sensible number verification in the find() function', assert => {
-        assert.equal(manager.count, 3);
+        assert.equal(manager.count, 0);
 
-        manager.onPlayerConnect({ playerid: 42, name: 'Barry' });
+        manager.onPlayerConnect({ playerid: 42, name: 'Russell' });
 
-        assert.equal(manager.count, 4);
+        assert.equal(manager.count, 1);
 
         assert.isNull(manager.find({ nameOrId: '42.11.41.128' }));
 
-        assert.equal(manager.find({ nameOrId: '42' }).name, 'Barry');
-        assert.equal(manager.find({ nameOrId: 'Barry' }).id, 42);
+        assert.equal(manager.find({ nameOrId: '42' }).name, 'Russell');
+        assert.equal(manager.find({ nameOrId: 'Russell' }).id, 42);
     });
 
     it('should know about the number of connected players', assert => {
-        assert.equal(manager.count, 3);
+        assert.equal(manager.count, 0);
 
         manager.onPlayerConnect({ playerid: 42 });
         manager.onPlayerConnect({ playerid: 15 });
-        manager.onPlayerConnect({ playerid: 11 });
+        manager.onPlayerConnect({ playerid: 0 });
 
-        assert.equal(manager.count, 6);
+        assert.equal(manager.count, 3);
 
         manager.onPlayerDisconnect({ playerid: 15, reason: 0 });
-        assert.equal(manager.count, 5);
+        assert.equal(manager.count, 2);
 
         manager.onPlayerDisconnect({ playerid: 0, reason: 0 });
-        assert.equal(manager.count, 4);
+        assert.equal(manager.count, 1);
     });
 
     it('should be able to iterate over the connected players', assert => {
         let count = 0;
 
         manager.forEach(player => ++count);
-        assert.equal(count, 3);
+        assert.equal(count, 0);
 
         manager.onPlayerConnect({ playerid: 42 });
         manager.onPlayerConnect({ playerid: 10 });
         manager.onPlayerConnect({ playerid: 5 });
 
-        count = 0;
         manager.forEach(player => ++count);
-        assert.equal(count, 6);
+        assert.equal(count, 3);
 
-        const expectedIds = [0, 1, 2, 42, 10, 5];
+        const expectedIds = [42, 10, 5];
         let actualIds = [];
 
         manager.forEach((player, playerId) => actualIds.push(playerId));
 
-        assert.equal(actualIds.length, 6);
+        assert.equal(actualIds.length, 3);
         assert.deepEqual(actualIds, expectedIds);
     });
 

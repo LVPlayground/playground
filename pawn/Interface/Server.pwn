@@ -10,6 +10,7 @@ native IsValidVehicle(vehicleid);
 native IsPlayerEligibleForBenefit(playerid, benefit);
 native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);
+native SetPlayerLevel(playerid, level, bool: isTemporary);
 
 // Defined in //javascript/features/collectables/collectable_benefits.js
 #define PLAYER_BENEFIT_SPRAY_QUICK_VEHICLE_ACCESS 0

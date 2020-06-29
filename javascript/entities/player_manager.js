@@ -41,8 +41,6 @@ export class PlayerManager {
         this.callbacks_.addEventListener(
             'playeractivitychange', PlayerManager.prototype.onPlayerActivityChange.bind(this));
         this.callbacks_.addEventListener(
-            'playerlevelchange', PlayerManager.prototype.onPlayerLevelChange.bind(this));
-        this.callbacks_.addEventListener(
             'messagelevelchange', PlayerManager.prototype.onPlayerMessageLevelChange.bind(this));
 
         // Implementation of the UpdatePlayerSyncedData() Pawn native.
@@ -169,31 +167,6 @@ export class PlayerManager {
             return;  // the event has been received for an invalid player
         
         player.activityInternal = event.activity;
-    }
-
-    // Called when a player's level on the server changes, for example because they log in to their
-    // account, they get temporary rights or take their own rights away.
-    onPlayerLevelChange(event) {
-        const player = this.players_.get(event.playerid);
-        if (!player)
-            return;  // the event has been received for an invalid player
-
-        switch (event.newlevel) {
-            case 3:  // Management
-                player.level = Player.LEVEL_MANAGEMENT;
-                player.levelIsTemporary = false;
-                break;
-            case 2:  // Administrator
-                player.level = Player.LEVEL_ADMINISTRATOR;
-                player.levelIsTemporary = !!event.temporary;
-                break;
-            default:
-                player.level = Player.LEVEL_PLAYER;
-                player.levelIsTemporary = false;
-                break;
-        }
-
-        this.notifyObservers('onPlayerLevelChange', player);
     }
 
     // Called when a player's message level has changed in the Pawn world.

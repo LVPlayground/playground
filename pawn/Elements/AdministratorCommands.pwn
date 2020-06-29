@@ -4,14 +4,6 @@
 
 new g_message[256];
 
-forward OnPlayerLevelChange(playerid, newlevel, temporary);
-public OnPlayerLevelChange(playerid, newlevel, temporary) {}
-
-forward DoPlayerLevelChange(playerid, newlevel, temporary);
-public DoPlayerLevelChange(playerid, newlevel, temporary) {
-    CallLocalFunction("OnPlayerLevelChange", "iii", playerid, newlevel, temporary);
-}
-
 #if Feature::DisableFights == 0
 
 lvp_resetfc(playerId, params[]) {

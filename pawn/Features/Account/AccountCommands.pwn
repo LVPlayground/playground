@@ -32,11 +32,6 @@ class AccountCommands {
             return 1;
         }
 
-        if (!Player(playerId)->isRegistered()) {
-            SendClientMessage(playerId, Color::Error, "You can only use /modlogin when signed in to another account.");
-            return 1;
-        }
-
         new username[32], password[32];
         Command->stringParameter(params, 0, username, sizeof(username));
         Command->stringParameter(params, 1, password, sizeof(password));

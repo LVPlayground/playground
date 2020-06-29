@@ -20,8 +20,6 @@ export class AccountManager {
             'playerlogin', AccountManager.prototype.onPlayerLoginEvent.bind(this));
         this.callbacks_.addEventListener(
             'playerguestlogin', AccountManager.prototype.onPlayerGuestLoginEvent.bind(this));
-        this.callbacks_.addEventListener(
-            'playermodlogin', AccountManager.prototype.onPlayerModLoginEvent.bind(this));
 
         provideNative('SetIsRegistered', 'ii', AccountManager.prototype.setIsRegistered.bind(this));
 
@@ -87,19 +85,6 @@ export class AccountManager {
 
         server.playerManager.onPlayerNameChange(player, /* update= */ true);
         server.playerManager.onPlayerGuestSession(player);
-    }
-
-    // Called when a player has logged in to an administrator's account, and their original level
-    // and rights should be applied. Statistics will continue to aggregate as the other account.
-    onPlayerModLoginEvent(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |player| does not exist (anymore)
-
-        // TODO: Mutate the |PlayerAccountSupplement| with the appropriate data when that's made
-        // responsible for account information, including for undercover players.
-
-        server.playerManager.onPlayerModLogin(event);
     }
 
     // Called when the |player| has disconnected from the server.

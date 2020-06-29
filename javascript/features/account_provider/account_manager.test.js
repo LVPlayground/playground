@@ -20,36 +20,4 @@ describe('AccountManager', (it, beforeEach) => {
 
         assert.notEqual(gunther.name, 'Gunther');
     });
-
-    it('is able to log in players undercover, override their rights', async (assert) => {
-        const gunther = server.playerManager.getById(/* Gunther= */ 0);
-
-        assert.equal(gunther.level, Player.LEVEL_PLAYER);
-        assert.isFalse(gunther.isVip());
-        assert.isFalse(gunther.isUndercover());
-        assert.isFalse(gunther.account.isRegistered());
-        assert.isFalse(gunther.account.isIdentified());
-
-        await gunther.identify({ userId: 42 });
-
-        assert.equal(gunther.level, Player.LEVEL_PLAYER);
-        assert.isFalse(gunther.isVip());
-        assert.isFalse(gunther.isUndercover());
-        assert.isTrue(gunther.account.isRegistered());
-        assert.isTrue(gunther.account.isIdentified());
-        assert.equal(gunther.account.userId, 42);
-
-        dispatchEvent('playermodlogin', {
-            playerid: gunther.id,
-            level: Player.LEVEL_ADMINISTRATOR + /* pawn offset= */ 1,
-            vip: true,
-        });
-
-        assert.equal(gunther.level, Player.LEVEL_ADMINISTRATOR);
-        assert.isTrue(gunther.isVip());
-        assert.isTrue(gunther.isUndercover());
-        assert.isTrue(gunther.account.isRegistered());
-        assert.isTrue(gunther.account.isIdentified());
-        assert.equal(gunther.account.userId, 42);
-    });
 });

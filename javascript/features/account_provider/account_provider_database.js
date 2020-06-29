@@ -6,8 +6,6 @@
 const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
-        users.level,
-        users.is_vip,
         users_mutable.online_time,
         users_mutable.kill_count,
         users_mutable.death_count,
@@ -22,8 +20,6 @@ const ACCOUNT_LOAD_QUERY = `
         users_mutable.muted
     FROM
         users_mutable
-    LEFT JOIN
-        users ON users.user_id = users_mutable.user_id
     WHERE
         users_mutable.user_id = ?`;
 

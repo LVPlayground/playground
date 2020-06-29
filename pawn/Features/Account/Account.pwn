@@ -183,7 +183,7 @@ class Account <playerId (MAX_PLAYERS)> {
         Annotation::ExpandList<OnPlayerLogin>(playerId);
 
         // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerLogin", "iiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId());
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, m_userId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 0 /* undercover */);
     }
 
     /**
@@ -244,7 +244,6 @@ class Account <playerId (MAX_PLAYERS)> {
      */
     public onSuccessfulModLoginAttempt(PlayerAccessLevel: level, originalUsername[], originalUserId) {
         AccountData(playerId)->applyPlayerLevel(level);
-
         UndercoverAdministrator(playerId)->setIsUndercoverAdministrator(true);
         UndercoverAdministrator(playerId)->resetUndercoverLoginAttemptCount();
         UndercoverAdministrator(playerId)->setOriginalUsername(originalUsername);
@@ -261,10 +260,12 @@ class Account <playerId (MAX_PLAYERS)> {
 
         EchoMessage("notice-crew", "z", notice);
 
-        // Broadcast an OnPlayerModLogin callback that can be intercepted by other scripts.
-        CallRemoteFunction("OnPlayerModLogin", "iii", playerId, _: level, Player(playerId)->isVip());
+        // Broadcast an OnPlayerLogin callback that can be intercepted by other scripts.
+        CallRemoteFunction("OnPlayerLogin", "iiiii", playerId, originalUserId, Player(playerId)->isVip(), AccountData(playerId)->gangId(), 1 /* undercover */);
 
         Annotation::ExpandList<OnPlayerModLogin>(playerId);
+
+        // TODO(Russell): Should this broadcast an event similar to OnPlayerLogin as well?
     }
 
     /**
@@ -288,11 +289,8 @@ class Account <playerId (MAX_PLAYERS)> {
     }
 };
 
-forward OnPlayerLogin(playerid, userid, vip, gangId);
-public OnPlayerLogin(playerid, userid, vip, gangId) {}
+forward OnPlayerLogin(playerid, userid, vip, gangId, undercover);
+public OnPlayerLogin(playerid, userid, vip, gangId, undercover) {}
 
 forward OnPlayerGuestLogin(playerId);
 public OnPlayerGuestLogin(playerId) {}
-
-forward OnPlayerModLogin(playerid, level, vip);
-public OnPlayerModLogin(playerid, level, vip) {}

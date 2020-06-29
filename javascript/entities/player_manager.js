@@ -192,6 +192,8 @@ export class PlayerManager {
                 player.levelIsTemporary = false;
                 break;
         }
+
+        this.notifyObservers('onPlayerLevelChange', player);
     }
 
     // Called when a player's message level has changed in the Pawn world.

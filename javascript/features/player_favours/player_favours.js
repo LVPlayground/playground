@@ -33,13 +33,12 @@ class PlayerFavours extends Feature {
 	    // -----------------------------------------------------------------------------------------
         // Jasmine (https://forum.sa-mp.nl/thread-33720.html)
 
-        this.objectRemover_.load('data/favours/jasmine_house_tower.json');
         this.objectGroups_.push(ObjectGroup.create('data/favours/jasmine_house_tower.json', 0, 0));
 
 	    // -----------------------------------------------------------------------------------------
         // Kibo (https://sa-mp.nl/players/122282/cb-kibo.html)
         // Gangbase for the [cB] - Camin Bulevar gang.
-        this.objectRemover_.load('data/favours/caminbulevar_gang_zone.json');
+
         this.objectGroups_.push(ObjectGroup.create('data/favours/caminbulevar_gang_zone.json', 0, 0));
 
         // -----------------------------------------------------------------------------------------

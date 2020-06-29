@@ -23,7 +23,7 @@ const kNumberPlaceholders = new Set('dfi$'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
 const kPlaceholderExpression =
-    /^(?:\{([^}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
+    /^(?:\{([^\}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';

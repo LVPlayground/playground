@@ -43,6 +43,7 @@ import Decorations from 'features/decorations/decorations.js';
 import Finance from 'features/finance/finance.js';
 import Friends from 'features/friends/friends.js';
 import Games from 'features/games/games.js';
+import GamesDeathmatch from 'features/games_deathmatch/games_deathmatch.js';
 import Gangs from 'features/gangs/gangs.js';
 import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
@@ -104,6 +105,7 @@ class MockServer {
             finance: Finance,
             friends: Friends,
             games: Games,
+            games_deathmatch: GamesDeathmatch,
             gangs: Gangs,
             haystack: Haystack,
             leaderboard: Leaderboard,

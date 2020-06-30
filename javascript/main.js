@@ -59,7 +59,7 @@ testRunner.run('.*\.test\.js').then(time => {
 
         // Low level features, which may only depend on each other and foundational features.
         'abuse', 'announce', 'economy', 'location', 'minigames',
-        'streamer', 'games',
+        'streamer',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',
@@ -82,6 +82,11 @@ testRunner.run('.*\.test\.js').then(time => {
         // Games and minigames
         // -----------------------------------------------------------------------------------------
 
+        // 1. Runtime
+        'games',
+        'games_deathmatch',
+
+        // 2. Individual games
         'haystack',
 
         // -----------------------------------------------------------------------------------------

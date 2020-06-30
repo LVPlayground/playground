@@ -40,6 +40,7 @@ export class GameDescription {
     static kScoreTime = 1;
 
     gameConstructor_ = null;
+    options_ = null;
 
     name_ = null;
     goal_ = null;
@@ -63,6 +64,9 @@ export class GameDescription {
 
     // Gets the constructor which can be used to instantiate the game.
     get gameConstructor() { return this.gameConstructor_; }
+
+    // Gets the unprocessed options that were used for initializing this game.
+    get options() { return this.options_; }
 
     // ---------------------------------------------------------------------------------------------
     // Required configuration
@@ -157,6 +161,7 @@ export class GameDescription {
             throw new Error('Each game must override the `Game` base class in this feature.');
 
         this.gameConstructor_ = gameConstructor;
+        this.options_ = options;
         
         // -----------------------------------------------------------------------------------------
         // Section: required options

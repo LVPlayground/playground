@@ -64,6 +64,9 @@ export class Player extends Supplementable {
     // Default gravity value
     static kDefaultGravity = 0.008;
 
+    // Default lag compensation mode.
+    static kDefaultLagCompensationMode = 2;
+
     // Constants applicable to the `Player.specialAction` property.
     static kSpecialActionNone = 0;
     static kSpecialActionCrouching = 1;  // read-only

@@ -18,9 +18,7 @@ ReportAbuse
 ReportTrailerUpdate
 
 # native SetIsRegistered(playerid, bool: isRegistered);
-# native SetPlayerLevel(playerid, level, bool: isTemporary);
 SetIsRegistered
-SetPlayerLevel
 
 # native MarkVehicleMoved(vehicleId);
 MarkVehicleMoved

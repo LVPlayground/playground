@@ -99,6 +99,21 @@ describe('PlayerManager', (it, beforeEach, afterEach) => {
         assert.equal(connectedPlayer.id, 42);
     });
 
+    it('should inform observers of level changes', assert => {
+        let counter = 0;
+
+        class MyObserver {
+            onPlayerLevelChange() { ++counter; }
+        }
+
+        manager.onPlayerConnect({ playerid: 42 });
+
+        manager.addObserver(new MyObserver());
+        manager.onPlayerLevelChange({ playerid: 42 });
+
+        assert.equal(counter, 1);
+    });
+
     it('should inform observers of logins', assert => {
         let counter = 0;
 

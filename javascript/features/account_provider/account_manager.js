@@ -22,7 +22,6 @@ export class AccountManager {
             'playerguestlogin', AccountManager.prototype.onPlayerGuestLoginEvent.bind(this));
 
         provideNative('SetIsRegistered', 'ii', AccountManager.prototype.setIsRegistered.bind(this));
-        provideNative('SetPlayerLevel', 'iii', AccountManager.prototype.setPlayerLevel.bind(this));
 
         server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
@@ -42,35 +41,6 @@ export class AccountManager {
         
         if (!registered)
             server.playerManager.onPlayerGuestSession(player);
-
-        return 1;
-    }
-
-    // native SetPlayerLevel(playerid, level);
-    //
-    // Updates the level of the given |playerid| to |level|, which is indicated in Pawn values, thus
-    // includes the ModeratorLevel which is no longer used.
-    setPlayerLevel(playerid, level, isTemporary) {
-        const player = server.playerManager.getById(playerid);
-        if (!player)
-            return 0;  // the given |playerid| does not point to a valid player
-        
-        switch (level) {
-            case /* ManagementLevel= */ 3:
-                player.level = Player.LEVEL_MANAGEMENT;
-                player.levelIsTemporary = !!isTemporary;
-                break;
-            
-            case /* AdministratorLevel= */ 2:
-                player.level = Player.LEVEL_ADMINISTRATOR;
-                player.levelIsTemporary = !!isTemporary;
-                break;
-            
-            default:
-                player.level = Player.LEVEL_PLAYER;
-                player.levelIsTemporary = false;
-                break;
-        }
 
         return 1;
     }
@@ -141,7 +111,6 @@ export class AccountManager {
         server.playerManager.removeObserver(this);
 
         provideNative('SetIsRegistered', 'ii', () => 0);
-        provideNative('SetPlayerLevel', 'iii', () => 0);
 
         this.callbacks_.dispose();
         this.callbacks_ = null;

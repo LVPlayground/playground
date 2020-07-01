@@ -63,7 +63,7 @@ export class AccountCommands {
     // Registers the commands with configurable access with the Playground feature.
     registerTrackedCommands() {
         this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
-        this.playground_().registerCommand('whois', Player.LEVEL_MANAGEMENT);
+        this.playground_().registerCommand('whois', Player.LEVEL_ADMINISTRATOR);
     }
 
     // ---------------------------------------------------------------------------------------------

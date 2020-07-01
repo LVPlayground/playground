@@ -63,6 +63,16 @@ aiming at, and mark them as collected when successful.
 
 This game, also, was originally introduced by [Jay](https://forum.sa-mp.nl/user-180.html).
 
+## Series: Treasures
+Fifty books are located all over Red County, Flint County and Whetstone, each of which unlocks a
+hint that will help you find a treasure—a different hint for each player!
+
+There are fifty books, and fifty treasures to be found. They're implemented as objects surrounded by
+an area, because SA-MP does not support per-player pickups, which would lead to confusing issues.
+Upon entering the area, the collectable will count as having been collected.
+
+This game was proposed by [Sophia_Naz](https://forum.sa-mp.nl/user-19713.html).
+
 ## Visualizing the collectables
 Management members have the ability to enable the `collectable_map_icons_display` setting in the
 `Playground` group via `/lvp settings`. This will create map icons for all of the collectables, with

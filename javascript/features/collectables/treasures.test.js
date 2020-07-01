@@ -98,6 +98,29 @@ describe('Treasures', (it, beforeEach) => {
         assert.equal(server.objectManager.size, existingObjectSize);
     });
 
+    it('should enable players to pick up the treasures', async (assert) => {
+        // Create a mixture of books (ID <50) and treasures (ID >=50) for Gunther.
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(25) ]);
+
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
+
+        // Get all the areas that have been created for Gunther.
+        const areas = [ ...delegate.playerAreaMapping_.get(gunther).keys() ];
+        assert.equal(areas.length, 50);
+
+        // (1) Have Gunther pick up a book, which should transition into a treasure.
+        delegate.onPlayerEnterArea(gunther, areas[25]);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(gunther.messages[0], 'not meant to find just yet');
+
+        // (2) Have Gunther pick up a treasure, which should award what they deserve.
+        delegate.onPlayerEnterArea(gunther, areas[0]);
+
+        // TODO: Implement behaviour when a treasure is found.
+    });
+
     it('should be able to determine the treasure Id for a given book Id', async (assert) => {
         const russell = server.playerManager.getById(/* Russell= */ 1);
 

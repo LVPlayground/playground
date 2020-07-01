@@ -235,9 +235,21 @@ export class Treasures extends CollectableBase {
             throw new Error(`Received an event for an area that's not part of this collectable.`);
 
         const collectableId = areaMapping.get(area);
+        const collectable = this.getCollectable(collectableId);
 
-        console.log(collectableId);
+        if (collectable.type === Treasures.kTypeBook)
+            this.onPlayerDiscoverBook(player, collectableId);
+        else
+            this.onPlayerDiscoverTreasure(player, collectableId);
     }
+
+    // Called when the |player| has discovered the given |book|, which is a collectable Id.
+    onPlayerDiscoverBook(player, bookCollectableId) {
+        player.sendMessage(`You've discovered something that you're not meant to find just yet ;)`);
+    }
+
+    // Called when the |player| has discovered the given |treasure|, also a collectable Id.
+    onPlayerDiscoverTreasure(player, treasureCollectableId) {}
 
     // ---------------------------------------------------------------------------------------------
 

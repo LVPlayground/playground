@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
+import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 import { Vector } from 'base/vector.js';
 
 import { createSeed, random, randomSeed } from 'base/random.js';
@@ -228,6 +229,9 @@ export class Treasures extends CollectableBase {
     // Called when the |player| enters the given |area|, which should be one of the collectables
     // that are part of this series. We consider this as them having picked up the collectable.
     onPlayerEnterArea(player, area) {
+        if (!this.hasPlayerStatistics(player))
+            return;  // treasures have not been initialized for this |player|
+
         const areaMapping = this.playerAreaMapping_.get(player);
         const objectMapping = this.playerObjectMapping_.get(player);
 
@@ -237,19 +241,99 @@ export class Treasures extends CollectableBase {
         const collectableId = areaMapping.get(area);
         const collectable = this.getCollectable(collectableId);
 
-        if (collectable.type === Treasures.kTypeBook)
-            this.onPlayerDiscoverBook(player, collectableId);
-        else
+        // (1) Mark the |collectableId| as having been found by the |player|, both locally and in
+        // the database, enabling them to continue collection across sessions.
+        const statistics = this.getPlayerStatistics(player);
+
+        statistics.collected.add(collectableId);
+        statistics.collectedRound.add(collectableId);
+
+        this.manager_.markCollectableAsCollected(
+            player, CollectableDatabase.kTreasures, statistics.round, collectableId);
+
+        // (2) Delete the current |collectable| from the map for the given |player|.
+        if (objectMapping.has(collectableId)) {
+            objectMapping.get(collectableId).dispose();
+            objectMapping.delete(collectableId);
+        }
+
+        area.dispose();
+
+        areaMapping.delete(area);
+
+        // (3) Determine how many books and treasures have been collected by the player.
+        const typedStatistics = {
+            [Treasures.kTypeBook]: 0,
+            [Treasures.kTypeTreasure]: 0,
+        };
+
+        for (const collectableId of statistics.collectedRound)
+            ++typedStatistics[this.getCollectable(collectableId).type];
+
+        // (4) Engage in |type|-specific behaviour for the |collectable|.
+        if (collectable.type === Treasures.kTypeBook) {
+            const processMessage =
+                this.createProcessMessage(typedStatistics[Treasures.kTypeBook], this.books_.size);
+
+            // (a) Show a notification to the |player| about having collected the book.
+            this.manager_.showNotification(player, kBookNotificationTitle, processMessage);
+
+            // (b) Create the treasure that can now be picked up by the |player|.
+            const treasureId = this.determineTreasureForBookForPlayer(player, collectableId);
+            const treasure = this.getCollectable(treasureId);
+
+            if (!statistics.collectedRound.has(treasureId)) {
+                this.createPickupableForPlayer(player, treasureId);
+
+                // (c) Inform the |player| about the treasure now available to them.
+                player.sendMessage(Message.COLLECTABLE_TREASURE_HINT, treasure.hint);
+                player.sendMessage(Message.COLLECTABLE_TREASURE_HOW);
+            }
+
+        } else {
+            const processMessage =
+                this.createProcessMessage(typedStatistics[Treasures.kTypeTreasure],
+                                          this.treasures_.size);
+
+            // (a) Show a notification to the |player| about having collected the treasure.
+            this.manager_.showNotification(player, kTreasureNotificationTitle, processMessage);
+
+            // (b) Award achievements to the player when they've collected certain numbers of
+            // treasures. These work on per-round statistics.
+            this.awardAchievementWhenApplicable(player, typedStatistics[Treasures.kTypeTreasure]);
+
+            // (b) Award the player whatever was contained within the treasure.
             this.onPlayerDiscoverTreasure(player, collectableId);
+        }
     }
 
-    // Called when the |player| has discovered the given |book|, which is a collectable Id.
-    onPlayerDiscoverBook(player, bookCollectableId) {
-        player.sendMessage(`You've discovered something that you're not meant to find just yet ;)`);
+    // Creates a string representing the player's process, when they've collected |current| out of
+    // the |total| available collectables in this series.
+    createProcessMessage(current, total) {
+        const remaining = total - current;
+        switch (remaining) {
+            case 0:
+                return `all done!`;
+            
+            case 1:
+                return `only one more to go...`;
+            
+            default:
+                return `${current} / ${total}`;
+        }
     }
 
-    // Called when the |player| has discovered the given |treasure|, also a collectable Id.
-    onPlayerDiscoverTreasure(player, treasureCollectableId) {}
+    // Called when the |player| has discovered the given |treasureCollectableId|. They will be
+    // awarded whatever was contained within the treasure.
+    onPlayerDiscoverTreasure(player, treasureCollectableId) {
+        // TODO: What do we award them?
+    }
+
+    // Awards an achievement to the |player| when their collectable stats in the current round are
+    // applicable to be awarded one. The thresholds are defined in achievements.js as well.
+    awardAchievementWhenApplicable(player, collected) {
+        // TODO: Achievements?
+    }
 
     // ---------------------------------------------------------------------------------------------
 

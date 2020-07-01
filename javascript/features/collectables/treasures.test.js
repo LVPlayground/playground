@@ -109,16 +109,33 @@ describe('Treasures', (it, beforeEach) => {
         const areas = [ ...delegate.playerAreaMapping_.get(gunther).keys() ];
         assert.equal(areas.length, 50);
 
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
+
         // (1) Have Gunther pick up a book, which should transition into a treasure.
         delegate.onPlayerEnterArea(gunther, areas[25]);
 
-        assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], 'not meant to find just yet');
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 0);
+        assert.isFalse(areas[25].isConnected());
+
+        assert.equal(gunther.messages.length, 2);
+        assert.includes(gunther.messages[0], 'mentions a treasure');
+        assert.equal(gunther.messages[1], Message.COLLECTABLE_TREASURE_HOW);
+
+        assert.equal(delegate.playerAreaMapping_.get(gunther).size, 50);
+        assert.equal(delegate.playerObjectMapping_.get(gunther).size, 50);
 
         // (2) Have Gunther pick up a treasure, which should award what they deserve.
         delegate.onPlayerEnterArea(gunther, areas[0]);
 
+        assert.equal(delegate.countCollectablesForPlayer(gunther).round, 1);
+        assert.isFalse(areas[0].isConnected());
+
+        assert.equal(gunther.messages.length, 2);  // no new messages
+
         // TODO: Implement behaviour when a treasure is found.
+
+        assert.equal(delegate.playerAreaMapping_.get(gunther).size, 49);
+        assert.equal(delegate.playerObjectMapping_.get(gunther).size, 49);
     });
 
     it('should be able to determine the treasure Id for a given book Id', async (assert) => {

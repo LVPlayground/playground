@@ -44,9 +44,21 @@ export class CollectableCommands {
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
             .build(CollectableCommands.prototype.onAchievementsCommand.bind(this));
 
+        // /barrels
+        server.commandManager.buildCommand('barrels')
+            .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'barrels'));
+
         // /collectables
         server.commandManager.buildCommand('collectables')
             .build(CollectableCommands.prototype.onCollectablesCommand.bind(this));
+        
+        // /tags
+        server.commandManager.buildCommand('tags')
+            .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'tags'));
+        
+        // /treasures
+        server.commandManager.buildCommand('treasures')
+            .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'treasures'));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -110,6 +122,13 @@ export class CollectableCommands {
                     instructions: Message.COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS,
                 }
             ],
+            [
+                '{64FFDA}Treasures',
+                {
+                    delegate: this.manager_.getDelegate(CollectableDatabase.kTreasures),
+                    instructions: Message.COLLECTABLE_INSTRUCTIONS_TREASURES,
+                }
+            ],
         ]);
 
         for (const [ label, { delegate, instructions } ] of series) {
@@ -141,6 +160,33 @@ export class CollectableCommands {
         }
 
         await dialog.displayForPlayer(player);
+    }
+
+    // Called when a player has entered the command for a specific series of collectables. Will
+    // handle the case as if they got their through the `/collectables` command.
+    async onSpecificSeriesCommand(player, series) {
+        switch (series) {
+            case 'barrels':
+                return this.handleCollectableSeries(
+                    player,
+                    this.manager_.getDelegate(CollectableDatabase.kRedBarrel),
+                    Message.COLLECTABLE_INSTRUCTIONS_RED_BARRELS);
+
+            case 'tags':
+                return this.handleCollectableSeries(
+                    player,
+                    this.manager_.getDelegate(CollectableDatabase.kSprayTag),
+                    Message.COLLECTABLE_INSTRUCTIONS_SPRAY_TAGS);
+
+            case 'treasures':
+                return this.handleCollectableSeries(
+                    player,
+                    this.manager_.getDelegate(CollectableDatabase.kTreasures),
+                    Message.COLLECTABLE_INSTRUCTIONS_TREASURES);
+
+            default:
+                throw new Error(`Unknown collectable series given: ${series}.`);
+        }
     }
 
     // Handles display of a menu with the specific series owned by |delegate| for the player. The
@@ -310,6 +356,10 @@ export class CollectableCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.commandManager.removeCommand('treasures');
+        server.commandManager.removeCommand('tags');
+        server.commandManager.removeCommand('barrels');
+
         server.commandManager.removeCommand('collectables');
         server.commandManager.removeCommand('achievements');
     }

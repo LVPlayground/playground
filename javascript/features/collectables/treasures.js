@@ -307,6 +307,9 @@ export class Treasures extends CollectableBase {
         }
     }
 
+    // Called when the given |player| leaves the |area|. Unused.
+    onPlayerLeaveArea(player, area) {}
+
     // Creates a string representing the player's process, when they've collected |current| out of
     // the |total| available collectables in this series.
     createProcessMessage(current, total) {

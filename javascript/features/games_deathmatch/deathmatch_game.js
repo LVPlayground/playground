@@ -10,6 +10,23 @@ export class DeathmatchGame extends Game {
     // Whether lag compensation mode should be enabled for this game.
     #lagCompensation_ = false;
 
+    // Snapshots of statistics of each of the participants when they join the game.
+    #statistics_ = new WeakMap();
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns a PlayerStatsView instance for the current statistics of the given |player|, or NULL
+    // when the |player| is not currently engaged in the game.
+    getStatisticsForPlayer(player) {
+        const snapshot = this.#statistics_.get(player);
+        if (!snapshot)
+            return null;  // no snapshot could be found
+        
+        return player.stats.diff(snapshot);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     async onInitialized(settings) {
         await super.onInitialized(settings);
 
@@ -20,12 +37,16 @@ export class DeathmatchGame extends Game {
     async onPlayerAdded(player) {
         await super.onPlayerAdded(player);
 
+        this.#statistics_.set(player, player.stats.snapshot());
+
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
     }
 
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
+
+        this.#statistics_.delete(player);
 
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;

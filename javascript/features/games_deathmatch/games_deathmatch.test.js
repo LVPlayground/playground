@@ -8,14 +8,26 @@ import { kDefaultTickIntervalMs } from 'features/games/game_description.js';
 
 describe('GamesDeathmatch', (it, beforeEach) => {
     let feature = null;
+    let games = null;
     let gunther = null;
     let settings = null;
 
     beforeEach(() => {
         feature = server.featureManager.loadFeature('games_deathmatch');
+        games = server.featureManager.loadFeature('games');
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         settings = server.featureManager.loadFeature('settings');
     });
+
+    // Returns the Game instance of the currently running game. When there are multiple games live
+    // on the server, only the first will be returned.
+    function getGameInstance() {
+        if (!games.manager_.runtimes_.size)
+            throw new Error('There currently are no running games on the server.');
+
+        // Return the Game instance, which is what this layer cares about.
+        return [ ...games.manager_.runtimes_ ][0].game_;
+    }
 
     // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
     // deterministic manner to match what would happen in a production environment.
@@ -71,7 +83,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
 
-        await runGameLoop();
+        await runGameLoop();  // fully initialize the game
 
         assert.equal(gunther.syncedData.lagCompensationMode, /* lag shot= */ 0);
 
@@ -79,6 +91,60 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.minigameName, '');
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
+    });
+
+    it('should maintain statistics of all participants in the game', async (assert) => {
+        class BubbleGame extends DeathmatchGame {}
+
+        feature.registerGame(BubbleGame, {
+            name: 'Bubble Fighting Game',
+            goal: 'Fight each other with bubbles',
+
+            command: 'bubble',
+            continuous: true,
+            price: 0,
+
+            lagCompensation: false,
+
+            minimumPlayers: 1,
+            maximumPlayers: 4,
+        });
+
+        gunther.shoot();
+
+        assert.equal(gunther.stats.session.shotsMissed, 1);
+
+        // Wait until the cooldown period for shooting your gun has passed.
+        await server.clock.advance(
+            settings.getValue('limits/deathmatch_weapon_fired_cooldown') * 1000);
+
+        assert.isTrue(await gunther.issueCommand('/bubble'));
+        assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
+
+        await runGameLoop();  // fully initialize the game
+
+        const game = getGameInstance();
+        {
+            const stats = game.getStatisticsForPlayer(gunther);
+
+            assert.isNotNull(stats);
+            assert.equal(stats.shotsMissed, 0);
+        }
+        
+        for (let shot = 0; shot < 10; ++shot)
+            gunther.shoot();
+        
+        {
+            const stats = game.getStatisticsForPlayer(gunther);
+
+            assert.isNotNull(stats);
+            assert.equal(stats.shotsMissed, 10);
+        }
+
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.equal(gunther.syncedData.minigameName, '');
+
+        assert.isNull(game.getStatisticsForPlayer(gunther));
     });
 
     it('should enable players to customise the settings', async (assert) => {
@@ -107,7 +173,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/bubble custom'));
         assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
 
-        await runGameLoop();
+        await runGameLoop();  // fully initialize the game
 
         // Overridden from the default through the customization menu:
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);

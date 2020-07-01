@@ -3,7 +3,8 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { Treasures } from 'features/collectables/treasures.js';
+import { Treasures,
+         kBookPickupModelId, kTreasurePickupModelId } from 'features/collectables/treasures.js';
 
 import { range } from 'base/range.js';
 
@@ -52,8 +53,6 @@ describe('Treasures', (it, beforeEach) => {
     });
 
     it('should either create a book, a treasure, or nothing, based on progression', assert => {
-        return;  // disabled
-
         const existingPickupCount = server.pickupManager.count;
 
         // Create all books, as if the player has not collected any yet.
@@ -73,6 +72,17 @@ describe('Treasures', (it, beforeEach) => {
 
         assert.isAbove(server.pickupManager.count, existingPickupCount);
         assert.isBelowOrEqual(server.pickupManager.count, updatedPickupCount);
+
+        const typeMap = new Map([
+            [ kBookPickupModelId, 0 ],
+            [ kTreasurePickupModelId, 0 ],
+        ]);
+
+        for (const pickup of delegate.playerPickups_.get(gunther).keys())
+            typeMap.set(pickup.modelId, typeMap.get(pickup.modelId) + 1);
+
+        assert.equal(typeMap.get(kBookPickupModelId), 25);
+        assert.equal(typeMap.get(kTreasurePickupModelId), 25);
 
         // Remove all pickups for the player, this should null them out again.
         delegate.clearCollectablesForPlayer(gunther);

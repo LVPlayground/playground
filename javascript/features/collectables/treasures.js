@@ -7,7 +7,6 @@ import { Vector } from 'base/vector.js';
 
 import { createSeed, randomSeed } from 'base/random.js';
 import { intersect } from 'base/set_extensions.js';
-import { murmur3hash } from 'base/murmur3hash.js';
 
 // Title of the notification that will be shown to the player when finding a book, and another one
 // for the notification to be shown when a treasure associated with that book has been found.
@@ -18,8 +17,8 @@ const kTreasureNotificationTitle = 'treasure!';
 const kTreasuresDataFile = 'data/collectables/treasures.json';
 
 // Model Ids for the pickups that should be created.
-export const kBookPickupId = 2894;
-export const kTreasurePickupId = 1276;
+export const kBookPickupModelId = 2894;
+export const kTreasurePickupModelId = 1276;
 
 // Implements the Treasure Hunt functionality, where players have to find books which then unlock
 // treasure that could be found. This is a two-stage collectable.
@@ -81,7 +80,7 @@ export class Treasures extends CollectableBase {
 
     // Clears all the collectables for the given |player|, generally because they've left the server
     // or, for some other reason, should not participate in the game anymore.
-    DISABLED__clearCollectablesForPlayer(player) {
+    clearCollectablesForPlayer(player) {
         super.clearCollectablesForPlayer(player);
         if (!this.playerPickups_.has(player))
             return;  // the |player| hasn't had their state initialized
@@ -100,7 +99,7 @@ export class Treasures extends CollectableBase {
     // Called when the collectables for the |player| have to be refreshed because (a) they've joined
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
-    DISABLED__refreshCollectablesForPlayer(player, statistics) {
+    refreshCollectablesForPlayer(player, statistics) {
         if (this.playerPickups_.has(player))
             this.clearCollectablesForPlayer(player);
         
@@ -110,11 +109,23 @@ export class Treasures extends CollectableBase {
         const pickups = new Map();
         for (const collectableId of this.books_) {
             if (statistics.collectedRound.has(collectableId)) {
-                // TODO: Create the treasures
+                const treasureId = this.determineTreasureForBookForPlayer(player, collectableId);
+                if (statistics.collectedRound.has(treasureId))
+                    continue;  // all collected!
+                
+                const { position } = this.getCollectable(treasureId);
+                const pickup = this.entities.createPickup({
+                    modelId: kTreasurePickupModelId,
+                    position: position,
+                    playerId: player.id,
+                });
+
+                pickups.set(pickup, treasureId);
+
             } else {
                 const { position } = this.getCollectable(collectableId);
                 const pickup = this.entities.createPickup({
-                    modelId: kBookPickupId,
+                    modelId: kBookPickupModelId,
                     position: position,
                     playerId: player.id,
                 });
@@ -152,15 +163,13 @@ export class Treasures extends CollectableBase {
     // Creates the book Id => treasure Id mapping for the given |player|. This is different for
     // each player, because we're mean and want to stop collaboration :)
     createTreasureMapping(player) {
-        const treasureCount = this.treasures_.size;
-        const treasures = [ ...this.treasures_ ];
-
         const uniqueValue = player.account.isIdentified() ? player.account.userId
                                                           : player.name;
 
         const seed = createSeed(`TR:${uniqueValue}`);
         const mapping = new Map();
 
+        const treasures = [ ...this.treasures_ ];
         for (const collectableId of this.books_) {
             const index = randomSeed(seed, treasures.length);
             const treasureId = treasures.splice(index, 1)[0];

@@ -15,6 +15,9 @@ export class AreaManager {
         this.areas_ = new Map();
     }
 
+    // Gets the number of areas that have been created on the server.
+    get size() { return this.areas_.size; }
+
     // ---------------------------------------------------------------------------------------------
     // Section: creating a new area
     // ---------------------------------------------------------------------------------------------

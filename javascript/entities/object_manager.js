@@ -26,6 +26,7 @@ export class ObjectManager {
 
     // Gets the number of objects currently created on the server.
     get count() { return this.objects_.size; }
+    get size() { return this.objects_.size; }
 
     // Returns an iterator that can be used to iterate over the created objects.
     [Symbol.iterator]() { return this.objects_.values(); }

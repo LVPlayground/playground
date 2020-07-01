@@ -5,7 +5,7 @@
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { Vector } from 'base/vector.js';
 
-import { createSeed, randomSeed } from 'base/random.js';
+import { createSeed, random, randomSeed } from 'base/random.js';
 import { intersect } from 'base/set_extensions.js';
 
 // Title of the notification that will be shown to the player when finding a book, and another one
@@ -15,6 +15,9 @@ const kTreasureNotificationTitle = 'treasure!';
 
 // File (JSON) in which all the treasure data has been stored.
 const kTreasuresDataFile = 'data/collectables/treasures.json';
+
+// Radius, in units, a player has to be within a collectable in order to "collect" it.
+export const kCollectableRadius = 2;
 
 // Model Ids for the pickups that should be created.
 export const kBookPickupModelId = 2894;
@@ -30,11 +33,15 @@ export class Treasures extends CollectableBase {
     collectables_ = null;
     manager_ = null;
 
-    // Map from Player instance => Map of Pickup instance to collectable Id
-    playerPickups_ = new Map();
+    // Map from Player instance to a mapping of book collectable IDs to treasure collectable IDs.
     playerTreasureMapping_ = new Map();
 
-    // Set of all collectable IDs, so quickly be able to initialize and diff
+    // Map from Player instance to a mapping of area instances to collectable IDs, and a second map
+    // that provides a similar mapping from collectable IDs to objects.
+    playerAreaMapping_ = new Map();
+    playerObjectMapping_ = new Map();
+
+    // Set of all collectable IDs, so quickly be able to initialize and diff operations.
     books_ = new Set();
     treasures_ = new Set();
 
@@ -82,14 +89,23 @@ export class Treasures extends CollectableBase {
     // or, for some other reason, should not participate in the game anymore.
     clearCollectablesForPlayer(player) {
         super.clearCollectablesForPlayer(player);
-        if (!this.playerPickups_.has(player))
-            return;  // the |player| hasn't had their state initialized
         
-        const pickups = this.playerPickups_.get(player);
-        for (const pickup of pickups.keys())
-            pickup.dispose();
-        
-        this.playerPickups_.delete(player);
+        // (1) Delete all the areas that have been created for the |player|.
+        if (this.playerAreaMapping_.has(player)) {
+            for (const area of this.playerAreaMapping_.get(player).keys())
+                area.dispose();
+        }
+
+        // (2) Delete all the objects that have been created for the |player|.
+        if (this.playerObjectMapping_.has(player)) {
+            for (const object of this.playerObjectMapping_.get(player).values())
+                object.dispose();
+        }
+
+        // (3) Delete the player-specific mappings and storage for this series.
+        this.playerAreaMapping_.delete(player);
+        this.playerObjectMapping_.delete(player);
+
         this.playerTreasureMapping_.delete(player);
 
         // Prune the scoped entities to get rid of references to deleted objects.
@@ -100,41 +116,26 @@ export class Treasures extends CollectableBase {
     // the server as a guest, (b) they've identified to their account, or (c) they've started a new
     // round of collectables and want to collect everything again.
     refreshCollectablesForPlayer(player, statistics) {
-        if (this.playerPickups_.has(player))
+        if (this.playerTreasureMapping_.has(player))
             this.clearCollectablesForPlayer(player);
-        
+
         this.createTreasureMapping(player);
         this.setPlayerStatistics(player, statistics);
 
-        const pickups = new Map();
+        this.playerAreaMapping_.set(player, new Map());
+        this.playerObjectMapping_.set(player, new Map());
+
         for (const collectableId of this.books_) {
             if (statistics.collectedRound.has(collectableId)) {
                 const treasureId = this.determineTreasureForBookForPlayer(player, collectableId);
                 if (statistics.collectedRound.has(treasureId))
                     continue;  // all collected!
-                
-                const { position } = this.getCollectable(treasureId);
-                const pickup = this.entities.createPickup({
-                    modelId: kTreasurePickupModelId,
-                    position: position,
-                    playerId: player.id,
-                });
 
-                pickups.set(pickup, treasureId);
-
+                this.createPickupableForPlayer(player, treasureId);
             } else {
-                const { position } = this.getCollectable(collectableId);
-                const pickup = this.entities.createPickup({
-                    modelId: kBookPickupModelId,
-                    position: position,
-                    playerId: player.id,
-                });
-
-                pickups.set(pickup, collectableId);
+                this.createPickupableForPlayer(player, collectableId);
             }
         }
-
-        this.playerPickups_.set(player, pickups);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -193,12 +194,59 @@ export class Treasures extends CollectableBase {
         return mapping.get(bookCollectableId);
     }
 
+    // Creates a pickupable for the given |player|. This will create a per-player object, as we
+    // can't mimic this behaviour with pickups, with an area around it that will inform us when they
+    // have "picked it up". The |collectableId| decides its appearance.
+    createPickupableForPlayer(player, collectableId) {
+        const { type, position } = this.getCollectable(collectableId);
+
+        // (1) Create a circular area around the collectable for the player.
+        const area = this.entities.createCircularArea(position, kCollectableRadius, {
+            playerId: player.id,
+        });
+
+        area.addObserver(this);
+
+        // (2) Create the object representing this collectable for the player.
+        const object = this.entities.createObject({
+            modelId: type === Treasures.kTypeBook ? kBookPickupModelId
+                                                  : kTreasurePickupModelId,
+
+            position,
+            rotation: random(360),
+
+            playerId: player.id,
+        });
+
+        // (3) Store both the |area| and the |object| specifically for the |player|.
+        this.playerAreaMapping_.get(player).set(area, collectableId);
+        this.playerObjectMapping_.get(player).set(collectableId, object);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| enters the given |area|, which should be one of the collectables
+    // that are part of this series. We consider this as them having picked up the collectable.
+    onPlayerEnterArea(player, area) {
+        const areaMapping = this.playerAreaMapping_.get(player);
+        const objectMapping = this.playerObjectMapping_.get(player);
+
+        if (!areaMapping || !areaMapping.has(area) || !objectMapping)
+            throw new Error(`Received an event for an area that's not part of this collectable.`);
+
+        const collectableId = areaMapping.get(area);
+
+        console.log(collectableId);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         super.dispose();  // will delete all entities
 
-        this.playerPickups_.clear();
+        this.playerAreaMapping_.clear();
+        this.playerObjectMapping_.clear();
+
         this.playerTreasureMapping_.clear();
     }
 }

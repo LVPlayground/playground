@@ -53,16 +53,21 @@ describe('Treasures', (it, beforeEach) => {
     });
 
     it('should either create a book, a treasure, or nothing, based on progression', assert => {
-        const existingPickupCount = server.pickupManager.count;
+        const existingAreaSize = server.areaManager.size;
+        const existingObjectSize = server.objectManager.size;
 
         // Create all books, as if the player has not collected any yet.
         const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
 
         delegate.refreshCollectablesForPlayer(gunther, emptyStatistics);
 
-        const updatedPickupCount = server.pickupManager.count;
-
-        assert.isAbove(updatedPickupCount, existingPickupCount);
+        assert.equal(server.areaManager.size, existingAreaSize + delegate.getCollectableCount());
+        assert.equal(
+            server.objectManager.size, existingObjectSize + delegate.getCollectableCount());
+        
+        assert.isTrue(delegate.playerObjectMapping_.has(gunther));
+        for (const object of delegate.playerObjectMapping_.get(gunther).values())
+            assert.equal(object.modelId, kBookPickupModelId);
 
         // Now update the books to a situation in which half of 'em have been collected.
         const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
@@ -70,24 +75,27 @@ describe('Treasures', (it, beforeEach) => {
 
         delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
 
-        assert.isAbove(server.pickupManager.count, existingPickupCount);
-        assert.isBelowOrEqual(server.pickupManager.count, updatedPickupCount);
+        assert.equal(server.areaManager.size, existingAreaSize + delegate.getCollectableCount());
+        assert.equal(
+            server.objectManager.size, existingObjectSize + delegate.getCollectableCount());
+        
+        const distribution = {
+            [kBookPickupModelId]: 0,
+            [kTreasurePickupModelId]: 0,
+        };
 
-        const typeMap = new Map([
-            [ kBookPickupModelId, 0 ],
-            [ kTreasurePickupModelId, 0 ],
-        ]);
+        assert.isTrue(delegate.playerObjectMapping_.has(gunther));
+        for (const object of delegate.playerObjectMapping_.get(gunther).values())
+            distribution[object.modelId]++;
+        
+        assert.equal(distribution[kBookPickupModelId], 25);
+        assert.equal(distribution[kTreasurePickupModelId], 25);
 
-        for (const pickup of delegate.playerPickups_.get(gunther).keys())
-            typeMap.set(pickup.modelId, typeMap.get(pickup.modelId) + 1);
-
-        assert.equal(typeMap.get(kBookPickupModelId), 25);
-        assert.equal(typeMap.get(kTreasurePickupModelId), 25);
-
-        // Remove all pickups for the player, this should null them out again.
+        // Clear all the collectables, expect area and object sizes to have reset.
         delegate.clearCollectablesForPlayer(gunther);
 
-        assert.equal(server.pickupManager.count, existingPickupCount);
+        assert.equal(server.areaManager.size, existingAreaSize);
+        assert.equal(server.objectManager.size, existingObjectSize);
     });
 
     it('should be able to determine the treasure Id for a given book Id', async (assert) => {

@@ -41,6 +41,12 @@ class PlayerFavours extends Feature {
 
         this.objectGroups_.push(ObjectGroup.create('data/favours/caminbulevar_gang_zone.json', 0, 0));
 
+        // ---
+        // Holsje (https://forum.sa-mp.nl/user-2779.html)
+        // Objects for the [CP] - Cheap People gang.
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/cp_gang_objects.json', 0, 0));
+
         // -----------------------------------------------------------------------------------------
         // Joe (https://sa-mp.nl/players/30/joe.html)
 

@@ -213,7 +213,7 @@ export class Treasures extends CollectableBase {
                                                   : kTreasurePickupModelId,
 
             position,
-            rotation: random(360),
+            rotation: new Vector(0, 0, random(360)),
 
             playerId: player.id,
         });

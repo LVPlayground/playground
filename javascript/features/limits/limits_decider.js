@@ -201,13 +201,17 @@ export class LimitsDecider extends PlayerEventObserver {
     // PlayerEventObserver listeners
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the |player| has taken damage inflicted by the given |issuer|.
+    // Called when the |player| has taken damage inflicted by the given |issuer|. Only damage
+    // inflicted by other players is considered, as falling of your bike shouldn't prevent you from
+    // getting another, or from teleporting anywhere.
     onPlayerTakeDamage(player, issuer) {
+        if (!issuer)
+            return;
+
         const currentTime = server.clock.monotonicallyIncreasingTime();
 
         this.deathmatchDamageTakenTime_.set(player, currentTime);
-        if (issuer)
-            this.deathmatchDamageIssuedTime_.set(issuer, currentTime);
+        this.deathmatchDamageIssuedTime_.set(issuer, currentTime);
     }
 
     // Called when the |player| has taken a shot, irrespective of whether it hit anything.

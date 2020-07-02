@@ -342,8 +342,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
         // Vehicle keys (8): Gravity
         if(PRESSED(VEHICLE_KEYS_BINDING_GRAVITY) && vehicleKeys & VEHICLE_KEYS_GRAVITY) {
-            g_playerGravity[playerid] *= -1;
-            SetPlayerGravity(playerid, g_playerGravity[playerid]);
+            if (!g_inLasVenturas[playerid]) {
+                g_playerGravity[playerid] *= -1;
+                SetPlayerGravity(playerid, g_playerGravity[playerid]);
+            }
         }
     }
 
@@ -431,8 +433,11 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     } else {
         g_ninjaJackCurrentVehicleId[playerid] = INVALID_VEHICLE_ID;
         StopBlinking(playerid);
-        g_playerGravity[playerid] = g_defaultGravity;
-        SetPlayerGravity(playerid, g_playerGravity[playerid]);
+
+        if (g_playerGravity[playerid] != g_defaultGravity) {
+            g_playerGravity[playerid] = g_defaultGravity;
+            SetPlayerGravity(playerid, g_playerGravity[playerid]);
+        }
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);

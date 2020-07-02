@@ -78,6 +78,9 @@ new g_vehicleTrailerId[MAX_VEHICLES];
 // The four blinker objects for the player. 0/1 = RIGHT 2/3 = LEFT
 new DynamicObject: g_blinkerObjects[MAX_PLAYERS][4];
 
+// Default gravity falue
+new const Float: g_defaultGravity = 0.008;
+
 // The current player gravity (positive or negative)
 new Float: g_playerGravity[MAX_PLAYERS];
 
@@ -125,7 +128,7 @@ public OnPlayerConnect(playerid) {
     g_lastTakenDamageIssuerId[playerid] = -1;
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
-    g_playerGravity[playerid] = 0.008;
+    g_playerGravity[playerid] = g_defaultGravity;
     g_inLasVenturas[playerid] = false;
     g_isDisconnecting[playerid] = false;
 
@@ -340,7 +343,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         // Vehicle keys (8): Gravity
         if(PRESSED(VEHICLE_KEYS_BINDING_GRAVITY) && vehicleKeys & VEHICLE_KEYS_GRAVITY) {
             g_playerGravity[playerid] *= -1;
-            SetPlayerGravity(playerid, g_playerGravity[playerid]);    
+            SetPlayerGravity(playerid, g_playerGravity[playerid]);
         }
     }
 
@@ -428,6 +431,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     } else {
         g_ninjaJackCurrentVehicleId[playerid] = INVALID_VEHICLE_ID;
         StopBlinking(playerid);
+        g_playerGravity[playerid] = g_defaultGravity;
+        SetPlayerGravity(playerid, g_playerGravity[playerid]);
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);

@@ -47,7 +47,7 @@ export class ZoneCommands {
 
     // Registers the tracked commands with the Playground feature, so that
     registerTrackedCommands() {
-        this.playground_().registerCommand('zone', Player.LEVEL_MANAGEMENT);
+        this.playground_().registerCommand('zone', Player.LEVEL_ADMINISTRATOR);
     }
 
     // Gets the ZoneDecorations instance canonically owned by the manager.

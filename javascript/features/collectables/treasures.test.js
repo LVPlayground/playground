@@ -52,6 +52,27 @@ describe('Treasures', (it, beforeEach) => {
         assert.equal(delegate.countCollectablesForPlayer(gunther).round, 2);
     });
 
+    it('should only expose hints for treasures when all books have been collected', assert => {
+        // Create all books, as if the player has not collected any yet.
+        const emptyStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+
+        delegate.refreshCollectablesForPlayer(gunther, emptyStatistics);
+
+        assert.equal(delegate.getCollectablesForHints(gunther).size, 50);
+        for (const [ id, data ] of delegate.getCollectablesForHints(gunther))
+            assert.equal(data.type, Treasures.kTypeBook);
+        
+        // Now update the books to a situation in which all books have been collected.
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(50) ]);
+
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
+
+        assert.equal(delegate.getCollectablesForHints(gunther).size, 50);
+        for (const [ id, data ] of delegate.getCollectablesForHints(gunther))
+            assert.equal(data.type, Treasures.kTypeTreasure);
+    });
+
     it('should either create a book, a treasure, or nothing, based on progression', assert => {
         const existingAreaSize = server.areaManager.size;
         const existingObjectSize = server.objectManager.size;

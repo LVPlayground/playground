@@ -71,6 +71,9 @@ There are fifty books, and fifty treasures to be found. They're implemented as o
 an area, because SA-MP does not support per-player pickups, which would lead to confusing issues.
 Upon entering the area, the collectable will count as having been collected.
 
+Hints work a little bit different for this series: until the player has collected all the books, no
+hints can be purchased for finding the actual treasures.
+
 This game was proposed by [Sophia_Naz](https://forum.sa-mp.nl/user-19713.html).
 
 ## Visualizing the collectables

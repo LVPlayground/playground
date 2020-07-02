@@ -338,7 +338,7 @@ export class CollectableCommands {
         const playerDistance = player.position;
         const playerStatistics = delegate.getPlayerStatistics(player);
 
-        for (const [ id, { position } ] of delegate.getCollectables()) {
+        for (const [ id, { position } ] of delegate.getCollectablesForHints(player)) {
             if (playerStatistics && playerStatistics.collectedRound.has(id))
                 continue;  // they've already collected this entry
 

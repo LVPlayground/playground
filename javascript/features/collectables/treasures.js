@@ -147,6 +147,28 @@ export class Treasures extends CollectableBase {
     // count the treasures that have been collected by the player, so need to specialise.
     getCollectableCount() { return this.treasures_.size; }
 
+    // Returns a map of collectables that the |player| can purchase hints for right now. They will
+    // have to collect all books before they can start purchasing hints for the treasures.
+    getCollectablesForHints(player) {
+        if (!this.hasPlayerStatistics(player))
+            return super.getCollectablesForHints(player);
+        
+        const statistics = this.getPlayerStatistics(player);
+        const collectables = new Map();
+
+        const booksCollected = intersect(this.books_, statistics.collectedRound);
+        const booksCompleted = booksCollected.size === this.books_.size;
+
+        for (const [ id, data ] of this.getCollectables()) {
+            if (data.type === Treasures.kTypeBook && !booksCompleted)
+                collectables.set(id, data);
+            else if (data.type === Treasures.kTypeTreasure && booksCompleted)
+                collectables.set(id, data);
+        }
+
+        return collectables;
+    }
+
     // Counts the number of collectables that the player has collected already. Returns a structure
     // in the format of { total, round }, both of which are numbers.
     countCollectablesForPlayer(player) {

@@ -194,7 +194,7 @@ export class CollectableCommands {
 
     // Called when a player has entered the command for a specific series of collectables. Will
     // handle the case as if they got their through the `/collectables` command.
-    async onSpecificSeriesCommand(player, series) {
+    async onSpecificSeriesCommand(series, player) {
         switch (series) {
             case 'barrels':
                 return this.handleCollectableSeries(

@@ -4,7 +4,6 @@
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { Vehicle } from 'entities/vehicle';
 
 // -------------------------------------------------------------------------------------------------
 // Next ID: 16

@@ -18,9 +18,12 @@ new Float: g_driftingMinAngle = 14.0;
 new Float: g_driftingMinSpeed = 50.0;
 new g_driftPointDivider = 2;
 
+// Section: vehicles
+new bool: g_vehicleKeysBlockedInLasVenturas = true;
+
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 10
+// Next ID: 11
 enum PawnConfigProperty {
     kAbuseIgnoreSolePassengerDamage = 5,
     kAbuseKickReasonPublic = 6,
@@ -31,6 +34,7 @@ enum PawnConfigProperty {
     kVehiclesDriftingMinAngle = 3,
     kVehiclesDriftingMinSpeed = 4,
     kVehiclesDriftingPointDivider = 9,
+    kVehiclesKeysBlockedInLasVenturas = 10,
 };
 
 // Called when a configuration option has been updated from JavaScript. Will immediately be applied
@@ -67,7 +71,8 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
         case kVehiclesDriftingPointDivider:
             g_driftPointDivider = intValue;
 
-        // Section: integer properties
+        case kVehiclesKeysBlockedInLasVenturas:
+            g_vehicleKeysBlockedInLasVenturas = !!intValue;
 
         default:
             printf("[PawnConfig][warning] Invalid property in update: %d", _: property);

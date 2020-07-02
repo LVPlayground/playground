@@ -84,6 +84,14 @@ new const Float: g_defaultGravity = 0.008;
 // The current player gravity (positive or negative)
 new Float: g_playerGravity[MAX_PLAYERS];
 
+// Returns whether the given |playerId| is able to use vehicle keys right now.
+bool: CanUseVehicleKeys(playerId) {
+    if (!g_vehicleKeysBlockedInLasVenturas)
+        return true;
+
+    return !g_inLasVenturas[playerId];
+}
+
 // Returns whether the given |modelId| is a remote controllable vehicle.
 IsModelRemoteControlVehicle(modelId) {
     switch (modelId) {
@@ -307,7 +315,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             GetVehiclePos(vehicleId, position[0], position[1], position[2]);
 
             // Only allow vehicle jumping outside of the City of Las Venturas, to not disturb DMers.
-            if (!g_inLasVenturas[playerid]) {
+            if (CanUseVehicleKeys(playerid)) {
                 new const Float: vehicleJump = 0.3;
                 new Float: velocity[3];
 
@@ -320,7 +328,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         if (HOLDING(VEHICLE_KEYS_BINDING_NOS) && (vehicleKeys & VEHICLE_KEYS_NOS)) {
             new const modelId = GetVehicleModel(vehicleId);
 
-            if (!g_inLasVenturas[playerid] && VehicleModel(modelId)->isNitroInjectionAvailable())
+            if (CanUseVehicleKeys(playerid) && VehicleModel(modelId)->isNitroInjectionAvailable())
                 AddVehicleComponent(vehicleId, 1010);
         }
 
@@ -342,7 +350,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
         // Vehicle keys (8): Gravity
         if(PRESSED(VEHICLE_KEYS_BINDING_GRAVITY) && vehicleKeys & VEHICLE_KEYS_GRAVITY) {
-            if (!g_inLasVenturas[playerid]) {
+            if (CanUseVehicleKeys(playerid)) {
                 g_playerGravity[playerid] *= -1;
                 SetPlayerGravity(playerid, g_playerGravity[playerid]);
             }

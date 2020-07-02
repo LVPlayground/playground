@@ -183,7 +183,7 @@ export class CollectableCommands {
                 listener = CollectableCommands.prototype.onAchievementsCommand.bind(this, player);
             } else {
                 listener = CollectableCommands.prototype.handleCollectableSeries.bind(
-                    this, player, delegate, instructions);
+                    this, player, delegate, instructions, isTreasures);
             }
 
             dialog.addItem(label, progress, listener);
@@ -212,7 +212,8 @@ export class CollectableCommands {
                 return this.handleCollectableSeries(
                     player,
                     this.manager_.getDelegate(CollectableDatabase.kTreasures),
-                    Message.COLLECTABLE_INSTRUCTIONS_TREASURES);
+                    Message.COLLECTABLE_INSTRUCTIONS_TREASURES,
+                    /* isTreasures= */ true);
 
             default:
                 throw new Error(`Unknown collectable series given: ${series}.`);
@@ -221,7 +222,7 @@ export class CollectableCommands {
 
     // Handles display of a menu with the specific series owned by |delegate| for the player. The
     // options available to the |player| will heavily depend on their progress thus far.
-    async handleCollectableSeries(player, delegate, instructions) {
+    async handleCollectableSeries(player, delegate, instructions, isTreasures) {
         const dialog = new Menu(delegate.name);
 
         // Whether the |player| has finished collecting everything for the series.
@@ -314,6 +315,22 @@ export class CollectableCommands {
         }
 
         // Statistics?
+
+        // Apply specialization for Treasures, which unlock hints. Those hints should always be
+        // accessible through the player, which we'll do through this command.
+        if (isTreasures) {
+            const hints = delegate.getUnsolvedHintsForPlayer(player);
+            if (hints.length > 0) {
+                dialog.addItem('-----');
+                
+                // Add the |hints|. Double clicking a particular hint will display it in the chat
+                // as well, because dialogs are rather ephemeral when figuring something out.
+                for (const hint of hints) {
+                    dialog.addItem(`Treasure hint: ${hint}`, () =>
+                        player.sendMessage(Message.COLLECTABLE_TREASURE_HINT, hint));
+                }
+            }
+        }
 
         await dialog.displayForPlayer(player);
     }

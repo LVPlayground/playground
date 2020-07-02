@@ -217,6 +217,29 @@ export class Treasures extends CollectableBase {
         return mapping.get(bookCollectableId);
     }
 
+    // Gets an array with all the unsolved hints that have been issued to the player.
+    getUnsolvedHintsForPlayer(player) {
+        const mapping = this.playerTreasureMapping_.get(player);
+        const statistics = this.getPlayerStatistics(player);
+
+        const hints = [];
+
+        if (!mapping || !statistics)
+            return hints;  // no mapping is known, nothing sensible we can do
+
+        for (const [ bookCollectableId, treasureCollectableId ] of mapping) {
+            if (!statistics.collectedRound.has(bookCollectableId))
+                continue;  // the book has not yet been collected
+            
+            if (statistics.collectedRound.has(treasureCollectableId))
+                continue;  // the treasure has already been collected
+            
+            hints.push(this.getCollectable(treasureCollectableId).hint);
+        }
+
+        return hints;
+    }
+
     // Creates a pickupable for the given |player|. This will create a per-player object, as we
     // can't mimic this behaviour with pickups, with an area around it that will inform us when they
     // have "picked it up". The |collectableId| decides its appearance.

@@ -11,11 +11,13 @@ import { range } from 'base/range.js';
 describe('Treasures', (it, beforeEach) => {
     let collectables = null;
     let delegate = null;
+    let finance = null;
     let gunther = null;
 
     beforeEach(() => {
         collectables = server.featureManager.loadFeature('collectables');
         delegate = collectables.manager_.getDelegate(CollectableDatabase.kTreasures);
+        finance = server.featureManager.loadFeature('finance');
         gunther = server.playerManager.getById(/* Gunther= */ 0);
 
         delegate.initialize();
@@ -151,12 +153,47 @@ describe('Treasures', (it, beforeEach) => {
         assert.equal(delegate.countCollectablesForPlayer(gunther).round, 1);
         assert.isFalse(areas[0].isConnected());
 
-        assert.equal(gunther.messages.length, 2);  // no new messages
-
-        // TODO: Implement behaviour when a treasure is found.
+        assert.equal(gunther.messages.length, 3);  // 2, +prize money notification
 
         assert.equal(delegate.playerAreaMapping_.get(gunther).size, 49);
         assert.equal(delegate.playerObjectMapping_.get(gunther).size, 49);
+    });
+
+    it('should award prize money when a treasure has been found', async (assert) => {
+        // Put Gunther in a situation where they've collected all the books.
+        const progressedStatistics = CollectableDatabase.createDefaultCollectableStatistics();
+        progressedStatistics.collectedRound = new Set([ ...range(50) ]);
+
+        delegate.refreshCollectablesForPlayer(gunther, progressedStatistics);
+
+        assert.equal(delegate.playerAreaMapping_.get(gunther).size, 50);
+        assert.equal(delegate.playerObjectMapping_.get(gunther).size, 50);
+
+        let cash = finance.getPlayerCash(gunther);
+        let messages = gunther.messages.length;
+
+        // Iterate over all the areas that are available to Gunther.
+        const areas = [ ...delegate.playerAreaMapping_.get(gunther).keys() ];
+
+        for (const area of areas) {
+            delegate.onPlayerEnterArea(gunther, area);
+
+            const updatedCash = finance.getPlayerCash(gunther);
+            const updatedMessages = gunther.messages.length;
+
+            if (messages === 9)
+                messages += 1;  // kAchievementTreasuresBronze
+            else if (messages === 50)
+                messages += 2;  // kAchievementTreasuresPlatinium & kBenefitVehicleKeysGravity
+
+            assert.equal(updatedMessages, messages + 1);
+            assert.equal(
+                gunther.messages[messages],
+                Message.format(Message.COLLECTABLE_TREASURE_FOUND, updatedCash - cash));
+
+            cash = updatedCash;
+            messages = updatedMessages;
+        }
     });
 
     it('should be able to determine the treasure Id for a given book Id', async (assert) => {

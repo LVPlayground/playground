@@ -34,7 +34,9 @@ export class Treasures extends CollectableBase {
     static kTypeTreasure = 1;
 
     collectables_ = null;
+    finance_ = null;
     manager_ = null;
+    settings_ = null;
 
     // Map from Player instance to a mapping of book collectable IDs to treasure collectable IDs.
     playerTreasureMapping_ = new Map();
@@ -48,7 +50,7 @@ export class Treasures extends CollectableBase {
     books_ = new Set();
     treasures_ = new Set();
 
-    constructor(collectables, manager) {
+    constructor(collectables, finance, manager, settings) {
         super({
             mapIconType: 44 /* Triads Casino */,
             name: 'Treasures',
@@ -56,7 +58,9 @@ export class Treasures extends CollectableBase {
         });
 
         this.collectables_ = collectables;
+        this.finance_ = finance;
         this.manager_ = manager;
+        this.settings_ = settings;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -376,7 +380,18 @@ export class Treasures extends CollectableBase {
     // Called when the |player| has discovered the given |treasureCollectableId|. They will be
     // awarded whatever was contained within the treasure.
     onPlayerDiscoverTreasure(player, treasureCollectableId) {
-        // TODO: What do we award them?
+        const base = this.settings_().getValue('playground/collectable_treasure_award_base');
+        const variance =
+            this.settings_().getValue('playground/collectable_treasure_award_variance');
+
+        // Decide on the actual prize money, based on the base amount with a variance.
+        const prize = base + (random(0 - variance, variance) / 100) * base;
+
+        // Award the prize money to the |player|.
+        this.finance_().givePlayerCash(player, prize);
+
+        // Let the |player| know that they've been awarded this sum of money for a treasure.
+        player.sendMessage(Message.COLLECTABLE_TREASURE_FOUND, prize);
     }
 
     // Awards an achievement to the |player| when their collectable stats in the current round are

@@ -43,7 +43,7 @@ export default class Collectables extends Feature {
 
         // The manager is responsible for keeping track which collectables have been collected by
         // which players, and enables creation of new "rounds" of collectables.
-        this.manager_ = new CollectableManager(this, nuwani, settings);
+        this.manager_ = new CollectableManager(this, finance, nuwani, settings);
 
         // The commands are the player's interfaces towards being able to control their collectables
         // and achievements, as well as seeing other player's statistics.

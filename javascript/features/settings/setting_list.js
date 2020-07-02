@@ -92,6 +92,8 @@ export const kSettingList = [
     new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),
     new Setting('playground', 'collectable_map_icons_distance', Setting.TYPE_NUMBER, 500, 'Distance from which collectable map icons will be visible.'),
     new Setting('playground', 'collectable_reset_require_complete', Setting.TYPE_BOOLEAN, true, 'Only allow resetting collectables when you collected all?'),
+    new Setting('playground', 'collectable_treasure_award_base', Setting.TYPE_NUMBER, 225000, 'What is the prize someone gets for finding a treasure?'),
+    new Setting('playground', 'collectable_treasure_award_variance', Setting.TYPE_NUMBER, 50, 'Variance, in percentage, that will be applied to the prize.'),
     new Setting('playground', 'gunther_help_interval_sec', Setting.TYPE_NUMBER, 300, 'At which interval should Gunther issue helpful /show commands?'),
     new Setting('playground', 'leaderboard_default_view', Setting.TYPE_STRING, 'none', 'Default view to show when someone uses the /top command.'),
     new Setting('playground', 'leaderboard_limit_days', Setting.TYPE_NUMBER, 4, 'Number of days of history the leaderboards should consider.'),

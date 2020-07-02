@@ -31,7 +31,7 @@ Electrolyte       | Win 1,000 reaction tests       |
 The Streak        | Win 10 reaction tests in a row |
 keybind.cs        | Win a reaction test in <2s     |
 Blackbeard        | Collect 10 Treasures           |
-Jack Sparrow      | Collect all Treasures          |
+Jack Sparrow      | Collect all Treasures          | Unlocks the _vehicle gravity_ key shortcut.
 
 Beginning another round of earning the achievements _will not_ reset the benefits. Once granted, you
 will keep them indefinitely.

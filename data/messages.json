@@ -21,6 +21,7 @@
   "ACHIEVEMENT": "{C6FF00}* %s has achieved the %s achievement, congratulations!",
   "ACHIEVEMENT_BOMB_SHOP": "{00E676}* You can now use the Vehicle Bomb Shop in Las Venturas!",
   "ACHIEVEMENT_VEHICLE_COLOR": "{00E676}* You can now change your vehicle's colour by clicking on numpad 4!",
+  "ACHIEVEMENT_VEHICLE_GRAVITY": "{00E676}* You can now change the gravity in your vehicle by clicking on numpad 8!",
   "ACHIEVEMENT_VEHICLE_JUMP": "{00E676}* You can now jump in your vehicle outside of Las Venturas by using the horn!",
   "ACHIEVEMENT_VEHICLE_NITRO": "{00E676}* You can now add nitrogen to your vehicle by clicking on the fire key!",
   "ACHIEVEMENT_VEHICLE_SPAWN": "{00E676}* You can now use the {388E3C}%s{00E676} and {388E3C}%s{00E676} commands to spawn vehicles!",

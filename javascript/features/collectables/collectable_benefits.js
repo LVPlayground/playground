@@ -18,3 +18,6 @@ export const kBenefitVehicleKeysJump = 5;
 
 // Whether a player can use the vehicle nitro key outside of Las Venturas.
 export const kBenefitVehicleKeysNitro = 6;
+
+// Whether a player can use the vehicle gravity key outside of Las Venturas.
+export const kBenefitVehicleKeysGravity = 7;

@@ -34,7 +34,7 @@ export const kAchievementReactionTestSpeed = 13;
 
 // Treasures achievements: awarded when the player gathers 10, or all, treasures.
 export const kAchievementTreasuresBronze = 14;
-export const kAchievementTreasuresPlatinium = 15;
+export const kAchievementTreasuresPlatinium = 15;  // kBenefitVehicleKeysGravity
 
 // -------------------------------------------------------------------------------------------------
 
@@ -164,6 +164,10 @@ export class Achievements extends CollectableBase {
                 [
                     kAchievementReactionTestSilver,
                     Message.ACHIEVEMENT_VEHICLE_NITRO,
+                ],
+                [
+                    kAchievementTreasuresPlatinium,
+                    Message.ACHIEVEMENT_VEHICLE_GRAVITY,
                 ]
             ]);
 
@@ -183,6 +187,10 @@ export class Achievements extends CollectableBase {
               
             case kAchievementReactionTestSilver:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysNos;
+                break;
+            
+            case kAchievementTreasuresPlatinium:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysGravity;
                 break;
         }
     }

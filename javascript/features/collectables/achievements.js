@@ -4,6 +4,7 @@
 
 import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
+import { Vehicle } from 'entities/vehicle';
 
 // -------------------------------------------------------------------------------------------------
 // Next ID: 16
@@ -23,7 +24,7 @@ export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
 
 // Reaction Tests quantity achievements: awarded when hitting a certain number of reaction tests.
 export const kAchievementReactionTestBronze = 9;
-export const kAchievementReactionTestSilver = 10;
+export const kAchievementReactionTestSilver = 10;  // kBenefitVehicleKeysNitro
 export const kAchievementReactionTestGold = 11;
 
 // Reaction Test performance achievement: awarded when winning ten reaction tests in a row.
@@ -161,6 +162,10 @@ export class Achievements extends CollectableBase {
                     kAchievementRedBarrelPlatinum,
                     Message.ACHIEVEMENT_VEHICLE_JUMP
                 ],
+                [
+                    kAchievementReactionTestSilver,
+                    Message.ACHIEVEMENT_VEHICLE_NITRO,
+                ]
             ]);
 
             const message = kUnlockMessages.get(achievement);
@@ -175,6 +180,10 @@ export class Achievements extends CollectableBase {
               
             case kAchievementRedBarrelPlatinum:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
+                break;
+              
+            case kAchievementReactionTestSilver:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysNos;
                 break;
         }
     }

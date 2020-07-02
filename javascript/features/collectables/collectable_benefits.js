@@ -15,3 +15,6 @@ export const kBenefitVehicleKeysColour = 4;
 
 // Whether a player can use the vehicle jump keys outside of Las Venturas.
 export const kBenefitVehicleKeysJump = 5;
+
+// Whether a player can use the vehicle nitro key outside of Las Venturas.
+export const kBenefitVehicleKeysNitro = 6;

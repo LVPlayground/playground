@@ -26,7 +26,7 @@ Arsonist          | Explode 40 Red Barrels         | Unlocks the _vehicle colour
 Incendiarist      | Explode 90 Red Barrels         |
 Jomeri's Syndrome | Explode all Red Barrels        | Unlocks the _vehicle jump_ key shortcut.
 Nimble Critter    | Win 10 reaction tests          |
-Quick Addict      | Win 100 reaction tests         |
+Quick Addict      | Win 100 reaction tests         | Unlocks the _vehicle nitro_ key shortcut.
 Electrolyte       | Win 1,000 reaction tests       |
 The Streak        | Win 10 reaction tests in a row |
 keybind.cs        | Win a reaction test in <2s     |

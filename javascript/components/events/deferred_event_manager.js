@@ -27,90 +27,100 @@ export class DeferredEventManager {
         while (!this.disposed_) {
             const events = getDeferredEvents();
             for (const { type, event } of events) {
-                switch (type) {
-                    case 'OnDynamicObjectMoved':
-                        server.objectManager.onObjectMoved(event);
-                        break;
-
-                    case 'OnPlayerChecksumAvailable':
-                        const feature = server.featureManager.loadFeature('nuwani_commands');
-                        feature.playerCommands_.onChecksumResponse(event);
-                        break;
-
-                    case 'OnPlayerEditDynamicObject':
-                        server.objectManager.onObjectEdited(event);
-                        break;
-
-                    case 'OnPlayerEnterDynamicArea':
-                        server.areaManager.onPlayerEnterArea(event);
-                        break;
-                    
-                    case 'OnPlayerLeaveDynamicArea':
-                        server.areaManager.onPlayerLeaveArea(event);
-                        break;
-                    
-                    case 'OnPlayerPickUpDynamicPickup':
-                        server.pickupManager.onPickupPickedUp(event);
-                        break;
-                    
-                    case 'OnPlayerResolvedDeath':
-                        player = server.playerManager.getById(event.playerid);
-                        killer = server.playerManager.getById(event.killerid);
-
-                        if (player) {
-                            for (const observer of this.observers_)
-                                observer.onPlayerDeath(player, killer, event.reason);
-                        }
-
-                        // TODO: Migrate all the event listeners to observe |this|.
-                        dispatchEvent('playerresolveddeath', event);
-                        break;
-                    
-                    case 'OnPlayerSelectDynamicObject':
-                        server.playerManager.onPlayerSelectObject(event);
-                        break;
-                    
-                    case 'OnPlayerShootDynamicObject':
-                        server.objectManager.onPlayerShootObject(event);
-                        break;
-                    
-                    case 'OnPlayerTakeDamage':
-                        player = server.playerManager.getById(event.playerid);
-                        issuer = server.playerManager.getById(event.issuerid);
-
-                        if (player) {
-                            for (const observer of this.observers_) {
-                                observer.onPlayerTakeDamage(
-                                    player, issuer, event.amount, event.weaponid, event.bodypart);
-                            }
-                        }
-
-                        // TODO: Migrate all the event listeners to observe |this|.
-                        dispatchEvent('playertakedamage', event);
-                        break;
-                    
-                    case 'OnPlayerWeaponShot':
-                        player = server.playerManager.getById(event.playerid);
-                        position = new Vector(event.fX, event.fY, event.fZ);
-
-                        if (player) {
-                            for (const observer of this.observers_) {
-                                observer.onPlayerWeaponShot(
-                                    player, event.weaponid, event.hittype, event.hitid, position);
-                            }
-                        }
-
-                        // TODO: Migrate all the event listeners to observe |this|.
-                        dispatchEvent('playerweaponshot', event);
-                        break;
-
-                    default:
-                        console.log(`Warning: unhandled deferred event "${type}".`);
-                        break;
+                try {
+                    this.handleSingleEvent(type, event);
+                } catch (exception) {
+                    console.log(exception);
                 }
             }
 
             await wait(kDeferredEventReadIntervalMs);
+        }
+    }
+
+    // Handles the given |event|, generally fed from the deferred event dispatcher. Will execute
+    // arbitrary code that could throw, which should not disrupt the dispatcher.
+    handleSingleEvent(type, event) {
+        switch (type) {
+            case 'OnDynamicObjectMoved':
+                server.objectManager.onObjectMoved(event);
+                break;
+
+            case 'OnPlayerChecksumAvailable':
+                const feature = server.featureManager.loadFeature('nuwani_commands');
+                feature.playerCommands_.onChecksumResponse(event);
+                break;
+
+            case 'OnPlayerEditDynamicObject':
+                server.objectManager.onObjectEdited(event);
+                break;
+
+            case 'OnPlayerEnterDynamicArea':
+                server.areaManager.onPlayerEnterArea(event);
+                break;
+            
+            case 'OnPlayerLeaveDynamicArea':
+                server.areaManager.onPlayerLeaveArea(event);
+                break;
+            
+            case 'OnPlayerPickUpDynamicPickup':
+                server.pickupManager.onPickupPickedUp(event);
+                break;
+            
+            case 'OnPlayerResolvedDeath':
+                player = server.playerManager.getById(event.playerid);
+                killer = server.playerManager.getById(event.killerid);
+
+                if (player) {
+                    for (const observer of this.observers_)
+                        observer.onPlayerDeath(player, killer, event.reason);
+                }
+
+                // TODO: Migrate all the event listeners to observe |this|.
+                dispatchEvent('playerresolveddeath', event);
+                break;
+            
+            case 'OnPlayerSelectDynamicObject':
+                server.playerManager.onPlayerSelectObject(event);
+                break;
+            
+            case 'OnPlayerShootDynamicObject':
+                server.objectManager.onPlayerShootObject(event);
+                break;
+            
+            case 'OnPlayerTakeDamage':
+                player = server.playerManager.getById(event.playerid);
+                issuer = server.playerManager.getById(event.issuerid);
+
+                if (player) {
+                    for (const observer of this.observers_) {
+                        observer.onPlayerTakeDamage(
+                            player, issuer, event.amount, event.weaponid, event.bodypart);
+                    }
+                }
+
+                // TODO: Migrate all the event listeners to observe |this|.
+                dispatchEvent('playertakedamage', event);
+                break;
+            
+            case 'OnPlayerWeaponShot':
+                player = server.playerManager.getById(event.playerid);
+                position = new Vector(event.fX, event.fY, event.fZ);
+
+                if (player) {
+                    for (const observer of this.observers_) {
+                        observer.onPlayerWeaponShot(
+                            player, event.weaponid, event.hittype, event.hitid, position);
+                    }
+                }
+
+                // TODO: Migrate all the event listeners to observe |this|.
+                dispatchEvent('playerweaponshot', event);
+                break;
+
+            default:
+                console.log(`Warning: unhandled deferred event "${type}".`);
+                break;
         }
     }
 

@@ -9,6 +9,8 @@ import { Vector } from 'base/vector.js';
 import { createSeed, random, randomSeed } from 'base/random.js';
 import { intersect } from 'base/set_extensions.js';
 
+import * as achievements from 'features/collectables/achievements.js';
+
 // Title of the notification that will be shown to the player when finding a book, and another one
 // for the notification to be shown when a treasure associated with that book has been found.
 const kBookNotificationTitle = 'uncovered!';
@@ -380,7 +382,14 @@ export class Treasures extends CollectableBase {
     // Awards an achievement to the |player| when their collectable stats in the current round are
     // applicable to be awarded one. The thresholds are defined in achievements.js as well.
     awardAchievementWhenApplicable(player, collected) {
-        // TODO: Achievements?
+        const kMilestones = new Map([
+            [  10, achievements.kAchievementTreasuresBronze ],
+            [  50, achievements.kAchievementTreasuresPlatinium ],
+        ]);
+
+        const achievement = kMilestones.get(collected);
+        if (achievement)
+            this.collectables_.awardAchievement(player, achievement);
     }
 
     // ---------------------------------------------------------------------------------------------

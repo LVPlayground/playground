@@ -6,7 +6,7 @@ import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 
 // -------------------------------------------------------------------------------------------------
-// Next ID: 9
+// Next ID: 16
 // -------------------------------------------------------------------------------------------------
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
@@ -31,6 +31,10 @@ export const kAchievementReactionTestSequence = 12;
 
 // Reaction Test performance achievement: awarded when answering a reaction test super quickly.
 export const kAchievementReactionTestSpeed = 13;
+
+// Treasures achievements: awarded when the player gathers 10, or all, treasures.
+export const kAchievementTreasuresBronze = 14;
+export const kAchievementTreasuresPlatinium = 15;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -62,6 +66,10 @@ export const kAchievements = new Map([
       { name: 'The Streak', text: 'Won 10 reaction tests in a row' } ],
     [ kAchievementReactionTestSpeed,
       { name: 'keybind.cs', text: 'Won a reaction test in under two seconds' } ],
+    [ kAchievementTreasuresBronze,
+      { name: 'Blackbeard', text: 'Collect 10 Treasures' } ],
+    [ kAchievementTreasuresPlatinium,
+      { name: 'Jack Sparrow', text: 'Collect all the Treasures' } ],
 ]);
 
 // -------------------------------------------------------------------------------------------------

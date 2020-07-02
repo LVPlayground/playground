@@ -549,6 +549,7 @@
   "VEHICLE_QUICK_COLLECTABLES": "@error Keep tagging Spray Tags and shooting Red Barrels to enable this command!",
   "VEHICLE_RESET": "@success The vehicle layout has been reset.",
   "VEHICLE_RESPAWNED": "@success The %s has been respawned.",
+  "VEHICLE_RESPAWN_NOT_IN_VEHICLE": "@error %s is not in a vehicle, which can thus not be respawned.",
   "VEHICLE_SAVE_TOO_BUSY": "@error Sorry, this area is too busy! There already are %d vehicles (max: %d) and %d models (max: %d).",
   "VEHICLE_SAVED": "@success The %s has been %s in the database.",
   "VEHICLE_SEIZE_DRIVER": "@error %s is already driving your vehicle!",

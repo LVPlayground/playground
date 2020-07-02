@@ -379,6 +379,10 @@ class VehicleCommands {
     // wish to reset the vehicle's position to its original spot.
     onVehicleRespawnCommand(player, subject) {
         const vehicle = subject.vehicle;
+        if (!vehicle) {
+            player.sendMessage(Message.VEHICLE_RESPAWN_NOT_IN_VEHICLE, subject.name);
+            return;
+        }
 
         // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {

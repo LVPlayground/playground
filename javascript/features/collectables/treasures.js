@@ -249,7 +249,7 @@ export class Treasures extends CollectableBase {
         const { type, position } = this.getCollectable(collectableId);
 
         // (1) Create a circular area around the collectable for the player.
-        const area = this.entities.createCircularArea(position, kCollectableRadius, {
+        const area = this.entities.createSphericalArea(position, kCollectableRadius, {
             playerId: player.id,
         });
 

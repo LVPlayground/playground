@@ -25,11 +25,34 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 #define VEHICLE_KEYS_BINDING_BLINKER_LEFT   KEY_LOOK_LEFT
 #define VEHICLE_KEYS_BINDING_GRAVITY        KEY_ANALOG_UP
 
+// Polygon that encloses the area of Las Venturas, on the insides of the highway.
+new const Float: kLasVenturasAreaPolygon[] = {
+    1353.59, 832.49,
+    2465.32, 832.49,  // south-eastern corner
+    2584.14, 892.06,
+    2677.49, 1036.73,
+    2677.49, 2287.71,
+    2618.08, 2415.36,  // north-eastern corner
+    2490.78, 2534.50,
+    2270.14, 2560.03,  // north-western corner
+    1667.59, 2381.32,
+    1345.11, 2398.34,
+    1243.27, 2279.20,
+    1234.78, 960.14,  // south-western corner
+    1277.22, 892.06
+};
+
 // Number of milliseconds a player has to be spraying in order to collect a spray tag.
 new const kSprayTagTimeMs = 2000;
 
 // Number of milliseconds between marking a vehicle as having moved due to unoccupied sync.
 new const kUnoccupiedSyncMarkTimeMs = 185000;
+
+// The area that describes the insides of Las Venturas. Made available and managed by the streamer.
+new STREAMER_TAG_AREA: g_areaLasVenturas;
+
+// Boolean that indicates whether a particular player is currently in Las Venturas.
+new bool: g_inLasVenturas[MAX_PLAYERS] = { false, ... };
 
 // Keeps track of the last time a player was hit, and who hit them.
 new g_lastTakenDamageIssuerId[MAX_PLAYERS] = { -1, ... };
@@ -91,12 +114,19 @@ EjectPlayerFromVehicle(playerId, Float: offsetZ = 0.5) {
     SetPlayerPos(playerId, position[0], position[1], position[2] + offsetZ);
 }
 
+InitializeAreas() {
+    g_areaLasVenturas = CreateDynamicPolygon(
+        kLasVenturasAreaPolygon, /* minz= */ -1, /* maxz= */ 400,
+        /* maxpoints= */ sizeof(kLasVenturasAreaPolygon), /* worldid= */ 0, /* interiorid= */ 0);
+}
+
 public OnPlayerConnect(playerid) {
     g_aimbotSuspicionCount[playerid] = 0;
     g_lastTakenDamageIssuerId[playerid] = -1;
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
     g_playerGravity[playerid] = 0.008;
+    g_inLasVenturas[playerid] = false;
     g_isDisconnecting[playerid] = false;
 
     g_playerDriftStartTime[playerid] = 0;
@@ -274,8 +304,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             GetVehiclePos(vehicleId, position[0], position[1], position[2]);
 
             // Only allow vehicle jumping outside of the City of Las Venturas, to not disturb DMers.
-            if (position[0] < 869.461 || position[0] >= 2997.06 ||
-                    position[1] < 596.349 || position[1] >= 2993.87) {
+            if (!g_inLasVenturas[playerid]) {
                 new const Float: vehicleJump = 0.3;
                 new Float: velocity[3];
 
@@ -288,7 +317,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
         if (HOLDING(VEHICLE_KEYS_BINDING_NOS) && (vehicleKeys & VEHICLE_KEYS_NOS)) {
             new const modelId = GetVehicleModel(vehicleId);
 
-            if (VehicleModel(modelId)->isNitroInjectionAvailable())
+            if (!g_inLasVenturas[playerid] && VehicleModel(modelId)->isNitroInjectionAvailable())
                 AddVehicleComponent(vehicleId, 1010);
         }
 
@@ -518,11 +547,17 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 // Zone management, powered by the streamer.
 public OnPlayerEnterDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
-    ShipManager->onPlayerEnterShip(playerid, areaid);
+    if (areaid == g_areaLasVenturas)
+        g_inLasVenturas[playerid] = true;
+    else
+        ShipManager->onPlayerEnterShip(playerid, areaid);
 }
 
 public OnPlayerLeaveDynamicArea(playerid, STREAMER_TAG_AREA:areaid) {
-    ShipManager->onPlayerLeaveShip(playerid, areaid);
+    if (areaid == g_areaLasVenturas)
+        g_inLasVenturas[playerid] = false;
+    else
+        ShipManager->onPlayerLeaveShip(playerid, areaid);
 }
 
 // Unoccupied but moved vehicles should be scheduled for respawn after a certain amount of time

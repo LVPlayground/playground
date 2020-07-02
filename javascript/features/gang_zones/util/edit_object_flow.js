@@ -21,7 +21,7 @@ export class EditObjectFlow {
 
         // Have the |player| edit the object. The result will either be { position, rotation } when
         // the flow succeeded, or NULL when the player edited or disconnected from the server.
-        while (player.isConnected()) {
+        while (player.isConnected() && object.isConnected()) {
             const result = await object.edit(player);
             if (!result)
                 break;  // the edit was cancelled

@@ -22,8 +22,6 @@ export class DeferredEventManager {
     async deferredEventDispatcher() {
         await wait(kDeferredEventReadIntervalMs);
 
-        let player, killer, issuer, position;
-
         while (!this.disposed_) {
             const events = getDeferredEvents();
             for (const { type, event } of events) {
@@ -41,6 +39,8 @@ export class DeferredEventManager {
     // Handles the given |event|, generally fed from the deferred event dispatcher. Will execute
     // arbitrary code that could throw, which should not disrupt the dispatcher.
     handleSingleEvent(type, event) {
+        let player, killer, issuer, position;
+
         switch (type) {
             case 'OnDynamicObjectMoved':
                 server.objectManager.onObjectMoved(event);
@@ -99,8 +99,6 @@ export class DeferredEventManager {
                     }
                 }
 
-                // TODO: Migrate all the event listeners to observe |this|.
-                dispatchEvent('playertakedamage', event);
                 break;
             
             case 'OnPlayerWeaponShot':
@@ -114,8 +112,6 @@ export class DeferredEventManager {
                     }
                 }
 
-                // TODO: Migrate all the event listeners to observe |this|.
-                dispatchEvent('playerweaponshot', event);
                 break;
 
             default:

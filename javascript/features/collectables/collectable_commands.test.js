@@ -42,7 +42,7 @@ describe('CollectableCommands', (it, beforeEach) => {
                 ],
                 [
                     '{64FFDA}Treasures',
-                    '{CCCCCC}not started',
+                    '1 / 50 {B2DFDB}(+2 books)',
                 ]
             ]
         });

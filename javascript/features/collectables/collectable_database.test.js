@@ -22,8 +22,8 @@ describe('CollectableDatabase', it => {
         assert.equal(redBarrels.collectedRound.size, 6);
         assert.equal(redBarrels.round, 1);
 
-        assert.equal(treasures.collected.size, 0);
-        assert.equal(treasures.collectedRound.size, 0);
+        assert.equal(treasures.collected.size, 3);
+        assert.equal(treasures.collectedRound.size, 3);
         assert.equal(treasures.round, 1);
     });
 });

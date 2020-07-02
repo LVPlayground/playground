@@ -6,6 +6,7 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { CubicBezier } from 'base/cubic_bezier.js';
 import { Menu } from 'components/menu/menu.js';
+import { Treasures } from 'features/collectables/treasures.js';
 
 import { kAchievements } from 'features/collectables/achievements.js';
 
@@ -127,23 +128,52 @@ export class CollectableCommands {
                 {
                     delegate: this.manager_.getDelegate(CollectableDatabase.kTreasures),
                     instructions: Message.COLLECTABLE_INSTRUCTIONS_TREASURES,
+                    isTreasures: true,
                 }
             ],
         ]);
 
-        for (const [ label, { delegate, instructions } ] of series) {
+        for (const [ label, { delegate, instructions, isTreasures } ] of series) {
             const total = delegate.getCollectableCount();
             const statistics = delegate.getPlayerStatistics(player);
 
-            const collected = statistics.collectedRound.size;
-            
-            let progress = '';
+            let collected = statistics.collectedRound.size;
+            let progress = null;
+            let progressSuffix = null;
+
+            // Special-case treasures, which deal with collectable books and treasures separately.
+            // This is something that we need to reflect in the /collectables menu.
+            if (isTreasures) {
+                let books = 0;
+                let treasures = 0;
+
+                for (const collectableId of statistics.collectedRound) {
+                    if (delegate.getCollectable(collectableId).type === Treasures.kTypeBook)
+                        ++books;
+                    else
+                        ++treasures;
+                }
+
+                // |collected| is equal to the number of treasures that are achievable.
+                collected = treasures;
+
+                // |progressSuffix| will be set when the player has collected one or more books, to
+                // at least reflect this progress in the overview menu.
+                if (books === 1)
+                    progressSuffix = ` {B2DFDB}(+1 book)`;
+                else if (books >= 2)
+                    progressSuffix = ` {B2DFDB}(+${books} books)`;
+            }
+
             if (!collected)
                 progress = '{CCCCCC}not started';
             else if (collected === total)
                 progress = '{FFFF00}completed';
             else
                 progress = `${collected} / ${total}`;
+
+            if (progressSuffix)
+                progress += progressSuffix;
 
             if (statistics.round > 1)
                 progress += ` {80ff00}(round ${statistics.round})`;

@@ -179,8 +179,16 @@ export class ObjectManager {
 
     // Called when the |object| has started to be edited by the given |player|.
     didRequestEditObject(object, player) {
-        if (this.editingPlayers_.has(player))
-            throw new Error(`The player (${player.name}) is already editing an object.`);
+        if (this.editingPlayers_.has(player)) {
+            console.log(`[exception] The player (${player.name}) is already editing an object.`);
+
+            // Mark the previous edit attempt as having failed, which the feature will be waiting
+            // for in either case. It's unfortunate that we have to handle all these edge cases.
+            const previousObject = this.editingPlayers_.get(player);
+            if (previousObject.isConnected())
+                previousObject.onEdited(null);
+
+        }
 
         this.editingPlayers_.set(player, object);
     }

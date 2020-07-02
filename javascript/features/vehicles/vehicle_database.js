@@ -125,8 +125,8 @@ class VehicleDatabase {
     }
 
     // Asynchronously deletes the |databaseVehicle| from the database.
-    async deleteVehicle(databaseVehicle) {
-        await server.database.query(DELETE_VEHICLE_QUERY, databaseVehicle.databaseId);
+    async deleteVehicle(vehicleId) {
+        await server.database.query(DELETE_VEHICLE_QUERY, vehicleId);
     }
 }
 

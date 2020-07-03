@@ -149,6 +149,13 @@ ProcessDriftEnd(playerId, currentTime, bool: successful) {
     g_playerDriftStartTime[playerId] = 0;
 }
 
+// Processes the scenario where the |playerId| has left their vehicle, either by choice or by
+// accident. Any in-progress drifts will be stopped immediately.
+ProcessDriftLeaveVehicleForPlayer(playerId) {
+    if (g_playerDriftStartTime[playerId] > 0)
+        ProcessDriftEnd(playerId, /* currentTime= */ GetTickCount(), /* successful= */ false);
+}
+
 // Processes drift updates for the given |playerId|. Only works when they're in a vehicle, and only
 // processed a certain ratio of player updates as this method is called a lot.
 ProcessDriftUpdateForPlayer(playerId) {

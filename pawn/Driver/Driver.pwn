@@ -448,6 +448,11 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
         }
     }
 
+    // When the |player| left their vehicle, and in-progress drifts may have to stop. It's a bit
+    // silly to exit a vehicle while drifting, but you never know, they might've hit a tree.
+    if (oldstate == PLAYER_STATE_DRIVER)
+        ProcessDriftLeaveVehicleForPlayer(playerid);
+
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
 }
 

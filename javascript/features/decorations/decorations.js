@@ -16,6 +16,9 @@ export const kDecorations = new Set([
     { filename: 'los_santos_winter.json', setting: 'decorations/los_santos_winter' },
     { filename: 'pilots.json', setting: 'decorations/pilots' },
     { filename: 'san_ferro_road_works.json', setting: 'decorations/san_ferro_road_works' },
+    { filename: 'stunts_lv_airport.json', setting: 'decorations/stunts_lv_airport' },
+    { filename: 'stunts_lv_south.json', setting: 'decorations/stunts_lv_south' },
+    { filename: 'stunts_sf_airport.json', setting: 'decorations/stunts_sf_airport' },
     { filename: 'vip_room.json', setting: 'decorations/vip_room' },
 ]);
 

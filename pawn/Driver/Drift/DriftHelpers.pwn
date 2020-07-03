@@ -16,6 +16,15 @@ new Float: g_playerDriftStartHealth[MAX_PLAYERS];
 new g_playerDriftStartTime[MAX_PLAYERS] = { 0, ... };
 new g_playerDriftUpdateTime[MAX_PLAYERS] = { 0, ... };
 
+// Determines whether the given |vehicleId| is able to drift. This generally is restricted to bikes
+// and automobiles, because >250k scores are easily obtainable through helicopters.
+IsValidDriftVehicle(vehicleId) {
+    new const modelId = GetVehicleModel(vehicleId);
+
+    return VehicleModel->isAutomobile(modelId) ||
+           VehicleModel->isBike(modelId);
+}
+
 // Calculates the vehicle's principal axes based on it's rotation quaternion, which allows us to
 // determine the vehicle's orientation during a drift. Drifts on a flat plane are great, but they
 // become a lot more interesting when exercised on e.g. a hill.
@@ -146,6 +155,9 @@ ProcessDriftUpdateForPlayer(playerId) {
     new const vehicleId = GetPlayerVehicleID(playerId);
     if (!vehicleId)
         return;  // the |playerId| is not currently in a vehicle
+
+    if (!IsValidDriftVehicle(vehicleId))
+        return;  // the |vehicleId| is not valid for drifting
 
     if ((++g_playerDriftUpdateCounter[playerId] % DRIFT_UPDATE_INTERVAL) != 0)
         return;  // this tick will be ignored to decrease server load

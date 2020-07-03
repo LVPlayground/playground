@@ -53,7 +53,10 @@ enum _: VehicleModelFlags {
     DisableNitroInjectionVehicleFlag = 0x1000,
 
     // Marks this vehicle as being unable to be created (i.e. because it's useless).
-    DisableCreationVehicleFlag = 0x2000
+    DisableCreationVehicleFlag = 0x2000,
+
+    // Indicates that this vehicle is an automobile.
+    AutomobileVehicleFlag = 0x4000,
 };
 
 /**
@@ -228,6 +231,26 @@ class VehicleModel <modelId (NumberOfVehicleModels)> {
      */
     public static inline bool: isAirplane(modelId) {
         return this->hasFlag(modelId, AirplaneVehicleFlag);
+    }
+
+    /**
+     * Returns whether this model Id represents an automobile.
+     * 
+     * @param modelId Id of the vehicle model to check against.
+     * @return boolean Is this model representing an automobile?
+     */
+    public static inline bool: isAutomobile(modelId) {
+        return this->hasFlag(modelId, AutomobileVehicleFlag);
+    }
+
+    /**
+     * Returns whether this model Id represents a bike.
+     *
+     * @param modelId Id of the vehicle model to check against.
+     * @return boolean Is this model representing a bike?
+     */
+    public static inline bool: isBike(modelId) {
+        return this->hasFlag(modelId, BikeVehicleFlag);
     }
 
     /**

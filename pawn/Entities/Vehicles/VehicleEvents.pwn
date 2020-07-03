@@ -141,19 +141,6 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
     if (Player(playerid)->isConnected() == false || Player(playerid)->isNonPlayerCharacter() == true)
         return 0; // don't handle invalid players or NPCs
 
-    if (!IsLegalModification(vehicleid, componentid)) {
-        new message[128];
-
-        format(message, sizeof(message), "%s (Id:%d) made an illegal vehicle modification with component %d.",
-            Player(playerid)->nicknameString(), playerid, componentid);
-        Admin(playerid, message);
-
-        // Kick them from Las Venturas Playground
-        Player(playerid)->kick("Illegal vehicle modification");
-
-        return 0; // don't handle illegal modifications
-    }
-
     if (!VehicleModel(GetVehicleModel(vehicleid))->isValidComponent(componentid))
         return false;
 

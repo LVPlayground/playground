@@ -95,7 +95,7 @@ describe('FinancialDispositionMonitor', (it, beforeEach, afterEach) => {
             dispatchEvent('vehiclemod', {
                 playerid: gunther.id,
                 vehicleid: vehicle.id,
-                componentid: 1000  // spoiler
+                componentid: 1008  // 5x Nitro
             });
 
             await server.clock.advance(kDispositionMonitorSpinDelay);

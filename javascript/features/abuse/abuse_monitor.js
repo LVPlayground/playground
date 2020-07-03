@@ -5,6 +5,8 @@
 import { AbuseDatabase } from 'features/abuse/abuse_database.js';
 import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 
+import { getComponentName } from 'entities/vehicle_components.js';
+
 // The abuse monitor keeps track of instances of abuse across the active players. A series of abuse
 // detectors are responsible for detecting it, after which it ends up here for decision making and
 // distribution of the knowledge to in-game administrators.
@@ -15,6 +17,8 @@ export class AbuseMonitor {
         this.settings_ = settings;
 
         provideNative('ReportAbuse', 'iss', AbuseMonitor.prototype.reportAbusePawn.bind(this));
+
+        server.vehicleManager.addObserver(this);
     }
 
     // Reports abuse by the given |player|, indicating that they've been observed exercising the
@@ -61,7 +65,28 @@ export class AbuseMonitor {
         return 1;
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| has made an illegal vehicle modification. This could be used to
+    // crash other players on the server, and thus is considered certain abuse.
+    onVehicleIllegalModification(player, vehicle, componentId) {
+        // (1) Report abuse for the |player|.
+        this.reportAbuse(player, 'illegal vehicle modification', AbuseDetector.kDetected, {
+            vehicleModelId: vehicle.modelId,
+            vehicleModelName: vehicle.model.name,
+            vehicleComponentId: componentId,
+            vehicleComponentName: getComponentName(componentId),
+        });
+
+        // (2) Immediately, without delay, remove the |player| from the server.
+        player.kick();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
+        server.vehicleManager.removeObserver(this);
+
         provideNative('ReportAbuse', 'iss', (playerid, detectorName, certainty) => 0);
     }
 }

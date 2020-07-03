@@ -4,6 +4,8 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+import { canVehicleModelHaveComponent } from 'entities/vehicle_components.js';
+
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
 export class VehicleManager {
@@ -116,16 +118,36 @@ export class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when a vehicle is being modified by a particular player. This event is cancelable, and
+    // should be canceled when an illegal modification is being made. This is a tactic that players
+    // with malicious intent often use for crashing others.
     onVehicleMod(event) {
         const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;
-
         const vehicle = this.vehicles_.get(event.vehicleid);
-        if (!vehicle)
-            return;
 
-        this.notifyObservers('onVehicleMod', player, vehicle, event.componentid);
+        // If either the |player| or the |vehicle| is invalid, bail out and prevent the default
+        // processing from happening. We don't have enough information to blame a cheater.
+        if (!player || !vehicle) {
+            console.log(`[exception] Vehicle modification found with invalid player/vehicle.`);
+
+            event.preventDefault();
+            return;
+        }
+
+        const componentId = event.componentid;
+
+        // If the |vehicle| is not allowed to have the |componentId|, we cancel the event, notify
+        // observers of an illegal vehicle modification, and bail out.
+        if (!canVehicleModelHaveComponent(vehicle.modelId, componentId)) {
+            this.notifyObservers('onVehicleIllegalModification', player, vehicle, componentId);
+
+            event.preventDefault();
+            return;
+        }
+
+        // TODO: Track modifications for the vehicle.
+
+        this.notifyObservers('onVehicleMod', player, vehicle, componentId);
     }
 
     onVehiclePaintjob(event) {

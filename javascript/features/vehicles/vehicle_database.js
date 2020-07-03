@@ -16,7 +16,8 @@ const LOAD_VEHICLES_QUERY = `
         vehicles.paintjob,
         vehicles.primary_color,
         vehicles.secondary_color,
-        vehicles.number_plate
+        vehicles.number_plate,
+        vehicles.components
     FROM
         vehicles
     WHERE
@@ -87,6 +88,8 @@ class VehicleDatabase {
                 primaryColor: info.primary_color,
                 secondaryColor: info.secondary_color,
                 numberPlate: info.number_plate,
+                components: info.components.length ? info.components.split(',')
+                                                   : [],
             });
 
             vehicles.push(vehicleInfo);

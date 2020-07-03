@@ -21,7 +21,8 @@ export class Vehicle extends Supplementable {
     static kComponentSlotSpoiler = 0;
     static kComponentSlotHood = 1;
     static kComponentSlotRoof = 2;
-    static kComponentSlotSideskirt = 3;
+    static kComponentSlotRightSideskirt = 3;
+    static kComponentSlotLeftSideskirt = 14;
     static kComponentSlotLights = 4;
     static kComponentSlotNitro = 5;
     static kComponentSlotExhaust = 6;

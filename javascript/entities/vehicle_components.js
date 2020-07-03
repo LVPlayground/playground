@@ -67,7 +67,7 @@ const kComponents = new Map([
         1007,
         {
             name: 'Right Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_b_ssk',
         }
     ],
@@ -147,7 +147,7 @@ const kComponents = new Map([
         1017,
         {
             name: 'Left Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_b_ssk',
         }
     ],
@@ -219,7 +219,7 @@ const kComponents = new Map([
         1026,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_s',
         }
     ],
@@ -227,7 +227,7 @@ const kComponents = new Map([
         1027,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_s',
         }
     ],
@@ -251,7 +251,7 @@ const kComponents = new Map([
         1030,
         {
             name: 'Left X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_c_s',
         }
     ],
@@ -259,7 +259,7 @@ const kComponents = new Map([
         1031,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_c_s',
         }
     ],
@@ -299,7 +299,7 @@ const kComponents = new Map([
         1036,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_l',
         }
     ],
@@ -323,7 +323,7 @@ const kComponents = new Map([
         1039,
         {
             name: 'Left X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_l_c_l',
         }
     ],
@@ -331,7 +331,7 @@ const kComponents = new Map([
         1040,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_l',
         }
     ],
@@ -339,7 +339,7 @@ const kComponents = new Map([
         1041,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_r_c_l',
         }
     ],
@@ -347,7 +347,7 @@ const kComponents = new Map([
         1042,
         {
             name: 'Right Chrome Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_br1',
         }
     ],
@@ -387,7 +387,7 @@ const kComponents = new Map([
         1047,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_f',
         }
     ],
@@ -395,7 +395,7 @@ const kComponents = new Map([
         1048,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_c_f',
         }
     ],
@@ -419,7 +419,7 @@ const kComponents = new Map([
         1051,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_f',
         }
     ],
@@ -427,7 +427,7 @@ const kComponents = new Map([
         1052,
         {
             name: 'Left X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_c_f',
         }
     ],
@@ -459,7 +459,7 @@ const kComponents = new Map([
         1056,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_st',
         }
     ],
@@ -467,7 +467,7 @@ const kComponents = new Map([
         1057,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_c_st',
         }
     ],
@@ -507,7 +507,7 @@ const kComponents = new Map([
         1062,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_st',
         }
     ],
@@ -515,7 +515,7 @@ const kComponents = new Map([
         1063,
         {
             name: 'Left X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_c_st',
         }
     ],
@@ -563,7 +563,7 @@ const kComponents = new Map([
         1069,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_j',
         }
     ],
@@ -571,7 +571,7 @@ const kComponents = new Map([
         1070,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_c_j',
         }
     ],
@@ -579,7 +579,7 @@ const kComponents = new Map([
         1071,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_j',
         }
     ],
@@ -587,7 +587,7 @@ const kComponents = new Map([
         1072,
         {
             name: 'Left X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_c_j',
         }
     ],
@@ -731,7 +731,7 @@ const kComponents = new Map([
         1090,
         {
             name: 'Right Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_a_u',
         }
     ],
@@ -755,7 +755,7 @@ const kComponents = new Map([
         1093,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_c_u',
         }
     ],
@@ -763,7 +763,7 @@ const kComponents = new Map([
         1094,
         {
             name: 'Left Alien Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_a_u',
         }
     ],
@@ -771,7 +771,7 @@ const kComponents = new Map([
         1095,
         {
             name: 'Right X-Flow Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_r_c_u',
         }
     ],
@@ -803,7 +803,7 @@ const kComponents = new Map([
         1099,
         {
             name: 'Left Chrome Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_br1',
         }
     ],
@@ -819,7 +819,7 @@ const kComponents = new Map([
         1101,
         {
             name: 'Left "Chrome Flames" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_rem1',
         }
     ],
@@ -827,7 +827,7 @@ const kComponents = new Map([
         1102,
         {
             name: 'Left "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_sv',
         }
     ],
@@ -859,7 +859,7 @@ const kComponents = new Map([
         1106,
         {
             name: 'Right "Chrome Arches" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_rem2',
         }
     ],
@@ -867,7 +867,7 @@ const kComponents = new Map([
         1107,
         {
             name: 'Left "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_bl1',
         }
     ],
@@ -875,7 +875,7 @@ const kComponents = new Map([
         1108,
         {
             name: 'Right "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_bl1',
         }
     ],
@@ -955,7 +955,7 @@ const kComponents = new Map([
         1118,
         {
             name: 'Right "Chrome Trim" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_slv1',
         }
     ],
@@ -963,7 +963,7 @@ const kComponents = new Map([
         1119,
         {
             name: 'Right "Wheelcovers" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_slv2',
         }
     ],
@@ -971,7 +971,7 @@ const kComponents = new Map([
         1120,
         {
             name: 'Left "Chrome Trim" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_slv1',
         }
     ],
@@ -979,7 +979,7 @@ const kComponents = new Map([
         1121,
         {
             name: 'Left "Wheelcovers" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_slv2',
         }
     ],
@@ -987,7 +987,7 @@ const kComponents = new Map([
         1122,
         {
             name: 'Right "Chrome Flames" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_rem1',
         }
     ],
@@ -1003,7 +1003,7 @@ const kComponents = new Map([
         1124,
         {
             name: 'Left "Chrome Arches" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_rem2',
         }
     ],
@@ -1075,7 +1075,7 @@ const kComponents = new Map([
         1133,
         {
             name: 'Right "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_sv',
         }
     ],
@@ -1083,7 +1083,7 @@ const kComponents = new Map([
         1134,
         {
             name: 'Right "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotRightSideskirt,
             model: 'wg_l_lr_t1',
         }
     ],
@@ -1107,7 +1107,7 @@ const kComponents = new Map([
         1137,
         {
             name: 'Left "Chrome Strip" Sideskirt',
-            slot: Vehicle.kComponentSlotSideskirt,
+            slot: Vehicle.kComponentSlotLeftSideskirt,
             model: 'wg_r_lr_t1',
         }
     ],

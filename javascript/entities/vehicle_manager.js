@@ -100,8 +100,8 @@ export class VehicleManager {
         if (!vehicle)
             return;  // the vehicle isn't owned by the JavaScript code
 
-        if (vehicle.trailer)
-            vehicle.trailer = null;
+        // Resets vehicle properties when it respawns, such as colours, paint jobs and components.
+        vehicle.initializeOnSpawn();
 
         this.notifyObservers('onVehicleSpawn', vehicle);
     }

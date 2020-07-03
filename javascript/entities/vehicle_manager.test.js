@@ -292,6 +292,21 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(vehicle.getComponents().length, 1);
         assert.equal(vehicle.getComponentInSlot(Vehicle.kComponentSlotNitro), 1010);
 
-        // TODO: Component behaviour when a vehicle respawns.
+        // (1) Other components can still take precedence when tuning or modifying.
+        assert.isTrue(vehicle.addComponent(1008 /* 5x Nitro */));
+        assert.isTrue(vehicle.addComponent(1081 /* Grove Wheels */));
+
+        assert.isFalse(vehicle.hasComponent(1010));
+        assert.isTrue(vehicle.hasComponent(1008));
+        assert.isTrue(vehicle.hasComponent(1081));
+        assert.equal(vehicle.getComponents().length, 2);
+        
+        // (2) Component status should be reset when the vehicle respawns.
+        vehicle.respawn();
+
+        assert.isTrue(vehicle.hasComponent(1010));
+        assert.isFalse(vehicle.hasComponent(1008));
+        assert.isFalse(vehicle.hasComponent(1081));
+        assert.equal(vehicle.getComponents().length, 1);
     });
 });

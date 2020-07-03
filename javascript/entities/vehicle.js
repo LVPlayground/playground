@@ -111,6 +111,9 @@ export class Vehicle extends Supplementable {
         if (this.#id_ === Vehicle.kInvalidId)
             throw new Error(`The vehicle (${this}) could not be created on the server.`);
 
+        if (options.numberPlate)
+            this.numberPlate = options.numberPlate;
+
         this.initializeOnSpawn();
     }
 
@@ -121,10 +124,7 @@ export class Vehicle extends Supplementable {
         
         if (options.virtualWorld)
             this.virtualWorld = options.virtualWorld;
-        
-        if (options.numberPlate)
-            this.numberPlate = options.numberPlate;
-        
+
         if (options.paintjob)
             this.paintjob = options.paintjob;
         
@@ -132,6 +132,11 @@ export class Vehicle extends Supplementable {
 
         for (const componentId of options.components)
             this.addComponent(componentId);
+
+        if (this.#trailer_) {
+            this.#trailer_.setParentInternal(null);
+            this.#trailer_ = null;
+        }
     }
 
     // Actually creates the vehicle on the server. Will return the ID of the newly created vehicle,

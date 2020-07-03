@@ -48,6 +48,12 @@ export default class HouseVehicleController {
             // Give the house's vehicle a number plate named after the owner when known.
             numberPlate: location.settings?.ownerName ?? null,
 
+            // Pass through the optional settings for the vehicle, only set when available.
+            primaryColor: houseVehicle.primaryColor,
+            secondaryColor: houseVehicle.secondaryColor,
+            paintjob: houseVehicle.paintjob,
+            components: houseVehicle.components,
+
             // House vehicles are considered persistent vehicles, so set a `respawnDelay`.
             respawnDelay: this.settings_().getValue('vehicles/respawn_persistent_delay_sec'),
         });

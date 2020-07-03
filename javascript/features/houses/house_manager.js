@@ -9,7 +9,7 @@ import HouseInterior from 'features/houses/house_interior.js';
 import HouseLocation from 'features/houses/house_location.js';
 import HouseParkingLot from 'features/houses/house_parking_lot.js';
 import HouseSettings from 'features/houses/house_settings.js';
-import HouseVehicle from 'features/houses/house_vehicle.js';
+import { HouseVehicle } from 'features/houses/house_vehicle.js';
 import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 import MockHouseDatabase from 'features/houses/test/mock_house_database.js';
 import { ObjectGroup } from 'entities/object_group.js';

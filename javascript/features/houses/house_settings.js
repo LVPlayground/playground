@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import HouseVehicle from 'features/houses/house_vehicle.js';
+import { HouseVehicle } from 'features/houses/house_vehicle.js';
 
 // This class represents the settings associated with a given house.
 class HouseSettings {

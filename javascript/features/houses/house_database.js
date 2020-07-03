@@ -92,7 +92,11 @@ const LOAD_VEHICLES_QUERY = `
         houses_settings.house_location_id,
         houses_vehicles.house_vehicle_id,
         houses_vehicles.house_parking_lot_id,
-        houses_vehicles.model_id
+        houses_vehicles.model_id,
+        houses_vehicles.primary_color,
+        houses_vehicles.secondary_color,
+        houses_vehicles.paintjob,
+        houses_vehicles.components
     FROM
         houses_vehicles
     LEFT JOIN
@@ -406,6 +410,12 @@ class HouseDatabase {
                 houses.get(locationId).vehicles.push({
                     id: row.house_vehicle_id,
                     modelId: row.model_id,
+
+                    primaryColor: row.primary_color,
+                    secondaryColor: row.secondary_color,
+                    paintjob: row.paintjob,
+                    components: row.components.length ? row.components.split(',')
+                                                      : [],
 
                     parkingLotId: row.house_parking_lot_id
                 });

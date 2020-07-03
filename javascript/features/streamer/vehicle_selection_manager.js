@@ -156,6 +156,7 @@ export class VehicleSelectionManager {
             secondaryColor: streamableVehicle.secondaryColor,
             numberPlate: streamableVehicle.numberPlate,
             siren: streamableVehicle.siren,
+            components: streamableVehicle.components,
 
             respawnDelay: -1,  // we handle respawns manually
         });

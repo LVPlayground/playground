@@ -86,6 +86,57 @@ describe('VehicleSelectionManager', (it, beforeEach) => {
         ]);
     });
 
+    it('should be able to create vehicles with specified components', async (assert) => {
+        assert.equal(server.vehicleManager.count, 0);
+
+        const vehicleInfo = new StreamableVehicleInfo({
+            modelId: 411,  // Infernus
+
+            position: new Vector(0, 0, 0),
+            rotation: 180,
+            components: [
+                1010,  // 10x Nitro
+                1097,  // Virtual Wheels
+                1185,  // Slamin Front Bumper - invalid for Infernus!
+            ],
+
+            respawnDelay: 180,
+        });
+
+        assert.equal(vehicleInfo.components.length, 2);
+        assert.deepEqual(vehicleInfo.components, [ 1010, 1097 ]);
+
+        const streamableVehicle = registry.createVehicle(vehicleInfo);
+
+        assert.equal(server.vehicleManager.count, 0);
+        assert.isNull(streamableVehicle.live);
+
+        // Request immediate creation of the vehicle.
+        manager.requestCreateVehicle(streamableVehicle);
+
+        assert.equal(server.vehicleManager.count, 1);
+        assert.isNotNull(streamableVehicle.live);
+
+        const vehicle = streamableVehicle.live;
+
+        assert.equal(vehicle.getComponents().length, 2);
+        assert.isTrue(vehicle.hasComponent(1010));
+        assert.isTrue(vehicle.hasComponent(1097));
+
+        vehicle.addComponent(1096 /* Ahab Wheels */);
+
+        assert.equal(vehicle.getComponents().length, 2);
+        assert.isTrue(vehicle.hasComponent(1010));
+        assert.isTrue(vehicle.hasComponent(1096));  // <-- Ahab Wheels
+
+        // Respawn the vehicle. This should reset its customization state back to default.
+        vehicle.respawn();
+
+        assert.equal(vehicle.getComponents().length, 2);
+        assert.isTrue(vehicle.hasComponent(1010));
+        assert.isTrue(vehicle.hasComponent(1097));  // <-- Virtual Wheels
+    });
+
     it('should try to keep the maximum number of vehicles alive', async (assert) => {
         manager.maxVisible_ = 10;
 

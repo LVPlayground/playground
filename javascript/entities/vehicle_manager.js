@@ -145,8 +145,10 @@ export class VehicleManager {
             return;
         }
 
-        // TODO: Track modifications for the vehicle.
+        // Register the |componentId| with the |vehicle|. It will be slotted automatically.
+        vehicle.addComponent(componentId, /* isSync= */ true);
 
+        // Notify observers of the modification to this vehicle.
         this.notifyObservers('onVehicleMod', player, vehicle, componentId);
     }
 

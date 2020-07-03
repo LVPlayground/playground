@@ -5,6 +5,8 @@
 import { Supplementable } from 'base/supplementable.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
+import { canVehicleModelHaveComponent, getComponentSlot } from 'entities/vehicle_components.js';
+
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.
 //
@@ -66,6 +68,7 @@ export class Vehicle extends Supplementable {
     #interiorId_ = null;
     #virtualWorld_ = null;
 
+    #components_ = null;
     #primaryColor_ = null;
     #secondaryColor_ = null;
     #paintjob_ = null;
@@ -91,6 +94,7 @@ export class Vehicle extends Supplementable {
         this.#interiorId_ = options.interiorId ?? 0;
         this.#virtualWorld_ = options.virtualWorld ?? 0;
 
+        this.#components_ = new Map();
         this.#primaryColor_ = options.primaryColor;
         this.#secondaryColor_ = options.secondaryColor;
         this.#siren_ = options.siren;
@@ -130,6 +134,11 @@ export class Vehicle extends Supplementable {
             /* addsiren= */ options.siren ? 1 : 0) || Vehicle.kInvalidId;
     }
 
+    // Actually adds the given |componentId| to the vehicle.
+    addComponentInternal(componentId) {
+        pawnInvoke('AddVehicleComponent', 'ii', this.#id_, componentId);
+    }
+
     // Attaches the |trailer| to |this| when given, or detaches an existing trailer otherwise.
     attachTrailerInternal(trailer) {
         if (trailer)
@@ -151,6 +160,11 @@ export class Vehicle extends Supplementable {
     // Actually changes a vehicle's paintjob on the server.
     changeVehiclePaintjobInternal(paintjob) {
         pawnInvoke('ChangeVehiclePaintjob', 'ii', this.#id_, paintjob);
+    }
+
+    // Actually removes the given |componentId| from the vehicle.
+    removeComponentInternal(componentId) {
+        pawnInvoke('RemoveVehicleComponent', 'ii', this.#id_, componentId);
     }
 
     // Actually sets the Interior ID and/or virtual world for this vehicle.
@@ -250,6 +264,51 @@ export class Vehicle extends Supplementable {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Component information
+    // ---------------------------------------------------------------------------------------------
+    
+    addComponent(componentId, isSync = false) {
+        if (!canVehicleModelHaveComponent(this.#modelId_, componentId))
+            return false;
+
+        const componentSlot = getComponentSlot(componentId);
+
+        this.#components_.set(componentSlot, componentId);
+        if (!isSync)
+            this.addComponentInternal(componentId);
+        
+        return true;
+    }
+
+    clearComponents(isSync = false) {
+        if (!isSync) {
+            for (const componentId of this.#components_.values())
+                this.removeComponentInternal(componentId);
+        }
+
+        this.#components_.clear();
+    }
+
+    removeComponent(componentId) {
+        const componentSlot = getComponentSlot(componentId);
+        if (!componentSlot || this.#components_.get(componentSlot) !== componentId)
+            return false;
+        
+        this.#components_.delete(componentSlot);
+
+        this.removeComponentInternal(componentId);
+        return true;
+    }
+
+    hasComponent(componentId) {
+        const componentSlot = getComponentSlot(componentId);
+        return componentSlot && this.#components_.get(componentSlot) === componentId;
+    }
+
+    getComponents() { return [ ...this.#components_.values() ]; }
+    getComponentInSlot(slot) { return this.#components_.get(slot) ?? null; }
+
+    // ---------------------------------------------------------------------------------------------
     // Trailer & parent functionality. Represented as Vehicle instances.
     // ---------------------------------------------------------------------------------------------
 
@@ -312,10 +371,6 @@ export class Vehicle extends Supplementable {
     respawn() { pawnInvoke('SetVehicleToRespawn', 'i', this.#id_); }
 
     repair() { pawnInvoke('RepairVehicle', 'i', this.#id_); }
-
-    addComponent(componentId) {
-        pawnInvoke('AddVehicleComponent', 'ii', this.#id_, componentId);
-    }
 
     toggleEngine(engineRunning) {
         const [engine, lights, alarm, doors, bonnet, boot, objective] =

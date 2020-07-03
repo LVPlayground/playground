@@ -41,7 +41,7 @@ describe('AbuseMonitor', (it, beforeEach) => {
 
         assert.isFalse(defaultPrevented);
         assert.isTrue(gunther.isConnected());
-        // TODO: Verify that |vehicle| has the component.
+        assert.isTrue(vehicle.hasComponent(1075));
 
         // (2) Have |gunther| make an illegal modification to the |vehicle|.
         dispatchEvent('vehiclemod', {
@@ -54,6 +54,6 @@ describe('AbuseMonitor', (it, beforeEach) => {
 
         assert.isTrue(defaultPrevented);
         assert.isFalse(gunther.isConnected());
-        // TODO: Verify that |vehicle| does not have the component.
+        assert.isFalse(vehicle.hasComponent(1144));
     });
 });

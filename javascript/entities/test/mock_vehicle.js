@@ -32,10 +32,12 @@ export class MockVehicle extends Vehicle {
     }
 
     // Overrides to avoid interacting with a vehicle on the server.
+    addComponentInternal(componentId) {}
     attachTrailerInternal(trailer) {}
     changeVehicleColorInternal(primaryColor, secondaryColor) {}
     changeVehicleNumberPlateInternal(numberPlate) {}
     changeVehiclePaintjobInternal(paintjob) {}
+    removeComponentInternal(componentId) {}
     setInteriorInternal(interior) {}
     setVirtualWorldInternal(virtualWorld) {}
     destroyVehicleInternal() {}
@@ -69,8 +71,6 @@ export class MockVehicle extends Vehicle {
     }
 
     repair() { this.#health_ = 1000; }
-
-    addComponent(componentId) {}
 
     toggleEngine(engineRunning) {}
 

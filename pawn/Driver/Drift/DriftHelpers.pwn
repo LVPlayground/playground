@@ -156,6 +156,9 @@ ProcessDriftUpdateForPlayer(playerId) {
     if (!vehicleId)
         return;  // the |playerId| is not currently in a vehicle
 
+    if (GetPlayerVehicleSeat(playerId) != /* SEAT_DRIVER= */ 0)
+        return;  // the |playerId| is not driving the vehicle
+
     if (!IsValidDriftVehicle(vehicleId))
         return;  // the |vehicleId| is not valid for drifting
 

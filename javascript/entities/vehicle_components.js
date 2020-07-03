@@ -2,12 +2,1571 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Vehicle } from 'entities/vehicle.js';
+
+// Map of all the valid vehicle components, keyed by component Id, valued with an object that
+// contains the component's name, slot and model name.
+const kComponents = new Map([
+    [
+        1000,
+        {
+            name: 'Pro Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_mar_m',
+        }
+    ],
+    [
+        1001,
+        {
+            name: 'Win Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bab_m',
+        }
+    ],
+    [
+        1002,
+        {
+            name: 'Drag Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bar_m',
+        }
+    ],
+    [
+        1003,
+        {
+            name: 'Alpha Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_mab_m',
+        }
+    ],
+    [
+        1004,
+        {
+            name: 'Champ Scoop Hood',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_b_sc_m',
+        }
+    ],
+    [
+        1005,
+        {
+            name: 'Fury Scoop Hood',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_b_sc_l',
+        }
+    ],
+    [
+        1006,
+        {
+            name: 'Roof Scoop Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_b_sc_r',
+        }
+    ],
+    [
+        1007,
+        {
+            name: 'Right Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_b_ssk',
+        }
+    ],
+    [
+        1008,
+        {
+            name: '5x Nitro',
+            slot: Vehicle.kComponentSlotNitro,
+            model: 'nto_b_l',
+        }
+    ],
+    [
+        1009,
+        {
+            name: '2x Nitro',
+            slot: Vehicle.kComponentSlotNitro,
+            model: 'nto_b_s',
+        }
+    ],
+    [
+        1010,
+        {
+            name: '10x Nitro',
+            slot: Vehicle.kComponentSlotNitro,
+            model: 'nto_b_tw',
+        }
+    ],
+    [
+        1011,
+        {
+            name: 'Race Scoop Hood',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_b_sc_p_m',
+        }
+    ],
+    [
+        1012,
+        {
+            name: 'Worx Scoop Hood',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_b_sc_p_l',
+        }
+    ],
+    [
+        1013,
+        {
+            name: 'Round Fog Lamps',
+            slot: Vehicle.kComponentSlotLights,
+            model: 'lgt_b_rspt',
+        }
+    ],
+    [
+        1014,
+        {
+            name: 'Champ Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bar_l',
+        }
+    ],
+    [
+        1015,
+        {
+            name: 'Race Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bbr_l',
+        }
+    ],
+    [
+        1016,
+        {
+            name: 'Worx Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bbr_m',
+        }
+    ],
+    [
+        1017,
+        {
+            name: 'Left Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_b_ssk',
+        }
+    ],
+    [
+        1018,
+        {
+            name: 'Upswept Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_b_ts',
+        }
+    ],
+    [
+        1019,
+        {
+            name: 'Twin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_b_t',
+        }
+    ],
+    [
+        1020,
+        {
+            name: 'Large Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_b_l',
+        }
+    ],
+    [
+        1021,
+        {
+            name: 'Medium Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_b_m',
+        }
+    ],
+    [
+        1022,
+        {
+            name: 'Small Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_b_s',
+        }
+    ],
+    [
+        1023,
+        {
+            name: 'Fury Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_b_bbb_m',
+        }
+    ],
+    [
+        1024,
+        {
+            name: 'Square Fog Lamps',
+            slot: Vehicle.kComponentSlotLights,
+            model: 'lgt_b_sspt',
+        }
+    ],
+    [
+        1025,
+        {
+            name: 'Offroad Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_or1',
+        }
+    ],
+    [
+        1026,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_s',
+        }
+    ],
+    [
+        1027,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_s',
+        }
+    ],
+    [
+        1028,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_s',
+        }
+    ],
+    [
+        1029,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_s',
+        }
+    ],
+    [
+        1030,
+        {
+            name: 'Left X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_s',
+        }
+    ],
+    [
+        1031,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_s',
+        }
+    ],
+    [
+        1032,
+        {
+            name: 'Alien Vent Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_s',
+        }
+    ],
+    [
+        1033,
+        {
+            name: 'X-Flow Vent Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_s',
+        }
+    ],
+    [
+        1034,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_l',
+        }
+    ],
+    [
+        1035,
+        {
+            name: 'X-Flow Vent Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_l',
+        }
+    ],
+    [
+        1036,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_l',
+        }
+    ],
+    [
+        1037,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_l',
+        }
+    ],
+    [
+        1038,
+        {
+            name: 'Alien Vent Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_l',
+        }
+    ],
+    [
+        1039,
+        {
+            name: 'Left X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_l',
+        }
+    ],
+    [
+        1040,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_l',
+        }
+    ],
+    [
+        1041,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_l',
+        }
+    ],
+    [
+        1042,
+        {
+            name: 'Right Chrome Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_br1',
+        }
+    ],
+    [
+        1043,
+        {
+            name: 'Slamin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_br2',
+        }
+    ],
+    [
+        1044,
+        {
+            name: 'Chrome Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_br1',
+        }
+    ],
+    [
+        1045,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_f',
+        }
+    ],
+    [
+        1046,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_f',
+        }
+    ],
+    [
+        1047,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_f',
+        }
+    ],
+    [
+        1048,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_f',
+        }
+    ],
+    [
+        1049,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_f_r',
+        }
+    ],
+    [
+        1050,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_f_r',
+        }
+    ],
+    [
+        1051,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_f',
+        }
+    ],
+    [
+        1052,
+        {
+            name: 'Left X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_f',
+        }
+    ],
+    [
+        1053,
+        {
+            name: 'X-Flow Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_f',
+        }
+    ],
+    [
+        1054,
+        {
+            name: 'Alien Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_f',
+        }
+    ],
+    [
+        1055,
+        {
+            name: 'Alien Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_st',
+        }
+    ],
+    [
+        1056,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_st',
+        }
+    ],
+    [
+        1057,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_st',
+        }
+    ],
+    [
+        1058,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_st_r',
+        }
+    ],
+    [
+        1059,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_st',
+        }
+    ],
+    [
+        1060,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_st_r',
+        }
+    ],
+    [
+        1061,
+        {
+            name: 'X-Flow Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_st',
+        }
+    ],
+    [
+        1062,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_st',
+        }
+    ],
+    [
+        1063,
+        {
+            name: 'Left X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_st',
+        }
+    ],
+    [
+        1064,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_st',
+        }
+    ],
+    [
+        1065,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_j',
+        }
+    ],
+    [
+        1066,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_j',
+        }
+    ],
+    [
+        1067,
+        {
+            name: 'Alien Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_j',
+        }
+    ],
+    [
+        1068,
+        {
+            name: 'X-Flow Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_j',
+        }
+    ],
+    [
+        1069,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_j',
+        }
+    ],
+    [
+        1070,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_j',
+        }
+    ],
+    [
+        1071,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_j',
+        }
+    ],
+    [
+        1072,
+        {
+            name: 'Left X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_j',
+        }
+    ],
+    [
+        1073,
+        {
+            name: 'Shadow Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr6',
+        }
+    ],
+    [
+        1074,
+        {
+            name: 'Mega Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr3',
+        }
+    ],
+    [
+        1075,
+        {
+            name: 'Rimshine Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr2',
+        }
+    ],
+    [
+        1076,
+        {
+            name: 'Wires Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_lr4',
+        }
+    ],
+    [
+        1077,
+        {
+            name: 'Classic Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_lr1',
+        }
+    ],
+    [
+        1078,
+        {
+            name: 'Twist Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_lr3',
+        }
+    ],
+    [
+        1079,
+        {
+            name: 'Cutter Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr1',
+        }
+    ],
+    [
+        1080,
+        {
+            name: 'Switch Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr5',
+        }
+    ],
+    [
+        1081,
+        {
+            name: 'Grove Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_sr4',
+        }
+    ],
+    [
+        1082,
+        {
+            name: 'Import Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_gn1',
+        }
+    ],
+    [
+        1083,
+        {
+            name: 'Dollar Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_lr2',
+        }
+    ],
+    [
+        1084,
+        {
+            name: 'Trance Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_lr5',
+        }
+    ],
+    [
+        1085,
+        {
+            name: 'Atomic Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_gn2',
+        }
+    ],
+    [
+        1086,
+        {
+            name: 'Stereo Stereo',
+            slot: Vehicle.kComponentSlotStereo,
+            model: 'stereo',
+        }
+    ],
+    [
+        1087,
+        {
+            name: 'Hydraulics Hydraulics',
+            slot: Vehicle.kComponentSlotHydraulics,
+            model: 'hydralics',
+        }
+    ],
+    [
+        1088,
+        {
+            name: 'Alien Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_a_u',
+        }
+    ],
+    [
+        1089,
+        {
+            name: 'X-Flow Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_c_u',
+        }
+    ],
+    [
+        1090,
+        {
+            name: 'Right Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_a_u',
+        }
+    ],
+    [
+        1091,
+        {
+            name: 'X-Flow Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_c_u',
+        }
+    ],
+    [
+        1092,
+        {
+            name: 'Alien Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_a_u',
+        }
+    ],
+    [
+        1093,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_c_u',
+        }
+    ],
+    [
+        1094,
+        {
+            name: 'Left Alien Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_a_u',
+        }
+    ],
+    [
+        1095,
+        {
+            name: 'Right X-Flow Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_c_u',
+        }
+    ],
+    [
+        1096,
+        {
+            name: 'Ahab Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_gn3',
+        }
+    ],
+    [
+        1097,
+        {
+            name: 'Virtual Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_gn4',
+        }
+    ],
+    [
+        1098,
+        {
+            name: 'Access Wheels',
+            slot: Vehicle.kComponentSlotWheels,
+            model: 'wheel_gn5',
+        }
+    ],
+    [
+        1099,
+        {
+            name: 'Left Chrome Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_br1',
+        }
+    ],
+    [
+        1100,
+        {
+            name: 'Chrome Grill Bullbar',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'misc_c_lr_rem1',
+        }
+    ],
+    [
+        1101,
+        {
+            name: 'Left "Chrome Flames" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_rem1',
+        }
+    ],
+    [
+        1102,
+        {
+            name: 'Left "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_sv',
+        }
+    ],
+    [
+        1103,
+        {
+            name: 'Covertible Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_lr_bl2',
+        }
+    ],
+    [
+        1104,
+        {
+            name: 'Chrome Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_bl1',
+        }
+    ],
+    [
+        1105,
+        {
+            name: 'Slamin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_bl2',
+        }
+    ],
+    [
+        1106,
+        {
+            name: 'Right "Chrome Arches" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_rem2',
+        }
+    ],
+    [
+        1107,
+        {
+            name: 'Left "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_bl1',
+        }
+    ],
+    [
+        1108,
+        {
+            name: 'Right "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_bl1',
+        }
+    ],
+    [
+        1109,
+        {
+            name: 'Chrome Rear Bullbars',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'bbb_lr_slv1',
+        }
+    ],
+    [
+        1110,
+        {
+            name: 'Slamin Rear Bullbars',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'bbb_lr_slv2',
+        }
+    ],
+    [
+        1111,
+        {
+            name: 'Front Sign',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_lr_slv1',
+        }
+    ],
+    [
+        1112,
+        {
+            name: 'Little Sign',
+            slot: Vehicle.kComponentSlotHood,
+            model: 'bnt_lr_slv2',
+        }
+    ],
+    [
+        1113,
+        {
+            name: 'Chrome Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_slv1',
+        }
+    ],
+    [
+        1114,
+        {
+            name: 'Slamin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_slv2',
+        }
+    ],
+    [
+        1115,
+        {
+            name: 'Chrome Front Bullbars',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbb_lr_slv1',
+        }
+    ],
+    [
+        1116,
+        {
+            name: 'Slamin Front Bullbars',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbb_lr_slv2',
+        }
+    ],
+    [
+        1117,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_slv1',
+        }
+    ],
+    [
+        1118,
+        {
+            name: 'Right "Chrome Trim" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_slv1',
+        }
+    ],
+    [
+        1119,
+        {
+            name: 'Right "Wheelcovers" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_slv2',
+        }
+    ],
+    [
+        1120,
+        {
+            name: 'Left "Chrome Trim" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_slv1',
+        }
+    ],
+    [
+        1121,
+        {
+            name: 'Left "Wheelcovers" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_slv2',
+        }
+    ],
+    [
+        1122,
+        {
+            name: 'Right "Chrome Flames" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_rem1',
+        }
+    ],
+    [
+        1123,
+        {
+            name: 'Bullbar Chrome Bars',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'misc_c_lr_rem2',
+        }
+    ],
+    [
+        1124,
+        {
+            name: 'Left "Chrome Arches" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_rem2',
+        }
+    ],
+    [
+        1125,
+        {
+            name: 'Bullbar Chrome Lights',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'misc_c_lr_rem3',
+        }
+    ],
+    [
+        1126,
+        {
+            name: 'Chrome Exhaust Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_rem1',
+        }
+    ],
+    [
+        1127,
+        {
+            name: 'Slamin Exhaust Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_rem2',
+        }
+    ],
+    [
+        1128,
+        {
+            name: 'Vinyl Hardtop Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_lr_bl1',
+        }
+    ],
+    [
+        1129,
+        {
+            name: 'Chrome Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_sv1',
+        }
+    ],
+    [
+        1130,
+        {
+            name: 'Hardtop Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_lr_sv1',
+        }
+    ],
+    [
+        1131,
+        {
+            name: 'Softtop Roof',
+            slot: Vehicle.kComponentSlotRoof,
+            model: 'rf_lr_sv2',
+        }
+    ],
+    [
+        1132,
+        {
+            name: 'Slamin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_sv2',
+        }
+    ],
+    [
+        1133,
+        {
+            name: 'Right "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_sv',
+        }
+    ],
+    [
+        1134,
+        {
+            name: 'Right "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_l_lr_t1',
+        }
+    ],
+    [
+        1135,
+        {
+            name: 'Slamin Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_t2',
+        }
+    ],
+    [
+        1136,
+        {
+            name: 'Chrome Exhaust',
+            slot: Vehicle.kComponentSlotExhaust,
+            model: 'exh_lr_t1',
+        }
+    ],
+    [
+        1137,
+        {
+            name: 'Left "Chrome Strip" Sideskirt',
+            slot: Vehicle.kComponentSlotSideskirt,
+            model: 'wg_r_lr_t1',
+        }
+    ],
+    [
+        1138,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_s_b',
+        }
+    ],
+    [
+        1139,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_s_b',
+        }
+    ],
+    [
+        1140,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_s',
+        }
+    ],
+    [
+        1141,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_s',
+        }
+    ],
+    [
+        1142,
+        {
+            name: 'Left Oval Vents',
+            slot: Vehicle.kComponentSlotRightVent,
+            model: 'bntr_b_ov',
+        }
+    ],
+    [
+        1143,
+        {
+            name: 'Right Oval Vents',
+            slot: Vehicle.kComponentSlotLeftVent,
+            model: 'bntl_b_ov',
+        }
+    ],
+    [
+        1144,
+        {
+            name: 'Left Square Vents',
+            slot: Vehicle.kComponentSlotRightVent,
+            model: 'bntr_b_sq',
+        }
+    ],
+    [
+        1145,
+        {
+            name: 'Right Square Vents',
+            slot: Vehicle.kComponentSlotLeftVent,
+            model: 'bntl_b_sq',
+        }
+    ],
+    [
+        1146,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_l_b',
+        }
+    ],
+    [
+        1147,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_l_b',
+        }
+    ],
+    [
+        1148,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_l',
+        }
+    ],
+    [
+        1149,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_l',
+        }
+    ],
+    [
+        1150,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_f',
+        }
+    ],
+    [
+        1151,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_f',
+        }
+    ],
+    [
+        1152,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_f',
+        }
+    ],
+    [
+        1153,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_f',
+        }
+    ],
+    [
+        1154,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_st',
+        }
+    ],
+    [
+        1155,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_st',
+        }
+    ],
+    [
+        1156,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_st',
+        }
+    ],
+    [
+        1157,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_st',
+        }
+    ],
+    [
+        1158,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_j_b',
+        }
+    ],
+    [
+        1159,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_j',
+        }
+    ],
+    [
+        1160,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_j',
+        }
+    ],
+    [
+        1161,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_j',
+        }
+    ],
+    [
+        1162,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_j_b',
+        }
+    ],
+    [
+        1163,
+        {
+            name: 'X-Flow Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_c_u_b',
+        }
+    ],
+    [
+        1164,
+        {
+            name: 'Alien Spoiler',
+            slot: Vehicle.kComponentSlotSpoiler,
+            model: 'spl_a_u_b',
+        }
+    ],
+    [
+        1165,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_u',
+        }
+    ],
+    [
+        1166,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_u',
+        }
+    ],
+    [
+        1167,
+        {
+            name: 'X-Flow Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_c_u',
+        }
+    ],
+    [
+        1168,
+        {
+            name: 'Alien Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_a_u',
+        }
+    ],
+    [
+        1169,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_s',
+        }
+    ],
+    [
+        1170,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_s',
+        }
+    ],
+    [
+        1171,
+        {
+            name: 'Alien Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_a_l',
+        }
+    ],
+    [
+        1172,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_l',
+        }
+    ],
+    [
+        1173,
+        {
+            name: 'X-Flow Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_c_j',
+        }
+    ],
+    [
+        1174,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_br1',
+        }
+    ],
+    [
+        1175,
+        {
+            name: 'Slamin Front Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'fbmp_lr_br2',
+        }
+    ],
+    [
+        1176,
+        {
+            name: 'Chrome Rear Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'rbmp_lr_br1',
+        }
+    ],
+    [
+        1177,
+        {
+            name: 'Slamin Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_br2',
+        }
+    ],
+    [
+        1178,
+        {
+            name: 'Slamin Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_rem2',
+        }
+    ],
+    [
+        1179,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_rem1',
+        }
+    ],
+    [
+        1180,
+        {
+            name: 'Chrome Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_rem1',
+        }
+    ],
+    [
+        1181,
+        {
+            name: 'Slamin Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_bl2',
+        }
+    ],
+    [
+        1182,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_bl1',
+        }
+    ],
+    [
+        1183,
+        {
+            name: 'Slamin Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_bl2',
+        }
+    ],
+    [
+        1184,
+        {
+            name: 'Chrome Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_bl1',
+        }
+    ],
+    [
+        1185,
+        {
+            name: 'Slamin Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_rem2',
+        }
+    ],
+    [
+        1186,
+        {
+            name: 'Slamin Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_sv2',
+        }
+    ],
+    [
+        1187,
+        {
+            name: 'Chrome Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_sv1',
+        }
+    ],
+    [
+        1188,
+        {
+            name: 'Slamin Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_sv2',
+        }
+    ],
+    [
+        1189,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_sv1',
+        }
+    ],
+    [
+        1190,
+        {
+            name: 'Slamin Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_t2',
+        }
+    ],
+    [
+        1191,
+        {
+            name: 'Chrome Front Bumper',
+            slot: Vehicle.kComponentSlotFrontBumper,
+            model: 'fbmp_lr_t1',
+        }
+    ],
+    [
+        1192,
+        {
+            name: 'Chrome Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_t1',
+        }
+    ],
+    [
+        1193,
+        {
+            name: 'Slamin Rear Bumper',
+            slot: Vehicle.kComponentSlotRearBumper,
+            model: 'rbmp_lr_t2',
+        }
+    ],
+]);
+
 // Map of all the valid vehicle components, keyed by vehicle model Id, valued with a set that
 // contains the individual vehicle IDs. This allows for quick O(1) lookup of validity.
 //
 // Note that the listed modifications are known to not cause crashes or weird behaviour, not that
 // they make sense. For instance, replacing the wheels on a tank probably is not very useful.
-const kValidComponents = new Map([
+const kValidComponentsForVehicleModel = new Map([
     [
         400 /* Landstalker */,
         new Set([ 1008, 1009, 1010, 1013, 1018, 1019, 1020, 1021, 1024, 1025, 1073, 1074, 1075,
@@ -1043,9 +2602,27 @@ const kValidComponents = new Map([
 
 // Returns whether the given |vehicleModel| can be customized with the given |componentId|.
 export function canVehicleModelHaveComponent(vehicleModel, componentId) {
-    const validComponents = kValidComponents.get(vehicleModel);
+    const validComponents = kValidComponentsForVehicleModel.get(vehicleModel);
     if (!validComponents)
         return false;  // the |vehicleModel| cannot have any modifications
     
     return validComponents.has(componentId);
+}
+
+// Returns the name of a particular component, or NULL when it's invalid.
+export function getComponentName(componentId) {
+    const information = kComponents.get(componentId);
+    if (!information)
+        return null;  // the |componentId| is not valid
+    
+    return information.name;
+}
+
+// Returns the slot in which a particular component is located, or NULL when it's invalid.
+export function getComponentSlot(componentId) {
+    const information = kComponents.get(componentId);
+    if (!information)
+        return null;  // the |componentId| is not valid
+    
+    return information.slot;
 }

@@ -17,6 +17,22 @@ export class Vehicle extends Supplementable {
     // ID indicating that a particular Player ID is explicitly not valid.
     static kInvalidId = 65535;
 
+    // The component slots that vehicles can be modified with.
+    static kComponentSlotSpoiler = 0;
+    static kComponentSlotHood = 1;
+    static kComponentSlotRoof = 2;
+    static kComponentSlotSideskirt = 3;
+    static kComponentSlotLights = 4;
+    static kComponentSlotNitro = 5;
+    static kComponentSlotExhaust = 6;
+    static kComponentSlotWheels = 7;
+    static kComponentSlotStereo = 8;
+    static kComponentSlotHydraulics = 9;
+    static kComponentSlotFrontBumper = 10;
+    static kComponentSlotRearBumper = 11;
+    static kComponentSlotRightVent = 12;
+    static kComponentSlotLeftVent = 13;
+
     // Vehicle keys that can be awarded to players through various achievements.
     static kVehicleKeysBoost = 1;
     static kVehicleKeysColourChange = 2;

@@ -278,4 +278,20 @@ describe('VehicleManager', (it, beforeEach) => {
         assert.equal(vehicle.getComponents().length, 0);
         assert.isNull(vehicle.getComponentInSlot(Vehicle.kComponentSlotNitro));
     });
+
+    it('should correctly track vehicle components across respawns', assert => {
+        const vehicle = manager.createVehicle({
+            modelId: 411,
+            position: new Vector(0, 0, 0),
+            components: [
+                1010,  // 10x Nitro
+            ],
+        });
+
+        assert.isTrue(vehicle.hasComponent(1010));
+        assert.equal(vehicle.getComponents().length, 1);
+        assert.equal(vehicle.getComponentInSlot(Vehicle.kComponentSlotNitro), 1010);
+
+        // TODO: Component behaviour when a vehicle respawns.
+    });
 });

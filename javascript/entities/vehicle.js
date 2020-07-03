@@ -6,6 +6,7 @@ import { Supplementable } from 'base/supplementable.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
 import { canVehicleModelHaveComponent, getComponentSlot } from 'entities/vehicle_components.js';
+import { clone } from 'base/clone.js';
 
 // Represents and encapsulates the lifetime of a Vehicle on the San Andreas: Multiplayer server.
 // Provides quick and idiomatic access to the vehicle's properties.
@@ -64,6 +65,8 @@ export class Vehicle extends Supplementable {
     #manager_ = null;
     #id_ = null;
 
+    #initOptions_ = null;
+
     #modelId_ = null;
     #interiorId_ = null;
     #virtualWorld_ = null;
@@ -90,6 +93,8 @@ export class Vehicle extends Supplementable {
     }
 
     initialize(options) {
+        this.#initOptions_ = clone(options);
+
         this.#modelId_ = options.modelId;
         this.#interiorId_ = options.interiorId ?? 0;
         this.#virtualWorld_ = options.virtualWorld ?? 0;
@@ -106,6 +111,11 @@ export class Vehicle extends Supplementable {
         if (this.#id_ === Vehicle.kInvalidId)
             throw new Error(`The vehicle (${this}) could not be created on the server.`);
 
+        this.initializeOnSpawn();
+    }
+
+    initializeOnSpawn() {
+        const options = this.#initOptions_;
         if (options.interiorId)
             this.interiorId = options.interiorId;
         
@@ -117,6 +127,11 @@ export class Vehicle extends Supplementable {
         
         if (options.paintjob)
             this.paintjob = options.paintjob;
+        
+        this.#components_.clear();
+
+        for (const componentId of options.components)
+            this.addComponent(componentId);
     }
 
     // Actually creates the vehicle on the server. Will return the ID of the newly created vehicle,

@@ -229,6 +229,7 @@ class VehicleManager {
             primaryColor: vehicle.primaryColor,
             secondaryColor: vehicle.secondaryColor,
             numberPlate: vehicle.numberPlate,
+            components: [],
         };
 
         // Store the current occupants of the vehicle. They will be teleported back in after.

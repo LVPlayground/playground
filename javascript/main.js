@@ -87,6 +87,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'games_deathmatch',
 
         // 2. Individual games
+        'fights',
         'haystack',
 
         // -----------------------------------------------------------------------------------------

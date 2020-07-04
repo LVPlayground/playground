@@ -246,6 +246,7 @@ class MockServer {
     async safeDispose() {
         Player.provideSupplement('account', null);
         Player.provideSupplement('settings', null);
+        Player.provideSupplement('stats', null);
     }
 }
 

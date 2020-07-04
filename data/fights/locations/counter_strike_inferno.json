@@ -2,7 +2,8 @@
     "name": "Counter Strike 1.6: Inferno",
     "spawnPositions": {
         "individual": [
-            { "position": [ -3867.0430, -3695.4424, 32.2653 ], "facingAngle": 180 }
+            { "position": [ -3867.0430, -3695.4424, 32.2653 ], "facingAngle": 180 },
+            { "position": [ -3868.0430, -3696.4424, 32.2653 ], "facingAngle": 180 }
         ]
     },
 

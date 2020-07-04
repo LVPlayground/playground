@@ -5,6 +5,7 @@
 import { Feature } from 'components/feature_manager/feature.js';
 import { FightGame } from 'features/fights/fight_game.js';
 import { FightRegistry } from 'features/fights/fight_registry.js';
+import { Setting } from 'entities/setting.js';
 
 // The Fights infrastructure powers games intended for players to have matches with each other. It
 // ranges from 1-on-1 fights, to free-for-all games and team battles. Uses the DeathmatchGame base
@@ -24,12 +25,10 @@ export default class Fights extends Feature {
         // Various parts of the fighting system are configurable through "/lvp settings".
         this.settings_ = this.defineDependency('settings');
 
-        // Initialize the registry, which loads information of all the available games. Immediately
-        // load all data from disk too, except when running tests, to reduce slow disk I/O.
+        // Has knowledge of the locations and commands (+presets) of games that are available on the
+        // server. Will be immediately initialized, even for tests.
         this.registry_ = new FightRegistry();
-
-        if (!server.isTest())
-            this.registry_.initialize();
+        this.registry_.initialize();
 
         // Register all games known to this feature.
         this.registerFightingGames();
@@ -39,6 +38,7 @@ export default class Fights extends Feature {
     // DeathmatchGame class with an object to specialize behaviour. The minimum number of players
     // for a fight is configurable through "/lvp settings", primarily for testing purposes.
     registerFightingGames() {
+        const defaultLocation = this.settings_().getValue('games/fight_default_location');
         const minimumPlayers = this.settings_().getValue('games/fight_minimum_players');
 
         this.games_().registerGame(FightGame, {
@@ -49,6 +49,13 @@ export default class Fights extends Feature {
             minimumPlayers,
             maximumPlayers: 8,
 
+            settings: [
+                // Option: Location (string)
+                new Setting(
+                    'fights', 'location', [ ...this.registry_.locations.keys() ], defaultLocation,
+                    'Location'),
+            ],
+
         }, this.registry_);
     }
 
@@ -57,6 +64,8 @@ export default class Fights extends Feature {
         this.registry_ = null;
 
         this.games_().removeGame(FightGame);
+
+        this.settings_ = null;
 
         this.games_.removeReloadObserver(this);
         this.games_ = null;

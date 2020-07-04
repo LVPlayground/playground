@@ -76,7 +76,7 @@ export class FightGame extends DeathmatchGame {
 
         // Determine the spawn position for the |player|. Players will iterative spawn in each of
         // the positions available for their team, or the set of individual spawns.
-        const spawns = this.#spawns_.get(getTeamForPlayer(player));
+        const spawns = this.#spawns_.get(this.getTeamForPlayer(player));
         const spawnPosition = spawns.positions[(spawns.index++) % spawns.positions.length];
 
         player.position = spawnPosition.position;

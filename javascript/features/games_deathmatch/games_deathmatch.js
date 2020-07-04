@@ -6,8 +6,6 @@ import { DeathmatchDescription } from 'features/games_deathmatch/deathmatch_desc
 import { Feature } from 'components/feature_manager/feature.js';
 import { Setting } from 'entities/setting.js';
 
-import { clone } from 'base/clone.js';
-
 // Determines if the given |gameConstructor| has a class named "DeathmatchGame" in its prototype
 // chain. We cannot use `isPrototypeOf` here, since the actual instances might be subtly different
 // when live reload has been used on the server.
@@ -47,8 +45,6 @@ export default class GamesDeathmatch extends Feature {
         if (!hasDeathmatchGameInPrototype(gameConstructor))
             throw new Error(`The given |gameConstructor| must extend the DeathmatchGame class.`);
 
-        const amendedOptions = clone(options);
-
         // Construct a `DeathmatchDescription` instance to verify the |options|. This will throw an
         // exception when it fails, informing the caller of the issue.
         const description = new DeathmatchDescription(/* description= */ null, options);
@@ -57,19 +53,41 @@ export default class GamesDeathmatch extends Feature {
         // feature reloads. Each user of this class wouldn't necessarily be aware of that.
         this.gameConstructors_.set(gameConstructor, { options, userData });
 
-        // Add the settings to the |options| with default values sourced from the |description|. The
-        // stored options for re-registering games after reloading will refer to the original ones.
-        if (!amendedOptions.hasOwnProperty('settings'))
-            amendedOptions.settings = [];
-        
-        amendedOptions.settings.push(
+        // Settings made available by the GamesDeathmatch API.
+        const settings = [
             // Option: Lag compensation (boolean)
             new Setting(
                 'deathmatch', 'lag_compensation', Setting.TYPE_BOOLEAN, description.lagCompensation,
                 'Lag compensation'),
-        );
+        ]
 
-        return this.games_().registerGame(gameConstructor, amendedOptions, userData);
+        // Inject each of the settings in |options|. This is an O(n^2) operation, but given that
+        // there won't be more than ten options or so and registering a new game is extremely rare,
+        // we'll go with it. Could be optimized by creating an existing setting map first.
+        if (!options.hasOwnProperty('settings') || !Array.isArray(options.settings))
+            options.settings = [];
+
+        for (const setting of settings) {
+            const identifier = setting.identifier;
+
+            let overridden = false;
+            for (let index = 0; index < options.settings.length; ++index) {
+                if (options.settings[index].identifier !== identifier)
+                    continue;
+
+                // Override the existing setting with the new one. We own the deathmatch/ namespace.
+                options.settings[index] = setting;
+
+                overridden = true;
+                break;
+            }
+
+            if (!overridden)
+                options.settings.push(setting);
+        }
+
+        // Now register the |gameConstructor| with the regular Games API.
+        return this.games_().registerGame(gameConstructor, options, userData);
     }
 
     // Starts the |gameConstructor| game for the |player|, which must have been registered with the

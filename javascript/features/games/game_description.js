@@ -41,6 +41,7 @@ export class GameDescription {
 
     gameConstructor_ = null;
     options_ = null;
+    userData_ = null;
 
     name_ = null;
     goal_ = null;
@@ -67,6 +68,9 @@ export class GameDescription {
 
     // Gets the unprocessed options that were used for initializing this game.
     get options() { return this.options_; }
+
+    // Gets the user data passed when the game was registered with this feature.
+    get userData() { return this.userData_; }
 
     // ---------------------------------------------------------------------------------------------
     // Required configuration
@@ -156,12 +160,13 @@ export class GameDescription {
 
     // ---------------------------------------------------------------------------------------------
 
-    constructor(gameConstructor, options) {
+    constructor(gameConstructor, options, userData) {
         if (!hasGameInPrototype(gameConstructor))
             throw new Error('Each game must override the `Game` base class in this feature.');
 
         this.gameConstructor_ = gameConstructor;
         this.options_ = options;
+        this.userData_ = userData;
         
         // -----------------------------------------------------------------------------------------
         // Section: required options

@@ -48,8 +48,8 @@ export default class Games extends Feature {
 
     // Registers the given |gameConstructor|, which will power the game declaratively defined in the
     // |options| dictionary. An overview of the available |options| is available in README.md.
-    registerGame(gameConstructor, options) {
-        this.registry_.registerGame(new GameDescription(gameConstructor, options));
+    registerGame(gameConstructor, options, userData = null) {
+        this.registry_.registerGame(new GameDescription(gameConstructor, options, userData));
     }
 
     // Starts the |gameConstructor| game for the |player|, which must have been registered with the

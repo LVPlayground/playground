@@ -71,10 +71,14 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should call the Game events in order', async (assert) => {
         let spawnCount = 0;
+        let userData = { counter: 0 };
 
         const events = [];
         const description = new GameDescription(class extends Game {
-            async onInitialized(settings) { events.push('onInitialized'); }
+            async onInitialized(settings, userData) {
+                events.push('onInitialized');
+                userData.counter++;
+            }
             async onPlayerAdded(player) { events.push('onPlayerAdded'); }
             async onPlayerSpawned(player, countdown) {
                 events.push('onPlayerSpawned');
@@ -85,7 +89,7 @@ describe('GameRuntime', (it, beforeEach) => {
             async onPlayerRemoved(player) { events.push('onPlayerRemoved'); }
             async onFinished() { events.push('onFinished'); }
 
-        }, { name: 'Bubble', goal: 'Capture the events' });
+        }, { name: 'Bubble', goal: 'Capture the events' }, userData);
 
         const runtime = await prepareGame(description, [ gunther, russell ]);
         const game = runtime.run();
@@ -112,6 +116,9 @@ describe('GameRuntime', (it, beforeEach) => {
             'onPlayerRemoved',
             'onFinished',
         ]);
+
+        // Verify that the user data counter has been incremented.
+        assert.equal(userData.counter, 1);
 
         await game;  // make sure that the game has finished
     });

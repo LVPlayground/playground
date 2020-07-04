@@ -24,6 +24,7 @@ function hasDeathmatchGameInPrototype(gameConstructor) {
 // Games class, but with additional verification and preparation in place.
 export default class GamesDeathmatch extends Feature {
     gameConstructors_ = new Map();
+
     games_ = null;
     settings_ = null;
 
@@ -42,7 +43,7 @@ export default class GamesDeathmatch extends Feature {
 
     // Registers the given |gameConstructor|, which will power the game declaratively defined in the
     // |options| dictionary. An overview of the available |options| is available in README.md.
-    registerGame(gameConstructor, options) {
+    registerGame(gameConstructor, options, userData = null) {
         if (!hasDeathmatchGameInPrototype(gameConstructor))
             throw new Error(`The given |gameConstructor| must extend the DeathmatchGame class.`);
 
@@ -54,7 +55,7 @@ export default class GamesDeathmatch extends Feature {
 
         // Store the |gameConstructor| so that we can silently reload all the games when the Games
         // feature reloads. Each user of this class wouldn't necessarily be aware of that.
-        this.gameConstructors_.set(gameConstructor, options);
+        this.gameConstructors_.set(gameConstructor, { options, userData });
 
         // Add the settings to the |options| with default values sourced from the |description|. The
         // stored options for re-registering games after reloading will refer to the original ones.
@@ -68,7 +69,7 @@ export default class GamesDeathmatch extends Feature {
                 'Lag compensation'),
         );
 
-        return this.games_().registerGame(gameConstructor, amendedOptions);
+        return this.games_().registerGame(gameConstructor, amendedOptions, userData);
     }
 
     // Starts the |gameConstructor| game for the |player|, which must have been registered with the
@@ -94,8 +95,8 @@ export default class GamesDeathmatch extends Feature {
     // Re-registers all known games with the Games feature, which has been reloaded. This way the
     // individual deathmatch games do not have to observe multiple features.
     registerGames() {
-        for (const [ gameConstructor, options ] of this.gameConstructors_)
-            this.registerGame(gameConstructor, options);
+        for (const [ gameConstructor, { options, userData } ] of this.gameConstructors_)
+            this.registerGame(gameConstructor, options, userData);
     }
 
     // ---------------------------------------------------------------------------------------------

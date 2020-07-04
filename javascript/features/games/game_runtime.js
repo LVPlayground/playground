@@ -77,7 +77,7 @@ export class GameRuntime extends GameActivity {
 
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);
 
-        await this.game_.onInitialized(this.settings_);
+        await this.game_.onInitialized(this.settings_, this.description_.userData);
 
         this.state_ = GameRuntime.kStateInitialized;
     }

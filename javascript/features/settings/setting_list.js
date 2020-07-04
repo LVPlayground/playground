@@ -60,6 +60,7 @@ export const kSettingList = [
     new Setting('financial', 'spawn_money', Setting.TYPE_NUMBER, 10000, 'How much money should a player get when they spawn?'),
 
     /** Game-related settings */
+    new Setting('games', 'fight_minimum_players', Setting.TYPE_NUMBER, 2, 'Minimum players needed to start a fight.'),
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
 
     /** Gang-related settings */

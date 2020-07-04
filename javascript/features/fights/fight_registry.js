@@ -20,6 +20,9 @@ export class FightRegistry {
     // Gets the locations that are available for fights.
     get locations() { return this.#locations_; }
 
+    // Gets a particular location by the given |name|. Returns NULL when it's invalid.
+    getLocation(name) { return this.#locations_.get(name) ?? null; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Initializes the full fight system from the files the data is defined in. Will be called by

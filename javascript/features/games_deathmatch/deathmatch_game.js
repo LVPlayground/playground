@@ -22,6 +22,13 @@ export class DeathmatchGame extends Game {
     static kModeIndividual = 0;
     static kModeTeams = 1;
 
+    // The objective which defines the winning conditions of this game.
+    static kObjectiveLastManStanding = 0;
+    static kObjectiveBestOfThree = 1;
+    static kObjectiveBestOfFive = 2;
+    static kObjectiveBestOfTen = 3;
+    static kObjectiveContinuous = 4;
+
     // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
     // players can be part of either Team Alpha or Team Bravo in team-based games.
     static kTeamIndividual = 0;
@@ -31,6 +38,7 @@ export class DeathmatchGame extends Game {
     #lagCompensation_ = null;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
+    #objective_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -111,6 +119,28 @@ export class DeathmatchGame extends Game {
 
             default:
                 throw new Error(`Invalid value given for map markers.`);
+        }
+
+        switch (settings.get('deathmatch/objective')) {
+            case 'Last man standing':
+                this.#objective_ = DeathmatchGame.kObjectiveLastManStanding;
+                break;
+
+            case 'Best of 3':
+                this.#objective_ = DeathmatchGame.kObjectiveBestOfThree;
+                break;
+
+            case 'Best of 5':
+                this.#objective_ = DeathmatchGame.kObjectiveBestOfFive;
+                break;
+
+            case 'Best of 10':
+                this.#objective_ = DeathmatchGame.kObjectiveBestOfTen;
+                break;
+
+            case 'Continuous':
+                this.#objective_ = DeathmatchGame.kObjectiveContinuous;
+                break;
         }
     }
 

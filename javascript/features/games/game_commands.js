@@ -13,6 +13,9 @@ import { Setting } from 'entities/setting.js';
 
 import { confirm } from 'components/dialogs/confirm.js';
 
+// Prefix given to internal settings, that are not modifiable by the player.
+const kInternalPrefix = 'internal/';
+
 // Returns whether the two given maps are equal to each other.
 function mapEquals(left, right) {
     if (left.size !== right.size)
@@ -334,7 +337,7 @@ export class GameCommands {
 
         // If no settings have been defined for this game, then there's nothing to customize. Ask
         // the player what they're intending to happen in this scenario.
-        if (!settings.size) {
+        if (![ ...settings.keys() ].some(identifier => !identifier.startsWith(kInternalPrefix))) {
             const startDefault = await confirm(player, {
                 title: `Customize the ${description.name} game`,
                 message: `The ${description.name} game does not have any customization options ` +
@@ -362,6 +365,9 @@ export class GameCommands {
         dialog.addItem('----------', '----------');
 
         for (const [ identifier, setting ] of description.settings) {
+            if (identifier.startsWith(kInternalPrefix))
+                continue;  // do not allow internal settings to be modified
+
             const label = setting.description;
 
             const defaultValue = setting.defaultValue;

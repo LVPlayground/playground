@@ -60,7 +60,8 @@ export const kSettingList = [
     new Setting('financial', 'spawn_money', Setting.TYPE_NUMBER, 10000, 'How much money should a player get when they spawn?'),
 
     /** Game-related settings */
-    new Setting('games', 'deathmatch_lag_compensation', Setting.TYPE_BOOLEAN, true, 'Whether deathmatch games should default to lag compensation.'),
+    new Setting('games', 'deathmatch_lag_compensation_default', Setting.TYPE_BOOLEAN, true, 'Whether deathmatch games should default to lag compensation.'),
+    new Setting('games', 'deathmatch_team_damage_default', Setting.TYPE_BOOLEAN, true, 'Whether participants in the same team can issue each other damage.'),
     new Setting('games', 'fight_default_location', Setting.TYPE_STRING, 'Counter Strike 1.6: Inferno', 'Default location for fights.'),
     new Setting('games', 'fight_minimum_players', Setting.TYPE_NUMBER, 2, 'Minimum players needed to start a fight.'),
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),

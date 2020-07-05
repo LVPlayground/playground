@@ -22,9 +22,10 @@ export class DeathmatchGame extends Game {
     static kTeamAlpha = 0;
     static kTeamBravo = 1;
 
-    #lagCompensation_ = false;
+    #lagCompensation_ = null;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
+    #teamDamage_ = null;
 
     // Snapshots of statistics of each of the participants when they join the game.
     #statistics_ = new WeakMap();
@@ -75,6 +76,7 @@ export class DeathmatchGame extends Game {
 
         // Import the settings from the |settings|, which may have been customised by the player.
         this.#lagCompensation_ = settings.get('deathmatch/lag_compensation');
+        this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
         switch (settings.get('deathmatch/map_markers')) {
             case 'Enabled':

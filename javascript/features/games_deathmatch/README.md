@@ -18,6 +18,7 @@ Option              | Description
 --------------------|--------------
 `lagCompensation`   | Whether lag compensation should be enabled. Defaults to `true`.
 `mapMarkers`        | Whether map markers should be enabled for participants. One of `Enabled` (default), `Team only` or `Disabled`.
+`teamDamage`        | Whether players in the same team can issue damage to each other. Defaults to `true`.
 
 ## Settings when starting a game
 The following settings will be made available to all deathmatch games, and can be customized by
@@ -27,5 +28,6 @@ Setting             | Description
 --------------------|--------------
 `Lag compensation`  | Whether lag compensation should be enabled.
 `Map markers`       | Whether map markers should be enabled for participants.
+`Team damage`       | Whether players in the same team can issue damage to each other.
 
 [1]: ../games#options-when-registering-a-game

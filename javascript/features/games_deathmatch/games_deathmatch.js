@@ -61,10 +61,15 @@ export default class GamesDeathmatch extends Feature {
                 'deathmatch', 'lag_compensation', Setting.TYPE_BOOLEAN, description.lagCompensation,
                 'Lag compensation'),
             
-            // Option: Map markers (boolean)
+            // Option: Map markers (enumeration)
             new Setting(
                 'deathmatch', 'map_markers', ['Enabled', 'Team only', 'Disabled'],
                 description.mapMarkers, 'Map markers'),
+            
+            // Option: Team damage (boolean)
+            new Setting(
+                'deathmatch', 'team_damage', Setting.TYPE_BOOLEAN, description.teamDamage,
+                'Team damage'),
         ]
 
         // Inject each of the settings in |options|. This is an O(n^2) operation, but given that

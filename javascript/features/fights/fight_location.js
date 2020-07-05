@@ -21,6 +21,10 @@ export class FightLocation {
     // many locations are using custom maps or modifications.
     getObjects() { return this.#description_.objects ?? []; }
 
+    // Returns the pickups that could be spawned as part of this game. Generally they are health
+    // and armour pickups, and occassionally a weapon.
+    getPickups() { return this.#description_.pickups ?? []; }
+
     // Returns an array with the spawn positions for this game, in the given |mode|. When the mode
     // is team-based play, the |teamIndex| should be set.
     getSpawnPositions(mode, teamIndex = null) {

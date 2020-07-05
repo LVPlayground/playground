@@ -64,9 +64,15 @@ export class FightGame extends DeathmatchGame {
             }));
         }
 
-        // Create all the objects that are part of this location. Players will 
+        // Create all the objects that are part of this location.
         for (const objectInfo of this.#location_.getObjects())
             this.scopedEntities.createObject(objectInfo);
+        
+        // Create the health & armour pickups for the location, when enabled.
+        if (settings.get('fights/pickups')) {
+            for (const pickupInfo of this.#location_.getPickups())
+                this.scopedEntities.createPickup(pickupInfo);
+        }
     }
 
     async onPlayerAdded(player) {

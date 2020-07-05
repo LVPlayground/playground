@@ -174,6 +174,15 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         assert.equal(gunther.team, russell.team);
 
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0xAA);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0x00);  // invisible
+
+        assert.equal(russell.getColorForPlayerForTesting(gunther).a, 0xAA);
+        assert.equal(russell.getColorForPlayerForTesting(lucy).a, 0x00);  // invisible
+        
+        assert.equal(lucy.getColorForPlayerForTesting(gunther).a, 0x00);  // invisible
+        assert.equal(lucy.getColorForPlayerForTesting(russell).a, 0x00);  // invisible
+
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.isTrue(await russell.issueCommand('/leave'));
         assert.isTrue(await lucy.issueCommand('/leave'));
@@ -247,7 +256,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');
 
-        assert.isNull(game.getStatisticsForPlayer(gunther));
+        assert.throws(() => game.getStatisticsForPlayer(gunther));
     });
 
     it('should enable players to customise the settings', async (assert) => {

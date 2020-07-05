@@ -13,7 +13,6 @@ export const kLocationSetting = 'fights/location';
 export class FightGame extends DeathmatchGame {
     #location_ = null;
     #spawns_ = null;
-    #teamsDecided_ = false;
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings);

@@ -2,7 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Color } from 'base/color.js';
+import { DeathmatchPlayerState } from 'features/games_deathmatch/deathmatch_player_state.js';
 import { Game } from 'features/games/game.js';
+
+// Colours that will be assigned to participants of certain teams.
+const kTeamColorAlpha = Color.fromHex('D84315AA');  // red
+const kTeamColorBravo = Color.fromHex('0277BDAA');  // blue
 
 // Implementation of the `Game` interface which extends it with deathmatch-related functionality. It
 // exposes methods that should be called before game-specific behaviour, i.e. through super calls.
@@ -27,11 +33,8 @@ export class DeathmatchGame extends Game {
     #mode_ = DeathmatchGame.kModeIndividual;
     #teamDamage_ = null;
 
-    // Snapshots of statistics of each of the participants when they join the game.
-    #statistics_ = new WeakMap();
-
-    // Team ID of the team that a given player is part of.
-    #teams_ = new Map();
+    // Map of Player instance to DeathmatchPlayerState instance for all participants.
+    #state_ = new Map();
 
     // ---------------------------------------------------------------------------------------------
 
@@ -39,14 +42,14 @@ export class DeathmatchGame extends Game {
     get mode() { return this.#mode_; }
     set mode(value) { this.#mode_ = value; }
 
-    // Returns a PlayerStatsView instance for the current statistics of the given |player|, or NULL
-    // when the |player| is not currently engaged in the game.
+    // Returns a PlayerStatsView instance for the current statistics of the given |player|. An
+    // exception will be thrown if the |player| has not had their state initialized yet.
     getStatisticsForPlayer(player) {
-        const snapshot = this.#statistics_.get(player);
-        if (!snapshot)
-            return null;  // no snapshot could be found
+        const state = this.#state_.get(player);
+        if (!state || !state.statistics)
+            throw new Error(`The given player (${player}) isn't part of this game anymore.`);
 
-        return player.stats.diff(snapshot);
+        return player.stats.diff(state.statistics);
     }
 
     // Gets the team that the given |player| is part of. Will be one of the DeathmatchGame.kTeam*
@@ -55,10 +58,11 @@ export class DeathmatchGame extends Game {
         if (this.#mode_ === DeathmatchGame.kModeIndividual)
             return DeathmatchGame.kTeamIndividual;
         
-        if (!this.#teams_.has(player))
+        const state = this.#state_.get(player);
+        if (!state || state.team === null)
             throw new Error(`The given player (${player}) has not been assigned a team yet.`);
 
-        return this.#teams_.get(player);
+        return state.team;
     }
 
     // Sets the team for the given |player| to |team|. This will throw an exception on invalid teams
@@ -70,8 +74,17 @@ export class DeathmatchGame extends Game {
         if (![ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ].includes(team))
             throw new Error(`Cannot set a player's team to an invalid team.`);
 
-        this.#teams_.set(player, team);
-        this.enableTeamStateForPlayer(player);
+        const state = this.#state_.get(player);
+        if (!state)
+            throw new Error(`The given player (${player}) isn't part of this game anymore.`);
+
+        state.team = team;
+
+        this.applyTeamColorSettingForPlayer(player);
+        this.applyTeamDamageSettingForPlayer(player);
+
+        // Has to be executed *after* applying team colours.
+        this.applyMapMarkerSettingForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -101,96 +114,183 @@ export class DeathmatchGame extends Game {
         }
     }
 
+    // Called when the given |player| is being added to the game. We prepare their de facto state,
+    // and get them in order before they're going to spawn in the game's world.
     async onPlayerAdded(player) {
         await super.onPlayerAdded(player);
 
-        this.#statistics_.set(player, player.stats.snapshot());
+        // Initialize and store the |player|'s current state.
+        this.#state_.set(player, new DeathmatchPlayerState(player));
 
+        // Disable lag compensation for the |player| when this has been configured.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
         
-        // For free-for-all games, this is the point where we apply team & visibility state.
+        // For free-for-all games, this is the point where map marker visibility will be decided.
+        // For team-based games, it will be done when the player's assigned a team instead.
         if (this.mode === DeathmatchGame.kModeIndividual)
-            this.enableTeamStateForPlayer(player);
+            this.applyMapMarkerSettingForPlayer(player);
     }
 
+    // Called when the given |player| has been removed from the game, either because they've lost,
+    // they executed the "/leave" command, or because they disconnected from the server.
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
 
-        this.clearTeamStateForPlayer(player);
+        // Reset the modified state for each of the game settings back to their original values for
+        // the given |player|. This makes sure we don't permanently alter their state.
+        this.resetMapMarkerSettingForPlayer(player);
+        this.resetTeamColorSettingForPlayer(player);
+        this.resetTeamDamageSettingForPlayer(player);
 
-        this.#statistics_.delete(player);
-        this.#teams_.delete(player);
-
+        // Flip lag compensation back to its default value if it was modified.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
+        
+        // Finally, clear the player-specific state we had stored in this game.
+        this.#state_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Map markers
+    // ---------------------------------------------------------------------------------------------
 
-    // Enables the team-specific state for the given |player|. This can be called multiple times,
-    // and will ensure that all settings for the |player| are synchronized to others.
-    enableTeamStateForPlayer(player) {
-        const team = this.#teams_.get(player);  // may be undefined
+    // Applies the map marker setting for the given |player|. It has three modes, either enabled for
+    // all (default), enabled for team only, and disabled for everyone.
+    applyMapMarkerSettingForPlayer(player) {
+        const state = this.#state_.get(player);
 
+        const invisiblePlayers = [];
+        const visiblePlayers = [];
+
+        // (1) Divide the participants in two lists: those which should be visible for the |player|,
+        // and those who should be invisible to the player.
         switch (this.#mapMarkers_) {
             case DeathmatchGame.kMapMarkersEnabled:
-                break;  // nothing to update
+                return;  // nothing to update
 
             case DeathmatchGame.kMapMarkersEnabledTeam:
-                for (const [ target, targetTeam ] of this.#teams_) {
-                    if (targetTeam === team)
-                        continue;  // same team, nothing to update
-
-                    target.toggleVisibilityToPlayer(player, /* visible= */ false);
-                    player.toggleVisibilityToPlayer(target, /* visible= */ false);
+                for (const [ target, targetState ] of this.#state_) {
+                    if (state.team === targetState.team)
+                        visiblePlayers.push({ target, targetState });
+                    else
+                        invisiblePlayers.push({ target, targetState });
                 }
                 break;
 
             case DeathmatchGame.kMapMarkersDisabled:
-                for (const target of this.players) {
-                    target.toggleVisibilityToPlayer(player, /* visible= */ false);
-                    player.toggleVisibilityToPlayer(target, /* visible= */ false);
-                }
+                for (const [ target, targetState ] of this.#state_)
+                    invisiblePlayers.push({ target, targetState });
 
                 break;
         }
 
-        if (team !== undefined && !this.#teamDamage_)
-            player.team = team;
+        // (2) Make sure that the |player| is invisible to those who can't see them.
+        for (const { target, targetState } of invisiblePlayers) {
+            if (!state.invisible.has(target)) {
+                this.makeTargetInvisibleForPlayer(player, target, state.color);
+                state.invisible.add(target);
+            }
+
+            if (!targetState.invisible.has(player)) {
+                this.makeTargetInvisibleForPlayer(target, player, targetState.color);
+                targetState.invisible.add(player);
+            }
+        }
+
+        // (3) Make sure that the |player| is visible to those who are able to see them.
+        for (const { target, targetState } of visiblePlayers) {
+            if (state.invisible.has(target)) {
+                this.makeTargetVisibleForPlayer(player, target, state.color);
+                state.invisible.delete(target);
+            }
+
+            if (targetState.invisible.has(player)) {
+                this.makeTargetVisibleForPlayer(target, player, targetState.color);
+                targetState.invisible.delete(player);
+            }
+        }
     }
 
-    // Disables the team-specific state for the given |player|. This will reset the team that they
-    // are part of when damage has been disabled, clean up marker state, etecetera.
-    clearTeamStateForPlayer(player) {
-        const team = this.#teams_.get(player);  // may be undefined
+    // Makes the given |target| invisible for the given |player|.
+    makeTargetInvisibleForPlayer(player, target, playerColor) {
+        player.setColorForPlayer(target, playerColor.withAlpha(0));
+        player.toggleVisibilityToPlayer(target, /* visible= */ false);
+    }
 
-        switch (this.#mapMarkers_) {
-            case DeathmatchGame.kMapMarkersEnabled:
-                break;  // nothing to update
+    // Makes the given |target| visible again for the given |player|. The player's |color| can be
+    // re-set as well, but this could be skipped when the |player| leaves the minigame.
+    makeTargetVisibleForPlayer(player, target, playerColor = null) {
+        if (playerColor !== null)
+            player.setColorForPlayer(target, playerColor);
 
-            case DeathmatchGame.kMapMarkersEnabledTeam:
-                for (const [ target, targetTeam ] of this.#teams_) {
-                    if (targetTeam === team)
-                        continue;  // same team, nothing to update
+        player.toggleVisibilityToPlayer(target, /* visible= */ true);
+    }
 
-                    target.toggleVisibilityToPlayer(player, /* visible= */ true);
-                    player.toggleVisibilityToPlayer(target, /* visible= */ true);
-                }
-                break;
+    // Resets the map marker settings for the |player| as they are leaving the game. We the list of
+    // participants and reset visibility for any invisible players.
+    resetMapMarkerSettingForPlayer(player) {
+        const state = this.#state_.get(player);
 
-            case DeathmatchGame.kMapMarkersDisabled:
-                for (const target of this.players) {
-                    if (target === player)
-                        continue;  // same player, nothing to update
+        for (const [ target, targetState ] of this.#state_) {
+            if (state.invisible.has(target)) {
+                this.makeTargetVisibleForPlayer(player, target);
+                state.invisible.delete(target);
+            }
 
-                    target.toggleVisibilityToPlayer(player, /* visible= */ true);
-                    player.toggleVisibilityToPlayer(target, /* visible= */ true);
-                }
-                break;
+            if (targetState.invisible.has(player)) {
+                this.makeTargetVisibleForPlayer(target, player);
+                targetState.invisible.delete(player);
+            }
         }
-        
-        if (team !== undefined && !this.#teamDamage_)
-            player.team = Player.kNoTeam;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Team color
+    // ---------------------------------------------------------------------------------------------
+
+    // Applies the team colour setting for the given |player|. This makes sure that all players who
+    // are part of the same team, get either a red or a blue colour assigned to them.
+    applyTeamColorSettingForPlayer(player) {
+        const state = this.#state_.get(player);
+        if (!state || state.team === null)
+            return;  // the player didn't have a team colour applied
+
+        // (1) Determine which colour the |player| should be given based on their team.
+        if (state.team === DeathmatchGame.kTeamAlpha)
+            state.color = kTeamColorAlpha;
+        else if (state.team === DeathmatchGame.kTeamBravo)
+            state.color = kTeamColorBravo;
+
+        // (2) Apply the renewed color to the |player|'s character.
+        player.color = state.color;
+    }
+
+    // Resets the |player|'s color back to what it was. We always re-set their color, as markers may
+    // also amend the |player|'s color and we shouldn't re-set it twice.
+    resetTeamColorSettingForPlayer(player) {
+        const state = this.#state_.get(player);
+        if (state)
+            player.color = state.originalColor;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Team damage
+    // ---------------------------------------------------------------------------------------------
+
+    // Applies the team damage setting for the given |player|. This is achieved by putting them in
+    // the same team as everyone else they're playing with, when damage should be void.
+    applyTeamDamageSettingForPlayer(player) {
+        const state = this.#state_.get(player);
+        if (state && state.team !== null && !this.#teamDamage_)
+            player.team = state.team;
+    }
+
+    // Resets the |player|'s team back to what it was before the game started, in case it was
+    // modified per the game's settings - to enable voiding team damage.
+    resetTeamDamageSettingForPlayer(player) {
+        const state = this.#state_.get(player);
+        if (state && state.team !== null && !this.#teamDamage_)
+            player.team = state.originalTeam;
     }
 }

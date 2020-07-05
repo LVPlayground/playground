@@ -1,0 +1,10 @@
+{
+    "name": "Minigun Madness",
+    "command": "minigun",
+    "goal": "Take out your enemies with a minigun before they spot you.",
+
+    "settings": {
+        "fights/location": "Acter Nuclear Power Plant",
+        "fights/pickups": false
+    }
+}

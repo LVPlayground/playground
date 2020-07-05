@@ -27,7 +27,7 @@ export default class Fights extends Feature {
 
         // Has knowledge of the locations and commands (+presets) of games that are available on the
         // server. Will be immediately initialized, even for tests.
-        this.registry_ = new FightRegistry();
+        this.registry_ = new FightRegistry(this.games_);
         this.registry_.initialize();
 
         // Register all games known to this feature when the Settings feature has been loaded, as
@@ -43,14 +43,16 @@ export default class Fights extends Feature {
         const minimumPlayers = this.settings_().getValue('games/fight_minimum_players');
 
         this.games_().registerGame(FightGame, {
-            name: 'Deathmatch Fight',
+            name: Fights.prototype.composeGameName.bind(this),
             goal: 'Defeat all other players to win the fight.',
-            command: 'newfights',
 
             minimumPlayers,
             maximumPlayers: 16,
 
             settings: [
+                // Option: Name (internal, string)
+                new Setting('internal', 'name', Setting.TYPE_STRING, null, 'Display name'),
+
                 // Option: Location (string)
                 new Setting(
                     'fights', 'location', [ ...this.registry_.locations.keys() ], defaultLocation,
@@ -61,6 +63,16 @@ export default class Fights extends Feature {
             ],
 
         }, this.registry_);
+    }
+
+    // Composes the display name of the fighting game that's about to be started. This should be set
+    // in the internal values for predefined games, but will otherwise be composed of the settings
+    // that the game is being started with.
+    composeGameName(settings) {
+        const base = settings.get('internal/name') ?? 'Deathmatch Fight';
+
+        // TODO: Specialise based on the given |settings|.
+        return base;
     }
 
     dispose() {

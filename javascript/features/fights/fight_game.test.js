@@ -10,11 +10,9 @@ describe('FightGame', (it, beforeEach) => {
     let russell = null;
     let settings = null;
 
-    beforeEach(async() => {
+    beforeEach(async () => {
         const feature = server.featureManager.loadFeature('fights');
         const finance = server.featureManager.loadFeature('finance');
-
-        feature.registry_.initialize();
 
         games = server.featureManager.loadFeature('games');
         gunther = server.playerManager.getById(/* Gunther= */ 0);
@@ -50,10 +48,10 @@ describe('FightGame', (it, beforeEach) => {
     }
 
     it('should be able to pick random spawn positions in individual games', async (assert) => {
-        assert.isTrue(server.commandManager.hasCommand('newfights'));
+        assert.isTrue(server.commandManager.hasCommand('sniper'));
 
-        assert.isTrue(await gunther.issueCommand('/newfights'));
-        assert.isTrue(await russell.issueCommand('/newfights'));
+        assert.isTrue(await gunther.issueCommand('/sniper'));
+        assert.isTrue(await russell.issueCommand('/sniper'));
 
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();

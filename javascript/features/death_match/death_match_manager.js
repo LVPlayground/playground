@@ -211,7 +211,7 @@ export class DeathMatchManger {
         player.interiorId = location.interiorId;
 
         // Do it in a tiny delay to avoid the player receiving an out of bounds message.
-        wait(0).then(() => player.setPlayerBounds(location.boundaries[0], location.boundaries[1],
+        wait(0).then(() => player.setWorldBoundaries(location.boundaries[0], location.boundaries[1],
             location.boundaries[2], location.boundaries[3]));
 
         player.resetWeapons();

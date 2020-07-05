@@ -247,8 +247,10 @@ export class Player extends Supplementable {
         pawnInvoke('SetPlayerVirtualWorld', 'ii', this.#id_, value);
     }
 
-    setPlayerBounds(maxX, minX, maxY, minY) {        
-        pawnInvoke('SetPlayerWorldBounds', 'iffff', this.#id_, maxX, minX, maxY, minY)
+    resetWorldBoundaries() { this.setWorldBoundaries(20000, -20000, 20000, -20000); }
+
+    setWorldBoundaries(maxX, minX, maxY, minY) {
+        pawnInvoke('SetPlayerWorldBounds', 'iffff', this.#id_, maxX, minX, maxY, minY);
     }
 
     // ---------------------------------------------------------------------------------------------

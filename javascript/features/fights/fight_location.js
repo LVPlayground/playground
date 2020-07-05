@@ -44,6 +44,10 @@ export class FightLocation {
         }
     }
 
+    // Returns the world boundaries that have been set for this location. This is optional: some
+    // locations do not require boundaries. Defined as a Rect, or null when absent.
+    getWorldBoundaries() { return this.#description_?.environment?.boundaries ?? null; }
+
     // Called when requesting a string representation of this location.
     toString() { return `[FightLocation: "${this.#description_.descriptionFilename}"]`; }
 }

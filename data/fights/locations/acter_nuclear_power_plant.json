@@ -1,5 +1,5 @@
 {
-    "name": "Sniper Madness",
+    "name": "Acter Nuclear Power Plant",
     "spawnPositions": {
         "individual": [
             { "position": [ 2647.7834, 2697.5884, 19.3222 ], "facingAngle": 353.1684 },
@@ -13,7 +13,7 @@
             { "position": [ 2601.3640, 2777.8101, 23.8222 ], "facingAngle": 253.4439 },
             { "position": [ 2584.3940, 2825.1748, 27.8203 ], "facingAngle": 244.5475 },
             { "position": [ 2631.8110, 2834.2593, 40.3281 ], "facingAngle": 213.2975 },
-            { "position": [ 2632.2852, 2834.9390, 122.9219 ], "facingAngle": 197.6725 },
+            { "position": [ 2498.3167, 2782.3357, 10.8203 ], "facingAngle": 251.7015 },
             { "position": [ 2646.1997, 2817.7070, 36.3222 ], "facingAngle": 182.0474 },
             { "position": [ 2685.8875, 2816.6575, 36.3222 ], "facingAngle": 129.9525 },
             { "position": [ 2691.1233, 2787.7883, 59.0212 ], "facingAngle": 208.0777 },
@@ -41,6 +41,10 @@
                 { "position": [ 2662.3035, 2824.0537, 36.3222 ], "facingAngle": 293.3665 }
             ]
         ]
+    },
+
+    "environment": {
+        "boundaries": [ 2485.0, 2656.0, 2760.0, 2866.0 ]
     },
 
     "pickups": [

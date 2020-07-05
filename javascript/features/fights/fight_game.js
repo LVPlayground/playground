@@ -78,6 +78,15 @@ export class FightGame extends DeathmatchGame {
     async onPlayerAdded(player) {
         await super.onPlayerAdded(player);
 
+        // Tell the streamer to preload any objects and items at the location for the player, as
+        // they are about to be teleported to it. This will not teleport the player.
+        const objects = this.#location_.getObjects();
+        if (objects.length) {
+            player.updateStreamer(
+                objects[0].position, this.scopedEntities.virtualWorld,
+                this.scopedEntities.interiorId, /* type= */ -1);
+        }
+
         // TODO: For team-based games, put the player in an appropriate team.
     }
 
@@ -91,9 +100,20 @@ export class FightGame extends DeathmatchGame {
 
         player.position = spawnPosition.position;
         player.rotation = spawnPosition.facingAngle;
+
+        // If the location has world boundaries, activate those for the |player| as well.
+        const boundaries = this.#location_.getWorldBoundaries();
+        if (boundaries) {
+            player.setWorldBoundaries(
+                boundaries.maxX, boundaries.minX, boundaries.maxY, boundaries.minY);
+        }
     }
 
     async onPlayerRemoved(player) {
+        // If world boundaries had been applied for the |player|, we need to remove them again.
+        if (this.#location_.getWorldBoundaries() !== null)
+            player.resetWorldBoundaries();
+        
         await super.onPlayerRemoved(player);
     }
 

@@ -7,24 +7,25 @@
 export class DeathmatchDescription {
     #description_ = null;
 
-    lagCompensation_ = false;
+    // Whether players should be subject to lag compensation during this game.
+    lagCompensation = false;
 
     // ---------------------------------------------------------------------------------------------
 
-    // Gets whether players should be subject to lag compensation during this game.
-    get lagCompensation() { return this.lagCompensation_; }
-
-    // ---------------------------------------------------------------------------------------------
-
-    constructor(description, manualOptions = null) {
+    constructor(description, manualOptions, settings) {
         this.#description_ = description;
 
+        // Set the default configuration based on the |settings|.
+        this.lagCompensation = settings.getValue('games/deathmatch_lag_compensation');
+
+        // Load all configuration from the |manualOptions|, or the |description| when available.
         const options = manualOptions || description.options;
+
         if (options.hasOwnProperty('lagCompensation')) {
             if (typeof options.lagCompensation !== 'boolean')
                 throw new Error(`[${this.name}] The lag compensation flag must be a boolean.`);
             
-            this.lagCompensation_ = options.lagCompensation;
+            this.lagCompensation = options.lagCompensation;
         }
     }
 }

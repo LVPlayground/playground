@@ -6,16 +6,36 @@ import { DeathmatchDescription } from 'features/games_deathmatch/deathmatch_desc
 
 describe('DeathmatchDescription', it => {
     it('should have sensible default values', assert => {
-        const description = new DeathmatchDescription(/* description= */ null, /* options= */ {});
+        const settings = server.featureManager.loadFeature('settings');
+        const description = new DeathmatchDescription(
+            /* description= */ null, /* options= */ {}, settings);
 
-        assert.isFalse(description.lagCompensation);
+        assert.equal(
+            description.lagCompensation, settings.getValue('games/deathmatch_lag_compensation'));
     });
 
     it('should be able to take configuration from an object of options', assert => {
-        const description = new DeathmatchDescription(/* description= */ null, {
-            lagCompensation: true,
-        });
+        const settings = server.featureManager.loadFeature('settings');
 
-        assert.isTrue(description.lagCompensation);
+        // (1) Create a description based on settings that enable everything.
+        {
+            const description = new DeathmatchDescription(/* description= */ null, {
+                lagCompensation: true,
+
+            }, settings);
+
+            assert.isTrue(description.lagCompensation);
+        }
+
+        // (2) Create a description based on settings that change most things, but with different
+        // values to catch cases where the server-defined default isn't overridden.
+        {
+            const description = new DeathmatchDescription(/* description= */ null, {
+                lagCompensation: false,
+
+            }, settings);
+
+            assert.isFalse(description.lagCompensation);
+        }
     });
 });

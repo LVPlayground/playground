@@ -47,7 +47,8 @@ export default class GamesDeathmatch extends Feature {
 
         // Construct a `DeathmatchDescription` instance to verify the |options|. This will throw an
         // exception when it fails, informing the caller of the issue.
-        const description = new DeathmatchDescription(/* description= */ null, options);
+        const description = new DeathmatchDescription(
+            /* description= */ null, options, this.settings_());
 
         // Store the |gameConstructor| so that we can silently reload all the games when the Games
         // feature reloads. Each user of this class wouldn't necessarily be aware of that.

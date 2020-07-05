@@ -11,25 +11,11 @@ export const kLocationSetting = 'fights/location';
 // games. Builds on the DeathmatchGame infrastructure, which builds on the Game infrastructure. An
 // instance will be created (and destroyed) based on player activity.
 export class FightGame extends DeathmatchGame {
-    // Mode of the game, either free-for-all or team-based.
-    static kModeIndividual = 0;
-    static kModeTeams = 1;
-
-    // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
-    // players can be part of either Team Alpha or Team Bravo in team-based games.
-    static kTeamIndividual = 0;
-    static kTeamAlpha = 0;
-    static kTeamBravo = 1;
-
     #location_ = null;
-    #mode_ = null;
     #spawns_ = null;
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings);
-
-        // TODO: Derive the desired fight move from the given |settings|.
-        this.#mode_ = FightGame.kModeIndividual;
 
         // Get the FightLocation instance from the |registry|, based on the given |settings|.
         this.#location_ = registry.getLocation(settings.get(kLocationSetting));
@@ -40,14 +26,14 @@ export class FightGame extends DeathmatchGame {
         // team-based games, as players will want to be spread out in a different manner.
         {
             const teams = [];
-            switch (this.#mode_) {
-                case FightGame.kModeIndividual:
-                    teams.push(FightGame.kTeamIndividual);
+            switch (this.getMode()) {
+                case DeathmatchGame.kModeIndividual:
+                    teams.push(DeathmatchGame.kTeamIndividual);
                     break;
                 
-                case FightGame.kModeTeams:
-                    teams.push(FightGame.kTeamAlpha);
-                    teams.push(FightGame.kTeamBravo);
+                case DeathmatchGame.kModeTeams:
+                    teams.push(DeathmatchGame.kTeamAlpha);
+                    teams.push(DeathmatchGame.kTeamBravo);
                     break;
             }
 
@@ -57,7 +43,7 @@ export class FightGame extends DeathmatchGame {
                 return [
                     team,
                     {
-                        positions: this.#location_.getSpawnPositions(this.#mode_, team),
+                        positions: this.#location_.getSpawnPositions(this.getMode(), team),
                         index: 0,
                     }
                 ];
@@ -116,9 +102,4 @@ export class FightGame extends DeathmatchGame {
         
         await super.onPlayerRemoved(player);
     }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Returns the team that the player is part of.
-    getTeamForPlayer(player) { return FightGame.kTeamIndividual; }
 }

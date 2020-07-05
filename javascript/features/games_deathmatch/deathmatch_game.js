@@ -12,13 +12,30 @@ export class DeathmatchGame extends Game {
     static kMapMarkersEnabledTeam = 1;
     static kMapMarkersDisabled = 2;
 
+    // Mode of the game, either free-for-all or team-based.
+    static kModeIndividual = 0;
+    static kModeTeams = 1;
+
+    // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
+    // players can be part of either Team Alpha or Team Bravo in team-based games.
+    static kTeamIndividual = 0;
+    static kTeamAlpha = 0;
+    static kTeamBravo = 1;
+
     #lagCompensation_ = false;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
+    #mode_ = DeathmatchGame.kModeIndividual;
 
     // Snapshots of statistics of each of the participants when they join the game.
     #statistics_ = new WeakMap();
 
+    // Team ID of the team that a given player is part of.
+    #teams_ = new WeakMap();
+
     // ---------------------------------------------------------------------------------------------
+
+    // Returns the mode that the deathmatch game is currently running under.
+    getMode() { return this.#mode_; }
 
     // Returns a PlayerStatsView instance for the current statistics of the given |player|, or NULL
     // when the |player| is not currently engaged in the game.
@@ -28,6 +45,27 @@ export class DeathmatchGame extends Game {
             return null;  // no snapshot could be found
 
         return player.stats.diff(snapshot);
+    }
+
+    // Gets the team that the given |player| is part of. Will be one of the DeathmatchGame.kTeam*
+    // constants, and always be kTeamIndividual for non-team based games.
+    getTeamForPlayer(player) {
+        if (this.#mode_ === DeathmatchGame.kModeIndividual)
+            return DeathmatchGame.kTeamIndividual;
+        
+        return this.#teams_.get(player);
+    }
+
+    // Sets the team for the given |player| to |team|. This will throw an exception on invalid teams
+    // or when setting teams in non-team based games.
+    setTeamForPlayer(player, team) {
+        if (this.#mode_ !== DeathmatchGame.kModeTeams)
+            throw new Error(`Cannot set a player's team in non-team based games.`);
+        
+        if (![ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ].includes(team))
+            throw new Error(`Cannot set a player's team to an invalid team.`);
+
+        this.#teams_.set(player, team);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -60,6 +98,7 @@ export class DeathmatchGame extends Game {
         await super.onPlayerAdded(player);
 
         this.#statistics_.set(player, player.stats.snapshot());
+        this.#teams_.set(player, DeathmatchGame.kTeamIndividual);
 
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
@@ -69,6 +108,7 @@ export class DeathmatchGame extends Game {
         await super.onPlayerRemoved(player);
 
         this.#statistics_.delete(player);
+        this.#teams_.delete(player);
 
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;

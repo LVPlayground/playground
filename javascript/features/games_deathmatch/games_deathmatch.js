@@ -63,9 +63,14 @@ export default class GamesDeathmatch extends Feature {
             
             // Option: Map markers (enumeration)
             new Setting(
-                'deathmatch', 'map_markers', ['Enabled', 'Team only', 'Disabled'],
+                'deathmatch', 'map_markers', DeathmatchDescription.kMapMarkerOptions,
                 description.mapMarkers, 'Map markers'),
             
+            // Option: Objective (enumeration)
+            new Setting(
+                'deathmatch', 'objective', DeathmatchDescription.kObjectiveOptions,
+                description.objective, 'Objective'),
+
             // Option: Team damage (boolean)
             new Setting(
                 'deathmatch', 'team_damage', Setting.TYPE_BOOLEAN, description.teamDamage,

@@ -17,6 +17,10 @@ describe('DeathmatchDescription', it => {
         assert.equal(description.mapMarkers, 'Enabled');
 
         assert.equal(
+            description.objective,
+            settings.getValue('games/deathmatch_objective_default'));
+
+        assert.equal(
             description.teamDamage,
             settings.getValue('games/deathmatch_team_damage_default'));
     });
@@ -29,12 +33,14 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: true,
                 mapMarkers: 'Team only',
+                objective: 'Best of 3',
                 teamDamage: true,
 
             }, settings);
 
             assert.isTrue(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Team only');
+            assert.equal(description.objective, 'Best of 3');
             assert.isTrue(description.teamDamage);
         }
 
@@ -44,12 +50,14 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: false,
                 mapMarkers: 'Disabled',
+                objective: 'Continuous',
                 teamDamage: false,
 
             }, settings);
 
             assert.isFalse(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Disabled');
+            assert.equal(description.objective, 'Continuous');
             assert.isFalse(description.teamDamage);
         }
     });

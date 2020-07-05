@@ -18,6 +18,7 @@ Option              | Description
 --------------------|--------------
 `lagCompensation`   | Whether lag compensation should be enabled. Defaults to `true`.
 `mapMarkers`        | Whether map markers should be enabled for participants. One of `Enabled` (default), `Team only` or `Disabled`.
+`objective`         | Objective of the game. One of `Last man standing` (default), `Best of 3`, `Best of 5`, `Best of 10` and `Continuous`.
 `teamDamage`        | Whether players in the same team can issue damage to each other. Defaults to `true`.
 
 ## Settings when starting a game
@@ -28,6 +29,7 @@ Setting             | Description
 --------------------|--------------
 `Lag compensation`  | Whether lag compensation should be enabled.
 `Map markers`       | Whether map markers should be enabled for participants.
+`Objective`         | What the objective of the game is, which defines the winning conditions.
 `Team damage`       | Whether players in the same team can issue damage to each other.
 
 [1]: ../games#options-when-registering-a-game

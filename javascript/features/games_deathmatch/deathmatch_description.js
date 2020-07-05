@@ -5,20 +5,15 @@
 // Specialised version of the `GameDescription` class that controls and validates all deathmatch-
 // related functionality added by this feature.
 export class DeathmatchDescription {
-    #description_ = null;
-
     // Whether players should be subject to lag compensation during this game.
     lagCompensation = false;
+
+    // Whether map markers should be enabled 
+    mapMarkers = 'Enabled';
 
     // ---------------------------------------------------------------------------------------------
 
     constructor(description, manualOptions, settings) {
-        this.#description_ = description;
-
-        // Set the default configuration based on the |settings|.
-        this.lagCompensation = settings.getValue('games/deathmatch_lag_compensation');
-
-        // Load all configuration from the |manualOptions|, or the |description| when available.
         const options = manualOptions || description.options;
 
         if (options.hasOwnProperty('lagCompensation')) {
@@ -26,6 +21,15 @@ export class DeathmatchDescription {
                 throw new Error(`[${this.name}] The lag compensation flag must be a boolean.`);
             
             this.lagCompensation = options.lagCompensation;
+        } else {
+            this.lagCompensation = settings.getValue('games/deathmatch_lag_compensation');
+        }
+
+        if (options.hasOwnProperty('mapMarkers')) {
+            if (!['Enabled', 'Team only', 'Disabled'].includes(options.mapMarkers))
+                throw new Error(`[${this.name}] Invalid value given for the map marker option.`);
+            
+            this.mapMarkers = options.mapMarkers;
         }
     }
 }

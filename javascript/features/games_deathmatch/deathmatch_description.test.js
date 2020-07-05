@@ -12,6 +12,7 @@ describe('DeathmatchDescription', it => {
 
         assert.equal(
             description.lagCompensation, settings.getValue('games/deathmatch_lag_compensation'));
+        assert.equal(description.mapMarkers, 'Enabled');
     });
 
     it('should be able to take configuration from an object of options', assert => {
@@ -21,10 +22,12 @@ describe('DeathmatchDescription', it => {
         {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: true,
+                mapMarkers: 'Team only',
 
             }, settings);
 
             assert.isTrue(description.lagCompensation);
+            assert.equal(description.mapMarkers, 'Team only');
         }
 
         // (2) Create a description based on settings that change most things, but with different
@@ -32,10 +35,12 @@ describe('DeathmatchDescription', it => {
         {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: false,
+                mapMarkers: 'Disabled',
 
             }, settings);
 
             assert.isFalse(description.lagCompensation);
+            assert.equal(description.mapMarkers, 'Disabled');
         }
     });
 });

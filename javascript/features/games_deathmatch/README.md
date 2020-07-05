@@ -17,6 +17,7 @@ The following options will be made available in addition to the [default ones][1
 Option              | Description
 --------------------|--------------
 `lagCompensation`   | Whether lag compensation should be enabled. Defaults to `true`.
+`mapMarkers`        | Whether map markers should be enabled for participants. One of `Enabled` (default), `Team only` or `Disabled`.
 
 ## Settings when starting a game
 The following settings will be made available to all deathmatch games, and can be customized by
@@ -24,6 +25,7 @@ players as they see fit. Specialized interfaces will be offered where appropriat
 
 Setting             | Description
 --------------------|--------------
-`Lag compensation`  | Whether lag compensation should be enabled. Defaults to the option's value.
+`Lag compensation`  | Whether lag compensation should be enabled.
+`Map markers`       | Whether map markers should be enabled for participants.
 
 [1]: ../games#options-when-registering-a-game

@@ -131,18 +131,66 @@ export class DeathmatchGame extends Game {
     // Enables the team-specific state for the given |player|. This can be called multiple times,
     // and will ensure that all settings for the |player| are synchronized to others.
     enableTeamStateForPlayer(player) {
-        // TODO: Map marker visibility
+        const team = this.#teams_.get(player);  // may be undefined
 
-        if (this.#teams_.has(player) && !this.#teamDamage_)
-            player.team = this.#teams_.get(player);
+        switch (this.#mapMarkers_) {
+            case DeathmatchGame.kMapMarkersEnabled:
+                break;  // nothing to update
+
+            case DeathmatchGame.kMapMarkersEnabledTeam:
+                for (const [ target, targetTeam ] of this.#teams_) {
+                    if (targetTeam === team)
+                        continue;  // same team, nothing to update
+
+                    target.toggleVisibilityToPlayer(player, /* visible= */ false);
+                    player.toggleVisibilityToPlayer(target, /* visible= */ false);
+                }
+                break;
+
+            case DeathmatchGame.kMapMarkersDisabled:
+                for (const target of this.players) {
+                    target.toggleVisibilityToPlayer(player, /* visible= */ false);
+                    player.toggleVisibilityToPlayer(target, /* visible= */ false);
+                }
+
+                break;
+        }
+
+        if (team !== undefined && !this.#teamDamage_)
+            player.team = team;
     }
 
     // Disables the team-specific state for the given |player|. This will reset the team that they
     // are part of when damage has been disabled, clean up marker state, etecetera.
     clearTeamStateForPlayer(player) {
-        // TODO: Map marker visibility
+        const team = this.#teams_.get(player);  // may be undefined
+
+        switch (this.#mapMarkers_) {
+            case DeathmatchGame.kMapMarkersEnabled:
+                break;  // nothing to update
+
+            case DeathmatchGame.kMapMarkersEnabledTeam:
+                for (const [ target, targetTeam ] of this.#teams_) {
+                    if (targetTeam === team)
+                        continue;  // same team, nothing to update
+
+                    target.toggleVisibilityToPlayer(player, /* visible= */ true);
+                    player.toggleVisibilityToPlayer(target, /* visible= */ true);
+                }
+                break;
+
+            case DeathmatchGame.kMapMarkersDisabled:
+                for (const target of this.players) {
+                    if (target === player)
+                        continue;  // same player, nothing to update
+
+                    target.toggleVisibilityToPlayer(player, /* visible= */ true);
+                    player.toggleVisibilityToPlayer(target, /* visible= */ true);
+                }
+                break;
+        }
         
-        if (this.#teams_.has(player) && !this.#teamDamage_)
+        if (team !== undefined && !this.#teamDamage_)
             player.team = Player.kNoTeam;
     }
 }

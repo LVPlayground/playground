@@ -290,6 +290,10 @@ export class Player extends Supplementable {
 
     respawn() { pawnInvoke('SpawnPlayer', 'i', this.#id_); }
 
+    toggleVisibilityToPlayer(target, visible) {
+        pawnInvoke('ShowPlayerNameTagForPlayer', 'iii', target.id, this.#id_, !!visible ? 1 : 0);
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Environment
     // ---------------------------------------------------------------------------------------------

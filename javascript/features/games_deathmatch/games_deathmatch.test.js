@@ -138,6 +138,14 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(russell.team, Player.kNoTeam);
         assert.equal(lucy.team, Player.kNoTeam);
 
+        // All the players should be able to see each other.
+        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
+        assert.isTrue(gunther.isVisibleToPlayerForTesting(lucy));
+        assert.isTrue(russell.isVisibleToPlayerForTesting(lucy));
+        assert.isTrue(lucy.isVisibleToPlayerForTesting(gunther));
+        assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
+
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.isTrue(await russell.issueCommand('/bubble'));
         assert.isTrue(await lucy.issueCommand('/bubble'));
@@ -151,8 +159,15 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(game.getTeamForPlayer(russell), DeathmatchGame.kTeamAlpha);
         assert.equal(game.getTeamForPlayer(lucy), DeathmatchGame.kTeamBravo);
 
-        // TODO: Verify the expected map marker visibility.
-        
+        // Gunther and Russell should be able to see each other, but not Lucy. Lucy shouldn't be
+        // able to see either, based on the game's configuration.
+        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
+        assert.isFalse(gunther.isVisibleToPlayerForTesting(lucy));
+        assert.isFalse(russell.isVisibleToPlayerForTesting(lucy));
+        assert.isFalse(lucy.isVisibleToPlayerForTesting(gunther));
+        assert.isFalse(lucy.isVisibleToPlayerForTesting(russell));
+
         assert.equal(gunther.team, game.getTeamForPlayer(gunther));
         assert.equal(russell.team, game.getTeamForPlayer(russell));
         assert.equal(lucy.team, game.getTeamForPlayer(lucy));
@@ -172,6 +187,13 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(russell.team, Player.kNoTeam);
         assert.equal(lucy.team, Player.kNoTeam);
 
+        // All the players should be able to see each other again.
+        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
+        assert.isTrue(gunther.isVisibleToPlayerForTesting(lucy));
+        assert.isTrue(russell.isVisibleToPlayerForTesting(lucy));
+        assert.isTrue(lucy.isVisibleToPlayerForTesting(gunther));
+        assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
     });
 
     it('should maintain statistics of all participants in the game', async (assert) => {

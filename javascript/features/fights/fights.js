@@ -30,8 +30,9 @@ export default class Fights extends Feature {
         this.registry_ = new FightRegistry();
         this.registry_.initialize();
 
-        // Register all games known to this feature.
-        this.registerFightingGames();
+        // Register all games known to this feature when the Settings feature has been loaded, as
+        // we depend on a number of settings in order to be able to initialize the feature.
+        this.settings_().ready.then(() => this.registerFightingGames());
     }
 
     // Registers the fighting games available on Las Venturas Playground. Each is represented by a

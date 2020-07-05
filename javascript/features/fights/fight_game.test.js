@@ -10,7 +10,7 @@ describe('FightGame', (it, beforeEach) => {
     let russell = null;
     let settings = null;
 
-    beforeEach(() => {
+    beforeEach(async() => {
         const feature = server.featureManager.loadFeature('fights');
         const finance = server.featureManager.loadFeature('finance');
 
@@ -24,6 +24,9 @@ describe('FightGame', (it, beforeEach) => {
         // Give both Gunther and Russell enough money to start a game.
         finance.givePlayerCash(gunther, 1000000);
         finance.givePlayerCash(russell, 1000000);
+
+        // Wait until the settings have been loaded, which the feature depends on.
+        await settings.ready;
     });
 
     // Returns the Game instance of the currently running game. When there are multiple games live

@@ -32,6 +32,12 @@ export default class Settings extends Feature {
         // The PawnConfig instance, which magically synchronizes any setting with Pawn.
         this.pawnConfig_ = new PawnConfig();
 
+        let readyResolver = null;
+
+        // The ready promise allows other features to wait until the Settings data has been loaded,
+        // which is asynchronous. Only relevant when their initialisation depends on values.
+        this.readyPromise_ = new Promise(resolver => readyResolver = resolver);
+
         // Import the settings from the |kSettingList| in to the local state.
         for (const setting of kSettingList)
             this.settings_.set(setting.identifier, setting);
@@ -46,6 +52,9 @@ export default class Settings extends Feature {
                                 exception);
                 }
             }
+
+            // Resolve the `ready` promise, telling other features we're ready.
+            readyResolver();
         });
     }
 
@@ -54,7 +63,10 @@ export default class Settings extends Feature {
     // Gets an iterator with the Settings that are available on Las Venturas Playground.
     getSettings() { return this.settings_.values(); }
 
-    // Returns the full settings map.
+    // Gets a promise that will be resolved when the settings have been loaded.
+    get ready() { return this.readyPromise_; }
+
+    // Gets the full settings map.
     get settings() { return this.settings_; }
 
     // ---------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
+import { GameCommandParams } from 'features/games/game_command_params.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import { Menu } from 'components/menu/menu.js';
@@ -134,11 +135,21 @@ export class GameCommands {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the |player| has executed the command necessary to start the game described in
-    // the given |description|. This will first check that they're not occupied with another
-    // activity just yet. If they aren't, it will either register them for an existing pending game,
-    // or create a new game just for them.
-    async onCommand(description, custom, player, registrationId) {
-        const settings = await this.determineSettings(description, custom, player);
+    // the given |description|. Triggers the same code path as games initialized by other features.
+    async onCommand(description, customise, player, registrationId) {
+        const params = new GameCommandParams();
+
+        params.customise = !!customise;
+        params.registrationId = registrationId;
+
+        return this.startGame(description, player, params);
+    }
+
+    // Actually attempts to start the game described by |description|. Runs all the necessary checks
+    // to verify that the player is able to do this right now. Will either sign them up to an
+    // existing game, or create a new game for them specifically.
+    async startGame(description, player, params) {
+        const settings = await this.determineSettings(description, player, params);
         if (!settings)
             return;  // the |player| aborted out of the flow
 
@@ -168,11 +179,11 @@ export class GameCommands {
             // If the |settings| aren't equal to the pending registration, we allow the sign up if
             // either (a) no |registrationId| is given, and this isn't a custom game, or (b) the
             // |registrationId| is given, and it matches the |pendingRegistration|'s ID.
-            if (!mapEquals(settings, pendingRegistration.settings) || registrationId) {
-                if (!registrationId && custom)
+            if (!mapEquals(settings, pendingRegistration.settings) || params.registrationId) {
+                if (!params.registrationId && params.customise)
                     continue;  // a new custom game has been created
 
-                if (registrationId && pendingRegistration.id !== registrationId)
+                if (params.registrationId && pendingRegistration.id !== params.registrationId)
                     continue;  // a registration Id has been given
             }
             
@@ -219,7 +230,7 @@ export class GameCommands {
         }
 
         // If a |registrationId| was given, and we reach this point, then it was invalid. Tell 'em.
-        if (registrationId) {
+        if (params.registrationId) {
             player.sendMessage(Message.GAME_REGISTRATION_INVALID_ID);
             return;
         }
@@ -304,17 +315,21 @@ export class GameCommands {
     // ---------------------------------------------------------------------------------------------
 
     // Determines the settings for the game described by |description|. This will use the default
-    // settings, unless the |player| has indicated that they want to customize. (The |custom| flag.)
-    async determineSettings(description, custom, player) {
+    // settings, influenced by the configuration defined in the given |params|.
+    async determineSettings(description, player, params) {
         const settings = new Map();
 
         // Populate the |settings| with the default configuration for the game.
-        for (const [ identifier, setting ] of description.settings)
-            settings.set(identifier, setting.defaultValue);
+        for (const [ identifier, setting ] of description.settings) {
+            if (params.settings.has(identifier))
+                settings.set(identifier, params.settings.get(identifier));
+            else
+                settings.set(identifier, setting.defaultValue);
+        }
 
-        // If the |custom| flag has not been set, return the |settings| immediately as we're done.
+        // If the customise flag has not been set, return the |settings| immediately as we're done.
         // Otherwise we begin the game customization flow.
-        if (!custom)
+        if (!params.customise)
             return settings;
 
         // If no settings have been defined for this game, then there's nothing to customize. Ask

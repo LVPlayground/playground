@@ -90,11 +90,11 @@ export default class GamesDeathmatch extends Feature {
         return this.games_().registerGame(gameConstructor, options, userData);
     }
 
-    // Starts the |gameConstructor| game for the |player|, which must have been registered with the
-    // game registry already. When set, the |custom| flag will enable the player to customize the
-    // game's settings when available. Optionally the |registrationId| may be given as well.
-    startGame(gameConstructor, player, custom = false, registrationId = null) {
-        return this.games_().startGame(gameConstructor, player, custom, registrationId);
+    // Starts the |gameConstructor| game for the given |player|. The constructor must have been
+    // registered with the game registry already. The |params| must be a GameCommandParams instance,
+    // and can be used to customize how the game should be started.
+    startGame(gameConstructor, player, params) {
+        return this.games_().startGame(gameConstructor, player, params);
     }
 
     // Removes the game previously registered with |gameConstructor| from the list of games that

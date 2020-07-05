@@ -57,7 +57,7 @@ export default class Fights extends Feature {
                 new Setting(
                     'fights', 'location', [ ...this.registry_.locations.keys() ], defaultLocation,
                     'Location'),
-                
+
                 // Option: Pickups (boolean)
                 new Setting('fights', 'pickups', Setting.TYPE_BOOLEAN, true, 'Pickups'),
             ],
@@ -69,10 +69,18 @@ export default class Fights extends Feature {
     // in the internal values for predefined games, but will otherwise be composed of the settings
     // that the game is being started with.
     composeGameName(settings) {
-        const base = settings.get('internal/name') ?? 'Deathmatch Fight';
+        const kSettingLagCompensation = 'deathmatch/lag_compensation';
+        const kSettingName = 'internal/name';
 
-        // TODO: Specialise based on the given |settings|.
-        return base;
+        const base = settings.get(kSettingName) ?? 'Deathmatch Fight';
+
+        let suffix = '';
+
+        // (1) Specialize the name if the |settings| will disable lag compensation.
+        if (settings.has(kSettingLagCompensation) && !settings.get(kSettingLagCompensation))
+            suffix = ' (lag shot)';
+
+        return base + suffix;
     }
 
     dispose() {

@@ -47,7 +47,7 @@ export default class Fights extends Feature {
             command: 'newfights',
 
             minimumPlayers,
-            maximumPlayers: 8,
+            maximumPlayers: 16,
 
             settings: [
                 // Option: Location (string)

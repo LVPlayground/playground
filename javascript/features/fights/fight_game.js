@@ -63,6 +63,10 @@ export class FightGame extends DeathmatchGame {
                 ];
             }));
         }
+
+        // Create all the objects that are part of this location. Players will 
+        for (const objectInfo of this.#location_.getObjects())
+            this.scopedEntities.createObject(objectInfo);
     }
 
     async onPlayerAdded(player) {
@@ -72,7 +76,7 @@ export class FightGame extends DeathmatchGame {
     }
 
     async onPlayerSpawned(player, countdown) {
-        await super.onPlayerAdded(player, countdown);
+        await super.onPlayerSpawned(player, countdown);
 
         // Determine the spawn position for the |player|. Players will iterative spawn in each of
         // the positions available for their team, or the set of individual spawns.
@@ -80,7 +84,7 @@ export class FightGame extends DeathmatchGame {
         const spawnPosition = spawns.positions[(spawns.index++) % spawns.positions.length];
 
         player.position = spawnPosition.position;
-        player.rotation = spawnPosition.rotation;
+        player.rotation = spawnPosition.facingAngle;
     }
 
     async onPlayerRemoved(player) {

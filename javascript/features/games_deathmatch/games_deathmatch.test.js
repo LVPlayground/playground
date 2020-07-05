@@ -134,6 +134,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             maximumPlayers: 4,
         });
 
+        assert.equal(gunther.team, Player.kNoTeam);
+        assert.equal(russell.team, Player.kNoTeam);
+        assert.equal(lucy.team, Player.kNoTeam);
+
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.isTrue(await russell.issueCommand('/bubble'));
         assert.isTrue(await lucy.issueCommand('/bubble'));
@@ -148,7 +152,12 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(game.getTeamForPlayer(lucy), DeathmatchGame.kTeamBravo);
 
         // TODO: Verify the expected map marker visibility.
-        // TODO: Verify the expected player team values.
+        
+        assert.equal(gunther.team, game.getTeamForPlayer(gunther));
+        assert.equal(russell.team, game.getTeamForPlayer(russell));
+        assert.equal(lucy.team, game.getTeamForPlayer(lucy));
+
+        assert.equal(gunther.team, russell.team);
 
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.isTrue(await russell.issueCommand('/leave'));
@@ -158,6 +167,11 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         // Verify that the Game instance has been destroyed, together with all supporting infra.
         assert.throws(() => getGameInstance());
+
+        assert.equal(gunther.team, Player.kNoTeam);
+        assert.equal(russell.team, Player.kNoTeam);
+        assert.equal(lucy.team, Player.kNoTeam);
+
     });
 
     it('should maintain statistics of all participants in the game', async (assert) => {

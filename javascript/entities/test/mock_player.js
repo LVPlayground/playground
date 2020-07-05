@@ -44,7 +44,7 @@ export class MockPlayer extends Player {
     #fightingStyle_ = Player.kFightingStyleNormal;
     #gravity_ = 0.008;
     #score_ = 0;
-    #team_ = 255;  // NO_TEAM
+    #team_ = Player.kNoTeam;
     #time_ = [0, 0];
     #wantedLevel_ = 0;
 

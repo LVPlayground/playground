@@ -132,13 +132,17 @@ export class DeathmatchGame extends Game {
     // and will ensure that all settings for the |player| are synchronized to others.
     enableTeamStateForPlayer(player) {
         // TODO: Map marker visibility
-        // TODO: Player team settings
+
+        if (this.#teams_.has(player) && !this.#teamDamage_)
+            player.team = this.#teams_.get(player);
     }
 
     // Disables the team-specific state for the given |player|. This will reset the team that they
     // are part of when damage has been disabled, clean up marker state, etecetera.
     clearTeamStateForPlayer(player) {
         // TODO: Map marker visibility
-        // TODO: Player team settings
+        
+        if (this.#teams_.has(player) && !this.#teamDamage_)
+            player.team = Player.kNoTeam;
     }
 }

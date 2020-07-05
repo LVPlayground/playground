@@ -42,6 +42,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     // Indices for the automatically inserted options in the customization menu.
     const kStartGameIndex = 0;
     const kLagCompensationIndex = 2;
+    const kMapMarkersIndex = 3;
+    const kTeamDamageIndex = 4;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
@@ -91,6 +93,71 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.minigameName, '');
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
+    });
+
+    it('should be able to change map markers and team damage in a game', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+
+        class BubbleGame extends DeathmatchGame {
+            async onInitialized(settings) {
+                await super.onInitialized(settings);
+                this.mode = DeathmatchGame.kModeTeams;
+            }
+
+            async onPlayerAdded(player) {
+                await super.onPlayerAdded(player);
+                switch (player) {
+                    case gunther:
+                    case russell:
+                        this.setTeamForPlayer(player, DeathmatchGame.kTeamAlpha);
+                        break;
+
+                    case lucy:
+                        this.setTeamForPlayer(player, DeathmatchGame.kTeamBravo);
+                        break;
+                }
+            }
+        }
+
+        feature.registerGame(BubbleGame, {
+            name: 'Bubble Fighting Game',
+            goal: 'Fight each other with bubbles',
+
+            command: 'bubble',
+            price: 0,
+
+            mapMarkers: 'Team only',
+            teamDamage: false,
+
+            minimumPlayers: 3,
+            maximumPlayers: 4,
+        });
+
+        assert.isTrue(await gunther.issueCommand('/bubble'));
+        assert.isTrue(await russell.issueCommand('/bubble'));
+        assert.isTrue(await lucy.issueCommand('/bubble'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        const game = getGameInstance();
+
+        assert.equal(game.getTeamForPlayer(gunther), DeathmatchGame.kTeamAlpha);
+        assert.equal(game.getTeamForPlayer(russell), DeathmatchGame.kTeamAlpha);
+        assert.equal(game.getTeamForPlayer(lucy), DeathmatchGame.kTeamBravo);
+
+        // TODO: Verify the expected map marker visibility.
+        // TODO: Verify the expected player team values.
+
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.isTrue(await russell.issueCommand('/leave'));
+        assert.isTrue(await lucy.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        // Verify that the Game instance has been destroyed, together with all supporting infra.
+        assert.throws(() => getGameInstance());
     });
 
     it('should maintain statistics of all participants in the game', async (assert) => {
@@ -159,6 +226,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             price: 0,
 
             lagCompensation: false,
+            mapMarkers: 'Team only',
+            teamDamage: false,
 
             minimumPlayers: 1,
             maximumPlayers: 4,
@@ -167,6 +236,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
 
         gunther.respondToDialog({ listitem: kLagCompensationIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
+            () => gunther.respondToDialog({ listitem: kMapMarkersIndex })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* disabled */ })).then(
+            () => gunther.respondToDialog({ listitem: kTeamDamageIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: kStartGameIndex }));
 
@@ -178,9 +251,15 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         // Overridden from the default through the customization menu:
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
 
+        // TODO: Verify map markers.
+        // TODO: Verify team damage.
+
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
+
+        // TODO: Verify map markers.
+        // TODO: Verify team damage.
     });
 });

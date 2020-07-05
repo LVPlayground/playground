@@ -27,7 +27,7 @@ export class FightGame extends DeathmatchGame {
         // team-based games, as players will want to be spread out in a different manner.
         {
             const teams = [];
-            switch (this.getMode()) {
+            switch (this.mode) {
                 case DeathmatchGame.kModeIndividual:
                     teams.push(DeathmatchGame.kTeamIndividual);
                     break;
@@ -44,7 +44,7 @@ export class FightGame extends DeathmatchGame {
                 return [
                     team,
                     {
-                        positions: this.#location_.getSpawnPositions(this.getMode(), team),
+                        positions: this.#location_.getSpawnPositions(this.mode, team),
                         index: 0,
                     }
                 ];

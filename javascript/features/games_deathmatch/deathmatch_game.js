@@ -122,24 +122,25 @@ export class DeathmatchGame extends Game {
                 throw new Error(`Invalid value given for map markers.`);
         }
 
-        switch (settings.get('deathmatch/objective')) {
+        const objective = settings.get('deathmatch/objective');
+        switch (objective.type) {
             case 'Last man standing':
                 this.#objective_ = DeathmatchGame.kObjectiveLastManStanding;
                 break;
 
             case 'Best of...':
                 this.#objective_ = DeathmatchGame.kObjectiveBest;
-                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 5;
+                this.#objectiveValue_ = objective.kills;
                 break;
 
             case 'First to...':
                 this.#objective_ = DeathmatchGame.kObjectiveFirstTo;
-                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 3;
+                this.#objectiveValue_ = objective.kills;
                 break;
 
             case 'Time limit...':
                 this.#objective_ = DeathmatchGame.kObjectiveTimeLimit;
-                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 180;
+                this.#objectiveValue_ = objective.seconds;
                 break;
 
             case 'Continuous':

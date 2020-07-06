@@ -377,7 +377,7 @@ export class GameCommands {
 
             let valueLabel = currentValue;
             if (setting.type === Setting.TYPE_BOOLEAN)
-                valueLabel = !!currentValue ? 'enabled' : 'disabled';
+                valueLabel = !!currentValue ? 'Enabled' : 'Disabled';
             else if (setting.type === Setting.TYPE_CUSTOM)
                 valueLabel = setting.handler.getCustomizationDialogValue(currentValue);
 
@@ -389,7 +389,7 @@ export class GameCommands {
                 switch (setting.type) {
                     case Setting.TYPE_BOOLEAN:
                         updatedValue = await this.displayListSettingDialog(
-                                           player, label, ['enabled', 'disabled'], valueLabel);
+                                           player, label, ['Enabled', 'Disabled'], valueLabel);
 
                         if (updatedValue !== null)
                             updatedValue = !!updatedValue;

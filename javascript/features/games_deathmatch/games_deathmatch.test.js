@@ -43,7 +43,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     const kStartGameIndex = 0;
     const kLagCompensationIndex = 2;
     const kMapMarkersIndex = 3;
-    const kTeamDamageIndex = 4;
+    const kObjectiveIndex = 4;
+    const kTeamDamageIndex = 5;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}

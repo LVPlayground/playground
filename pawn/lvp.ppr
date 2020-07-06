@@ -7,6 +7,7 @@
     <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
     <DiskObject>\Driver\Drift\</DiskObject>
     <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
+    <DiskObject>\Driver\Drift\DriftUi.pwn</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
     <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
     <DiskObject>\Driver\ThirdParty\</DiskObject>
@@ -79,7 +80,6 @@
     <DiskObject>\Entities\Properties\PropertyStorageManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\</DiskObject>
-    <DiskObject>\Entities\Vehicles\LegalModifications.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\Vehicle.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleEvents.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleManager.pwn</DiskObject>
@@ -343,7 +343,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\Drift\DriftUi.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

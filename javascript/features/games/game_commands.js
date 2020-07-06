@@ -360,6 +360,7 @@ export class GameCommands {
     // Displays the settings dialog for the game described by |description| to the |player|.
     async displaySettingsDialog(player, description, settings) {
         const dialog = new Menu(description.name, ['Setting', 'Value']);
+        const options = [];
 
         dialog.addItem('Start the game!', '-');
         dialog.addItem('----------', '----------');
@@ -377,6 +378,8 @@ export class GameCommands {
             let valueLabel = currentValue;
             if (setting.type === Setting.TYPE_BOOLEAN)
                 valueLabel = !!currentValue ? 'enabled' : 'disabled';
+            else if (setting.type === Setting.TYPE_CUSTOM)
+                valueLabel = setting.handler.getCustomizationDialogValue(currentValue);
 
             // Create a listener that internally switches based on the type of this setting. This
             // avoids a lot of code duplication, because most of the validation is consistent.
@@ -391,6 +394,11 @@ export class GameCommands {
                         if (updatedValue !== null)
                             updatedValue = !!updatedValue;
 
+                        break;
+                    
+                    case Setting.TYPE_CUSTOM:
+                        updatedValue = await setting.handler.handleCustomization(
+                                           player, settings, currentValue);
                         break;
                     
                     case Setting.TYPE_ENUM:
@@ -412,15 +420,23 @@ export class GameCommands {
                 if (updatedValue === null)
                     return;  // bail out of the flow
                 
-                settings.set(identifier, updatedValue);
+                if (setting.type !== Setting.TYPE_CUSTOM)
+                    settings.set(identifier, updatedValue);
 
                 // Display the same dialog again, as there may be more settings to change.
                 await this.displaySettingsDialog(player, description, settings);
             };
 
             // Add the configuration setting to the |dialog| that's being built.
-            dialog.addItem(label, prefix + valueLabel, listener);
+            options.push({ label, value: prefix + valueLabel, listener });
         }
+
+        // Sort the |options| in ascending order based on the text of their label.
+        options.sort((lhs, rhs) => lhs.label.localeCompare(rhs.label));
+
+        // And add all the |options|, now in alphabetized order, to the |dialog|.
+        for (const { label, value, listener } of options)
+            dialog.addItem(label, value, listener);
 
         return await dialog.displayForPlayer(player);
     }

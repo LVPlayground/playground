@@ -392,7 +392,7 @@ export class GameCommands {
                                            player, label, ['Enabled', 'Disabled'], valueLabel);
 
                         if (updatedValue !== null)
-                            updatedValue = !!updatedValue;
+                            updatedValue = updatedValue !== 'Disabled';
 
                         break;
                     
@@ -419,7 +419,7 @@ export class GameCommands {
 
                 if (updatedValue === null)
                     return;  // bail out of the flow
-                
+
                 if (setting.type !== Setting.TYPE_CUSTOM)
                     settings.set(identifier, updatedValue);
 

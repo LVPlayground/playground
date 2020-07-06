@@ -85,7 +85,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
         assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
         assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
             'Objective',
-            '{FFFF00}Last man standing',
+            'Last man standing',
         ]);
 
         // (4) Gunther is able to start a Best of... game.

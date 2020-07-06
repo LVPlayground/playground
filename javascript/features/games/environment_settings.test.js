@@ -52,5 +52,82 @@ describe('GameCustomSetting', (it, beforeEach) => {
                 'Sunny afternoon',
             ]
         ]);
+
+        // (2) Gunther is able to start a game with default settings.
+        gunther.respondToDialog({ listitem: 0 /* Start the game! */ });
+
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.isTrue(settings.has('game/environment'));
+        assert.typeOf(settings.get('game/environment'), 'object');
+        assert.deepEqual(settings.get('game/environment'), {
+            time: 'Afternoon',
+            weather: 'Sunny',
+            gravity: 'Normal',
+        });
+
+        // (3) Gunther should be able to change the gravity.
+        gunther.respondToDialog({ listitem: 2 /* Environment */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Gravity */ })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* High */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.deepEqual(settings.get('game/environment'), {
+            time: 'Afternoon',
+            weather: 'Sunny',
+            gravity: 'High',
+        });
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Environment',
+            '{FFFF00}Sunny afternoon, high gravity',
+        ]);
+
+        // (4) Gunther should be able to change the time.
+        gunther.respondToDialog({ listitem: 2 /* Environment */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Time */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Morning */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.deepEqual(settings.get('game/environment'), {
+            time: 'Morning',
+            weather: 'Sunny',
+            gravity: 'Normal',
+        });
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Environment',
+            '{FFFF00}Sunny morning',
+        ]);
+
+        // (5) Gunther should be able to change the weather.
+        gunther.respondToDialog({ listitem: 2 /* Environment */ }).then(
+            () => gunther.respondToDialog({ listitem: 2 /* Weather */ })).then(
+            () => gunther.respondToDialog({ listitem: 4 /* Sandstorm */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.deepEqual(settings.get('game/environment'), {
+            time: 'Afternoon',
+            weather: 'Sandstorm',
+            gravity: 'Normal',
+        });
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Environment',
+            '{FFFF00}Afternoon sandstorm',
+        ]);
     });
 });

@@ -11,23 +11,12 @@ import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
 
+import { clone } from 'base/clone.js';
 import { confirm } from 'components/dialogs/confirm.js';
+import { equals } from 'base/equals.js';
 
 // Prefix given to internal settings, that are not modifiable by the player.
 const kInternalPrefix = 'internal/';
-
-// Returns whether the two given maps are equal to each other.
-function mapEquals(left, right) {
-    if (left.size !== right.size)
-        return false;
-    
-    for (const [ key, value ] of left) {
-        if (right.get(key) !== value)
-            return false;
-    }
-
-    return true;
-}
 
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
@@ -182,7 +171,7 @@ export class GameCommands {
             // If the |settings| aren't equal to the pending registration, we allow the sign up if
             // either (a) no |registrationId| is given, and this isn't a custom game, or (b) the
             // |registrationId| is given, and it matches the |pendingRegistration|'s ID.
-            if (!mapEquals(settings, pendingRegistration.settings) || params.registrationId) {
+            if (!equals(settings, pendingRegistration.settings) || params.registrationId) {
                 if (!params.registrationId && params.customise)
                     continue;  // a new custom game has been created
 
@@ -329,7 +318,7 @@ export class GameCommands {
             if (params.settings.has(identifier))
                 settings.set(identifier, params.settings.get(identifier));
             else
-                settings.set(identifier, setting.defaultValue);
+                settings.set(identifier, clone(setting.defaultValue));
             
             if (!identifier.startsWith(kInternalPrefix) && !description.isSettingFrozen(identifier))
                 hasCustomisableSettings = true;
@@ -380,7 +369,7 @@ export class GameCommands {
 
             const defaultValue = setting.defaultValue;
             const currentValue = settings.get(identifier);
-            const prefix = defaultValue !== currentValue ? '{FFFF00}' : '';
+            const prefix = !equals(defaultValue, currentValue) ? '{FFFF00}' : '';
 
             let valueLabel = currentValue;
             if (setting.type === Setting.TYPE_BOOLEAN)

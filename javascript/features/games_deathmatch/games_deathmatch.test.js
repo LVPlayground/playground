@@ -206,6 +206,43 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
     });
 
+    it('should award players spawn armour and weapons, as configured', async (assert) => {
+        class BubbleGame extends DeathmatchGame {}
+
+        feature.registerGame(BubbleGame, {
+            name: 'Bubble Fighting Game',
+            goal: 'Fight each other with bubbles',
+
+            command: 'bubble',
+            continuous: true,
+            price: 0,
+
+            spawnArmour: true,
+            // TODO: spawnWeapons
+
+            minimumPlayers: 1,
+            maximumPlayers: 4,
+        });
+
+        assert.equal(gunther.armour, 0);
+
+        assert.isTrue(await gunther.issueCommand('/bubble'));
+        assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
+
+        await runGameLoop();  // fully initialize the game
+
+        assert.equal(gunther.armour, 100);
+
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.equal(gunther.syncedData.minigameName, '');
+
+        assert.throws(() => game.getStatisticsForPlayer(gunther));
+    });
+
+    it('should support the different objectives for each game', async (assert) => {
+        // TODO: Test as we implement
+    });
+
     it('should maintain statistics of all participants in the game', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
 

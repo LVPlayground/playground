@@ -35,7 +35,7 @@ export class MockPlayer extends Player {
     #color_ = Color.WHITE;
     #customColors_ = new Map();
     #health_ = 100.0;
-    #armour_ = 100.0;
+    #armour_ = 0.0;
     #skin_ = 308;  // San Fierro Paramedic (EMT)
     #specialAction_ = Player.kSpecialActionNone;
     #state_ = Player.kStateOnFoot;

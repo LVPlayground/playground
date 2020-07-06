@@ -72,6 +72,11 @@ export default class GamesDeathmatch extends Feature {
                 'deathmatch', 'objective', new ObjectiveSetting(), description.objective,
                 'Objective'),
 
+            // Option: Spawn armour (boolean)
+            new Setting(
+                'deathmatch', 'spawn_armour', Setting.TYPE_BOOLEAN, description.spawnArmour,
+                'Spawn armour'),
+
             // Option: Team damage (boolean)
             new Setting(
                 'deathmatch', 'team_damage', Setting.TYPE_BOOLEAN, description.teamDamage,

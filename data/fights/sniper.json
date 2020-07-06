@@ -5,6 +5,7 @@
 
     "settings": {
         "deathmatch/map_markers": "Disabled",
+        "deathmatch/spawn_armour": true,
         "fights/location": "Acter Nuclear Power Plant",
         "fights/pickups": false
     }

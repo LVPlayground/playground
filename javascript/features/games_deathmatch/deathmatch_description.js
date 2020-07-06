@@ -19,6 +19,9 @@ export class DeathmatchDescription {
     // The objective for this game, i.e. the winning conditions. { type, rounds?, kills?, seconds? }
     objective = null;
 
+    // Whether participants should be given spawn armour by default.
+    spawnArmour = null;
+
     // Whether participants in the same team can issue damage to each other.
     teamDamage = true;
 
@@ -81,6 +84,15 @@ export class DeathmatchDescription {
                 kills: settings.getValue('games/deathmatch_objective_value_default'),
                 seconds: settings.getValue('games/deathmatch_objective_value_default'),
             };
+        }
+
+        if (options.hasOwnProperty('spawnArmour')) {
+            if (typeof options.spawnArmour !== 'boolean')
+                throw new Error(`[${this.name}] The spawn armour flag must be a boolean.`);
+
+            this.spawnArmour = options.spawnArmour;
+        } else {
+            this.spawnArmour = settings.getValue('games/deathmatch_spawn_armour_default');
         }
 
         if (options.hasOwnProperty('teamDamage')) {

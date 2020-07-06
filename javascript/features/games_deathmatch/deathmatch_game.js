@@ -39,6 +39,7 @@ export class DeathmatchGame extends Game {
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
     #objective_ = null;
+    #spawnArmour_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -102,6 +103,7 @@ export class DeathmatchGame extends Game {
 
         // Import the settings from the |settings|, which may have been customised by the player.
         this.#lagCompensation_ = settings.get('deathmatch/lag_compensation');
+        this.#spawnArmour_ = settings.get('deathmatch/spawn_armour');
         this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
         this.#mapMarkers_ = settings.get('deathmatch/map_markers');
@@ -145,6 +147,16 @@ export class DeathmatchGame extends Game {
         // For team-based games, it will be done when the player's assigned a team instead.
         if (this.mode === DeathmatchGame.kModeIndividual)
             this.applyMapMarkerSettingForPlayer(player);
+    }
+
+    // Called when the given |player| is spawning into the world. Here they will be assigned their
+    // spawn armour and weapons, setting them up for the fight.
+    async onPlayerSpawned(player, countdown) {
+        await super.onPlayerSpawned(player, countdown);
+
+        // Award the player with spawn armour if that has been configured.
+        if (this.#spawnArmour_)
+            player.armour = 100;
     }
 
     // Called when the given |player| has been removed from the game, either because they've lost,

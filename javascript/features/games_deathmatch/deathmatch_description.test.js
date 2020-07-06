@@ -16,13 +16,16 @@ describe('DeathmatchDescription', it => {
 
         assert.equal(description.mapMarkers, 'Enabled');
 
-        assert.equal(
+        assert.deepEqual(
             description.objective,
-            settings.getValue('games/deathmatch_objective_default'));
+            {
+                type: settings.getValue('games/deathmatch_objective_default'),
 
-        assert.equal(
-            description.objectiveValue,
-            settings.getValue('games/deathmatch_objective_value_default'));
+                // The specific values are duplicated for the default value.
+                rounds: settings.getValue('games/deathmatch_objective_value_default'),
+                kills: settings.getValue('games/deathmatch_objective_value_default'),
+                seconds: settings.getValue('games/deathmatch_objective_value_default'),
+            });
 
         assert.equal(
             description.teamDamage,
@@ -37,16 +40,14 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: true,
                 mapMarkers: 'Team only',
-                objective: 'Best of...',
-                objectiveValue: 3,
+                objective: { type: 'Best of...', rounds: 3 },
                 teamDamage: true,
 
             }, settings);
 
             assert.isTrue(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Team only');
-            assert.equal(description.objective, 'Best of...');
-            assert.equal(description.objectiveValue, 3);
+            assert.deepEqual(description.objective, { type: 'Best of...', rounds: 3 });
             assert.isTrue(description.teamDamage);
         }
 
@@ -56,14 +57,14 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: false,
                 mapMarkers: 'Disabled',
-                objective: 'Continuous',
+                objective: { type: 'Continuous' },
                 teamDamage: false,
 
             }, settings);
 
             assert.isFalse(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Disabled');
-            assert.equal(description.objective, 'Continuous');
+            assert.deepEqual(description.objective, { type: 'Continuous' });
             assert.isFalse(description.teamDamage);
         }
     });

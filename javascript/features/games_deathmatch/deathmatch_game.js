@@ -14,20 +14,20 @@ const kTeamColorBravo = Color.fromHex('0277BDAA');  // blue
 // exposes methods that should be called before game-specific behaviour, i.e. through super calls.
 export class DeathmatchGame extends Game {
     // Values for map marker visibility for the participants.
-    static kMapMarkersEnabled = 0;
-    static kMapMarkersEnabledTeam = 1;
-    static kMapMarkersDisabled = 2;
+    static kMapMarkersEnabled = 'Enabled';
+    static kMapMarkersEnabledTeam = 'Team only';
+    static kMapMarkersDisabled = 'Disabled';
 
     // Mode of the game, either free-for-all or team-based.
     static kModeIndividual = 0;
     static kModeTeams = 1;
 
     // The objective which defines the winning conditions of this game.
-    static kObjectiveLastManStanding = 0;
-    static kObjectiveBestOf = 1;
-    static kObjectiveFirstTo = 2;
-    static kObjectiveTimeLimit = 3;
-    static kObjectiveContinuous = 4;
+    static kObjectiveLastManStanding = 'Last man standing';
+    static kObjectiveBestOf = 'Best of...';
+    static kObjectiveFirstTo = 'First to...';
+    static kObjectiveTimeLimit = 'Time limit...';
+    static kObjectiveContinuous = 'Continuous';
 
     // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
     // players can be part of either Team Alpha or Team Bravo in team-based games.
@@ -39,7 +39,6 @@ export class DeathmatchGame extends Game {
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
     #objective_ = null;
-    #objectiveValue_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -105,47 +104,28 @@ export class DeathmatchGame extends Game {
         this.#lagCompensation_ = settings.get('deathmatch/lag_compensation');
         this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
-        switch (settings.get('deathmatch/map_markers')) {
-            case 'Enabled':
-                this.#mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
-                break;
-
-            case 'Team only':
-                this.#mapMarkers_ = DeathmatchGame.kMapMarkersEnabledTeam;
-                break;
-
-            case 'Disabled':
-                this.#mapMarkers_ = DeathmatchGame.kMapMarkersDisabled;
+        this.#mapMarkers_ = settings.get('deathmatch/map_markers');
+        switch (this.#mapMarkers_) {
+            case DeathmatchGame.kMapMarkersEnabled:
+            case DeathmatchGame.kMapMarkersEnabledTeam:
+            case DeathmatchGame.kMapMarkersDisabled:
                 break;
 
             default:
-                throw new Error(`Invalid value given for map markers.`);
+                throw new Error('Invalid value given for map markers: ' + this.#mapMarkers_);
         }
 
-        const objective = settings.get('deathmatch/objective');
-        switch (objective.type) {
-            case 'Last man standing':
-                this.#objective_ = DeathmatchGame.kObjectiveLastManStanding;
+        this.#objective_ = settings.get('deathmatch/objective');
+        switch (this.#objective_.type) {
+            case DeathmatchGame.kObjectiveLastManStanding:
+            case DeathmatchGame.kObjectiveBest:
+            case DeathmatchGame.kObjectiveFirstTo:
+            case DeathmatchGame.kObjectiveTimeLimit:
+            case DeathmatchGame.kObjectiveContinuous:
                 break;
-
-            case 'Best of...':
-                this.#objective_ = DeathmatchGame.kObjectiveBest;
-                this.#objectiveValue_ = objective.kills;
-                break;
-
-            case 'First to...':
-                this.#objective_ = DeathmatchGame.kObjectiveFirstTo;
-                this.#objectiveValue_ = objective.kills;
-                break;
-
-            case 'Time limit...':
-                this.#objective_ = DeathmatchGame.kObjectiveTimeLimit;
-                this.#objectiveValue_ = objective.seconds;
-                break;
-
-            case 'Continuous':
-                this.#objective_ = DeathmatchGame.kObjectiveContinuous;
-                break;
+            
+            default:
+                throw new Error('Invalid value given for the objective: ' + this.#objective_.type);
         }
     }
 

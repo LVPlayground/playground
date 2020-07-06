@@ -69,8 +69,8 @@ export default class GamesDeathmatch extends Feature {
             
             // Option: Objective (enumeration)
             new Setting(
-                'deathmatch', 'objective', new ObjectiveSetting(),
-                ObjectiveSetting.getDefaultValue(description), 'Objective'),
+                'deathmatch', 'objective', new ObjectiveSetting(), description.objective,
+                'Objective'),
 
             // Option: Team damage (boolean)
             new Setting(

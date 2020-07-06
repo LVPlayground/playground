@@ -273,6 +273,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
             lagCompensation: false,
             mapMarkers: 'Team only',
+            objective: { type: 'Continuous' },
             teamDamage: false,
 
             minimumPlayers: 1,

@@ -30,8 +30,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
 
             settings: [
                 new Setting(
-                    'deathmatch', 'objective', new ObjectiveSetting(),
-                    ObjectiveSetting.getDefaultValue({ objective: 'Last man standing' }),
+                    'deathmatch', 'objective', new ObjectiveSetting, { type: 'Last man standing' },
                     'Objective')
             ],
         });

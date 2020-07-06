@@ -16,9 +16,8 @@ export class DeathmatchDescription {
     // Whether map markers should be enabled. One of {Enabled, Team only, Disabled}.
     mapMarkers = 'Enabled';
 
-    // The objective for this game, i.e. the winning conditions.
+    // The objective for this game, i.e. the winning conditions. { type, rounds?, kills?, seconds? }
     objective = null;
-    objectiveValue = null;
 
     // Whether participants in the same team can issue damage to each other.
     teamDamage = true;
@@ -45,19 +44,43 @@ export class DeathmatchDescription {
         }
 
         if (options.hasOwnProperty('objective')) {
-            if (!DeathmatchDescription.kObjectiveOptions.includes(options.objective))
+            if (typeof options !== 'object')
                 throw new Error(`[${this.name}] Invalid value given for the objective option.`);
 
-            this.objective = options.objective;
-            if (options.hasOwnProperty('objectiveValue')) {
-                if (typeof options.objectiveValue !== 'number')
-                    throw new Error(`[${this.name}] Invalid objective value given, not a number.`);
+            if (!DeathmatchDescription.kObjectiveOptions.includes(options.objective.type))
+                throw new Error(`[${this.name}] Invalid value given for the objective type.`);
+
+            switch (options.objective.type) {
+                case 'Last man standing':
+                case 'Continuous':
+                    break;
                 
-                this.objectiveValue = options.objectiveValue;
+                case 'Best of...':
+                    if (!options.objective.hasOwnProperty('rounds'))
+                        throw new Error(`[${this.name}] The objective.rounds option is missing.`);
+                    break;
+
+                case 'First to...':
+                    if (!options.objective.hasOwnProperty('kills'))
+                        throw new Error(`[${this.name}] The objective.kills option is missing.`);
+                    break;
+                
+                case 'Time limit...':
+                    if (!options.objective.hasOwnProperty('seconds'))
+                        throw new Error(`[${this.name}] The objective.seconds option is missing.`);
+                    break;
             }
+
+            this.objective = options.objective;
         } else {
-            this.objective = settings.getValue('games/deathmatch_objective_default');
-            this.objectiveValue = settings.getValue('games/deathmatch_objective_value_default');
+            this.objective = {
+                type: settings.getValue('games/deathmatch_objective_default'),
+
+                // We don't know what the given |type| is, so just duplicate the value for each...
+                rounds: settings.getValue('games/deathmatch_objective_value_default'),
+                kills: settings.getValue('games/deathmatch_objective_value_default'),
+                seconds: settings.getValue('games/deathmatch_objective_value_default'),
+            };
         }
 
         if (options.hasOwnProperty('teamDamage')) {

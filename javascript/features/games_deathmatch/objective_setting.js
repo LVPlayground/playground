@@ -22,22 +22,6 @@ function isNumberInRange(min, max, value) {
 // where certain options have further customization values available, e.g. the number of rounds, or
 // the time limit for which a deathmatch game is allowed to run.
 export class ObjectiveSetting extends GameCustomSetting {
-    // Composes the default value for the objective based on the |description|.
-    static getDefaultValue(description) {
-        switch (description.objective) {
-            case 'Last man standing':
-            case 'Continuous':
-                return { type: description.objective };
-            
-            case 'Best of...':
-            case 'First to...':
-                return { type: description.objective, kills: description.objectiveValue };
-            
-            case 'Time limit...':
-                return { type: description.objective, seconds: description.objectiveValue };
-        }
-    }
-
     // Returns the value label to display in the actual box. This combines the type of objective
     // with the specialization given by the player, e.g. best of X.
     getCustomizationDialogValue(currentValue) {

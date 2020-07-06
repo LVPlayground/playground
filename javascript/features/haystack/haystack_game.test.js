@@ -24,7 +24,6 @@ describe('HaystackGame', (it, beforeEach) => {
     const kDefaultSettings = new Map([
         [ 'haystack/difficulty', 'normal' ],
         [ 'haystack/levels', 30 ],
-        [ 'haystack/nighttime', false ],
     ]);
 
     it('should have registered the game with the server', assert => {
@@ -57,7 +56,6 @@ describe('HaystackGame', (it, beforeEach) => {
         await extremeGame.onInitialized(new Map([
             [ 'haystack/difficulty', 'extreme' ],
             [ 'haystack/levels', 40 ],
-            [ 'haystack/nighttime', true ],
         ]));
 
         assert.isBelow(extremeGame.settings_.hayDensity, normalGame.settings_.hayDensity);
@@ -66,7 +64,6 @@ describe('HaystackGame', (it, beforeEach) => {
         assert.isBelow(extremeGame.settings_.tickSkip, normalGame.settings_.tickSkip);
 
         assert.equal(extremeGame.settings_.levels, 40);
-        assert.deepEqual(extremeGame.settings_.time, [ 1, 30 ]);
     });
 
     it('should populate the matrix at the configured density', async (assert) => {

@@ -48,7 +48,6 @@ export default class Haystack extends Feature {
                     'haystack', 'difficulty', ['easy', 'normal', 'hard', 'extreme'], 'normal',
                     'Game difficulty'),
                 new Setting('haystack', 'levels', Setting.TYPE_NUMBER, 30, 'Number of levels'),
-                new Setting('haystack', 'nighttime', Setting.TYPE_BOOLEAN, false, 'Nighttime'),
             ],
 
             scoreType: 'time',

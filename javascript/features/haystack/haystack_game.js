@@ -292,9 +292,6 @@ export class HaystackGame extends Game {
         if (settings.has('haystack/levels'))
             levels = settings.get('haystack/levels');
 
-        if (settings.get('haystack/nighttime') === true)
-            time = [ 1, 30 ];
-        
         return { hayDensity, levels, rockDensity, speedAdjustment, tickSkip, time, weatherId };
     }
 

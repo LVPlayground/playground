@@ -417,13 +417,12 @@ export class GameCommands {
                         break;
                 }
 
-                if (updatedValue === null)
-                    return;  // bail out of the flow
-
-                if (setting.type !== Setting.TYPE_CUSTOM)
+                if (updatedValue !== null && setting.type !== Setting.TYPE_CUSTOM)
                     settings.set(identifier, updatedValue);
 
-                // Display the same dialog again, as there may be more settings to change.
+                // Display the same dialog again, as there may be more settings to change. This
+                // also captures the case where a sub-dialog was cancelled: that brings the player
+                // back to the main customization dialog instead.
                 await this.displaySettingsDialog(player, description, settings);
             };
 

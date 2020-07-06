@@ -14,7 +14,32 @@ export class EnvironmentSettings extends GameCustomSetting {
 
     // Returns the value that is to be displayed in the generic customization dialog for games.
     getCustomizationDialogValue(currentValue) {
-        // TODO
+        let value = null;
+
+        switch (currentValue.weather) {
+            case 'Cloudy':
+            case 'Foggy':
+            case 'Rainy':
+            case 'Sunny':
+                value = currentValue.weather + ' ' + currentValue.time.toLowerCase();
+                break;
+            
+            case 'Heatwave':
+            case 'Sandstorm':
+                if (currentValue.time === 'Night')
+                    value = currentValue.time + 'ly ' + currentValue.weather.toLowerCase();
+                else
+                    value = currentValue.time + ' ' + currentValue.weather.toLowerCase();
+                break;
+            
+            default:
+                throw new Error('Invalid weather value: ' + currentValue.weather);
+        }
+
+        if (currentValue.gravity !== 'Normal')
+            value += `, ${currentValue.gravity.toLowerCase()} gravity`;
+        
+        return value;
     }
 
     // Handles the customization flow for the given |player|. The resulting environment settings

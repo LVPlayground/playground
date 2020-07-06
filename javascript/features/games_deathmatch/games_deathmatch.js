@@ -4,6 +4,7 @@
 
 import { DeathmatchDescription } from 'features/games_deathmatch/deathmatch_description.js';
 import { Feature } from 'components/feature_manager/feature.js';
+import { ObjectiveSetting } from 'features/games_deathmatch/objective_setting.js';
 import { Setting } from 'entities/setting.js';
 
 // Determines if the given |gameConstructor| has a class named "DeathmatchGame" in its prototype
@@ -68,8 +69,8 @@ export default class GamesDeathmatch extends Feature {
             
             // Option: Objective (enumeration)
             new Setting(
-                'deathmatch', 'objective', DeathmatchDescription.kObjectiveOptions,
-                description.objective, 'Objective'),
+                'deathmatch', 'objective', new ObjectiveSetting(),
+                ObjectiveSetting.getDefaultValue(description), 'Objective'),
 
             // Option: Team damage (boolean)
             new Setting(

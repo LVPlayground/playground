@@ -15,7 +15,6 @@ describe('GameCustomSetting', (it, beforeEach) => {
 
     beforeEach(() => {
         const feature = server.featureManager.loadFeature('games');
-        const finance = server.featureManager.loadFeature('finance');
 
         commands = feature.commands_;
         gunther = server.playerManager.getById(/* Gunther= */ 0);

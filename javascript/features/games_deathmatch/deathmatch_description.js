@@ -8,7 +8,7 @@ export class DeathmatchDescription {
     // Available values for some of the enumeration-based deathmatch options.
     static kMapMarkerOptions = ['Enabled', 'Team only', 'Disabled'];
     static kObjectiveOptions =
-        ['Last man standing', 'Best of...', 'Best of...', 'Time limit...', 'Continuous'];
+        ['Last man standing', 'Best of...', 'First to..', 'Time limit...', 'Continuous'];
 
     // Whether players should be subject to lag compensation during this game.
     lagCompensation = null;

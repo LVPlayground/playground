@@ -75,6 +75,7 @@ Option              | Description
 --------------------|--------------
 `settings`          | Array of [Setting](../../entities/setting.js) instances for this game.
 `settingsValidator` | Function to be called when one of the non-fixed-value settings is changed.
+`settingsFrozen`    | Array of setting identifiers that cannot be modified by players.
 
 ### Optional configuration: misc
 

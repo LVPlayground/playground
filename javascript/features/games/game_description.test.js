@@ -42,12 +42,14 @@ describe('GameDescription', it => {
         assert.isNull(description.countdownCamera);
         assert.isNull(description.countdownView);
 
-        assert.equal(description.environment.time, 'Afternoon');
-        assert.equal(description.environment.weather, 'Sunny');
-        assert.equal(description.environment.gravity, 'Normal');
+        const environment = description.settings.get('game/environment').value;
+
+        assert.equal(environment.time, 'Afternoon');
+        assert.equal(environment.weather, 'Sunny');
+        assert.equal(environment.gravity, 'Normal');
 
         assert.instanceOf(description.settings, Map);
-        assert.equal(description.settings.size, 0);
+        assert.equal(description.settings.size, GameDescription.kDefaultSettings.length);
         assert.isNull(description.settingsValidator);
 
         assert.isNull(description.command);
@@ -93,9 +95,11 @@ describe('GameDescription', it => {
         assert.equal(description.countdownCamera.length, 2);
         assert.equal(description.countdownView.length, 2);
 
-        assert.equal(description.environment.time, 'Night');
-        assert.equal(description.environment.weather, 'Foggy');
-        assert.equal(description.environment.gravity, 'Low');
+        const environment = description.settings.get('game/environment').value;
+
+        assert.equal(environment.time, 'Night');
+        assert.equal(environment.weather, 'Foggy');
+        assert.equal(environment.gravity, 'Low');
     });
 
     it('is able to provide a series of configurable settings', assert => {
@@ -110,7 +114,7 @@ describe('GameDescription', it => {
             ]
         });
 
-        assert.equal(description.settings.size, 2);
+        assert.equal(description.settings.size, 2 + GameDescription.kDefaultSettings.length);
         assert.isTrue(description.settings.has('game/bonus'));
         assert.isTrue(description.settings.has('game/night'));
         assert.isFalse(description.settings.get('game/night').defaultValue);

@@ -49,6 +49,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
             goal: 'Show a fancy dialog with customised options',
             command: 'bubblegame',
 
+            settingsFrozen: GameDescription.kDefaultSettings,
             settings: [
                 new Setting('bubble', 'custom', customSetting, [ 1, 2, 3 ], 'Custom setting')
             ],

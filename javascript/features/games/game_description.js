@@ -36,6 +36,9 @@ function hasGameInPrototype(gameConstructor) {
 // sign-up, what their available options are, how the game will be represented and which events the
 // Game implementation of the game will receive. Immutable once created.
 export class GameDescription {
+    // Setting identifiers that will be added to the system by default.
+    static kDefaultSettings = [ 'game/environment' ];
+
     // Types of scores that a game can indicate.
     static kScoreNumber = 0;
     static kScoreTime = 1;
@@ -61,6 +64,7 @@ export class GameDescription {
     tick_ = kDefaultTickIntervalMs;
 
     settings_ = new Map();
+    settingsFrozen_ = new Set();
     settingsValidator_ = null;
 
     // ---------------------------------------------------------------------------------------------
@@ -101,18 +105,14 @@ export class GameDescription {
     get countdownView() { return this.countdownView_; }
 
     // ---------------------------------------------------------------------------------------------
-    // Optional configuration: environment
-    // ---------------------------------------------------------------------------------------------
-
-    // Gets the environment that should be applied to this game by default.
-    get environment() { return this.environment_; }
-
-    // ---------------------------------------------------------------------------------------------
     // Optional configuration: settings
     // ---------------------------------------------------------------------------------------------
 
     // Gets a map of the settings that can be configured for this game.
     get settings() { return this.settings_; }
+
+    // Returns whether the given |setting| is frozen and cannot be modified by the player.
+    isSettingFrozen(setting) { return this.settingsFrozen_.has(setting); }
 
     // Gets the function, if any, which should be used to validate a custom setting.
     get settingsValidator() { return this.settingsValidator_; }
@@ -218,6 +218,18 @@ export class GameDescription {
             }
         }
 
+        if (options.hasOwnProperty('settingsFrozen')) {
+            if (!Array.isArray(options.settingsFrozen))
+                throw new Error(`[${this.name}] The game's frozen settings must be an array.`);
+
+            for (const identifier of options.settingsFrozen) {
+                if (typeof identifier !== 'string')
+                    throw new Error(`[${this.name}] Each frozen setting must be a string.`);
+
+                this.settingsFrozen_.add(identifier);
+            }
+        }
+
         // -----------------------------------------------------------------------------------------
         // Section: optional countdown configuration
         // -----------------------------------------------------------------------------------------
@@ -296,7 +308,12 @@ export class GameDescription {
             }
         }
 
-        this.environment_ = environment;
+        // Add the environment information to the game's settings. This avoids duplication because
+        // the environment settings are configurable by players as well.
+        this.settings_.set(
+            'game/environment',
+            new Setting('game', 'environment', new EnvironmentSettings(), environment,
+                        'Environment'));
 
         // -----------------------------------------------------------------------------------------
         // Section: optional options

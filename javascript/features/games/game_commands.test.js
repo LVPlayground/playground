@@ -188,6 +188,9 @@ describe('GameCommands', (it, beforeEach) => {
             name: 'Bubble',
             goal: 'Have the registration time expire',
             command: 'bubblegame',
+
+            // Disable all the default settings, to get the error dialog.
+            settingsFrozen: GameDescription.kDefaultSettings,
         });
 
         // Create the command, give Gunther enough money to participate, and fix the timeout.
@@ -209,6 +212,9 @@ describe('GameCommands', (it, beforeEach) => {
             name: 'Bubble',
             goal: 'Have the registration time expire',
             command: 'bubblegame',
+
+            // Disable all the default settings, to be able to test the customisation flow.
+            settingsFrozen: GameDescription.kDefaultSettings,
 
             settingsValidator: (setting, value) => true,
             settings: [
@@ -295,6 +301,7 @@ describe('GameCommands', (it, beforeEach) => {
             goal: 'Have the registration time expire',
             command: 'bubblegame',
 
+            settingsFrozen: GameDescription.kDefaultSettings,
             settingsValidator: (setting, value) => {
                 switch (setting) {
                     case 'bubble/number':

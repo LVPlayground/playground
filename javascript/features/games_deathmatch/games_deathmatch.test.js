@@ -41,10 +41,11 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
     // Indices for the automatically inserted options in the customization menu.
     const kStartGameIndex = 0;
-    const kLagCompensationIndex = 2;
-    const kMapMarkersIndex = 3;
-    const kObjectiveIndex = 4;
-    const kTeamDamageIndex = 5;
+    const kEnvironmentIndex = 2;
+    const kLagCompensationIndex = 3;
+    const kMapMarkersIndex = 4;
+    const kObjectiveIndex = 5;
+    const kTeamDamageIndex = 6;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}

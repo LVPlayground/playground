@@ -322,12 +322,17 @@ export class GameCommands {
     async determineSettings(description, player, params) {
         const settings = new Map();
 
+        let hasCustomisableSettings = false;
+
         // Populate the |settings| with the default configuration for the game.
         for (const [ identifier, setting ] of description.settings) {
             if (params.settings.has(identifier))
                 settings.set(identifier, params.settings.get(identifier));
             else
                 settings.set(identifier, setting.defaultValue);
+            
+            if (!identifier.startsWith(kInternalPrefix) && !description.isSettingFrozen(identifier))
+                hasCustomisableSettings = true;
         }
 
         // If the customise flag has not been set, return the |settings| immediately as we're done.
@@ -337,7 +342,7 @@ export class GameCommands {
 
         // If no settings have been defined for this game, then there's nothing to customize. Ask
         // the player what they're intending to happen in this scenario.
-        if (![ ...settings.keys() ].some(identifier => !identifier.startsWith(kInternalPrefix))) {
+        if (!hasCustomisableSettings) {
             const startDefault = await confirm(player, {
                 title: `Customize the ${description.name} game`,
                 message: `The ${description.name} game does not have any customization options ` +
@@ -368,7 +373,7 @@ export class GameCommands {
         dialog.addItem('----------', '----------');
 
         for (const [ identifier, setting ] of description.settings) {
-            if (identifier.startsWith(kInternalPrefix))
+            if (identifier.startsWith(kInternalPrefix) || description.isSettingFrozen(identifier))
                 continue;  // do not allow internal settings to be modified
 
             const label = setting.description;

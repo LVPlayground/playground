@@ -28,6 +28,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
             goal: 'Show a fancy dialog with customised options',
             command: 'bubblegame',
 
+            settingsFrozen: GameDescription.kDefaultSettings,
             settings: [
                 new Setting(
                     'deathmatch', 'objective', new ObjectiveSetting, { type: 'Last man standing' },

@@ -4,7 +4,7 @@
 
 import { Color } from 'base/color.js';
 import { DeathmatchPlayerState } from 'features/games_deathmatch/deathmatch_player_state.js';
-import { Game } from 'features/games/game.js';
+import { GameBase } from 'features/games/game_base.js';
 
 // Colours that will be assigned to participants of certain teams.
 const kTeamColorAlpha = Color.fromHex('D84315AA');  // red
@@ -12,7 +12,7 @@ const kTeamColorBravo = Color.fromHex('0277BDAA');  // blue
 
 // Implementation of the `Game` interface which extends it with deathmatch-related functionality. It
 // exposes methods that should be called before game-specific behaviour, i.e. through super calls.
-export class DeathmatchGame extends Game {
+export class DeathmatchGame extends GameBase {
     // Values for map marker visibility for the participants.
     static kMapMarkersEnabled = 'Enabled';
     static kMapMarkersEnabledTeam = 'Team only';

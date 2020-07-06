@@ -5,13 +5,43 @@
 import { GameCustomSetting } from 'features/games/game_custom_setting.js';
 import { Menu } from 'components/menu/menu.js';
 
+// Configuration and mappings for the gravity options available to games.
+const kGravityConfiguration = new Map([
+    [ 'Low', 0.005 ],
+    [ 'Normal', null ],
+    [ 'High', 0.011 ],
+]);
+
+// Configuration and mappings for the time options available to games.
+const kTimeConfiguration = new Map([
+    [ 'Morning', 8 ],
+    [ 'Afternoon', 15 ],
+    [ 'Evening', 20 ],
+    [ 'Night', 2 ],
+]);
+
+// Configuration and mappings for the weather options available to games.
+const kWeatherConfiguration = new Map([
+    [ 'Cloudy', 7 ],
+    [ 'Foggy', 9 ],
+    [ 'Heatwave', 11 ],
+    [ 'Rainy', 8 ],
+    [ 'Sandstorm', 19 ],
+    [ 'Sunny', 10 ],
+]);
+
 // Represents the environment for minigames, which can be customised to the player's liking. This
 // includes the time, the weather, as well as the gravity level to apply.
 export class EnvironmentSettings extends GameCustomSetting {
     // Options available for each of the configuration values.
-    static kTimeOptions = [ 'Morning', 'Afternoon', 'Evening', 'Night' ];
-    static kWeatherOptions = [ 'Cloudy', 'Foggy', 'Heatwave', 'Rainy', 'Sandstorm', 'Sunny' ];
-    static kGravityOptions = [ 'Low', 'Normal', 'High' ];
+    static kGravityOptions = [ ...kGravityConfiguration.keys() ];
+    static kTimeOptions = [ ...kTimeConfiguration.keys() ];
+    static kWeatherOptions = [ ...kWeatherConfiguration.keys() ];
+
+    // Returns the actual in-game values for the given |option|.
+    static getGravityForOption(option) { return kGravityConfiguration.get(option) ?? null; }
+    static getTimeForOption(option) { return kTimeConfiguration.get(option) ?? null; }
+    static getWeatherForOption(option) { return kWeatherConfiguration.get(option) ?? null; }
 
     // Returns the value that is to be displayed in the generic customization dialog for games.
     getCustomizationDialogValue(currentValue) {

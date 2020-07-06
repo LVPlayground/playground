@@ -2,7 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { GameActivity } from 'features/games/game_activity.js';
+import { GameBase } from 'features/games/game_base.js';
 import { GameDescription, kDefaultTickIntervalMs } from 'features/games/game_description.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
@@ -247,14 +249,22 @@ describe('GameRuntime', (it, beforeEach) => {
             minimumPlayers: 2,
             maximumPlayers: 4,
             price: 250,
+
+            environment: {
+                gravity: 'Low',
+                time: 'Afternoon',
+                weather: 'Foggy',
+            },
         };
 
         let vehicles = [ null, null ];
-        feature.registerGame(class extends Game {
+        feature.registerGame(class extends GameBase {
             nextPlayerIndex_ = 0;
             playerIndex_ = new Map();
 
-            async onInitialized(settings) {
+            async onInitialized(settings, userData) {
+                await super.onInitialized(settings, userData);
+
                 vehicles[0] = this.scopedEntities.createVehicle({
                     modelId: 432,  // tank
                     position: new Vector(0, 0, 0),
@@ -267,14 +277,20 @@ describe('GameRuntime', (it, beforeEach) => {
             }
 
             async onPlayerAdded(player) {
+                await super.onPlayerAdded(player);
+
                 this.playerIndex_.set(player, this.nextPlayerIndex_++);
             }
 
             async onPlayerSpawned(player) {
+                await super.onPlayerSpawned(player);
+
                 player.enterVehicle(vehicles[this.playerIndex_.get(player)]);
             }
 
             async onPlayerDeath(player, killer, reason) {
+                await super.onPlayerDeath(player, killer, reason);
+
                 await this.playerLost(player);
                 await this.playerWon(killer, 25);
             }
@@ -298,6 +314,9 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.equal(
             manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateRegistered);
         
+        assert.deepEqual(gunther.time, [ 0, 0 ]);
+        assert.equal(gunther.gravity, Player.kDefaultGravity);
+
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();
 
@@ -314,6 +333,9 @@ describe('GameRuntime', (it, beforeEach) => {
         assert.equal(
             manager.getPlayerActivity(russell).getActivityState(), GameActivity.kStateEngaged);
         
+        assert.deepEqual(gunther.time, [ EnvironmentSettings.getTimeForOption('Afternoon'), 20 ]);
+        assert.equal(gunther.gravity, EnvironmentSettings.getGravityForOption('Low'));
+
         assert.equal(runtime.state, GameRuntime.kStateRunning);
 
         assert.isNotNull(vehicles[0]);
@@ -355,6 +377,9 @@ describe('GameRuntime', (it, beforeEach) => {
         // Make sure that the money has been divided as expected.
         assert.equal(finance.getPlayerCash(gunther), 150);
         assert.equal(finance.getPlayerCash(russell), 1250);
+
+        // Make sure that gravity was reset.
+        assert.equal(gunther.gravity, Player.kDefaultGravity);
     });
 
     it('is able to proportionally calculate the prize money', assert => {

@@ -18,7 +18,7 @@ derby and racing games.
 
 ## Options when registering a game
 When registering a game with the `Games.registerGame()` function, you pass in a class that extends
-the [Game class](game.js) and an options dictionary.
+the [GameBase class](game_base.js) ([interface](game.js)) and an options dictionary.
 
 ### Required configuration
 

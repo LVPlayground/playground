@@ -21,6 +21,10 @@ describe('DeathmatchDescription', it => {
             settings.getValue('games/deathmatch_objective_default'));
 
         assert.equal(
+            description.objectiveValue,
+            settings.getValue('games/deathmatch_objective_value_default'));
+
+        assert.equal(
             description.teamDamage,
             settings.getValue('games/deathmatch_team_damage_default'));
     });
@@ -33,14 +37,16 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: true,
                 mapMarkers: 'Team only',
-                objective: 'Best of 3',
+                objective: 'Best of...',
+                objectiveValue: 3,
                 teamDamage: true,
 
             }, settings);
 
             assert.isTrue(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Team only');
-            assert.equal(description.objective, 'Best of 3');
+            assert.equal(description.objective, 'Best of...');
+            assert.equal(description.objectiveValue, 3);
             assert.isTrue(description.teamDamage);
         }
 

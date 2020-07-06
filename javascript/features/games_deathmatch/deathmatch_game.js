@@ -24,9 +24,9 @@ export class DeathmatchGame extends Game {
 
     // The objective which defines the winning conditions of this game.
     static kObjectiveLastManStanding = 0;
-    static kObjectiveBestOfThree = 1;
-    static kObjectiveBestOfFive = 2;
-    static kObjectiveBestOfTen = 3;
+    static kObjectiveBestOf = 1;
+    static kObjectiveFirstTo = 2;
+    static kObjectiveTimeLimit = 3;
     static kObjectiveContinuous = 4;
 
     // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
@@ -39,6 +39,7 @@ export class DeathmatchGame extends Game {
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
     #objective_ = null;
+    #objectiveValue_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -126,16 +127,19 @@ export class DeathmatchGame extends Game {
                 this.#objective_ = DeathmatchGame.kObjectiveLastManStanding;
                 break;
 
-            case 'Best of 3':
-                this.#objective_ = DeathmatchGame.kObjectiveBestOfThree;
+            case 'Best of...':
+                this.#objective_ = DeathmatchGame.kObjectiveBest;
+                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 5;
                 break;
 
-            case 'Best of 5':
-                this.#objective_ = DeathmatchGame.kObjectiveBestOfFive;
+            case 'First to...':
+                this.#objective_ = DeathmatchGame.kObjectiveFirstTo;
+                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 3;
                 break;
 
-            case 'Best of 10':
-                this.#objective_ = DeathmatchGame.kObjectiveBestOfTen;
+            case 'Time limit...':
+                this.#objective_ = DeathmatchGame.kObjectiveTimeLimit;
+                this.#objectiveValue_ = settings.get('internal/objective_value') ?? 180;
                 break;
 
             case 'Continuous':

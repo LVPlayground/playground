@@ -8,7 +8,7 @@ export class DeathmatchDescription {
     // Available values for some of the enumeration-based deathmatch options.
     static kMapMarkerOptions = ['Enabled', 'Team only', 'Disabled'];
     static kObjectiveOptions =
-        ['Last man standing', 'Best of 3', 'Best of 5', 'Best of 10', 'Continuous'];
+        ['Last man standing', 'Best of...', 'Best of...', 'Time limit...', 'Continuous'];
 
     // Whether players should be subject to lag compensation during this game.
     lagCompensation = null;
@@ -18,6 +18,7 @@ export class DeathmatchDescription {
 
     // The objective for this game, i.e. the winning conditions.
     objective = null;
+    objectiveValue = null;
 
     // Whether participants in the same team can issue damage to each other.
     teamDamage = true;
@@ -48,8 +49,15 @@ export class DeathmatchDescription {
                 throw new Error(`[${this.name}] Invalid value given for the objective option.`);
 
             this.objective = options.objective;
+            if (options.hasOwnProperty('objectiveValue')) {
+                if (typeof options.objectiveValue !== 'number')
+                    throw new Error(`[${this.name}] Invalid objective value given, not a number.`);
+                
+                this.objectiveValue = options.objectiveValue;
+            }
         } else {
             this.objective = settings.getValue('games/deathmatch_objective_default');
+            this.objectiveValue = settings.getValue('games/deathmatch_objective_value_default');
         }
 
         if (options.hasOwnProperty('teamDamage')) {

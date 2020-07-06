@@ -18,7 +18,8 @@ Option              | Description
 --------------------|--------------
 `lagCompensation`   | Whether lag compensation should be enabled. Defaults to `true`.
 `mapMarkers`        | Whether map markers should be enabled for participants. One of `Enabled` (default), `Team only` or `Disabled`.
-`objective`         | Objective of the game. One of `Last man standing` (default), `Best of 3`, `Best of 5`, `Best of 10` and `Continuous`.
+`objective`         | Objective of the game. One of `Last man standing` (default), `Best of...`, `First to...`, `Time limit...` and `Continuous`.
+`objectiveValue`    | Objective value. Kill count for `Best of...` and `First to...`, seconds for `Time limit...`.
 `teamDamage`        | Whether players in the same team can issue damage to each other. Defaults to `true`.
 
 ## Settings when starting a game
@@ -31,5 +32,9 @@ Setting             | Description
 `Map markers`       | Whether map markers should be enabled for participants.
 `Objective`         | What the objective of the game is, which defines the winning conditions.
 `Team damage`       | Whether players in the same team can issue damage to each other.
+
+Furthermore, when composing a game programmatically, the `objectiveValue` setting is exposed as
+`internal/objective_value`. It will be presented as a specialized dialog when the user adjusts the
+settings manually.
 
 [1]: ../games#options-when-registering-a-game

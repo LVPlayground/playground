@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { Setting } from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
@@ -52,6 +53,7 @@ export class GameDescription {
 
     command_ = null;
     continuous_ = false;
+    environment_ = null;
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
     price_ = kDefaultPrice;
@@ -97,6 +99,13 @@ export class GameDescription {
 
     // Gets the target, the view of the camera during the countdown. (From -> To)
     get countdownView() { return this.countdownView_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Optional configuration: environment
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the environment that should be applied to this game by default.
+    get environment() { return this.environment_; }
 
     // ---------------------------------------------------------------------------------------------
     // Optional configuration: settings
@@ -249,6 +258,45 @@ export class GameDescription {
 
             this.countdownView_ = options.countdownView;
         }
+
+        // -----------------------------------------------------------------------------------------
+        // Section: optional environment configuration
+        // -----------------------------------------------------------------------------------------
+
+        // Default environment configuration, can be overridden by the configuration.
+        const environment = {
+            time: 'Afternoon',
+            weather: 'Sunny',
+            gravity: 'Normal',
+        };
+
+        if (options.hasOwnProperty('environment')) {
+            if (typeof options.environment !== 'object')
+                throw new Error(`[${this.name}] The game's environment must be an object.`);
+
+            if (options.environment.hasOwnProperty('time')) {
+                if (!EnvironmentSettings.kTimeOptions.includes(options.environment.time))
+                    throw new Error(`[${this.name}] Invalid value for the environment's time`);
+                
+                environment.time = options.environment.time;
+            }
+
+            if (options.environment.hasOwnProperty('weather')) {
+                if (!EnvironmentSettings.kWeatherOptions.includes(options.environment.weather))
+                    throw new Error(`[${this.name}] Invalid value for the environment's weather`);
+                
+                environment.weather = options.environment.weather;
+            }
+
+            if (options.environment.hasOwnProperty('gravity')) {
+                if (!EnvironmentSettings.kGravityOptions.includes(options.environment.gravity))
+                    throw new Error(`[${this.name}] Invalid value for the environment's gravity`);
+                
+                environment.gravity = options.environment.gravity;
+            }
+        }
+
+        this.environment_ = environment;
 
         // -----------------------------------------------------------------------------------------
         // Section: optional options

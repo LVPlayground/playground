@@ -38,6 +38,34 @@ Option              | Description
 `countdownCamera`   | Position of the camera during the countdown, array of two Vector objects.
 `countdownView`     | Target of the camera during the countdown, array of two Vector objects.
 
+### Optional configuration: environment
+
+_Settings are able to set the default environment that should be applied for this game, through_
+_the `environment` object. A default customisation option is available for players to change this._
+
+Option              | Description
+--------------------|--------------
+`environment`       | The environment that should be applied to the game.
+
+```javascript
+environment: {
+    time: 'Afternoon',  // one of { Morning, Afternoon, Evening, Night }
+    weather: 'Rainy',  // see table below
+    gravity: 'Normal',  // one of { Low, Normal, High }
+}
+```
+
+The available weather IDs are as follows:
+
+Name         | [Weather ID](https://wiki.sa-mp.com/wiki/WeatherID)
+-------------|----------------
+Cloudy       | 7
+Foggy        | 9
+Heatwave     | 11
+Rainy        | 8
+Sandstorm    | 19
+Sunny        | 10
+
 ### Optional configuration: settings
 
 _Settings may be used to allow players to configure the game to their liking, either through the_

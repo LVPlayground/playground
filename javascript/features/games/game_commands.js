@@ -358,11 +358,13 @@ export class GameCommands {
     }
 
     // Displays the settings dialog for the game described by |description| to the |player|.
-    async displaySettingsDialog(player, description, settings) {
+    async displaySettingsDialog(player, description, settings, state) {
         const dialog = new Menu(description.name, ['Setting', 'Value']);
         const options = [];
 
-        dialog.addItem('Start the game!', '-');
+        state = state ?? { start: false };
+
+        dialog.addItem('Start the game!', '-', () => state.start = true);
         dialog.addItem('----------', '----------');
 
         for (const [ identifier, setting ] of description.settings) {
@@ -423,7 +425,7 @@ export class GameCommands {
                 // Display the same dialog again, as there may be more settings to change. This
                 // also captures the case where a sub-dialog was cancelled: that brings the player
                 // back to the main customization dialog instead.
-                await this.displaySettingsDialog(player, description, settings);
+                await this.displaySettingsDialog(player, description, settings, state);
             };
 
             // Add the configuration setting to the |dialog| that's being built.
@@ -437,7 +439,7 @@ export class GameCommands {
         for (const { label, value, listener } of options)
             dialog.addItem(label, value, listener);
 
-        return await dialog.displayForPlayer(player);
+        return await dialog.displayForPlayer(player) && state.start;
     }
 
     // Displays a dialog that allows the player to change to a particular list of settings. The

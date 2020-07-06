@@ -66,6 +66,7 @@ describe('equals', it => {
                     multiply,
                     'Hello world!',
                     Math.PI,
+                    /.*/g,
                 ]
             }, {
                 value: true,
@@ -77,6 +78,7 @@ describe('equals', it => {
                     multiply,
                     'Hello world!',
                     Math.PI,
+                    /.*/g,
                 ]
             }));
     });

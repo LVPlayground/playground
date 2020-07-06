@@ -18,6 +18,7 @@ export function equals(value, other) {
             return value.getTime() === other.getTime();
 
         case '[object Function]':
+        case '[object RegExp]':
             return value.toString() === other.toString();
 
         case '[object Map]':

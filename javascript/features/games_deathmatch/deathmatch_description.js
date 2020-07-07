@@ -130,9 +130,8 @@ export class DeathmatchDescription {
                 this.spawnWeapons.push({ weapon, ammo });
             }
         } else {
-            // Have two spawn weapons by default: Sawnoff Shotgun and Uzi, i.e. the RW weapons.
-            this.spawnWeapons.push({ weapon: 26, ammo: 250 });
-            this.spawnWeapons.push({ weapon: 28, ammo: 500 });
+            // Give all players a Desert Eagle unless other weapons were specified.
+            this.spawnWeapons.push({ weapon: 24, ammo: 100 });
         }
 
         if (options.hasOwnProperty('teamDamage')) {

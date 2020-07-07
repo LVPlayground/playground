@@ -30,7 +30,7 @@ const kSpawnWeapons = new Map([
     [ 25, { name: 'Shotgun', category: 'Shotguns', ammo: 250 } ],
     [ 26, { name: 'Sawnoff Shotgun', category: 'Shotguns', ammo: 250 } ],
     [ 27, { name: 'Combat Shotgun', category: 'Shotguns', ammo: 250 } ],
-    [ 28, { name: 'Micro SMG (UZI)', category: 'Sub-machine guns', ammo: 500 } ],
+    [ 28, { name: 'Micro SMG', category: 'Sub-machine guns', ammo: 500 } ],
     [ 29, { name: 'MP5', category: 'Sub-machine guns', ammo: 500 } ],
     [ 30, { name: 'AK-47', category: 'Assault rifles', ammo: 400 } ],
     [ 31, { name: 'M4', category: 'Assault rifles', ammo: 400 } ],
@@ -53,7 +53,20 @@ export class SpawnWeaponsSetting extends GameCustomSetting {
     static kSpawnWeaponIds = new Set([ ...kSpawnWeapons.keys() ]);
 
     // Returns the value that is to be displayed in the generic customization dialog for games.
-    getCustomizationDialogValue(currentValue) {}
+    getCustomizationDialogValue(currentValue) {
+        switch (currentValue.length) {
+            case 0:
+                return 'None';
+
+            case 1:
+            case 2:
+                return currentValue.map(spawnWeapon =>
+                    kSpawnWeapons.get(spawnWeapon.weapon).name).join(', ');
+
+            default:
+                return `${currentValue.length} weapons`;
+        }
+    }
 
     // Handles the customization flow for the given |player|. The spawn weapon configuration will
     // be written directly to the given |settings| Map.

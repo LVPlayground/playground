@@ -57,7 +57,7 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
             ],
             [
                 'Spawn weapons',
-                'undefined',
+                'Micro SMG, Sawnoff Shotgun',
             ]
         ]);
     });

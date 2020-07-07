@@ -36,8 +36,7 @@ describe('DeathmatchDescription', it => {
         assert.deepEqual(
             description.spawnWeapons,
             [
-                { weapon: 26, ammo: 250 },
-                { weapon: 28, ammo: 500 },
+                { weapon: 24, ammo: 100 },
             ]);
 
         assert.equal(

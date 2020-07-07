@@ -19,7 +19,9 @@ Option              | Description
 `lagCompensation`   | Whether lag compensation should be enabled. Defaults to `true`.
 `mapMarkers`        | Whether map markers should be enabled for participants. One of `Enabled` (default), `Team only` or `Disabled`.
 `objective`         | Objective of the game. See the separate section on this value.
+`skin`              | ID of the [player skin](https://wiki.sa-mp.com/wiki/Skins:All) that should be forced on participants.
 `spawnArmour`       | Whether players should spawn with full armour.
+`spawnWeapons`      | The weapons that players should be issued upon spawning. See the separate section on this value.
 `teamDamage`        | Whether players in the same team can issue damage to each other. Defaults to `true`.
 
 ## Settings when starting a game
@@ -32,6 +34,7 @@ Setting             | Description
 `Map markers`       | Whether map markers should be enabled for participants.
 `Objective`         | What the objective of the game is, which defines the winning conditions.
 `Spawn armour`      | Whether players should spawn with full armour.
+`Spawn weapons`     | The set of weapons that players should be issued on spawning.
 `Team damage`       | Whether players in the same team can issue damage to each other.
 
 ## Advanced option: `objective`
@@ -49,5 +52,18 @@ Continuous         | No winners, players will have to `/leave`  | `{ type: 'Cont
 
 The default objective is configurable through `/lvp settings` in the `Games` category. The values
 there must match one of the aforementioned values.
+
+## Advanced option: `spawnWeapons`
+Players can be issued any number of spawn weapons in the game, which can be set with the game's
+description and can be modified by the player through a user interface. The value of `spawnWeapons`
+is an array, each of which has two entries.
+
+Key       | Value
+----------|----------------
+`weapon`  | The [weapon ID](https://wiki.sa-mp.com/wiki/Weapons) of the weapon that should be granted.
+`ammo`    | The amount of ammunition players should receive for this weapon.
+
+As of right now, all weapons are available with the exception of satchels. Be careful when granting
+a knife or a Katana sword, as they may desync the player which cannot be fixed during the game.
 
 [1]: ../games#options-when-registering-a-game

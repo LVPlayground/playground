@@ -4,6 +4,9 @@
 
 import { GameCustomSetting } from 'features/games/game_custom_setting.js';
 import { Menu } from 'components/menu/menu.js';
+import { Question } from 'components/dialogs/question.js';
+
+import { isNumberInRange } from 'features/games_deathmatch/objective_setting.js';
 
 // Map of all the spawn weapons with their default ammunition numbers that are available.
 const kSpawnWeapons = new Map([
@@ -159,7 +162,7 @@ export class SpawnWeaponsSetting extends GameCustomSetting {
         const defaultAmmo = kSpawnWeapons.get(weapon).ammo;
         if (defaultAmmo > 1) {
             dialog.addItem(`Modify ammunition({FFFF00}${ammo}x)`, async () => {
-                return this.handleWeaponAmmunition(player, settings, currentValue, weapon, ammo);
+                return this.handleWeaponAmmunition(player, settings, currentValue, weapon);
             });
         } else {
             dialog.addItem('{9E9E9E}Modify ammunition (unavailable)');
@@ -171,7 +174,33 @@ export class SpawnWeaponsSetting extends GameCustomSetting {
 
     // Handles the ability for the |player| to modify the amount of ammunition given to a particular
     // weapon. Only available for weapons that actually support >1 round.
-    async handleWeaponAmmunition(player, settings, currentValue, weapon, ammo) {
+    async handleWeaponAmmunition(player, settings, currentValue, weapon) {
+        const name = kSpawnWeapons.get(weapon).name;
+        const updatedAmmo = await Question.ask(player, {
+            question: 'Spawn weapon selection',
+            message: `Please enter the amount of ammunition for the ${name}.`,
+            constraints: {
+                validation: isNumberInRange.bind(null, 1, 10000),
+                explanation: 'The amount of ammunition must be between 1 and 10000.',
+                abort: 'You need to give a reasonable amount of ammunition for this weapon.',
+            }
+        });
 
+        if (!updatedAmmo)
+            return;
+        
+        // (1) Update the amount of ammunition in the |currentValue| structure.
+        for (let index = 0; index < currentValue.length; ++index) {
+            if (currentValue[index].weapon !== weapon)
+                continue;
+            
+            currentValue[index].ammo = parseInt(updatedAmmo, 10);
+        }
+
+        // (2) Save the |currentValue| back to the |settings|.
+        settings.set('deathmatch/spawn_weapons', currentValue);
+
+        // (3) Hop back to the overview screen for weapon customisation.
+        return await this.handleCustomization(player, settings, currentValue);
     }
 }

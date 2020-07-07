@@ -10,7 +10,7 @@ import { format } from 'base/format.js';
 import { timeDifferenceToString } from 'base/time.js';
 
 // Returns whether the given |value| is in range of |min| (inclusive) and |max| (inclusive).
-function isNumberInRange(min, max, value) {
+export function isNumberInRange(min, max, value) {
     const floatValue = parseFloat(value);
     if (Number.isNaN(floatValue) || !Number.isSafeInteger(floatValue))
         return false;

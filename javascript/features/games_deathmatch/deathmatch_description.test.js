@@ -27,6 +27,8 @@ describe('DeathmatchDescription', it => {
                 seconds: settings.getValue('games/deathmatch_objective_value_default'),
             });
 
+        assert.equal(description.skin, -1);
+
         assert.equal(
             description.spawnArmour,
             settings.getValue('games/deathmatch_spawn_armour_default'));
@@ -52,6 +54,7 @@ describe('DeathmatchDescription', it => {
                 lagCompensation: true,
                 mapMarkers: 'Team only',
                 objective: { type: 'Best of...', rounds: 3 },
+                skin: 121,
                 spawnArmour: true,
                 spawnWeapons: [ { weapon: 16, ammo: 50 } ],
                 teamDamage: true,
@@ -61,6 +64,7 @@ describe('DeathmatchDescription', it => {
             assert.isTrue(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Team only');
             assert.deepEqual(description.objective, { type: 'Best of...', rounds: 3 });
+            assert.equal(description.skin, 121);
             assert.isTrue(description.spawnArmour);
             assert.deepEqual(description.spawnWeapons, [ { weapon: 16, ammo: 50 } ]);
             assert.isTrue(description.teamDamage);
@@ -73,6 +77,7 @@ describe('DeathmatchDescription', it => {
                 lagCompensation: false,
                 mapMarkers: 'Disabled',
                 objective: { type: 'Continuous' },
+                skin: 300,
                 spawnArmour: false,
                 spawnWeapons: [],
                 teamDamage: false,
@@ -82,6 +87,7 @@ describe('DeathmatchDescription', it => {
             assert.isFalse(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Disabled');
             assert.deepEqual(description.objective, { type: 'Continuous' });
+            assert.equal(description.skin, 300);
             assert.isFalse(description.spawnArmour);
             assert.deepEqual(description.spawnWeapons, []);
             assert.isFalse(description.teamDamage);

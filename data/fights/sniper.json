@@ -5,6 +5,7 @@
 
     "settings": {
         "deathmatch/map_markers": "Disabled",
+        "deathmatch/skin": 75,
         "deathmatch/spawn_armour": true,
         "deathmatch/spawn_weapons": [
             { "weapon": 34, "ammo": 1000 }

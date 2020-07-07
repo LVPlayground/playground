@@ -73,6 +73,9 @@ export default class GamesDeathmatch extends Feature {
                 'deathmatch', 'objective', new ObjectiveSetting(), description.objective,
                 'Objective'),
 
+            // Option: Skin (number, hidden)
+            new Setting('deathmatch', 'skin', Setting.TYPE_NUMBER, description.skin, 'Skin'),
+
             // Option: Spawn armour (boolean)
             new Setting(
                 'deathmatch', 'spawn_armour', Setting.TYPE_BOOLEAN, description.spawnArmour,
@@ -113,6 +116,14 @@ export default class GamesDeathmatch extends Feature {
             if (!overridden)
                 options.settings.push(setting);
         }
+
+        // Hide the "deathmatch/skin" option. Until we have a fancy picker for skins, this should
+        // only be configurable by preconfigured minigames.
+        if (!options.hasOwnProperty('settingsFrozen') || !Array.isArray(options.settingsFrozen))
+            options.settingsFrozen = [];
+        
+        if (!options.settingsFrozen.includes('deathmatch/skin'))
+            options.settingsFrozen.push('deathmatch/skin');
 
         // Now register the |gameConstructor| with the regular Games API.
         return this.games_().registerGame(gameConstructor, options, userData);

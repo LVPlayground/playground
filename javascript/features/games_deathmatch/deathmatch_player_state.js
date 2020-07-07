@@ -6,6 +6,7 @@
 // initialized when the player is added to the game.
 export class DeathmatchPlayerState {
     originalColor = null;
+    originalSkin = null;
     originalTeam = null;
 
     color = null;
@@ -15,6 +16,7 @@ export class DeathmatchPlayerState {
 
     constructor(player) {
         this.originalColor = player.color;
+        this.originalSkin = player.skin;
         this.originalTeam = player.team;
 
         // Make a mutable copy of the |player|'s colour, which can be adjusted.

@@ -39,6 +39,7 @@ export class DeathmatchGame extends GameBase {
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #mode_ = DeathmatchGame.kModeIndividual;
     #objective_ = null;
+    #skin_ = null;
     #spawnArmour_ = null;
     #teamDamage_ = null;
 
@@ -103,6 +104,7 @@ export class DeathmatchGame extends GameBase {
 
         // Import the settings from the |settings|, which may have been customised by the player.
         this.#lagCompensation_ = settings.get('deathmatch/lag_compensation');
+        this.#skin_ = settings.get('deathmatch/skin');
         this.#spawnArmour_ = settings.get('deathmatch/spawn_armour');
         this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
@@ -142,7 +144,11 @@ export class DeathmatchGame extends GameBase {
         // Disable lag compensation for the |player| when this has been configured.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
-        
+
+        // Force the |player| in this game's skin when it has been requested.
+        if (this.#skin_ >= 0)
+            player.skin = this.#skin_;
+
         // For free-for-all games, this is the point where map marker visibility will be decided.
         // For team-based games, it will be done when the player's assigned a team instead.
         if (this.mode === DeathmatchGame.kModeIndividual)
@@ -164,11 +170,17 @@ export class DeathmatchGame extends GameBase {
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
 
+        const state = this.#state_.get(player);
+
         // Reset the modified state for each of the game settings back to their original values for
         // the given |player|. This makes sure we don't permanently alter their state.
-        this.resetMapMarkerSettingForPlayer(player);
-        this.resetTeamColorSettingForPlayer(player);
-        this.resetTeamDamageSettingForPlayer(player);
+        this.resetMapMarkerSettingForPlayer(player, state);
+        this.resetTeamColorSettingForPlayer(player, state);
+        this.resetTeamDamageSettingForPlayer(player, state);
+
+        // Reset the player back to their original skin if we had changed it.
+        if (this.#skin_ >= 0)
+            player.skin = state.originalSkin;
 
         // Flip lag compensation back to its default value if it was modified.
         if (!this.#lagCompensation_)
@@ -256,9 +268,7 @@ export class DeathmatchGame extends GameBase {
 
     // Resets the map marker settings for the |player| as they are leaving the game. We the list of
     // participants and reset visibility for any invisible players.
-    resetMapMarkerSettingForPlayer(player) {
-        const state = this.#state_.get(player);
-
+    resetMapMarkerSettingForPlayer(player, state) {
         for (const [ target, targetState ] of this.#state_) {
             if (state.invisible.has(target)) {
                 this.makeTargetVisibleForPlayer(player, target);
@@ -295,8 +305,7 @@ export class DeathmatchGame extends GameBase {
 
     // Resets the |player|'s color back to what it was. We always re-set their color, as markers may
     // also amend the |player|'s color and we shouldn't re-set it twice.
-    resetTeamColorSettingForPlayer(player) {
-        const state = this.#state_.get(player);
+    resetTeamColorSettingForPlayer(player, state) {
         if (state)
             player.color = state.originalColor;
     }

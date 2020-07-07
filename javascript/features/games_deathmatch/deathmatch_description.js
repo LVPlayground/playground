@@ -21,6 +21,9 @@ export class DeathmatchDescription {
     // The objective for this game, i.e. the winning conditions. { type, rounds?, kills?, seconds? }
     objective = null;
 
+    // The skin that participants should spawn with.
+    skin = -1;
+
     // Whether participants should be given spawn armour by default.
     spawnArmour = null;
 
@@ -89,6 +92,13 @@ export class DeathmatchDescription {
                 kills: settings.getValue('games/deathmatch_objective_value_default'),
                 seconds: settings.getValue('games/deathmatch_objective_value_default'),
             };
+        }
+
+        if (options.hasOwnProperty('skin')) {
+            if (typeof options.skin !== 'number')
+                throw new Error(`[${this.name}] The skin ID must be passed as a number.`);
+
+            this.skin = options.skin;
         }
 
         if (options.hasOwnProperty('spawnArmour')) {

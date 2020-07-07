@@ -67,3 +67,14 @@ As of right now, all weapons are available with the exception of satchels. Be ca
 a knife or a Katana sword, as they may desync the player which cannot be fixed during the game.
 
 [1]: ../games#options-when-registering-a-game
+
+## TODO
+The following items are still to do for the Games Deathmatch API to be complete.
+
+  * Implement support for **balanced teams**.
+  * Implement support for **randomized teams**.
+  * Implement the **Last man standing** objective.
+  * Implement the **Best of...** objective.
+  * Implement the **First to...** objective.
+  * Implement the **Time limit...** objective.
+  * Implement the **Continuous** objective.

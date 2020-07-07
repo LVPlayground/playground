@@ -6,3 +6,4 @@ out.pwn
 .idea
 tools/sftp-config.json
 .vs
+*.code-workspace

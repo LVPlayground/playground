@@ -85,7 +85,6 @@ multi-player deathmatch fights, for example gang wars.
 The following items are still to do for the Games Deathmatch API to be complete.
 
   * Implement support for **balanced teams**.
-  * Implement support for **randomized teams**.
   * Implement the **Last man standing** objective.
   * Implement the **Best of...** objective.
   * Implement the **First to...** objective.

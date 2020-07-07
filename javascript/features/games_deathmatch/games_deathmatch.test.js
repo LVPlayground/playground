@@ -45,7 +45,9 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     const kLagCompensationIndex = 3;
     const kMapMarkersIndex = 4;
     const kObjectiveIndex = 5;
-    const kTeamDamageIndex = 6;
+    const kSpawnArmourIndex = 6;
+    const kSpawnWeaponsIndex = 7;
+    const kTeamDamageIndex = 8;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
@@ -324,7 +326,12 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: kMapMarkersIndex })).then(
             () => gunther.respondToDialog({ listitem: 2 /* disabled */ })).then(
+            () => gunther.respondToDialog({ listitem: kEnvironmentIndex })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* gravity */ })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* high */ })).then(
             () => gunther.respondToDialog({ listitem: kTeamDamageIndex })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
+            () => gunther.respondToDialog({ listitem: kSpawnArmourIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: kStartGameIndex }));
 
@@ -335,6 +342,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         // Overridden from the default through the customization menu:
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
+        assert.equal(gunther.gravity, 0.012);
+        assert.equal(gunther.armour, 100);
 
         // TODO: Verify map markers.
         // TODO: Verify team damage.
@@ -343,6 +352,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.minigameName, '');
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
+        assert.equal(gunther.gravity, Player.kDefaultGravity);
 
         // TODO: Verify map markers.
         // TODO: Verify team damage.

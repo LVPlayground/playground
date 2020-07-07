@@ -6,6 +6,7 @@ import { DeathmatchDescription } from 'features/games_deathmatch/deathmatch_desc
 import { Feature } from 'components/feature_manager/feature.js';
 import { ObjectiveSetting } from 'features/games_deathmatch/objective_setting.js';
 import { Setting } from 'entities/setting.js';
+import { SpawnWeaponsSetting } from 'features/games_deathmatch/spawn_weapons_setting.js';
 
 // Determines if the given |gameConstructor| has a class named "DeathmatchGame" in its prototype
 // chain. We cannot use `isPrototypeOf` here, since the actual instances might be subtly different
@@ -67,7 +68,7 @@ export default class GamesDeathmatch extends Feature {
                 'deathmatch', 'map_markers', DeathmatchDescription.kMapMarkerOptions,
                 description.mapMarkers, 'Map markers'),
             
-            // Option: Objective (enumeration)
+            // Option: Objective (complex)
             new Setting(
                 'deathmatch', 'objective', new ObjectiveSetting(), description.objective,
                 'Objective'),
@@ -76,6 +77,11 @@ export default class GamesDeathmatch extends Feature {
             new Setting(
                 'deathmatch', 'spawn_armour', Setting.TYPE_BOOLEAN, description.spawnArmour,
                 'Spawn armour'),
+
+            // Option: Spawn weapons (complex)
+            new Setting(
+                'deathmatch', 'spawn_weapons', new SpawnWeaponsSetting(), description.spawnWeapons,
+                'Spawn weapons'),
 
             // Option: Team damage (boolean)
             new Setting(

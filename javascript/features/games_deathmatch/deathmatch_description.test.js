@@ -31,6 +31,13 @@ describe('DeathmatchDescription', it => {
             description.spawnArmour,
             settings.getValue('games/deathmatch_spawn_armour_default'));
 
+        assert.deepEqual(
+            description.spawnWeapons,
+            [
+                { weapon: 26, ammo: 250 },
+                { weapon: 28, ammo: 500 },
+            ]);
+
         assert.equal(
             description.teamDamage,
             settings.getValue('games/deathmatch_team_damage_default'));
@@ -46,6 +53,7 @@ describe('DeathmatchDescription', it => {
                 mapMarkers: 'Team only',
                 objective: { type: 'Best of...', rounds: 3 },
                 spawnArmour: true,
+                spawnWeapons: [ { weapon: 16, ammo: 50 } ],
                 teamDamage: true,
 
             }, settings);
@@ -54,6 +62,7 @@ describe('DeathmatchDescription', it => {
             assert.equal(description.mapMarkers, 'Team only');
             assert.deepEqual(description.objective, { type: 'Best of...', rounds: 3 });
             assert.isTrue(description.spawnArmour);
+            assert.deepEqual(description.spawnWeapons, [ { weapon: 16, ammo: 50 } ]);
             assert.isTrue(description.teamDamage);
         }
 
@@ -65,6 +74,7 @@ describe('DeathmatchDescription', it => {
                 mapMarkers: 'Disabled',
                 objective: { type: 'Continuous' },
                 spawnArmour: false,
+                spawnWeapons: [],
                 teamDamage: false,
 
             }, settings);
@@ -73,6 +83,7 @@ describe('DeathmatchDescription', it => {
             assert.equal(description.mapMarkers, 'Disabled');
             assert.deepEqual(description.objective, { type: 'Continuous' });
             assert.isFalse(description.spawnArmour);
+            assert.deepEqual(description.spawnWeapons, []);
             assert.isFalse(description.teamDamage);
         }
     });

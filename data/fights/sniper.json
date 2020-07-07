@@ -6,6 +6,9 @@
     "settings": {
         "deathmatch/map_markers": "Disabled",
         "deathmatch/spawn_armour": true,
+        "deathmatch/spawn_weapons": [
+            { "weapon": 34, "ammo": 1000 }
+        ],
         "fights/location": "Acter Nuclear Power Plant",
         "fights/pickups": false
     }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { SpawnWeaponsSetting } from 'features/games_deathmatch/spawn_weapons_setting.js';
+
 // Specialised version of the `GameDescription` class that controls and validates all deathmatch-
 // related functionality added by this feature.
 export class DeathmatchDescription {
@@ -21,6 +23,9 @@ export class DeathmatchDescription {
 
     // Whether participants should be given spawn armour by default.
     spawnArmour = null;
+
+    // The spawn weapons taht the player will be spawning with.
+    spawnWeapons = [];
 
     // Whether participants in the same team can issue damage to each other.
     teamDamage = true;
@@ -93,6 +98,31 @@ export class DeathmatchDescription {
             this.spawnArmour = options.spawnArmour;
         } else {
             this.spawnArmour = settings.getValue('games/deathmatch_spawn_armour_default');
+        }
+
+        if (options.hasOwnProperty('spawnWeapons')) {
+            if (!Array.isArray(options.spawnWeapons))
+                throw new Error(`[${this.name}] Given spawn weapons must be an array.`);
+            
+            for (const spawnWeapon of options.spawnWeapons) {
+                if (typeof spawnWeapon !== 'object')
+                    throw new Error(`[${this.name}] Each spawn weapon must be an object.`);
+                
+                const weapon = spawnWeapon.weapon;
+                const ammo = spawnWeapon.ammo;
+
+                if (!SpawnWeaponsSetting.kSpawnWeaponIds.has(weapon))
+                    throw new Error(`[${this.name}] Invalid weapon ID passed for spawn weapon.`);
+                
+                if (typeof ammo !== 'number' || ammo < 0 || ammo > 10000)
+                    throw new Error(`[${this.name}] Invalid ammunition passed for spawn weapon.`);
+                
+                this.spawnWeapons.push({ weapon, ammo });
+            }
+        } else {
+            // Have two spawn weapons by default: Sawnoff Shotgun and Uzi, i.e. the RW weapons.
+            this.spawnWeapons.push({ weapon: 26, ammo: 250 });
+            this.spawnWeapons.push({ weapon: 28, ammo: 500 });
         }
 
         if (options.hasOwnProperty('teamDamage')) {

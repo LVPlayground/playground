@@ -18,10 +18,6 @@ export class DeathmatchGame extends GameBase {
     static kMapMarkersEnabledTeam = 'Team only';
     static kMapMarkersDisabled = 'Disabled';
 
-    // Mode of the game, either free-for-all or team-based.
-    static kModeIndividual = 0;
-    static kModeTeams = 1;
-
     // The objective which defines the winning conditions of this game.
     static kObjectiveLastManStanding = 'Last man standing';
     static kObjectiveBestOf = 'Best of...';
@@ -35,13 +31,19 @@ export class DeathmatchGame extends GameBase {
     static kTeamAlpha = 0;
     static kTeamBravo = 1;
 
+    // Values for how teams should be divided in this game. Defaults to free for all, but can be
+    // anything. Players will be divided before the first player spawns.
+    static kTeamsBalanced = 'Balanced teams';
+    static kTeamsFreeForAll = 'Free for all';
+    static kTeamsRandomized = 'Randomized teams';
+
     #lagCompensation_ = null;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
-    #mode_ = DeathmatchGame.kModeIndividual;
     #objective_ = null;
     #skin_ = null;
     #spawnArmour_ = null;
     #spawnWeapons_ = null;
+    #teams_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -49,9 +51,8 @@ export class DeathmatchGame extends GameBase {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Gets or sets the mode that the deathmatch game is currently running under.
-    get mode() { return this.#mode_; }
-    set mode(value) { this.#mode_ = value; }
+    // Returns whether teams will be used for this game.
+    hasTeams() { return this.#teams_ !== DeathmatchGame.kTeamsFreeForAll; }
 
     // Returns a PlayerStatsView instance for the current statistics of the given |player|. An
     // exception will be thrown if the |player| has not had their state initialized yet.
@@ -66,7 +67,7 @@ export class DeathmatchGame extends GameBase {
     // Gets the team that the given |player| is part of. Will be one of the DeathmatchGame.kTeam*
     // constants, and always be kTeamIndividual for non-team based games.
     getTeamForPlayer(player) {
-        if (this.#mode_ === DeathmatchGame.kModeIndividual)
+        if (!this.hasTeams())
             return DeathmatchGame.kTeamIndividual;
         
         const state = this.#state_.get(player);
@@ -79,7 +80,7 @@ export class DeathmatchGame extends GameBase {
     // Sets the team for the given |player| to |team|. This will throw an exception on invalid teams
     // or when setting teams in non-team based games. Team settings will immediately be applied.
     setTeamForPlayer(player, team) {
-        if (this.#mode_ !== DeathmatchGame.kModeTeams)
+        if (!this.hasTeams())
             throw new Error(`Cannot set a player's team in non-team based games.`);
 
         if (![ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ].includes(team))
@@ -108,6 +109,7 @@ export class DeathmatchGame extends GameBase {
         this.#skin_ = settings.get('deathmatch/skin');
         this.#spawnArmour_ = settings.get('deathmatch/spawn_armour');
         this.#spawnWeapons_ = settings.get('deathmatch/spawn_weapons');
+        this.#teams_ = settings.get('deathmatch/teams');
         this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
         this.#mapMarkers_ = settings.get('deathmatch/map_markers');
@@ -153,7 +155,7 @@ export class DeathmatchGame extends GameBase {
 
         // For free-for-all games, this is the point where map marker visibility will be decided.
         // For team-based games, it will be done when the player's assigned a team instead.
-        if (this.mode === DeathmatchGame.kModeIndividual)
+        if (!this.hasTeams())
             this.applyMapMarkerSettingForPlayer(player);
     }
 

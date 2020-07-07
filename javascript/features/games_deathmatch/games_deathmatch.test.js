@@ -47,7 +47,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     const kObjectiveIndex = 5;
     const kSpawnArmourIndex = 6;
     const kSpawnWeaponsIndex = 7;
-    const kTeamDamageIndex = 8;
+    const kTeamsIndex = 8;
+    const kTeamDamageIndex = 9;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
@@ -104,11 +105,6 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         const lucy = server.playerManager.getById(/* Lucy= */ 2);
 
         class BubbleGame extends DeathmatchGame {
-            async onInitialized(settings) {
-                await super.onInitialized(settings);
-                this.mode = DeathmatchGame.kModeTeams;
-            }
-
             async onPlayerAdded(player) {
                 await super.onPlayerAdded(player);
                 switch (player) {
@@ -132,6 +128,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             price: 0,
 
             mapMarkers: 'Team only',
+            teams: 'Randomized teams',
             teamDamage: false,
 
             minimumPlayers: 3,

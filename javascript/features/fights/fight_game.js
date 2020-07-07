@@ -15,7 +15,7 @@ export class FightGame extends DeathmatchGame {
     #spawns_ = null;
 
     async onInitialized(settings, registry) {
-        await super.onInitialized(settings);
+        await super.onInitialized(settings, registry);
 
         // Get the FightLocation instance from the |registry|, based on the given |settings|.
         this.#location_ = registry.getLocation(settings.get(kLocationSetting));
@@ -24,31 +24,20 @@ export class FightGame extends DeathmatchGame {
         
         // Determine the spawn positions for the game. These differ between individual games and
         // team-based games, as players will want to be spread out in a different manner.
-        {
-            const teams = [];
-            switch (this.mode) {
-                case DeathmatchGame.kModeIndividual:
-                    teams.push(DeathmatchGame.kTeamIndividual);
-                    break;
-                
-                case DeathmatchGame.kModeTeams:
-                    teams.push(DeathmatchGame.kTeamAlpha);
-                    teams.push(DeathmatchGame.kTeamBravo);
-                    break;
-            }
+        const teams = this.hasTeams() ? [ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ]
+                                      : [ DeathmatchGame.kTeamIndividual ];
 
-            // Initialize the spawn positions as a map from team to an object containing the actual
-            // spawn positions, as well as the most recently used index.
-            this.#spawns_ = new Map(teams.map(team => {
-                return [
-                    team,
-                    {
-                        positions: this.#location_.getSpawnPositions(this.mode, team),
-                        index: 0,
-                    }
-                ];
-            }));
-        }
+        // Initialize the spawn positions as a map from team to an object containing the actual
+        // spawn positions, as well as the most recently used index.
+        this.#spawns_ = new Map(teams.map(team => {
+            return [
+                team,
+                {
+                    positions: this.#location_.getSpawnPositions(this.hasTeams(), team),
+                    index: 0,
+                }
+            ];
+        }));
 
         // Create all the objects that are part of this location.
         for (const objectInfo of this.#location_.getObjects())
@@ -72,8 +61,6 @@ export class FightGame extends DeathmatchGame {
                 objects[0].position, this.scopedEntities.virtualWorld,
                 this.scopedEntities.interiorId, /* type= */ -1);
         }
-
-        // TODO: For team-based games, put the player in an appropriate team.
     }
 
     async onPlayerSpawned(player, countdown) {

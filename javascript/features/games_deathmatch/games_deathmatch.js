@@ -86,6 +86,11 @@ export default class GamesDeathmatch extends Feature {
                 'deathmatch', 'spawn_weapons', new SpawnWeaponsSetting(), description.spawnWeapons,
                 'Spawn weapons'),
 
+            // Option: Teams (enumeration)
+            new Setting(
+                'deathmatch', 'teams', DeathmatchDescription.kTeamOptions, description.teams,
+                'Teams'),
+
             // Option: Team damage (boolean)
             new Setting(
                 'deathmatch', 'team_damage', Setting.TYPE_BOOLEAN, description.teamDamage,

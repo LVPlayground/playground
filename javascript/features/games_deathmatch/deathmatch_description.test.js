@@ -39,6 +39,8 @@ describe('DeathmatchDescription', it => {
                 { weapon: 24, ammo: 100 },
             ]);
 
+        assert.equal(description.teams, 'Free for all');
+
         assert.equal(
             description.teamDamage,
             settings.getValue('games/deathmatch_team_damage_default'));
@@ -56,6 +58,7 @@ describe('DeathmatchDescription', it => {
                 skin: 121,
                 spawnArmour: true,
                 spawnWeapons: [ { weapon: 16, ammo: 50 } ],
+                teams: 'Free for all',
                 teamDamage: true,
 
             }, settings);
@@ -66,6 +69,7 @@ describe('DeathmatchDescription', it => {
             assert.equal(description.skin, 121);
             assert.isTrue(description.spawnArmour);
             assert.deepEqual(description.spawnWeapons, [ { weapon: 16, ammo: 50 } ]);
+            assert.equal(description.teams, 'Free for all');
             assert.isTrue(description.teamDamage);
         }
 
@@ -79,6 +83,7 @@ describe('DeathmatchDescription', it => {
                 skin: 300,
                 spawnArmour: false,
                 spawnWeapons: [],
+                teams: 'Balanced teams',
                 teamDamage: false,
 
             }, settings);
@@ -89,6 +94,7 @@ describe('DeathmatchDescription', it => {
             assert.equal(description.skin, 300);
             assert.isFalse(description.spawnArmour);
             assert.deepEqual(description.spawnWeapons, []);
+            assert.equal(description.teams, 'Balanced teams');
             assert.isFalse(description.teamDamage);
         }
     });

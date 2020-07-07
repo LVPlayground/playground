@@ -64,9 +64,10 @@ Feature                                          | Code Health | Description
 [Decorations](decorations/)                      | ❓ 2020     | Powers JSON-based decorations on the server.
 [Derbies](derbies/)                              | ❓ 2020     | -
 [Economy](economy/)                              | ❓ 2020     | -
-[Fights](fights/)                                | ❓ 2020     | -
-[Friends](friends/)                              | ✔ 2020     | -
-[Games](games/)                                  | ❓ 2020     | Driver for all sorts of interactive games on the server.
+[Fights](fights/)                                | ✔ 2020     | Provides various fighting-based games to the players.
+[Friends](friends/)                              | ✔ 2020     | Enables players to friend other players, unlocking easier communication.
+[Games](games/)                                  | ✔ 2020     | Driver for all sorts of interactive games on the server.
+[GamesDeathmatch](games_deathmatch/)             | ✔ 2020     | Driver for deathmatch-based games on the server.
 [Gangs](gangs/)                                  | ❓ 2020     | -
 [GangChat](gang_chat/)                           | ❓ 2020     | Extends [Gangs](gangs/) with a private communication channel.
 [GangZones](gang_zones/)                         | ❓ 2020     | Extends [Gangs](gangs/) with visual and interactive gang zones.
@@ -76,7 +77,7 @@ Feature                                          | Code Health | Description
 [Leaderboard](leaderboard/)                      | ❓ 2020     | The `/leaderboard` command, and database routines to calculate it.
 [Location](location/)                            | ❓ 2020     | -
 [NuwaniCommands](nuwani_commands/)               | ❓ 2020     | The `/nuwani` command, enabling Management to control the bot system.
-[PlayerCommands](player_commands/)               | ✅ 2020    | Provides commands for the player also useable for admins. E.g. to buy weapons.
+[PlayerCommands](player_commands/)               | ❓ 2020    | Provides commands for the player also useable for admins. E.g. to buy weapons.
 [PlayerFavours](player_favours/)                 | ❓ 2020     | -
 [PlayerSettings](player_settings/)               | ❓ 2020     | -
 [Playground](playground/)                        | ❓ 2020     | -

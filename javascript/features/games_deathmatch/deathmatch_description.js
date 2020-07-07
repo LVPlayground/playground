@@ -11,6 +11,7 @@ export class DeathmatchDescription {
     static kMapMarkerOptions = ['Enabled', 'Team only', 'Disabled'];
     static kObjectiveOptions =
         ['Last man standing', 'Best of...', 'First to..', 'Time limit...', 'Continuous'];
+    static kTeamOptions = [ 'Balanced teams', 'Free for all', 'Randomized teams' ];
 
     // Whether players should be subject to lag compensation during this game.
     lagCompensation = null;
@@ -29,6 +30,9 @@ export class DeathmatchDescription {
 
     // The spawn weapons taht the player will be spawning with.
     spawnWeapons = [];
+
+    // Whether teams should be created, and if so, how they should be balanced.
+    teams = 'Free for all';
 
     // Whether participants in the same team can issue damage to each other.
     teamDamage = true;
@@ -132,6 +136,13 @@ export class DeathmatchDescription {
         } else {
             // Give all players a Desert Eagle unless other weapons were specified.
             this.spawnWeapons.push({ weapon: 24, ammo: 100 });
+        }
+
+        if (options.hasOwnProperty('teams')) {
+            if (!DeathmatchDescription.kTeamOptions.includes(options.teams))
+                throw new Error(`[${this.name}] Invalid value given the teams configuration.`);
+
+            this.teams = options.teams;
         }
 
         if (options.hasOwnProperty('teamDamage')) {

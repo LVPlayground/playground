@@ -25,23 +25,17 @@ export class FightLocation {
     // and armour pickups, and occassionally a weapon.
     getPickups() { return this.#description_.pickups ?? []; }
 
-    // Returns an array with the spawn positions for this game, in the given |mode|. When the mode
-    // is team-based play, the |teamIndex| should be set.
-    getSpawnPositions(mode, teamIndex = null) {
-        switch (mode) {
-            case DeathmatchGame.kModeIndividual:
-                return this.#description_.spawnPositions.individual;
+    // Returns an array with the spawn positions for this game. When the |hasTeams| flag has been
+    // set, the |teamIndex| must be given to indicate which team to select positions for.
+    getSpawnPositions(hasTeams, teamIndex = null) {
+        if (!hasTeams)
+            return this.#description_.spawnPositions.individual;
 
-            case DeathmatchGame.kModeTeams:
-                const spawnPositions = this.#description_.spawnPositions.teams;
-                if (teamIndex < 0 || teamIndex >= spawnPositions.length)
-                    throw new Error(`No spawn positions are defined for team #${teamIndex}.`);
-                
-                return spawnPositions[teamIndex];
+        const spawnPositions = this.#description_.spawnPositions.teams;
+        if (teamIndex < 0 || teamIndex >= spawnPositions.length)
+            throw new Error(`No spawn positions are defined for team #${teamIndex}.`);
 
-            default:
-                throw new Error(`Invalid game mode given: ${mode}.`);
-        }
+        return spawnPositions[teamIndex];
     }
 
     // Returns the world boundaries that have been set for this location. This is optional: some

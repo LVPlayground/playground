@@ -138,7 +138,40 @@ export class SpawnWeaponsSetting extends GameCustomSetting {
 
     // Handles the ability for players to modify an already selected weapon, either to remove it or
     // to adjust the amount of ammunition that will be granted for it.
-    async handleWeapon(player, setting, currentValue, weapon, ammo) {
+    async handleWeapon(player, settings, currentValue, weapon, ammo) {
+        const dialog = new Menu('Spawn weapon selection');
+        const name = kSpawnWeapons.get(weapon).name;
+
+        // (1) Make it possible for the |weapon| to be deleted.
+        dialog.addItem(`Delete the ${name}`, async () => {
+            currentValue = currentValue.filter(spawnWeapon => {
+                return spawnWeapon.weapon !== weapon;
+            })
+
+            settings.set('deathmatch/spawn_weapons', currentValue);
+
+            // Return the player to the main customization flow for weapons.
+            return await this.handleCustomization(player, settings, currentValue);
+        });
+
+        // (2) Make it possible to amend the amount of ammunition granted for the |weapon|. Only
+        // enable this option when the |weapon| supports more than one bullet.
+        const defaultAmmo = kSpawnWeapons.get(weapon).ammo;
+        if (defaultAmmo > 1) {
+            dialog.addItem(`Modify ammunition({FFFF00}${ammo}x)`, async () => {
+                return this.handleWeaponAmmunition(player, settings, currentValue, weapon, ammo);
+            });
+        } else {
+            dialog.addItem('{9E9E9E}Modify ammunition (unavailable)');
+        }
+
+        // (3) Show the |dialog| to the |player|, enabling them to make a choice.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Handles the ability for the |player| to modify the amount of ammunition given to a particular
+    // weapon. Only available for weapons that actually support >1 round.
+    async handleWeaponAmmunition(player, settings, currentValue, weapon, ammo) {
 
     }
 }

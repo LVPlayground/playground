@@ -221,7 +221,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             price: 0,
 
             spawnArmour: true,
-            // TODO: spawnWeapons
+            spawnWeapons: [
+                { weapon: 14, ammo: 1 },
+                { weapon: 23, ammo: 100 },
+            ],
 
             minimumPlayers: 1,
             maximumPlayers: 4,
@@ -235,6 +238,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         await runGameLoop();  // fully initialize the game
 
         assert.equal(gunther.armour, 100);
+        assert.deepEqual([ ...gunther.getWeaponsForTesting() ], [
+            [ 14, 1 ],
+            [ 23, 100 ],
+        ]);
 
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');

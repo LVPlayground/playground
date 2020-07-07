@@ -26,6 +26,8 @@ export class MockPlayer extends Player {
 
     #isServerAdmin_ = false;
 
+    #weapons_ = new Map();
+
     #position_ = new Vector(0, 0, 0);
     #rotation_ = 0;
     #interiorId_ = 0;
@@ -128,7 +130,6 @@ export class MockPlayer extends Player {
     // Section: Weapons
     // ---------------------------------------------------------------------------------------------
 
-    // Give a player a certain weapon with ammo.
     giveSpawnWeapon(weaponId, multiplier) {
         pawnInvoke('OnGiveSpawnWeapon', 'iii', this.id, weaponId, multiplier);
     }
@@ -139,16 +140,20 @@ export class MockPlayer extends Player {
 
     giveWeapon(weaponId, ammo) {
         pawnInvoke('OnGiveWeapon', 'iii', this.id, weaponId, ammo);
+        this.#weapons_.set(weaponId, ammo);
     }
 
     removeWeapon(weaponId) {
         pawnInvoke('OnRemovePlayerWeapon', 'ii', this.id, weaponId);
+        this.#weapons_.delete(weaponId);
     }
 
-    // Resets all the weapons a player has.
     resetWeapons() {
         pawnInvoke('OnResetPlayerWeapons', 'i', this.id);
+        this.#weapons_.clear();
     }
+
+    getWeaponsForTesting() { return this.#weapons_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Physics

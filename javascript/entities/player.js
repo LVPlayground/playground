@@ -205,7 +205,6 @@ export class Player extends Supplementable {
         wait(0).then(() => pawnInvoke('OnGiveSpawnArmour', 'i', this.#id_))
     }
 
-    // Give a player a certain weapon with ammo.
     giveWeapon(weaponId, ammo) {
         wait(0).then(() => pawnInvoke('OnGiveWeapon', 'iii', this.#id_, weaponId, ammo));
     }
@@ -214,7 +213,6 @@ export class Player extends Supplementable {
         wait(0).then(() => pawnInvoke('OnRemovePlayerWeapon', 'ii', this.#id_, weaponId));
     }
 
-    // Resets all the weapons a player has.
     resetWeapons() {
         wait(0).then(() => pawnInvoke('OnResetPlayerWeapons', 'i', this.#id_));
     }

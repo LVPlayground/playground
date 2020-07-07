@@ -41,6 +41,7 @@ export class DeathmatchGame extends GameBase {
     #objective_ = null;
     #skin_ = null;
     #spawnArmour_ = null;
+    #spawnWeapons_ = null;
     #teamDamage_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
@@ -106,6 +107,7 @@ export class DeathmatchGame extends GameBase {
         this.#lagCompensation_ = settings.get('deathmatch/lag_compensation');
         this.#skin_ = settings.get('deathmatch/skin');
         this.#spawnArmour_ = settings.get('deathmatch/spawn_armour');
+        this.#spawnWeapons_ = settings.get('deathmatch/spawn_weapons');
         this.#teamDamage_ = settings.get('deathmatch/team_damage');
 
         this.#mapMarkers_ = settings.get('deathmatch/map_markers');
@@ -163,6 +165,10 @@ export class DeathmatchGame extends GameBase {
         // Award the player with spawn armour if that has been configured.
         if (this.#spawnArmour_)
             player.armour = 100;
+
+        // Award the player with each of the spawn weapons that they should be getting.
+        for (const { weapon, ammo } of this.#spawnWeapons_)
+            player.giveWeapon(weapon, ammo);
     }
 
     // Called when the given |player| has been removed from the game, either because they've lost,

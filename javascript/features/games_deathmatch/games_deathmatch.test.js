@@ -336,6 +336,9 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             () => gunther.respondToDialog({ listitem: kEnvironmentIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* gravity */ })).then(
             () => gunther.respondToDialog({ listitem: 2 /* high */ })).then(
+            () => gunther.respondToDialog({ listitem: kSpawnWeaponsIndex })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* weapon set */ })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* walk weapons */ })).then(
             () => gunther.respondToDialog({ listitem: kTeamDamageIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: kSpawnArmourIndex })).then(
@@ -351,6 +354,12 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
         assert.equal(gunther.gravity, 0.012);
         assert.equal(gunther.armour, 100);
+
+        assert.deepEqual([ ...gunther.getWeaponsForTesting() ], [
+            [ 24 /* Desert Eagle */, 150 ],
+            [ 31 /* M4 */, 400 ],
+            [ 34 /* Sniper Rifle */, 100 ],
+        ]);
 
         // TODO: Verify map markers.
         // TODO: Verify team damage.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { SpawnWeaponsSetting } from 'features/games_deathmatch/spawn_weapons_setting.js';
+import { SpawnWeaponsSetting } from 'features/games_deathmatch/settings/spawn_weapons_setting.js';
 
 // Specialised version of the `GameDescription` class that controls and validates all deathmatch-
 // related functionality added by this feature.

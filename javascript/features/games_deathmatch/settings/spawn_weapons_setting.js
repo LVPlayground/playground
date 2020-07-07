@@ -6,7 +6,7 @@ import { GameCustomSetting } from 'features/games/game_custom_setting.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 
-import { isNumberInRange } from 'features/games_deathmatch/objective_setting.js';
+import { isNumberInRange } from 'features/games_deathmatch/settings/objective_setting.js';
 
 // Map of all the spawn weapons with their default ammunition numbers that are available.
 const kSpawnWeapons = new Map([

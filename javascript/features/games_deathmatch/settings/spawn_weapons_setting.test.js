@@ -6,7 +6,7 @@ import { DeathmatchGame } from 'features/games_deathmatch/deathmatch_game.js';
 import { GameCommandParams } from 'features/games/game_command_params.js';
 import { GameDescription } from 'features/games/game_description.js';
 import { Setting } from 'entities/setting.js';
-import { SpawnWeaponsSetting } from 'features/games_deathmatch/spawn_weapons_setting.js';
+import { SpawnWeaponsSetting } from 'features/games_deathmatch/settings/spawn_weapons_setting.js';
 
 describe('SpawnWeaponsSetting', (it, beforeEach) => {
     let commands = null;

@@ -4,9 +4,9 @@
 
 import { DeathmatchDescription } from 'features/games_deathmatch/deathmatch_description.js';
 import { Feature } from 'components/feature_manager/feature.js';
-import { ObjectiveSetting } from 'features/games_deathmatch/objective_setting.js';
+import { ObjectiveSetting } from 'features/games_deathmatch/settings/objective_setting.js';
 import { Setting } from 'entities/setting.js';
-import { SpawnWeaponsSetting } from 'features/games_deathmatch/spawn_weapons_setting.js';
+import { SpawnWeaponsSetting } from 'features/games_deathmatch/settings/spawn_weapons_setting.js';
 
 // Determines if the given |gameConstructor| has a class named "DeathmatchGame" in its prototype
 // chain. We cannot use `isPrototypeOf` here, since the actual instances might be subtly different

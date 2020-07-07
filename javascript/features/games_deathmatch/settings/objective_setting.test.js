@@ -5,7 +5,7 @@
 import { GameCommandParams } from 'features/games/game_command_params.js';
 import { GameDescription } from 'features/games/game_description.js';
 import { Game } from 'features/games/game.js';
-import { ObjectiveSetting } from 'features/games_deathmatch/objective_setting.js';
+import { ObjectiveSetting } from 'features/games_deathmatch/settings/objective_setting.js';
 import { Setting } from 'entities/setting.js';
 
 describe('GameCustomSetting', (it, beforeEach) => {

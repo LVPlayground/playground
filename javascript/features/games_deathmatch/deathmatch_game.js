@@ -3,8 +3,11 @@
 // be found in the LICENSE file.
 
 import { Color } from 'base/color.js';
+import { BalancedTeamsResolver } from 'features/games_deathmatch/teams/balanced_teams_resolver.js';
 import { DeathmatchPlayerState } from 'features/games_deathmatch/deathmatch_player_state.js';
+import { FreeForAllResolver } from 'features/games_deathmatch/teams/free_for_all_resolver.js';
 import { GameBase } from 'features/games/game_base.js';
+import { RandomizedTeamsResolver } from 'features/games_deathmatch/teams/randomized_teams_resolver.js';
 
 // Colours that will be assigned to participants of certain teams.
 const kTeamColorAlpha = Color.fromHex('D84315AA');  // red
@@ -45,6 +48,7 @@ export class DeathmatchGame extends GameBase {
     #spawnWeapons_ = null;
     #teams_ = null;
     #teamDamage_ = null;
+    #teamResolver_ = null;
 
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
     #state_ = new Map();
@@ -134,6 +138,23 @@ export class DeathmatchGame extends GameBase {
             
             default:
                 throw new Error('Invalid value given for the objective: ' + this.#objective_.type);
+        }
+
+        switch (this.#teams_) {
+            case DeathmatchGame.kTeamsBalanced:
+                this.#teamResolver_ = new BalancedTeamsResolver();
+                break;
+
+            case DeathmatchGame.kTeamsFreeForAll:
+                this.#teamResolver_ = new FreeForAllResolver();
+                break;
+
+            case DeathmatchGame.kTeamsRandomized:
+                this.#teamResolver_ = new RandomizedTeamsResolver();
+                break;
+            
+            default:
+                throw new Error('Invalid value given for the team resolver: ' + this.#teams_);
         }
     }
 

@@ -60,5 +60,37 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
                 'Micro SMG, Sawnoff Shotgun',
             ]
         ]);
+
+        // (1) Gunther is able to add individual weapons.
+
+        // (2) Gunther is not able to add individual weapons multiple times.
+
+        // (3) Gunther is able to remove a weapon from the selection.
+
+        // (4) Gunther is able to overwrite the selection with a weapon set.
+        gunther.respondToDialog({ listitem: 2 /* spawn weapons */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* select weapon set */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* fun weapon set */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* start the game! */ }));
+        
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.isTrue(settings.has('deathmatch/spawn_weapons'));
+        assert.deepEqual(settings.get('deathmatch/spawn_weapons'), [
+            { weapon: 10, ammo: 1 },
+            { weapon: 41, ammo: 250 },
+        ]);
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Spawn weapons',
+            '{FFFF00}Purple Dildo, Spraycan',
+        ]);
+
+        // (5) Gunther is able to change the amount of ammunition for a weapon.
+
+        // (6) Gunther is able to remove all weapons.
+
     });
 });

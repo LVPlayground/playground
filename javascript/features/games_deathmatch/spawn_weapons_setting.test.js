@@ -195,8 +195,5 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
             'Spawn weapons',
             '{FFFF00}None',
         ]);
-
-        // (7) Gunther can select weapons with really complex flows and adjustments.
-
     });
 });

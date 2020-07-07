@@ -7,9 +7,9 @@ import { Menu } from 'components/menu/menu.js';
 
 // Configuration and mappings for the gravity options available to games.
 const kGravityConfiguration = new Map([
-    [ 'Low', 0.005 ],
+    [ 'Low', 0.0035 ],
     [ 'Normal', null ],
-    [ 'High', 0.011 ],
+    [ 'High', 0.012 ],
 ]);
 
 // Configuration and mappings for the time options available to games.

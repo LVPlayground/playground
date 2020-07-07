@@ -114,7 +114,79 @@ export class SpawnWeaponsSetting extends GameCustomSetting {
     // Handles the ability for the player to manually add an extra weapon to the selection. Weapons
     // that already are included in the |currentValue| will be greyed out instead.
     async handleSelectWeapon(player, settings, currentValue) {
+        const dialog = new Menu('Spawn weapon selection');
+        const categories = new Set();
 
+        // (1) Collate all the categories of weapons that are available.
+        for (const { category } of kSpawnWeapons.values())
+            categories.add(category);
+        
+        // (2) Sort the categories for convenient and predictable display.
+        const sortedCategories = [ ...categories ].sort();
+
+        // (3) Build a menu with all of the |sortedCategories| within them.
+        for (const category of sortedCategories) {
+            dialog.addItem(category, async () => {
+                await this.handleSelectWeaponCategory(player, settings, currentValue, category);
+            });
+        }
+
+        // (4) Display the |dialog| to the player.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Handles the ability for the |player| to select weapons from a particular |category|. Upon
+    // selection, the weapon will directly be added to the given |settings|.
+    async handleSelectWeaponCategory(player, settings, currentValue, category) {
+        const currentWeapons = new Set(currentValue.map(({ weapon }) => weapon));
+        const weapons = new Map();
+
+        // (1) Collate all the weapons that are part of this category.
+        for (const [ id, spawnWeapon ] of kSpawnWeapons) {
+            if (spawnWeapon.category !== category)
+                continue;
+            
+            weapons.set(id, {
+                name: spawnWeapon.name,
+                ammo: spawnWeapon.ammo,
+                selected: currentWeapons.has(id),
+            });
+        }
+
+        // (2) Build a dialog with all the weapons, greying out those already purchased.
+        const dialog = new Menu('Spawn weapon selection', [
+            'Weapon',
+            'Ammo',
+        ]);
+
+        for (const [ id, { name, ammo, selected } ] of weapons) {
+            const prefix = selected ? '{9E9E9E}' : '';
+
+            // Add the item. In the listener, we either overwrite the existing weapon, or add a new
+            // weapon, depending on whether it already was added to the set.
+            dialog.addItem(prefix + name, prefix + ammo, async () => {
+                if (selected) {
+                    for (let index = 0; index < currentValue.length; ++index) {
+                        if (currentValue[index].weapon !== id)
+                            continue;
+                        
+                        currentValue[index].ammo = ammo;
+                        break;
+                    }
+                } else {
+                    currentValue.push({ weapon: id, ammo });
+                }
+
+                // Store the |currentValue| as the current state in |settings|.
+                settings.set('deathmatch/spawn_weapons', currentValue);
+
+                // And go back to the main dialog for customising the spawn weapons.
+                return await this.handleCustomization(player, settings, currentValue);
+            });
+        }
+
+        // (3) Display the dialog to the |player|.
+        return await dialog.displayForPlayer(player);
     }
 
     // Handles the ability for players to replace the full weapon selection with a predefined set

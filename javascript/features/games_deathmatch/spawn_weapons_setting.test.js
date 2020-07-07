@@ -62,8 +62,51 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
         ]);
 
         // (1) Gunther is able to add individual weapons.
+        gunther.respondToDialog({ listitem: 2 /* spawn weapons */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* add a weapon */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Assault rifles */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* M4 */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* bail out of weapon dialog */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* start the game! */ }));
 
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.isTrue(settings.has('deathmatch/spawn_weapons'));
+        assert.deepEqual(settings.get('deathmatch/spawn_weapons'), [
+            { weapon: 28, ammo: 50 },
+            { weapon: 26, ammo: 50 },
+            { weapon: 31, ammo: 400 },
+        ]);
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Spawn weapons',
+            '{FFFF00}3 weapons',
+        ]);
+        
         // (2) Gunther is not able to add individual weapons multiple times.
+        gunther.respondToDialog({ listitem: 2 /* spawn weapons */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* add a weapon */ })).then(
+            () => gunther.respondToDialog({ listitem: 6 /* shotguns */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* sawnoff shotgun */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* bail out of weapon dialog */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* start the game! */ }));
+
+        settings = await commands.determineSettings(description, gunther, params);
+        assert.isNotNull(settings);
+
+        assert.isTrue(settings.has('deathmatch/spawn_weapons'));
+        assert.deepEqual(settings.get('deathmatch/spawn_weapons'), [
+            { weapon: 28, ammo: 50 },
+            { weapon: 26, ammo: 250 },
+        ]);
+
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
+            'Spawn weapons',
+            '{FFFF00}Micro SMG, Sawnoff Shotgun',
+        ]);
 
         // (3) Gunther is able to remove a weapon from the selection.
         gunther.respondToDialog({ listitem: 2 /* spawn weapons */ }).then(
@@ -152,5 +195,8 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
             'Spawn weapons',
             '{FFFF00}None',
         ]);
+
+        // (7) Gunther can select weapons with really complex flows and adjustments.
+
     });
 });

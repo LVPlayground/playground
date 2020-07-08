@@ -188,6 +188,11 @@ export class DeathmatchGame extends GameBase {
             case DeathmatchGame.kObjectiveLastManStanding:
                 await this.playerLost(player);
                 break;
+            
+            case DeathmatchGame.kObjectiveContinuous:
+                // This case is listed to trigger your <ctrl>+<f> function. When a deathmatch game
+                // is continuous, it won't stop until the last player uses the "/leave" command.
+                break;
         }
     }
 
@@ -212,8 +217,25 @@ export class DeathmatchGame extends GameBase {
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
         
-        // Finally, clear the player-specific state we had stored in this game.
+        // Clear the player-specific state we had stored in this game.
         this.#state_.delete(player);
+
+        // For most objectives, having only a single remaining player in the game does not make
+        // sense. Remove them as a winner in that case. We do need to consider cases where we remove
+        // players in a loop, e.g. at the end of a team-based game, where this is undesirable.
+        switch (this.#objective_.type) {
+            case DeathmatchGame.kObjectiveLastManStanding:
+                const remainingParticipants = [ ...this.#state_.keys() ];
+                if (remainingParticipants.length === 1)
+                    await this.playerWon(remainingParticipants[0]);
+
+                break;
+
+            case DeathmatchGame.kObjectiveContinuous:
+                // Allow single-player continuous games. They're likely betting on the fact that
+                // other players will join soon, or just checking out the different areas.
+                break;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

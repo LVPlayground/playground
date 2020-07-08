@@ -10,12 +10,14 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     let feature = null;
     let games = null;
     let gunther = null;
+    let russell = null;
     let settings = null;
 
     beforeEach(() => {
         feature = server.featureManager.loadFeature('games_deathmatch');
         games = server.featureManager.loadFeature('games');
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        russell = server.playerManager.getById(/* Russell= */ 1);
         settings = server.featureManager.loadFeature('settings');
     });
 
@@ -101,7 +103,6 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     });
 
     it('should be able to change map markers and team damage in a game', async (assert) => {
-        const russell = server.playerManager.getById(/* Russell= */ 1);
         const lucy = server.playerManager.getById(/* Lucy= */ 2);
 
         class BubbleGame extends DeathmatchGame {}
@@ -273,6 +274,45 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             gunther.die();
 
             await runGameLoop();  // wait for the game to end
+
+            assert.throws(() => getGameInstance());
+        }
+
+        // (2) Best of... objective
+
+        // (3) First to... objective
+
+        // (4) Time limit... objective
+
+        // (5) Continuous objective
+        {
+            gunther.respondToDialog({ listitem: kObjectiveIndex }).then(
+                () => gunther.respondToDialog({ listitem: kContinuousIndex })).then(
+                () => gunther.respondToDialog({ listitem: 0 /* start the game */ }));
+
+            assert.isTrue(await gunther.issueCommand('/bubble custom'));
+            assert.isTrue(await russell.issueCommand('/bubble'));
+
+            await server.clock.advance(kRegistrationTimeoutMs);
+            await runGameLoop();  // fully initialize the game
+
+            assert.doesNotThrow(() => getGameInstance());
+            assert.equal(getGameInstance().objectiveForTesting.type, 'Continuous');
+
+            gunther.die();
+            russell.die();
+
+            await runGameLoop();  // give the game a chance to end if it would
+
+            assert.doesNotThrow(() => getGameInstance());
+
+            gunther.disconnectForTesting();
+            await runGameLoop();  // give the game a chance to end if it would
+
+            assert.doesNotThrow(() => getGameInstance());
+            assert.isTrue(await russell.issueCommand('/leave'));
+
+            await runGameLoop();  // give the game a chance to end, which it now should
 
             assert.throws(() => getGameInstance());
         }

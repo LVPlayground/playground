@@ -51,7 +51,7 @@ export class ObjectiveSetting extends GameCustomSetting {
             [
                 'Last man standing',
                 ObjectiveSetting.prototype.applyOption.bind(this, settings, 'Last man standing')
-            ],
+            ],/*
             [
                 'Best of...',
                 ObjectiveSetting.prototype.handleBestOfSetting.bind(this, settings, player)
@@ -59,7 +59,7 @@ export class ObjectiveSetting extends GameCustomSetting {
             [
                 'First to...',
                 ObjectiveSetting.prototype.handleFirstToSetting.bind(this, settings, player)
-            ],
+            ],*/
             [
                 'Time limit...',
                 ObjectiveSetting.prototype.handleTimeLimitSetting.bind(this, settings, player)

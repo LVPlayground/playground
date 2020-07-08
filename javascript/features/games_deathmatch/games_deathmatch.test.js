@@ -249,10 +249,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         // Indices of the different objectives in the sub-menu.
         const kLastManStandingIndex = 0;
-        const kBestOfIndex = 1;
-        const FirstToIndex = 2;
-        const kTimeLimitIndex = 3;
-        const kContinuousIndex = 4;
+        //const kBestOfIndex = 1;
+        //const FirstToIndex = 2;
+        const kTimeLimitIndex = 1;
+        const kContinuousIndex = 2;
 
         // Timeout, in milliseconds, for minigame registrations.
         const kRegistrationTimeoutMs = settings.getValue('games/registration_expiration_sec') * 1000
@@ -279,8 +279,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         }
 
         // (2) Best of... objective
+        // TODO: Implement this after LVP 51
 
         // (3) First to... objective
+        // TODO: Implement this after LVP 51
 
         // (4) Time limit... objective
 

@@ -88,6 +88,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
             'Last man standing',
         ]);
 
+if (false) {
         // (4) Gunther is able to start a Best of... game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
             () => gunther.respondToDialog({ listitem: 1 /* Best of... */ })).then(
@@ -131,10 +132,11 @@ describe('GameCustomSetting', (it, beforeEach) => {
             'Objective',
             '{FFFF00}First to 31 kills',
         ]);
+}
 
         // (6) Gunther is able to start a Time limit... game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Time limit... */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Time limit... */ })).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
             () => gunther.respondToDialog({ response: 1 /* try again */ })).then(
             () => gunther.respondToDialog({ inputtext: '9999' /* invalid */ })).then(
@@ -157,7 +159,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
 
         // (7) Gunther is able to start a Continuous game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 4 /* Continuous */ })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* Continuous */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
         
         settings = await commands.determineSettings(description, gunther, params);
@@ -174,7 +176,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
 
         // (8) Gunther should be able to opt out of the dialog immediately.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 3 /* Time limit... */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Time limit... */ })).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
             () => gunther.respondToDialog({ response: 0 /* give up */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));

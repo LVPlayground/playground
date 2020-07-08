@@ -233,7 +233,49 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     });
 
     it('should support the different objectives for each game', async (assert) => {
-        // TODO: Test as we implement
+        class BubbleGame extends DeathmatchGame {}
+
+        feature.registerGame(BubbleGame, {
+            name: 'Bubble Fighting Game',
+            goal: 'Fight each other with bubbles',
+
+            command: 'bubble',
+            price: 0,
+
+            minimumPlayers: 1,
+            maximumPlayers: 4,
+        });
+
+        // Indices of the different objectives in the sub-menu.
+        const kLastManStandingIndex = 0;
+        const kBestOfIndex = 1;
+        const FirstToIndex = 2;
+        const kTimeLimitIndex = 3;
+        const kContinuousIndex = 4;
+
+        // Timeout, in milliseconds, for minigame registrations.
+        const kRegistrationTimeoutMs = settings.getValue('games/registration_expiration_sec') * 1000
+
+        // (1) Last man standing objective.
+        {
+            gunther.respondToDialog({ listitem: kObjectiveIndex }).then(
+                () => gunther.respondToDialog({ listitem: kLastManStandingIndex })).then(
+                () => gunther.respondToDialog({ listitem: 0 /* start the game */ }));
+
+            assert.isTrue(await gunther.issueCommand('/bubble custom'));
+
+            await server.clock.advance(kRegistrationTimeoutMs);
+            await runGameLoop();  // fully initialize the game
+
+            assert.doesNotThrow(() => getGameInstance());
+            assert.equal(getGameInstance().objectiveForTesting.type, 'Last man standing');
+
+            gunther.die();
+
+            await runGameLoop();  // wait for the game to end
+
+            assert.throws(() => getGameInstance());
+        }
     });
 
     it('should maintain statistics of all participants in the game', async (assert) => {

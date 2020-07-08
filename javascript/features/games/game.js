@@ -20,10 +20,10 @@ export class Game {
     // ---------------------------------------------------------------------------------------------
 
     // Signals that the |player| has lost. They will be removed from the game.
-    playerLost(player, score) { this.#runtime_.playerLost(player, score); }
+    async playerLost(player, score) { await this.#runtime_.playerLost(player, score); }
 
     // Signals that the |player| has won. They will be removed from the game.
-    playerWon(player, score) { this.#runtime_.playerWon(player, score); }
+    async playerWon(player, score) { await this.#runtime_.playerWon(player, score); }
 
     // Immediately stops the game, and removes all players.
     stop() { this.#runtime_.stop(); }

@@ -81,6 +81,9 @@ export class DeathmatchGame extends GameBase {
         return state.team;
     }
 
+    // Gets the objective of the game, for testing purposes only.
+    get objectiveForTesting() { return this.#objective_; }
+
     // ---------------------------------------------------------------------------------------------
 
     async onInitialized(settings) {
@@ -174,6 +177,18 @@ export class DeathmatchGame extends GameBase {
         // Award the player with each of the spawn weapons that they should be getting.
         for (const { weapon, ammo } of this.#spawnWeapons_)
             player.giveWeapon(weapon, ammo);
+    }
+
+    // Called when the given |player| has died. Depending on the objective of this game, we might
+    // have to remove the player from it, or mark them down as having lost another live.
+    async onPlayerDeath(player, killer, reason) {
+        await super.onPlayerDeath(player, killer, reason);
+
+        switch (this.#objective_.type) {
+            case DeathmatchGame.kObjectiveLastManStanding:
+                await this.playerLost(player);
+                break;
+        }
     }
 
     // Called when the given |player| has been removed from the game, either because they've lost,

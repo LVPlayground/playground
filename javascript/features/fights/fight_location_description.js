@@ -40,8 +40,26 @@ export class FightLocationDescription extends StructuredGameDescription {
                                 },
                             ],
                         },
-
-                        // TODO: team spawn positions
+                    },
+                    {
+                        name: 'teams',
+                        type: StructuredGameDescription.kTypeArray,
+                        elementType: {
+                            type: StructuredGameDescription.kTypeArray,
+                            elementType: {
+                                type: StructuredGameDescription.kTypeObject,
+                                structure: [
+                                    {
+                                        name: 'position',
+                                        ...kPositionProperty,
+                                    },
+                                    {
+                                        name: 'facingAngle',
+                                        ...kRotationAngleProperty,
+                                    },
+                                ],
+                            }
+                        },
                     },
                 ],
             },

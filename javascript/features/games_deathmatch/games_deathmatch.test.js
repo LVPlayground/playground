@@ -47,8 +47,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     const kObjectiveIndex = 5;
     const kSpawnArmourIndex = 6;
     const kSpawnWeaponsIndex = 7;
-    const kTeamsIndex = 8;
-    const kTeamDamageIndex = 9;
+    const kTeamDamageIndex = 8;
+    const kTeamsIndex = 9;
 
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
@@ -319,11 +319,13 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             () => gunther.respondToDialog({ listitem: kEnvironmentIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* gravity */ })).then(
             () => gunther.respondToDialog({ listitem: 2 /* high */ })).then(
+            () => gunther.respondToDialog({ listitem: kTeamsIndex })).then(
+            () => gunther.respondToDialog({ listitem: 2 /* random teams */ })).then(
             () => gunther.respondToDialog({ listitem: kSpawnWeaponsIndex })).then(
             () => gunther.respondToDialog({ listitem: 1 /* weapon set */ })).then(
             () => gunther.respondToDialog({ listitem: 2 /* walk weapons */ })).then(
             () => gunther.respondToDialog({ listitem: kTeamDamageIndex })).then(
-            () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* disabled */ })).then(
             () => gunther.respondToDialog({ listitem: kSpawnArmourIndex })).then(
             () => gunther.respondToDialog({ listitem: 0 /* enabled */ })).then(
             () => gunther.respondToDialog({ listitem: kStartGameIndex }));
@@ -344,8 +346,9 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             [ 34 /* Sniper Rifle */, 100 ],
         ]);
 
+        assert.notEqual(gunther.team, Player.kNoTeam);
+
         // TODO: Verify map markers.
-        // TODO: Verify team damage.
 
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');
@@ -353,7 +356,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
         assert.equal(gunther.gravity, Player.kDefaultGravity);
 
+        assert.equal(gunther.team, Player.kNoTeam);
+
         // TODO: Verify map markers.
-        // TODO: Verify team damage.
     });
 });

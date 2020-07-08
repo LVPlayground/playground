@@ -47,6 +47,9 @@ describe('FightGame', (it, beforeEach) => {
         }
     }
 
+    // Indices for various options in the customisation menu.
+    const kTeamsIndex = 11;
+
     it('should be able to pick random spawn positions in individual games', async (assert) => {
         assert.isTrue(server.commandManager.hasCommand('sniper'));
 
@@ -56,8 +59,36 @@ describe('FightGame', (it, beforeEach) => {
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();
 
-        const game = getGameInstance();
+        assert.doesNotThrow(() => getGameInstance());
         
+        // Gunther and Russell should have been assigned different spawn positions.
+        assert.notDeepEqual(gunther.position, russell.position);
+
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.isTrue(await russell.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        // Verify that the Game instance has been destroyed, together with all supporting infra.
+        assert.throws(() => getGameInstance());
+    });
+
+    it('should be able to pick random spawn positions in team-based games', async (assert) => {
+        assert.isTrue(server.commandManager.hasCommand('sniper'));
+
+        // Have Gunther set up a custom sniper game in which teams will be used.
+        gunther.respondToDialog({ listitem: kTeamsIndex }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* balanced teams */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* start the game */ }));
+
+        assert.isTrue(await gunther.issueCommand('/sniper custom'));
+        assert.isTrue(await russell.issueCommand('/sniper'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.doesNotThrow(() => getGameInstance());
+
         // Gunther and Russell should have been assigned different spawn positions.
         assert.notDeepEqual(gunther.position, russell.position);
 

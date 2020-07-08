@@ -183,6 +183,9 @@ export class DeathmatchGame extends GameBase {
 
         await super.onPlayerSpawned(player, countdown);
 
+        // Reset the player's health back to 100.
+        player.health = 100;
+
         // Award the player with spawn armour if that has been configured.
         if (this.#spawnArmour_)
             player.armour = 100;

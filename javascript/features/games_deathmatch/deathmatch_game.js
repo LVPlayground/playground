@@ -2,8 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Color } from 'base/color.js';
 import { BalancedTeamsResolver } from 'features/games_deathmatch/teams/balanced_teams_resolver.js';
+import { Color } from 'base/color.js';
+import { Countdown } from 'features/games_deathmatch/interface/countdown.js';
 import { DeathmatchPlayerState } from 'features/games_deathmatch/deathmatch_player_state.js';
 import { FreeForAllResolver } from 'features/games_deathmatch/teams/free_for_all_resolver.js';
 import { GameBase } from 'features/games/game_base.js';
@@ -40,6 +41,8 @@ export class DeathmatchGame extends GameBase {
     static kTeamsFreeForAll = 'Free for all';
     static kTeamsRandomized = 'Randomized teams';
 
+    #countdown_ = null;
+    #expireTime_ = null;
     #lagCompensation_ = null;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #objective_ = null;
@@ -112,10 +115,16 @@ export class DeathmatchGame extends GameBase {
             case DeathmatchGame.kObjectiveLastManStanding:
             case DeathmatchGame.kObjectiveBest:
             case DeathmatchGame.kObjectiveFirstTo:
-            case DeathmatchGame.kObjectiveTimeLimit:
             case DeathmatchGame.kObjectiveContinuous:
                 break;
-            
+
+            case DeathmatchGame.kObjectiveTimeLimit:
+                this.#countdown_ = new Countdown();
+                this.#expireTime_ =
+                    server.clock.monotonicallyIncreasingTime() + this.#objective_.seconds * 1000;
+
+                break;
+
             default:
                 throw new Error('Invalid value given for the objective: ' + this.#objective_.type);
         }
@@ -145,6 +154,10 @@ export class DeathmatchGame extends GameBase {
 
         // Initialize and store the |player|'s current state.
         this.#state_.set(player, new DeathmatchPlayerState(player));
+
+        // Display the countdown for the |player| if one has been created.
+        if (this.#countdown_)
+            this.#countdown_.createForPlayer(player);
 
         // Disable lag compensation for the |player| when this has been configured.
         if (!this.#lagCompensation_)
@@ -213,6 +226,10 @@ export class DeathmatchGame extends GameBase {
         if (this.#skin_ >= 0)
             player.skin = state.originalSkin;
 
+        // Destroy the game's countdown for the |player| if one had been created.
+        if (this.#countdown_)
+            this.#countdown_.destroyForPlayer(player);
+
         // Flip lag compensation back to its default value if it was modified.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
@@ -235,6 +252,64 @@ export class DeathmatchGame extends GameBase {
                 // Allow single-player continuous games. They're likely betting on the fact that
                 // other players will join soon, or just checking out the different areas.
                 break;
+        }
+    }
+
+    // Called periodically to update the game's state. For games on a time limit, this is where the
+    // countdown will decrement, and we'll eventually finish the game.
+    async onTick() {
+        await super.onTick();
+
+        if (this.#objective_.type !== DeathmatchGame.kObjectiveTimeLimit || !this.#countdown_)
+            return;  // not a time limited game
+
+        const remaining = this.#expireTime_ - server.clock.monotonicallyIncreasingTime();
+        if (remaining > 0) {
+            this.#countdown_.update(Math.floor(remaining / 1000));
+            return;
+        }
+
+        // The game has ended. Create a tally of all remaining participants, order them by number of
+        // kills in ascending order, and then drop them out in sequence.
+        const participants = [];
+
+        // (1) Get all the necessary information from the participants.
+        for (const [ player, state ] of this.#state_) {
+            const statistics = player.stats.diff(state.statistics);
+            participants.push({
+                player,
+                kills: statistics.killCount,  // primary sort
+                damage: statistics.damageGiven,  // secondary sort
+            })
+        }
+
+        // (2) Sort them in ascending order. Kill count primary, damage given secondary.
+        participants.sort((left, right) => {
+            if (left.kills === right.kills)
+                return left.damage > right.damage ? 1 : -1;
+
+            return left.kills > right.kills ? 1 : -1;
+        });
+
+        // (3) Pop the winner from the |participants|. We'll handle them separately.
+        const winner = participants.pop();
+
+        // (4a) Mark all the remaining |participants| as losers in the game.
+        for (const { player, kills } of participants)
+            await this.playerLost(player, kills);
+        
+        // (4b) Mark the |winner| as the one who has won this game.
+        await this.playerWon(winner.player, winner.kills);
+    }
+
+    // Called after the game has finished. Clean up state that has been initialized for the game,
+    // as it will no longer be required hereafter.
+    async onFinished() {
+        await super.onFinished();
+
+        if (this.#countdown_) {
+            this.#countdown_.dispose();
+            this.#countdown_ = null;
         }
     }
 

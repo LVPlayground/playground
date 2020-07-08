@@ -86,6 +86,5 @@ The following items are still to do for the Games Deathmatch API to be complete.
 
   * Implement the **Best of...** objective.
   * Implement the **First to...** objective.
-  * Implement the **Time limit...** objective.
 
 [1]: ../games#options-when-registering-a-game

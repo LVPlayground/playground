@@ -237,7 +237,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         class BubbleGame extends DeathmatchGame {}
 
         feature.registerGame(BubbleGame, {
-            name: 'Bubble Fighting Game',
+            name: 'Bubble Fighting',
             goal: 'Fight each other with bubbles',
 
             command: 'bubble',
@@ -285,6 +285,28 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         // TODO: Implement this after LVP 51
 
         // (4) Time limit... objective
+        {
+            gunther.respondToDialog({ listitem: kObjectiveIndex }).then(
+                () => gunther.respondToDialog({ listitem: kTimeLimitIndex })).then(
+                () => gunther.respondToDialog({ inputtext: '180' /* seconds */ })).then(
+                () => gunther.respondToDialog({ listitem: 0 /* start the game */ }));
+
+            assert.isTrue(await gunther.issueCommand('/bubble custom'));
+            assert.isTrue(await russell.issueCommand('/bubble'));
+
+            await server.clock.advance(kRegistrationTimeoutMs);
+            await runGameLoop();  // fully initialize the game
+
+            assert.doesNotThrow(() => getGameInstance());
+            assert.equal(getGameInstance().objectiveForTesting.type, 'Time limit...');
+
+            gunther.die(russell);
+
+            await server.clock.advance(180 * 1000);  // wait for the entire duration of the game
+            await runGameLoop();  // allow the game to finish
+
+            assert.throws(() => getGameInstance());
+        }
 
         // (5) Continuous objective
         {

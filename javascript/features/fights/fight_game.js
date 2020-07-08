@@ -24,8 +24,9 @@ export class FightGame extends DeathmatchGame {
         
         // Determine the spawn positions for the game. These differ between individual games and
         // team-based games, as players will want to be spread out in a different manner.
-        const teams = this.hasTeams() ? [ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ]
-                                      : [ DeathmatchGame.kTeamIndividual ];
+        const teamBased = this.isTeamBased();
+        const teams = teamBased ? [ DeathmatchGame.kTeamAlpha, DeathmatchGame.kTeamBravo ]
+                                : [ DeathmatchGame.kTeamIndividual ];
 
         // Initialize the spawn positions as a map from team to an object containing the actual
         // spawn positions, as well as the most recently used index.
@@ -33,7 +34,7 @@ export class FightGame extends DeathmatchGame {
             return [
                 team,
                 {
-                    positions: this.#location_.getSpawnPositions(this.hasTeams(), team),
+                    positions: this.#location_.getSpawnPositions(this.isTeamBased(), team),
                     index: 0,
                 }
             ];

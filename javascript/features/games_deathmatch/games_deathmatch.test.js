@@ -104,21 +104,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         const russell = server.playerManager.getById(/* Russell= */ 1);
         const lucy = server.playerManager.getById(/* Lucy= */ 2);
 
-        class BubbleGame extends DeathmatchGame {
-            async onPlayerAdded(player) {
-                await super.onPlayerAdded(player);
-                switch (player) {
-                    case gunther:
-                    case russell:
-                        this.setTeamForPlayer(player, DeathmatchGame.kTeamAlpha);
-                        break;
-
-                    case lucy:
-                        this.setTeamForPlayer(player, DeathmatchGame.kTeamBravo);
-                        break;
-                }
-            }
-        }
+        class BubbleGame extends DeathmatchGame {}
 
         feature.registerGame(BubbleGame, {
             name: 'Bubble Fighting Game',
@@ -128,7 +114,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             price: 0,
 
             mapMarkers: 'Team only',
-            teams: 'Randomized teams',
+            teams: 'Balanced teams',
             teamDamage: false,
 
             minimumPlayers: 3,
@@ -148,8 +134,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
 
         assert.isTrue(await gunther.issueCommand('/bubble'));
-        assert.isTrue(await russell.issueCommand('/bubble'));
         assert.isTrue(await lucy.issueCommand('/bubble'));
+        assert.isTrue(await russell.issueCommand('/bubble'));
 
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();

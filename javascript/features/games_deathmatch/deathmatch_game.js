@@ -341,6 +341,9 @@ export class DeathmatchGame extends GameBase {
     // Resolves the proper team for |player|. If |team| is given it's during initial initialization,
     // otherwise the |player| joined late and we have to decide it for them here.
     resolveTeamForPlayer(player, team = null) {
+        if (!this.isTeamBased())
+            return;  // no need to resolve teams for non-team based games
+
         const state = this.#state_.get(player);
         if (!state)
             throw new Error(`The given player (${player}) has no state in this game.`);

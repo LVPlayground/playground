@@ -186,6 +186,8 @@ export class DeathmatchGame extends GameBase {
         // Award the player with spawn armour if that has been configured.
         if (this.#spawnArmour_)
             player.armour = 100;
+        else
+            player.armour = 0;
 
         // Award the player with each of the spawn weapons that they should be getting.
         for (const { weapon, ammo } of this.#spawnWeapons_)

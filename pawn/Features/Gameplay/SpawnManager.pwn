@@ -237,7 +237,7 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         // -----------------------------------------------------------------------------------------
         // Has JavaScript requested authority over this player's spawns?
 
-        if (IsInvolvedInJavaScriptGame(playerId))
+        if (IsInvolvedInJavaScriptGame(playerId) || PlayerSyncedData(playerId)->hasMinigameName())
             return true;
 
         // -----------------------------------------------------------------------------------------

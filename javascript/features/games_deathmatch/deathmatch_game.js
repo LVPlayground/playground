@@ -167,11 +167,9 @@ export class DeathmatchGame extends GameBase {
         if (this.#skin_ >= 0)
             player.skin = this.#skin_;
 
-        // For free-for-all games, this is the point where map marker visibility will be decided.
-        // For team-based games, it will be done when the player's assigned a team instead.
-        if (!this.isTeamBased())
-            this.applyMapMarkerSettingForPlayer(player);
-        else if (this.#teamResolved_)
+        // Resolve the player's team right now when they join the game late, and there already are
+        // existing, divided teams. For individual games this will set up their marker settings.
+        if (this.#teamResolved_)
             this.resolveTeamForPlayer(player);
     }
 
@@ -327,9 +325,11 @@ export class DeathmatchGame extends GameBase {
     resolveTeams() {
         const resolution = this.#teamResolver_.resolve(this.players);
 
-        // Iteration (1): apply the appropriate team colours for the |player|.
-        for (const { player, team } of resolution)
-            this.applyTeamColorSettingForPlayer(player, team);
+        // Iteration (1): apply the appropriate team colours for the |player| for team-based games.
+        if (this.isTeamBased()) {
+            for (const { player, team } of resolution)
+                this.applyTeamColorSettingForPlayer(player, team);
+        }
 
         // Iteration (2): apply all the remaining settings and store state for the |player|.
         for (const { player, team } of resolution)
@@ -341,9 +341,6 @@ export class DeathmatchGame extends GameBase {
     // Resolves the proper team for |player|. If |team| is given it's during initial initialization,
     // otherwise the |player| joined late and we have to decide it for them here.
     resolveTeamForPlayer(player, team = null) {
-        if (!this.isTeamBased())
-            return;  // no need to resolve teams for non-team based games
-
         const state = this.#state_.get(player);
         if (!state)
             throw new Error(`The given player (${player}) has no state in this game.`);
@@ -353,10 +350,13 @@ export class DeathmatchGame extends GameBase {
 
         // Activate team colours if this is a new player, and both damage and map marker settings
         // for the |player|, both initial and new participants.
-        if (team === null)
-            this.applyTeamColorSettingForPlayer(player, state.team);
+        if (this.isTeamBased()) {
+            if (team === null)
+                this.applyTeamColorSettingForPlayer(player, state.team);
 
-        this.applyTeamDamageSettingForPlayer(player);
+            this.applyTeamDamageSettingForPlayer(player);
+        }
+
         this.applyMapMarkerSettingForPlayer(player);
     }
 
@@ -396,6 +396,8 @@ export class DeathmatchGame extends GameBase {
 
         // (2) Make sure that the |player| is invisible to those who can't see them.
         for (const { target, targetState } of invisiblePlayers) {
+            if (target === player) continue;
+
             if (!state.invisible.has(target)) {
                 this.makeTargetInvisibleForPlayer(player, target, state.color);
                 state.invisible.add(target);
@@ -409,6 +411,8 @@ export class DeathmatchGame extends GameBase {
 
         // (3) Make sure that the |player| is visible to those who are able to see them.
         for (const { target, targetState } of visiblePlayers) {
+            if (target === player) continue;
+
             if (state.invisible.has(target)) {
                 this.makeTargetVisibleForPlayer(player, target, state.color);
                 state.invisible.delete(target);
@@ -459,12 +463,17 @@ export class DeathmatchGame extends GameBase {
     // Applies the team colour setting for the given |player|. This makes sure that all players who
     // are part of the same team, get either a red or a blue colour assigned to them.
     applyTeamColorSettingForPlayer(player, team) {
+        if (!this.isTeamBased())
+            throw new Error(`Cannot apply team colours in individual games.`);
+
         const state = this.#state_.get(player);
 
         if (team === DeathmatchGame.kTeamAlpha)
-            player.color = state.color = kTeamColorAlpha;
+            state.color = kTeamColorAlpha;
         else if (team === DeathmatchGame.kTeamBravo)
-            player.color = state.color = kTeamColorBravo;
+            state.color = kTeamColorBravo;
+
+        player.color = state.color;
     }
 
     // Resets the |player|'s color back to what it was. We always re-set their color, as markers may

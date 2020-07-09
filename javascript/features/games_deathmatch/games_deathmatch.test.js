@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Color } from 'base/color.js';
 import { DeathmatchGame } from 'features/games_deathmatch/deathmatch_game.js';
 
 import { kDefaultTickIntervalMs } from 'features/games/game_description.js';
@@ -194,6 +195,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     });
 
     it('should award players spawn armour and weapons, as configured', async (assert) => {
+        const kOriginalColor = Color.fromHex('FFFF00AA');  // admin yellow
+
         class BubbleGame extends DeathmatchGame {}
 
         feature.registerGame(BubbleGame, {
@@ -214,7 +217,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             maximumPlayers: 4,
         });
 
-        assert.equal(gunther.armour, 0);
+        gunther.armour = 0;
+        gunther.color = kOriginalColor;
 
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
@@ -231,6 +235,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.syncedData.minigameName, '');
 
         assert.throws(() => game.getStatisticsForPlayer(gunther));
+
+        assert.equal(gunther.color, kOriginalColor);
     });
 
     it('should support the different objectives for each game', async (assert) => {
@@ -397,6 +403,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     });
 
     it('should enable players to customise the settings', async (assert) => {
+        const kOriginalColor = Color.fromHex('FFFF00AA');  // admin yellow
+
         class BubbleGame extends DeathmatchGame {}
 
         feature.registerGame(BubbleGame, {
@@ -415,6 +423,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             minimumPlayers: 1,
             maximumPlayers: 4,
         });
+
+        gunther.color = kOriginalColor;
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
 
@@ -459,6 +469,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');
 
+        assert.equal(gunther.color, kOriginalColor);
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
         assert.equal(gunther.gravity, Player.kDefaultGravity);
 

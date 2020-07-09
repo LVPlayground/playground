@@ -33,19 +33,19 @@ describe('HaystackGame', (it, beforeEach) => {
     it('is able to generate different names based on settings', async (assert) => {
         const feature = server.featureManager.loadFeature('haystack');
 
-        assert.equal(feature.generateName(new Map()), 'Haystack');
+        assert.equal(feature.generateName(new Map()), 'Haystack Game');
         assert.equal(
             feature.generateName(new Map([ ['haystack/difficulty', 'extreme' ]])),
-            'Extreme Haystack');
+            'Extreme Haystack Game');
         
         assert.equal(
             feature.generateName(new Map([ ['haystack/levels', 25 ]])),
-            'Haystack x25');
+            'Haystack x25 Game');
         
         assert.equal(
             feature.generateName(new Map([ ['haystack/difficulty', 'easy' ],
                                            [ 'haystack/levels', 55 ] ])),
-            'Easy Haystack x55');
+            'Easy Haystack x55 Game');
     });
 
     it('should pick appropriate configuration based on difficulty level', async (assert) => {

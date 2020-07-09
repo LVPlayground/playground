@@ -67,8 +67,8 @@ export default class Haystack extends Feature {
         const levels = settings.get('haystack/levels');
         if (levels && levels !== 30)
             suffix = ` x${levels}`;
-        
-        return prefix + 'Haystack' + suffix;
+
+        return `${prefix}Haystack${suffix} Game`;
     }
 
     // Validates the given settings. Only applicable to non-fixed types, i.e. numbers and strings.

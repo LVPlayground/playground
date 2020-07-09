@@ -163,10 +163,6 @@ export class DeathmatchGame extends GameBase {
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
 
-        // Force the |player| in this game's skin when it has been requested.
-        if (this.#skin_ >= 0)
-            player.skin = this.#skin_;
-
         // Resolve the player's team right now when they join the game late, and there already are
         // existing, divided teams. For individual games this will set up their marker settings.
         if (this.#teamResolved_)
@@ -189,6 +185,10 @@ export class DeathmatchGame extends GameBase {
             player.armour = 100;
         else
             player.armour = 0;
+        
+        // Force the |player| in this game's skin when it has been requested.
+        if (this.#skin_ >= 0)
+            player.skin = this.#skin_;
 
         // Award the player with each of the spawn weapons that they should be getting.
         for (const { weapon, ammo } of this.#spawnWeapons_)

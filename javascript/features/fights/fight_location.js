@@ -17,6 +17,9 @@ export class FightLocation {
     // Gets the name for this location. Used by commands to refer to individual locations too.
     get name() { return this.#description_.name; }
 
+    // Gets the short name for this location. Used for automatically generated match names.
+    get shortName() { return this.#description_.shortName; }
+
     // Returns the objects that should be shown for this location. Objects are optional, although
     // many locations are using custom maps or modifications.
     getObjects() { return this.#description_.objects ?? []; }

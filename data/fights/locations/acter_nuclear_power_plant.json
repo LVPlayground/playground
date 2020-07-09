@@ -1,5 +1,7 @@
 {
     "name": "Acter Nuclear Power Plant",
+    "shortName": "Nuclear",
+
     "spawnPositions": {
         "individual": [
             { "position": [ 2647.7834, 2697.5884, 19.3222 ], "facingAngle": 353.1684 },

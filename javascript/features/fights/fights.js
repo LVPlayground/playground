@@ -7,6 +7,8 @@ import { FightGame } from 'features/fights/fight_game.js';
 import { FightRegistry } from 'features/fights/fight_registry.js';
 import { Setting } from 'entities/setting.js';
 
+import { fightNameGenerator } from 'features/fights/fight_name_generator.js';
+
 // The Fights infrastructure powers games intended for players to have matches with each other. It
 // ranges from 1-on-1 fights, to free-for-all games and team battles. Uses the DeathmatchGame base
 // for most functionality, with custom maps on top of that.
@@ -43,7 +45,7 @@ export default class Fights extends Feature {
         const minimumPlayers = this.settings_().getValue('games/fight_minimum_players');
 
         this.games_().registerGame(FightGame, {
-            name: Fights.prototype.composeGameName.bind(this),
+            name: fightNameGenerator.bind(null, this.registry_),
             goal: 'Defeat all other players to win the fight.',
             command: 'match',
 
@@ -64,24 +66,6 @@ export default class Fights extends Feature {
             ],
 
         }, this.registry_);
-    }
-
-    // Composes the display name of the fighting game that's about to be started. This should be set
-    // in the internal values for predefined games, but will otherwise be composed of the settings
-    // that the game is being started with.
-    composeGameName(settings) {
-        const kSettingLagCompensation = 'deathmatch/lag_compensation';
-        const kSettingName = 'internal/name';
-
-        const base = settings.get(kSettingName) ?? 'Deathmatch Fight';
-
-        let suffix = '';
-
-        // (1) Specialize the name if the |settings| will disable lag compensation.
-        if (settings.has(kSettingLagCompensation) && !settings.get(kSettingLagCompensation))
-            suffix = ' (lag shot)';
-
-        return base + suffix;
     }
 
     dispose() {

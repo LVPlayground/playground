@@ -21,6 +21,10 @@ export class FightLocationDescription extends StructuredGameDescription {
                 type: StructuredGameDescription.kTypeString,
             },
             {
+                name: 'shortName',
+                type: StructuredGameDescription.kTypeString,
+            },
+            {
                 name: 'spawnPositions',
                 type: StructuredGameDescription.kTypeObject,
                 structure: [

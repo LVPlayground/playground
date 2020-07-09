@@ -1,5 +1,7 @@
 {
     "name": "Counter Strike 1.6: Inferno",
+    "shortName": "Inferno",
+
     "spawnPositions": {
         "individual": [
             { "position": [ -3734.2300, -3728.1309, 23.5410 ], "facingAngle": 208.2793 },

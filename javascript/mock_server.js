@@ -57,6 +57,7 @@ import PlayerStats from 'features/player_stats/player_stats.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
+import Sampcac from 'features/sampcac/sampcac.js';
 import Settings from 'features/settings/settings.js';
 import Streamer from 'features/streamer/streamer.js';
 import Teleportation from 'features/teleportation/teleportation.js';
@@ -120,6 +121,7 @@ class MockServer {
             punishments: Punishments,
             radio: Radio,
             reaction_tests: ReactionTests,
+            sampcac: Sampcac,
             settings: Settings,
             streamer: Streamer,
             teleportation: Teleportation,

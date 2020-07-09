@@ -39,6 +39,7 @@ Feature                              | Code Health | Description
 [Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
 [Nuwani](nuwani/)                    | ✔ 2020     | Provides our ability to interact with IRC and Discord.
 [PlayerStats](player_stats/)         | ✔ 2020     | Provides the `Player.stats` supplement, tracks player metrics.
+[Sampcac](sampcac/)                  | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
 [Settings](settings/)                | ✔ 2020     | Manages persistent settings on the server.
 
 ## 2. Low-level features

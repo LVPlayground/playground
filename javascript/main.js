@@ -42,6 +42,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'limits',
         'nuwani',
         'player_stats',
+        'sampcac',
         'settings',
 
         // -----------------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         'collectables',
+        'streamer',
 
         // -----------------------------------------------------------------------------------------
         // Regular features
@@ -59,7 +61,6 @@ testRunner.run('.*\.test\.js').then(time => {
 
         // Low level features, which may only depend on each other and foundational features.
         'abuse', 'announce', 'economy', 'location', 'minigames',
-        'streamer',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',

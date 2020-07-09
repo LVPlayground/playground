@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { PlayerEventObserver } from 'components/events/player_event_observer.js';
+import { SAMPCACEventObserver } from 'components/events/sampcac_event_observer.js';
 import { Vector } from 'base/vector.js';
 
 // Every how many milliseconds should pending deferred events be read from the server.
@@ -13,7 +14,9 @@ const kDeferredEventReadIntervalMs = 40;  // 25Hz
 // JavaScript to run in completely optimized mode without a series of adapters.
 export class DeferredEventManager {
     disposed_ = false;
-    observers_ = new Set();
+
+    playerObservers_ = new Set();
+    sampcacObservers_ = new Set();
 
     // ---------------------------------------------------------------------------------------------
 
@@ -42,6 +45,51 @@ export class DeferredEventManager {
         let player, killer, issuer, position;
 
         switch (type) {
+            case 'CAC_OnCheatDetect':
+                player = server.playerManager.getById(event.player_id);
+                if (player) {
+                    for (const observer of this.sampcacObservers_) {
+                        observer.onPlayerCheatDetected(
+                            player, event.cheat_id, event.opt1, event.opt2);
+                    }
+                }
+                break;
+
+            case 'CAC_OnGameResourceMismatch':
+                player = server.playerManager.getById(event.player_id);
+                if (player) {
+                    for (const observer of this.sampcacObservers_) {
+                        observer.onPlayerGameResourceMismatch(
+                            player, event.model_id, event.component_type, event.checksum);
+                    }
+                }
+                break;
+
+            case 'CAC_OnMemoryRead':
+                player = server.playerManager.getById(event.player_id);
+                if (player) {
+                    const buffer = new Uint8Array(event.content);
+                    for (const observer of this.sampcacObservers_)
+                        observer.onPlayerMemoryRead(player, event.address, buffer);
+                }
+                break;
+
+            case 'CAC_OnPlayerKick':
+                player = server.playerManager.getById(event.player_id);
+                if (player) {
+                    for (const observer of this.sampcacObservers_)
+                        observer.onPlayerKicked(player, event.reason_id);
+                }
+                break;
+
+            case 'CAC_OnScreenshotTaken':
+                player = server.playerManager.getById(event.player_id);
+                if (player) {
+                    for (const observer of this.sampcacObservers_)
+                        observer.onPlayerScreenshotTaken();
+                }
+                break;
+
             case 'OnDynamicObjectMoved':
                 server.objectManager.onObjectMoved(event);
                 break;
@@ -72,12 +120,14 @@ export class DeferredEventManager {
                 killer = server.playerManager.getById(event.killerid);
 
                 if (player) {
-                    for (const observer of this.observers_)
+                    for (const observer of this.playerObservers_)
                         observer.onPlayerDeath(player, killer, event.reason);
                 }
 
                 // TODO: Migrate all the event listeners to observe |this|.
-                dispatchEvent('playerresolveddeath', event);
+                if (!server.isTest())
+                    dispatchEvent('playerresolveddeath', event);
+
                 break;
             
             case 'OnPlayerSelectDynamicObject':
@@ -93,7 +143,7 @@ export class DeferredEventManager {
                 issuer = server.playerManager.getById(event.issuerid);
 
                 if (player) {
-                    for (const observer of this.observers_) {
+                    for (const observer of this.playerObservers_) {
                         observer.onPlayerTakeDamage(
                             player, issuer, event.amount, event.weaponid, event.bodypart);
                     }
@@ -106,7 +156,7 @@ export class DeferredEventManager {
                 position = new Vector(event.fX, event.fY, event.fZ);
 
                 if (player) {
-                    for (const observer of this.observers_) {
+                    for (const observer of this.playerObservers_) {
                         observer.onPlayerWeaponShot(
                             player, event.weaponid, event.hittype, event.hitid, position);
                     }
@@ -124,23 +174,26 @@ export class DeferredEventManager {
 
     // Adds the given |observer| to those receiving player events.
     addObserver(observer) {
-        if (!(observer instanceof PlayerEventObserver))
+        if (observer instanceof PlayerEventObserver)
+            this.playerObservers_.add(observer);
+        else if (observer instanceof SAMPCACEventObserver)
+            this.sampcacObservers_.add(observer);
+        else
             throw new Error(`The given observer (${observer}) must inherit PlayerEventObserver.`);
-        
-        this.observers_.add(observer);
     }
 
-    // Removes the given |observer| from those receiving player events.
+    // Removes the given |observer| from those receiving any kinds of events.
     removeObserver(observer) {
-        if (!(observer instanceof PlayerEventObserver))
-            throw new Error(`The given observer (${observer}) must inherit PlayerEventObserver.`);
-        
-        this.observers_.delete(observer);
+        this.playerObservers_.delete(observer);
+        this.sampcacObservers_.delete(observer);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.disposed_ = true;
+
+        this.playerObservers_.clear();
+        this.sampcacObservers_.clear();
     }
 }

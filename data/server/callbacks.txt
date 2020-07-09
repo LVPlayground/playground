@@ -23,6 +23,13 @@ forward OnPlayerGuestLogin(playerId);
 [Deferred] forward OnPlayerSelectDynamicObject(playerid, objectid, modelid, Float:x, Float:y, Float:z);
 [Deferred] forward OnPlayerShootDynamicObject(playerid, weaponid, objectid, Float:x, Float:y, Float:z);
 
+# SAMPCAC callbacks
+[Deferred] forward CAC_OnCheatDetect(player_id, cheat_id, opt1, opt2);
+[Deferred] forward CAC_OnPlayerKick(player_id, reason_id);
+[Deferred] forward CAC_OnMemoryRead(player_id, address, size, const content[]);
+[Deferred] forward CAC_OnGameResourceMismatch(player_id, model_id, component_type, checksum);
+[Deferred] forward CAC_OnScreenshotTaken(player_id);
+
 # SA-MP callbacks
 forward OnGameModeInit();
 forward OnGameModeExit();

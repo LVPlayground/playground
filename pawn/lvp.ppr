@@ -4,6 +4,8 @@
     <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
     <DiskObject>\Driver\Abuse\</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDamageDecider.pwn</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDistanceBlocker.pwn</DiskObject>
     <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
     <DiskObject>\Driver\Drift\</DiskObject>
     <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
@@ -343,8 +345,7 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\Abuse\WeaponDamageDecider.pwn</DiskObject>
-    <DiskObject>\Driver\Abuse\WeaponDistanceBlocker.pwn</DiskObject>
+    <DiskObject>\Driver\Forwards.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

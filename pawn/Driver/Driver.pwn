@@ -8,6 +8,7 @@ native ProcessSprayTagForPlayer(playerid);
 native ReportAbuse(playerid, detectorName[], certainty[]);
 native ReportTrailerUpdate(vehicleid, trailerid);
 
+#include "Driver/Forwards.pwn"
 #include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponDamageDecider.pwn"
 #include "Driver/Abuse/WeaponDistanceBlocker.pwn"
@@ -642,16 +643,6 @@ public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_
     return 1;
     #pragma unused playerid, passenger_seat, new_x, new_y, new_z, vel_x, vel_y, vel_z
 }
-
-// Define so that JavaScript can intercept the events.
-public OnPlayerText(playerid, text[]) {}
-public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz) {}
-public OnPlayerPickUpDynamicPickup(playerid, STREAMER_TAG_PICKUP:pickupid) {}
-public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, modelid, Float:x, Float:y, Float:z) {}
-public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
-
-forward OnPlayerChecksumAvailable(playerid, address, checksum);
-public OnPlayerChecksumAvailable(playerid, address, checksum) {}
 
 #if Feature::EnableServerSideWeaponConfig == 0
 public OnPlayerUpdate(playerid) {

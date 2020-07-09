@@ -51,6 +51,7 @@ export default class Fights extends Feature {
 
             minimumPlayers,
             maximumPlayers: 16,
+            price: 0,
 
             settings: [
                 // Option: Name (internal, string)

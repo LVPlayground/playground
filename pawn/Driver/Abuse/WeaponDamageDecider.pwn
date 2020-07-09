@@ -12,7 +12,7 @@ ProcessManualWeaponDamage(playerId, issuerId, weaponId, bodyPart) {
         return;  // the damage was self-inflicted
 
     if (PlayerSyncedData(playerId)->lagCompensationMode() == 0 /* disabled */
-            || PlayerSyncedData(issuerId)->lagCompensationMode() == 0) {
+            || PlayerSyncedData(issuerId)->lagCompensationMode() == 0 /* disabled */) {
         return;  // either player has disabled lag compensation
     }
 

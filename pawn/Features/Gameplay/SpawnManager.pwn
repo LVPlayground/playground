@@ -60,6 +60,10 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
     // The lag compensation mode active for this player.
     new m_lagCompensationMode;
 
+    // Number of class selections to force our way through because the player's lag compensation
+    // mode has changed. That's a bit of a nasty side effect of the feature.
+    new m_lagCompensationIgnoreCounter;
+
     // ---------------------------------------------------------------------------------------------
 
     // Whether the player should have their position restored on spawn.
@@ -96,6 +100,7 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         m_beforeInitialClassSelection = true;
         m_hasSeenFirstSpawn = false;
         m_lagCompensationMode = 2;
+        m_lagCompensationIgnoreCounter = 0;
         m_restoreOnSpawn = false;
         m_spawnInterior = -1;
     }
@@ -164,8 +169,20 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
             }
         }
 
+        new bool: forceSpawn = false;
         if (PlayerSyncedData(playerId)->lagCompensationMode() != m_lagCompensationMode) {
             m_lagCompensationMode = PlayerSyncedData(playerId)->lagCompensationMode();
+            m_lagCompensationIgnoreCounter = 1;
+
+            forceSpawn = true;
+        } else if (m_lagCompensationIgnoreCounter > 0) {
+            m_lagCompensationIgnoreCounter -= 1;
+
+            forceSpawn = true;
+        }
+
+        // Force-spawn our way through the lag compensation mode change.
+        if (forceSpawn) {
             if (m_skinId != SpawnManager::InvalidSkinId)
                 SetSpawnInfo(playerId, 0, m_skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
 

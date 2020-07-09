@@ -26,7 +26,7 @@ forward OnPlayerGuestLogin(playerId);
 # SAMPCAC callbacks
 [Deferred] forward CAC_OnCheatDetect(player_id, cheat_id, opt1, opt2);
 [Deferred] forward CAC_OnPlayerKick(player_id, reason_id);
-[Deferred] forward CAC_OnMemoryRead(player_id, address, size, const content[]);
+[Deferred] forward CAC_OnMemoryRead(player_id, address, size, content[]);
 [Deferred] forward CAC_OnGameResourceMismatch(player_id, model_id, component_type, checksum);
 [Deferred] forward CAC_OnScreenshotTaken(player_id);
 

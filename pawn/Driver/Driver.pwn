@@ -10,6 +10,7 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 
 #include "Driver/PawnConfig.pwn"
 #include "Driver/Abuse/WeaponDamageDecider.pwn"
+#include "Driver/Abuse/WeaponDistanceBlocker.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
 #include "Driver/Drift/DriftHelpers.pwn"
 #include "Driver/Drift/DriftUi.pwn"
@@ -549,6 +550,12 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
             g_damageDisabledExpirationTime[playerid] = 0;
         else
             return 0;
+    }
+
+    // If out-of-range damage has been disabled, and the shot is out of range, block it.
+    if (g_abuseDisableOutOfRangeDamage && IsLastShotOutOfRange(playerid, weaponid, hittype)) {
+        printf("[%d] out of range shot (weapon: %d)", playerid, weaponid);
+        return 0;
     }
 
     // We might want to ignore damage done by players who are passengers as the sole occupant of a

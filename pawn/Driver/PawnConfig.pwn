@@ -6,6 +6,7 @@
 // //features/settings/pawn_config.js. Each option will be stored as a global Pawn variable.
 
 // Section: abuse
+new bool: g_abuseDisableOutOfRangeDamage = true;
 new g_abuseFakeCarEntryPreventionEnterMs = 3000;
 new g_abuseFakeCarEntryPreventionExitMs = 1750;
 new bool: g_abuseIgnoreSolePassengerDamage = true;
@@ -26,8 +27,9 @@ new bool: g_vehicleKeysBlockedInLasVenturas = true;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 14
+// Next ID: 15
 enum PawnConfigProperty {
+    kAbuseDisableOutOfRangeDamage = 14,
     kAbuseFakeCarEntryPreventionEnterMs = 11,
     kAbuseFakeCarEntryPreventionExitMs = 12,
     kAbuseIgnoreSolePassengerDamage = 5,
@@ -50,6 +52,9 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
     new const intValue = floatround(numberValue, floatround_tozero);
 
     switch (property) {
+        case kAbuseDisableOutOfRangeDamage:
+            g_abuseDisableOutOfRangeDamage = !!intValue;
+
         case kAbuseFakeCarEntryPreventionEnterMs:
             g_abuseFakeCarEntryPreventionEnterMs = intValue;
 

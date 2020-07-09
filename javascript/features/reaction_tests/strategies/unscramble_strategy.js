@@ -5,6 +5,7 @@
 import { Strategy } from 'features/reaction_tests/strategy.js';
 
 import { random } from 'base/random.js';
+import { shuffle } from 'base/shuffle.js';
 
 // File that contains the word definitions for scrambled word games.
 const kWordDefinitionFile = 'data/scrambled_words.json';
@@ -100,7 +101,7 @@ export class UnscrambleStrategy extends Strategy {
                 characters.push(word.charAt(index));
             }
 
-            const shuffled = this.shuffle(characters);
+            const shuffled = shuffle(characters);
             const composed = [];
 
             // (3) Re-compose the scrambled word.
@@ -116,22 +117,6 @@ export class UnscrambleStrategy extends Strategy {
 
         // (3) Join the composed word together, then translate to upper case.
         return result.join(' ');
-    }
-
-    // Shuffles the given |array| with the Fisher-Yates algorithm:
-    // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    shuffle(array) {
-        let counter = array.length;
-
-        while (counter > 0) {
-            const index = random(counter--);
-            const temp = array[counter];
-
-            array[counter] = array[index];
-            array[index] = temp;
-        }
-
-        return array;
     }
 
     // Verifies whether the |message| is, or contains, the answer to this reaction test.

@@ -6,6 +6,7 @@ import { DeathmatchGame } from 'features/games_deathmatch/deathmatch_game.js';
 import { TeamResolver } from 'features/games_deathmatch/teams/team_resolver.js';
 
 import { random } from 'base/random.js';
+import { shuffle } from 'base/shuffle.js';
 
 // Resolves teams in a randomized way. This means that the teams will have roughly the same amount
 // of participants in them, but deciding which team somebody ends up on is done by a dice roll.
@@ -22,7 +23,7 @@ export class RandomizedTeamsResolver extends TeamResolver {
     // Resolves the intended teams for the given |players|, a sequence. We achieve this by shuffling
     // the sequence of |players| and cutting it in half, rather than doing individual coin flips.
     resolve(players) {
-        const shuffledPlayers = this.shuffle([ ...players ]);
+        const shuffledPlayers = shuffle([ ...players ]);
         const middle = Math.floor(shuffledPlayers.length / 2);
 
         // (1) Actually divide the |shuffledPlayers| in two teams.
@@ -44,22 +45,6 @@ export class RandomizedTeamsResolver extends TeamResolver {
 
         // (4) And we're done - the teams have been divided.
         return teams;
-    }
-
-    // Shuffles the given |array| with the Fisher-Yates algorithm:
-    // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    shuffle(array) {
-        let counter = array.length;
-
-        while (counter > 0) {
-            const index = random(counter--);
-            const temp = array[counter];
-
-            array[counter] = array[index];
-            array[index] = temp;
-        }
-
-        return array;
     }
 
     // Resolves the intended team for the given |player|, who may have joined late. They will join

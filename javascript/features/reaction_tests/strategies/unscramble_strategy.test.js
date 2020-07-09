@@ -5,6 +5,7 @@
 import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscramble_strategy.js';
 
 import { range } from 'base/range.js';
+import { shuffle } from 'base/shuffle.js';
 import { symmetricDifference } from 'base/set_extensions.js';
 
 describe('UnscrambleStrategy', (it, beforeEach) => {
@@ -25,7 +26,7 @@ describe('UnscrambleStrategy', (it, beforeEach) => {
 
         // (1) Test the shuffling function.
         const values = range(100);
-        const shuffled = strategy.shuffle(values);
+        const shuffled = shuffle(values);
 
         assert.equal(values.length, shuffled.length);
         assert.equal(symmetricDifference(new Set(values), new Set(shuffled)).size, 0);

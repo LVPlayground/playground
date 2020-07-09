@@ -278,6 +278,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             assert.equal(getGameInstance().objectiveForTesting.type, 'Last man standing');
 
             gunther.die();
+            gunther.respawn();
 
             await runGameLoop();  // wait for the game to end
 

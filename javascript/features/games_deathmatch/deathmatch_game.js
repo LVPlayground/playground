@@ -53,6 +53,9 @@ export class DeathmatchGame extends GameBase {
     #teamResolved_ = false;
     #teamResolver_ = null;
 
+    // Whether to eject the player from the game when they spawn next.
+    #ejectOnSpawn_ = new Set();
+
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
     #state_ = new Map();
 
@@ -177,6 +180,11 @@ export class DeathmatchGame extends GameBase {
 
         await super.onPlayerSpawned(player, countdown);
 
+        // If the |player| has to be ejected on spawn because they lost in `onPlayerDeath`, do that
+        // right now. This is done on spawning to stop them from respawning multiple times.
+        if (this.#ejectOnSpawn_.has(player))
+            return await this.playerLost(player);
+
         // Reset the player's health back to 100.
         player.health = 100;
 
@@ -202,7 +210,7 @@ export class DeathmatchGame extends GameBase {
 
         switch (this.#objective_.type) {
             case DeathmatchGame.kObjectiveLastManStanding:
-                await this.playerLost(player);
+                this.#ejectOnSpawn_.add(player);
                 break;
             
             case DeathmatchGame.kObjectiveContinuous:
@@ -238,6 +246,7 @@ export class DeathmatchGame extends GameBase {
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
         
         // Clear the player-specific state we had stored in this game.
+        this.#ejectOnSpawn_.delete(player);
         this.#state_.delete(player);
 
         // For most objectives, having only a single remaining player in the game does not make

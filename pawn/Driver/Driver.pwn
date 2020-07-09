@@ -473,6 +473,11 @@ public UpdateVehicleTrailerStatus() {
 }
 
 public OnPlayerDeath(playerid, killerid, reason) {
+    // Fixes the issue where the player has died, but is still walking around for a a while. Sourced
+    // from the GTA: San Andreas Splitmode for SA:MP mode by iou.
+    if (!g_isDisconnecting[playerid])
+        SetPlayerHealth(playerid, 100);
+
     // Corrects the |killerid| when the "ninja jacking" bug has been used, and issues a monitor-
     // level abuse report on the player abusing that bug, informing administrators.
     if (killerid == INVALID_PLAYER_ID &&

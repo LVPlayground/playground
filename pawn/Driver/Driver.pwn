@@ -464,9 +464,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     // When the player is leaving a vehicle, disable their damage for a predefined amount of time
     // to avoid players from abusing vehicle bugs to give them an advantage in a fight.
     if ((oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER)
-            && g_abuseFakeCarEntryPreventionSec > 0) {
+            && g_abuseFakeCarEntryPreventionExitMs > 0) {
         g_damageDisabledExpirationTime[playerid] =
-            GetTickCount() + g_abuseFakeCarEntryPreventionSec * 1000;
+            GetTickCount() + g_abuseFakeCarEntryPreventionExitMs;
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
@@ -648,13 +648,13 @@ public OnPlayerUpdate(playerid) {
 
     // Determines if the player is entering a vehicle through animation, and if so, marks the time
     // until which their damage should be disabled based on the prevention setting.
-    if (g_abuseFakeCarEntryPreventionSec > 0) {
+    if (g_abuseFakeCarEntryPreventionEnterMs > 0) {
         new const animationIndex = GetPlayerAnimationIndex(playerid);
         switch (animationIndex) {
             case 1043 /* CAR_OPEN_LHS */, 1044 /* CAR_OPEN_RHS */,
                  1026 /* CAR_GETIN_LHS */, 1027 /* CAR_GETIN_RHS */: {
                 g_damageDisabledExpirationTime[playerid] =
-                    GetTickCount() + g_abuseFakeCarEntryPreventionSec * 1000;
+                    GetTickCount() + g_abuseFakeCarEntryPreventionEnterMs;
             }
         }
     }

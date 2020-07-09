@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { DeathmatchGame } from 'features/games_deathmatch/deathmatch_game.js';
+import { shuffle } from 'base/shuffle.js';
 
 // Represents the location at which a fight will take place. Locations have a high amount of
 // requirements, as we want to provide flexibility to players when they set up the rules for a
@@ -29,13 +29,13 @@ export class FightLocation {
     // set, the |teamIndex| must be given to indicate which team to select positions for.
     getSpawnPositions(hasTeams, teamIndex = null) {
         if (!hasTeams)
-            return this.#description_.spawnPositions.individual;
+            return shuffle(this.#description_.spawnPositions.individual);
 
         const spawnPositions = this.#description_.spawnPositions.teams;
         if (teamIndex < 0 || teamIndex >= spawnPositions.length)
             throw new Error(`No spawn positions are defined for team #${teamIndex}.`);
 
-        return spawnPositions[teamIndex];
+        return shuffle(spawnPositions[teamIndex]);
     }
 
     // Returns the world boundaries that have been set for this location. This is optional: some

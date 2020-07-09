@@ -369,6 +369,9 @@ IsPlayerInMinigame(playerId) {
     if (PlayerActivity(playerId)->isJavaScriptActivity())
         return 1;
 
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 1;
+
     if (IsPlayerStatusMinigame(playerId) && MinigameTypeInfo[Progress] > 1)
         return 1;
 

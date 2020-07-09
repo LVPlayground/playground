@@ -7,20 +7,22 @@ describe('Fights', it => {
         const feature = server.featureManager.loadFeature('fights');
         const settings = server.featureManager.loadFeature('settings');
 
+        const kCommand = 'newsniper';
+
         await settings.ready;
 
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('fights'));
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('games'));
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('games_deathmatch'));
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('fights'));
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand(kCommand));
     });
 });

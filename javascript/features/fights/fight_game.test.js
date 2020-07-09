@@ -51,10 +51,10 @@ describe('FightGame', (it, beforeEach) => {
     const kTeamsIndex = 11;
 
     it('should be able to pick random spawn positions in individual games', async (assert) => {
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand('match'));
 
-        assert.isTrue(await gunther.issueCommand('/sniper'));
-        assert.isTrue(await russell.issueCommand('/sniper'));
+        assert.isTrue(await gunther.issueCommand('/match'));
+        assert.isTrue(await russell.issueCommand('/match'));
 
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();
@@ -74,15 +74,15 @@ describe('FightGame', (it, beforeEach) => {
     });
 
     it('should be able to pick random spawn positions in team-based games', async (assert) => {
-        assert.isTrue(server.commandManager.hasCommand('sniper'));
+        assert.isTrue(server.commandManager.hasCommand('match'));
 
         // Have Gunther set up a custom sniper game in which teams will be used.
         gunther.respondToDialog({ listitem: kTeamsIndex }).then(
             () => gunther.respondToDialog({ listitem: 0 /* balanced teams */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* start the game */ }));
 
-        assert.isTrue(await gunther.issueCommand('/sniper custom'));
-        assert.isTrue(await russell.issueCommand('/sniper'));
+        assert.isTrue(await gunther.issueCommand('/match custom'));
+        assert.isTrue(await russell.issueCommand('/match'));
 
         await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
         await runGameLoop();

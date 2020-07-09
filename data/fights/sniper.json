@@ -1,6 +1,6 @@
 {
     "name": "Sniper Madness",
-    "command": "sniper",
+    "command": "newsniper",
     "goal": "Take out your enemies while trying to remain hidden yourself.",
 
     "settings": {

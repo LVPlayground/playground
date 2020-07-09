@@ -45,6 +45,7 @@ export default class Fights extends Feature {
         this.games_().registerGame(FightGame, {
             name: Fights.prototype.composeGameName.bind(this),
             goal: 'Defeat all other players to win the fight.',
+            command: 'match',
 
             minimumPlayers,
             maximumPlayers: 16,

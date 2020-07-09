@@ -343,6 +343,8 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDamageDecider.pwn</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDistanceBlocker.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

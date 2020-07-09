@@ -9,6 +9,7 @@ native ReportAbuse(playerid, detectorName[], certainty[]);
 native ReportTrailerUpdate(vehicleid, trailerid);
 
 #include "Driver/PawnConfig.pwn"
+#include "Driver/Abuse/WeaponDamageDecider.pwn"
 #include "Driver/Abuse/WeaponShotDetection.pwn"
 #include "Driver/Drift/DriftHelpers.pwn"
 #include "Driver/Drift/DriftUi.pwn"
@@ -591,6 +592,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
         g_lastTakenDamageIssuerId[playerid] = issuerid;
         g_lastTakenDamageTime[playerid] = GetTickCount();
     }
+
+    // Process manual weapon damage for the shot when this has been enabled. This overrides the
+    // amount of damage that would be done by SA-MP itself.
+    ProcessManualWeaponDamage(playerid, issuerid, weaponid, bodypart);
 
     return LVPPlayerTakeDamage(playerid, issuerid, amount, weaponid, bodypart);
 #else

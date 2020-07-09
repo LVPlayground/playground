@@ -51,6 +51,9 @@ new const kUnoccupiedSyncMarkTimeMs = 185000;
 // The area that describes the insides of Las Venturas. Made available and managed by the streamer.
 new STREAMER_TAG_AREA: g_areaLasVenturas;
 
+// Time (in milliseconds) until when damage issued by a particular player should be disabled.
+new g_damageDisabledExpirationTime[MAX_PLAYERS] = { 0, ... };
+
 // Boolean that indicates whether a particular player is currently in Las Venturas.
 new bool: g_inLasVenturas[MAX_PLAYERS] = { false, ... };
 
@@ -146,6 +149,11 @@ public OnPlayerConnect(playerid) {
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerConnect();
+}
+
+public OnPlayerSpawn(playerid) {
+    g_damageDisabledExpirationTime[playerid] = 0;
+    return LVPPlayerSpawn(playerid);
 }
 
 public OnPlayerDisconnect(playerid, reason) {
@@ -453,6 +461,14 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     if (oldstate == PLAYER_STATE_DRIVER)
         ProcessDriftLeaveVehicleForPlayer(playerid);
 
+    // When the player is leaving a vehicle, disable their damage for a predefined amount of time
+    // to avoid players from abusing vehicle bugs to give them an advantage in a fight.
+    if ((oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER)
+            && g_abuseFakeCarEntryPreventionSec > 0) {
+        g_damageDisabledExpirationTime[playerid] =
+            GetTickCount() + g_abuseFakeCarEntryPreventionSec * 1000;
+    }
+
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
 }
 
@@ -524,6 +540,15 @@ public OnPlayerDeath(playerid, killerid, reason) {
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: fY, Float: fZ) {
 #if Feature::EnableServerSideWeaponConfig == 0
     DetectAbuseOnWeaponShot(playerid, hittype, hitid);
+
+    // If damage has been disabled for the |playerid|, discard the shots entirely. It will expire
+    // automatically when the time has passed.
+    if (g_damageDisabledExpirationTime[playerid] > 0) {
+        if (g_damageDisabledExpirationTime[playerid] < GetTickCount())
+            g_damageDisabledExpirationTime[playerid] = 0;
+        else
+            return 0;
+    }
 
     // We might want to ignore damage done by players who are passengers as the sole occupant of a
     // vehicle. They can only be damaged with a chainsaw, making this very unfair in fights.
@@ -620,6 +645,19 @@ public OnPlayerChecksumAvailable(playerid, address, checksum) {}
 public OnPlayerUpdate(playerid) {
     if (g_driftingEnabled)
         ProcessDriftUpdateForPlayer(playerid);
+
+    // Determines if the player is entering a vehicle through animation, and if so, marks the time
+    // until which their damage should be disabled based on the prevention setting.
+    if (g_abuseFakeCarEntryPreventionSec > 0) {
+        new const animationIndex = GetPlayerAnimationIndex(playerid);
+        switch (animationIndex) {
+            case 1043 /* CAR_OPEN_LHS */, 1044 /* CAR_OPEN_RHS */,
+                 1026 /* CAR_GETIN_LHS */, 1027 /* CAR_GETIN_RHS */: {
+                g_damageDisabledExpirationTime[playerid] =
+                    GetTickCount() + g_abuseFakeCarEntryPreventionSec * 1000;
+            }
+        }
+    }
 
     return 1;
 }

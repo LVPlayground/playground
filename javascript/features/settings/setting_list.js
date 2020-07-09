@@ -10,6 +10,7 @@ export const kSettingList = [
     new Setting('abuse', 'detector_cleo_dmage', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Dmage detector be enabled?'),
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
+    new Setting('abuse', 'fake_car_entry_prevention_sec', Setting.TYPE_NUMBER, 3, 'Number of seconds to disable damage after entering/exiting a car?'),
     new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
     new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
     new Setting('abuse', 'kill_attribution_time_sec', Setting.TYPE_NUMBER, 10, 'Time after last hit when deaths should be attributed for.'),

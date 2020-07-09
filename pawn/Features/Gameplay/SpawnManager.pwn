@@ -458,7 +458,7 @@ public OnPlayerRequestSpawn(playerid) {
  * @param playerid Id of the player who is spawning.
  * @return integer False if the player should be returned to class selection after the next spawn.
  */
-public OnPlayerSpawn(playerid) {
+LVPPlayerSpawn(playerid) {
     if (Player(playerid)->isConnected() == false)
         return 0;
 

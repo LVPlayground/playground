@@ -11,6 +11,11 @@ ProcessManualWeaponDamage(playerId, issuerId, weaponId, bodyPart) {
     if (playerId == issuerId)
         return;  // the damage was self-inflicted
 
+    if (PlayerSyncedData(playerId)->lagCompensationMode() == 0 /* disabled */
+            || PlayerSyncedData(issuerId)->lagCompensationMode() == 0) {
+        return;  // either player has disabled lag compensation
+    }
+
     // TODO: Implement this routine for more weapons if players like it.
     if (weaponId != /* Sawnoff Shotgun */ 26)
         return;

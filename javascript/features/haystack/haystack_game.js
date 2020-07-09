@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Game } from 'features/games/game.js';
+import { GameBase } from 'features/games/game_base.js';
 import { Vector } from 'base/vector.js';
 
 import { random } from 'base/random.js';
@@ -15,7 +15,7 @@ export const kPlayerProgressInterval = 8;
 
 // Implementation of the Game class specifically for the Haystack minigame. An instance of this
 // class will be created by the Games infrastructure when it's started.
-export class HaystackGame extends Game {
+export class HaystackGame extends GameBase {
     // Type of object that can be stored in either of the matrices.
     static kPositionEmpty = 0;
     static kPositionHaystack = 1;
@@ -42,7 +42,9 @@ export class HaystackGame extends Game {
 
     // Called when the game has been initialized. Here we create the haystacks and the rocks that
     // that the player is able to climb on.
-    async onInitialized(settings) {
+    async onInitialized(settings, userData) {
+        await super.onInitialized(settings, userData);
+
         this.settings_ = this.determineSettings(settings);
 
         if ((this.settings_.hayDensity + this.settings_.rockDensity) >= 1)
@@ -101,6 +103,8 @@ export class HaystackGame extends Game {
     // Called when the |player| is ready to spawn. We position them near the hay so that they can
     // start running immediately. The countdown has already passed at this point.
     async onPlayerSpawned(player, countdown) {
+        await super.onPlayerSpawned(player, countdown);
+
         const jitter = {
             x: (Math.random() * 8) - 4,
             y: (Math.random() * 8) - 4,
@@ -131,6 +135,8 @@ export class HaystackGame extends Game {
     // of the haystacks in the game, and every five ticks (~500ms) we'll check whether any of the
     // players has reached the top of the haystack.
     async onTick() {
+        await super.onTick();
+
         if ((this.counter_++) % kPlayerProgressInterval === 0)
             this.updatePlayerProgress();
 

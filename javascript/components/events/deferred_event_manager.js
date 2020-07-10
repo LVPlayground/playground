@@ -86,7 +86,7 @@ export class DeferredEventManager {
                 player = server.playerManager.getById(event.player_id);
                 if (player) {
                     for (const observer of this.sampcacObservers_)
-                        observer.onPlayerScreenshotTaken();
+                        observer.onPlayerScreenshotTaken(player);
                 }
                 break;
 

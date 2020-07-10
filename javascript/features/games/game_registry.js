@@ -42,11 +42,9 @@ export class GameRegistry {
     // Removes the game previously registered with |gameConstructor| from the list of games that
     // are available on the server. In-progress games will be stopped immediately.
     removeGame(gameConstructor) {
-        if (!this.games_.has(gameConstructor)) {
-            console.log(new Error('Attempting to remove a game that has not yet registered.'));
-            return;
-        }
-
+        if (!this.games_.has(gameConstructor))
+            throw new Error('Attempting to remove a game that has not yet registered.');
+        
         const description = this.games_.get(gameConstructor);
 
         // Remove the command through which players could start this game, if any.

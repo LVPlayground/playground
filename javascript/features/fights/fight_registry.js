@@ -105,10 +105,7 @@ export class FightRegistry {
     dispose() {
         for (const command of this.#commands_)
             server.commandManager.removeCommand(command);
-        
-        this.#commands_ = null;
 
-        this.#locations_.clear();
-        this.#locations_ = null;
+        this.#commands_ = null;
     }
 }

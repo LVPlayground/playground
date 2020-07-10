@@ -51,19 +51,6 @@ export class FightGame extends DeathmatchGame {
         }
     }
 
-    async onPlayerAdded(player) {
-        await super.onPlayerAdded(player);
-
-        // Tell the streamer to preload any objects and items at the location for the player, as
-        // they are about to be teleported to it. This will not teleport the player.
-        const objects = this.#location_.getObjects();
-        if (objects.length) {
-            player.updateStreamer(
-                objects[0].position, this.scopedEntities.virtualWorld,
-                this.scopedEntities.interiorId, /* type= */ -1);
-        }
-    }
-
     async onPlayerSpawned(player, countdown) {
         await super.onPlayerSpawned(player, countdown);
 
@@ -74,6 +61,9 @@ export class FightGame extends DeathmatchGame {
 
         player.position = spawnPosition.position;
         player.rotation = spawnPosition.facingAngle;
+
+        player.updateStreamerObjects();
+        player.position = spawnPosition.position;
 
         // If the location has world boundaries, activate those for the |player| as well.
         const boundaries = this.#location_.getWorldBoundaries();

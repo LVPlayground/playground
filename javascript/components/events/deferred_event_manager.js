@@ -68,7 +68,7 @@ export class DeferredEventManager {
             case 'CAC_OnMemoryRead':
                 player = server.playerManager.getById(event.player_id);
                 if (player) {
-                    const buffer = new Uint8Array(event.content);
+                    const buffer = new Uint8Array([ ...event.content ]);
                     for (const observer of this.sampcacObservers_)
                         observer.onPlayerMemoryRead(player, event.address, buffer);
                 }

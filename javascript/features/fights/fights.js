@@ -70,10 +70,10 @@ export default class Fights extends Feature {
     }
 
     dispose() {
+        this.games_().removeGame(FightGame);
+
         this.registry_.dispose();
         this.registry_ = null;
-
-        this.games_().removeGame(FightGame);
 
         this.settings_ = null;
 

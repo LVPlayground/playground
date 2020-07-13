@@ -11,17 +11,23 @@ import { Game } from 'features/games/game.js';
 import { Vector } from 'base/vector.js';
 
 describe('GameRuntime', (it, beforeEach) => {
+    let finance = null;
     let gunther = null;
     let manager = null;
+    let nuwani = null;
     let russell = null;
+    let spectate = null;
 
     beforeEach(() => {
         const feature = server.featureManager.loadFeature('games');
 
         manager = feature.manager_;
 
+        finance = server.featureManager.loadFeature('finance');
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        nuwani = server.featureManager.loadFeature('nuwani');
         russell = server.playerManager.getById(/* Russell= */ 1);
+        spectate = server.featureManager.loadFeature('spectate');
     });
 
     // Default settings, an empty map, to be made available to games.
@@ -30,12 +36,11 @@ describe('GameRuntime', (it, beforeEach) => {
     // Prepares the game run in |description|, but does not yet call `run()` and/or `finalize()`,
     // which is left as an exercise to the test.
     async function prepareGame(description, players) {
-        const finance = server.featureManager.loadFeature('finance');
-        const nuwani = server.featureManager.loadFeature('nuwani');
         const virtualWorld = Math.floor(Math.random() * 10000);
 
         const runtime =
-            new GameRuntime(manager, description, kDefaultSettings, finance, nuwani, virtualWorld);
+            new GameRuntime(manager, description, kDefaultSettings, () => finance, () => nuwani,
+                            () => spectate, virtualWorld);
         
         await runtime.initialize();
         for (const player of players)
@@ -56,7 +61,8 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should serialize and later on restore participant states', async (assert) => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description, kDefaultSettings);
+        const runtime = new GameRuntime(
+            manager, description, kDefaultSettings, () => finance, () => nuwani, () => spectate);
 
         await runtime.initialize();
 
@@ -239,7 +245,6 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should be able to run games through this feature end-to-end', async (assert) => {
         const feature = server.featureManager.loadFeature('games');
-        const finance = server.featureManager.loadFeature('finance');
         const settings = server.featureManager.loadFeature('settings');
 
         const options = {
@@ -384,7 +389,8 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('is able to proportionally calculate the prize money', assert => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description, kDefaultSettings);
+        const runtime = new GameRuntime(
+            manager, description, kDefaultSettings, () => finance, () => nuwani, () => spectate);
 
         runtime.prizeMoney_ = 10000;
 
@@ -426,7 +432,6 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should enable players to join continuous games at any time', async (assert) => {
         const feature = server.featureManager.loadFeature('games');
-        const finance = server.featureManager.loadFeature('finance');
 
         let activePlayers = 0;
         let initialized = false;
@@ -501,7 +506,8 @@ describe('GameRuntime', (it, beforeEach) => {
 
     it('should have a sensible description when casted to a string', assert => {
         const description = new GameDescription(Game, { name: 'Bubble', goal: '' });
-        const runtime = new GameRuntime(manager, description, kDefaultSettings);
+        const runtime = new GameRuntime(
+            manager, description, kDefaultSettings, () => finance, () => nuwani, () => spectate);
 
         assert.equal(String(runtime), '[GameActivity: Bubble (engaged)]');
 
@@ -516,7 +522,8 @@ describe('GameRuntime', (it, beforeEach) => {
         });
 
         const customRuntime = new GameRuntime(
-            manager, customDescription, new Map([ [ 'bubble/difficulty', 'extreme' ] ]));
+            manager, customDescription, new Map([ [ 'bubble/difficulty', 'extreme' ] ]),
+            () => finance, () => nuwani, () => spectate);
 
         assert.equal(String(customRuntime), '[GameActivity: Extreme Bubble (engaged)]');
     });

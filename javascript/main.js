@@ -53,6 +53,9 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         'collectables',
+        'games',
+        'games_deathmatch',
+        'spectate',
         'streamer',
 
         // -----------------------------------------------------------------------------------------
@@ -83,11 +86,6 @@ testRunner.run('.*\.test\.js').then(time => {
         // Games and minigames
         // -----------------------------------------------------------------------------------------
 
-        // 1. Runtime
-        'games',
-        'games_deathmatch',
-
-        // 2. Individual games
         'fights',
         'haystack',
 

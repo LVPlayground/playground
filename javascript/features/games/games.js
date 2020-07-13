@@ -31,9 +31,12 @@ export default class Games extends Feature {
         // Various aspects of the games framework are configurable through `/lvp settings`.
         const settings = this.defineDependency('settings');
 
+        // Games come with a built-in ability to spectate participants within the game.
+        const spectate = this.defineDependency('spectate');
+
         // The game manager keeps track of all active games on the server, regardless of how they
         // have been started. Expects to be instrumented by other components.
-        this.manager_ = new GameManager(finance, nuwani);
+        this.manager_ = new GameManager(finance, nuwani, spectate);
 
         // The game registry keeps track of all the games that are available on the server. It will
         // further make sure that the commands for these games are available as appropriate.

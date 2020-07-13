@@ -18,6 +18,7 @@ const kGameVirtualWorldRange = [ 115, 199 ];
 export class GameManager {
     finance_ = null;
     nuwani_ = null;
+    spectate_ = null;
 
     callbacks_ = null;
 
@@ -35,9 +36,10 @@ export class GameManager {
     // Circular buffer that's able to sequentially issue the virtual worlds assigned to games.
     worlds_ = null;
 
-    constructor(finance, nuwani) {
+    constructor(finance, nuwani, spectate) {
         this.finance_ = finance;
         this.nuwani_ = nuwani;
+        this.spectate_ = spectate;
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
@@ -99,7 +101,7 @@ export class GameManager {
         // Create the |runtime| and add it to the active runtime set.
         const runtime =
             new GameRuntime(this, description, registration.settings, this.finance_, this.nuwani_,
-                            this.worlds_.next());
+                            this.spectate_, this.worlds_.next());
 
         this.runtimes_.add(runtime);
 

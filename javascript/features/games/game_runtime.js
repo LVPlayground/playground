@@ -4,6 +4,7 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
+import { SpectateGroup } from 'features/spectate/spectate_group.js';
 
 import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
@@ -22,6 +23,7 @@ export class GameRuntime extends GameActivity {
     manager_ = null;
     nuwani_ = null;
     settings_ = null;
+    spectate_ = null;
     state_ = null;
     virtualWorld_ = null;
 
@@ -33,6 +35,7 @@ export class GameRuntime extends GameActivity {
     prizeMoney_ = 0;
     scopedEntities_ = null;
     spawned_ = new WeakSet();
+    spectateGroup_ = null;
 
     // The actual game instance that contains the logic.
     game_ = null;
@@ -49,7 +52,7 @@ export class GameRuntime extends GameActivity {
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description, settings, finance, nuwani, virtualWorld = 0) {
+    constructor(manager, description, settings, finance, nuwani, spectate, virtualWorld = 0) {
         super();
 
         this.description_ = description;
@@ -57,6 +60,7 @@ export class GameRuntime extends GameActivity {
         this.manager_ = manager;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
+        this.spectate_ = spectate;
         this.state_ = GameRuntime.kStateUninitialized;
         this.virtualWorld_ = virtualWorld;
     }
@@ -69,12 +73,21 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateUninitialized)
             throw new Error(`Initialization must only happen immediately following construction.`);
         
+        // (1) Set to maintain all the participants who are part of this game.
         this.players_ = new Set();
+
+        // (2) A ScopedEntities object on which all of the game's entities should be created.
         this.scopedEntities_ = new ScopedEntities({
             interiorId: -1,  // all interiors
             virtualWorld: this.virtualWorld_,
         });
 
+        // (3) A spectate group, in case people or participants want to watch the game. Players
+        // watch a game rather than a particular participant, so if a participant leaves, watchers
+        // should move to the next participant in the game.
+        this.spectateGroup_ = this.spectate_().createGroup(SpectateGroup.kSwitchAbandonBehaviour);
+
+        // (4) The Game instance itself, initialized through its constructor.
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);
 
         await this.game_.onInitialized(this.settings_, this.description_.userData);
@@ -115,6 +128,9 @@ export class GameRuntime extends GameActivity {
 
         this.game_ = null;
 
+        this.spectate_().deleteGroup(this.spectateGroup_);
+        this.spectateGroup_ = null;
+
         this.scopedEntities_.dispose();
         this.scopedEntities_ = null;
 
@@ -133,6 +149,9 @@ export class GameRuntime extends GameActivity {
         // Serialize the |player|'s state so that we can take them back after the game.
         player.serializeState(/* restoreOnSpawn= */ false);
         
+        // Add the |player| to the list of folks who can be watched.
+        this.spectateGroup_.addPlayer(player);
+
         // Tell the manager about the player now being engaged in this game.
         this.manager_.setPlayerActivity(player, this);
         this.players_.add(player);
@@ -149,6 +168,9 @@ export class GameRuntime extends GameActivity {
 
         // First remove the |player| from the game.
         await this.game_.onPlayerRemoved(player);
+
+        // Remove the |player| from the list of folks who can be watched.
+        this.spectateGroup_.removePlayer(player);
 
         // Restore the |player|'s state -- back as if nothing ever happened.
         if (!disconnecting)

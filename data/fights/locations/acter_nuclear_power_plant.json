@@ -46,7 +46,12 @@
     },
 
     "environment": {
-        "boundaries": [ 2485.0, 2656.0, 2760.0, 2866.0 ]
+        "boundaries": {
+            "minimumX": 2485.0,
+            "maximumX": 2656.0,
+            "minimumY": 2760.0,
+            "maximumY": 2866.0
+        }
     },
 
     "pickups": [

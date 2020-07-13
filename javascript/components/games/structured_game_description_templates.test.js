@@ -84,7 +84,12 @@ describe('StructuredGameDescriptionTemplates', it => {
 
         const valuedDescription = new StructuredGameDescription('Game', {
             environment: {
-                boundaries: [ 0, 100, 50, 150 ],
+                boundaries: {
+                    minimumX: 0,
+                    maximumX: 50,
+                    minimumY: 100,
+                    maximumY: 150,
+                },
                 interiorId: 7,
                 time: [ 18, 35 ],
                 weather: 12

@@ -31,29 +31,41 @@ function positionPropertyValidator(positionArray) {
     return position;
 }
 
-// Validator function for importing the given |rectangleArray|, which must be in the order of
-// [ minX, minY, maxX, maxY ]. Will be returned as a new Rect instance.
-function positionRectanglePropertyValidator(rectangleArray) {
-    if (!rectangleArray.length)
+// Validator function for importing the given |rectangleObject|, which must contain all of the
+// minimum and maximum X/Y coordinates. Will be returned as a new Rect instance.
+function positionRectanglePropertyValidator(rectangleObject) {
+    if (!rectangleObject.hasOwnProperty('minimumX'))
         return null;  // empty rectangle
-
-    if (rectangleArray.length !== 4)
-        throw new Error('Rectangles must be indicated as [minX, minY, maxX, maxY] arrays.');
     
-    const names = [ 'minX', 'minY', 'maxX', 'maxY' ];
-    for (const [ index, name ] of Object.entries(names)) {
-        if (rectangleArray[index] >= -4500 && rectangleArray[index] < 4500)
-            continue;
+    const dimensions = {
+        minimumX: -20000,
+        maximumX: 20000,
+        minimumY: -20000,
+        maximumY: 20000,
+    };
+
+    for (const property of Object.getOwnPropertyNames(dimensions)) {
+        if (!rectangleObject.hasOwnProperty(property))
+            throw new Error(`The boundary box must define a "${property}" property.`);
+
+        const value = rectangleObject[property];
+        if (typeof value !== 'number')
+            throw new Error(`The "${property}" property of a bounding box must be a number.`);
+
+        if (value < -4096 || value > 4096)
+            throw new Error(`The "${property}" of a bounding box must be within [-4096, 4096].`);
         
-        throw new Error(`The ${name} of a rectangle must be within [-4500, 4500].`);
+        dimensions[property] = value;
     }
 
-    if (rectangleArray[0] > rectangleArray[2])
-        throw new Error('The minX in a rectangle must be lower than the maxX.');
-    if (rectangleArray[1] > rectangleArray[3])
-        throw new Error('The minY of a rectangle must be lower than the maxY.');
+    if (dimensions.minimumX >= dimensions.maximumX)
+        throw new Error(`The minimum X in a boundary box must be lower than the maximum X.`);
 
-    return new Rect(rectangleArray[0], rectangleArray[1], rectangleArray[2], rectangleArray[3]);
+    if (dimensions.minimumY >= dimensions.maximumY)
+        throw new Error(`The minimum X in a boundary box must be lower than the maximum X.`);
+
+    return new Rect(
+        dimensions.minimumX, dimensions.minimumY, dimensions.maximumX, dimensions.maximumY);
 }
 
 // Validator function for ensuring that the rotation is in range of [0, 360].
@@ -125,10 +137,25 @@ export const kPositionProperty = {
 // Structured property definition for representing a portion of the map, as a rectangle in the order
 // of [ minX, minY, maxX, maxY ]. Will be represented as a Rect instance.
 export const kPositionRectangleProperty = {
-    type: StructuredGameDescription.kTypeArray,
-    elementType: {
-        type: StructuredGameDescription.kTypeNumber,
-    },
+    type: StructuredGameDescription.kTypeObject,
+    structure: [
+        {
+            name: 'minimumX',
+            type: StructuredGameDescription.kTypeNumber,
+        },
+        {
+            name: 'maximumX',
+            type: StructuredGameDescription.kTypeNumber,
+        },
+        {
+            name: 'minimumY',
+            type: StructuredGameDescription.kTypeNumber,
+        },
+        {
+            name: 'maximumY',
+            type: StructuredGameDescription.kTypeNumber,
+        }
+    ],
 
     validator: positionRectanglePropertyValidator,
 };

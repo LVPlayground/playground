@@ -71,11 +71,9 @@ export class FightGame extends DeathmatchGame {
         player.position = spawnPosition.position;
         player.rotation = spawnPosition.facingAngle;
 
-        player.updateStreamerObjects();
-        player.position = spawnPosition.position.translate({ z: 0.125 });
-
-        // Unfreeze the player, which will enable them to start moving.
-        player.controllable = true;
+        // Force-update the streamer for the player, based on where they will be spawning.
+        player.updateStreamer(spawnPosition.position, this.scopedEntities.virtualWorld,
+                              this.scopedEntities.interiorId, /* STREAMER_TYPE_OBJECT= */ 0);
 
         // If the location has world boundaries, activate those for the |player| as well.
         const boundaries = this.#location_.getWorldBoundaries();
@@ -83,6 +81,15 @@ export class FightGame extends DeathmatchGame {
             player.setWorldBoundaries(
                 boundaries.maxX, boundaries.minX, boundaries.maxY, boundaries.minY);
         }
+
+        // Wait a second, giving the objects a chance to load. This may not be necessary for games
+        // taking place without custom mapping, but having a single code path keeps complexity down.
+        await wait(1000);
+
+        // Teleport the |player| to their intended spawning position again, and unfreeze them
+        // immediately so that they can start playing.
+        player.position = spawnPosition.position.translate({ z: 0.125 });
+        player.controllable = true;
     }
 
     async onPlayerRemoved(player) {

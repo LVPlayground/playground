@@ -51,6 +51,15 @@ export class FightGame extends DeathmatchGame {
         }
     }
 
+    // Called when the |player| has been added to the game. Most of the work is done by the Games
+    // Deathmatch API, but as we're in charge of location we want it to fully load.
+    async onPlayerAdded(player) {
+        await super.onPlayerAdded(player);
+
+        // Freeze the player, so that we can teleport them with care.
+        player.controllable = false;
+    }
+
     async onPlayerSpawned(player, countdown) {
         await super.onPlayerSpawned(player, countdown);
 
@@ -63,7 +72,10 @@ export class FightGame extends DeathmatchGame {
         player.rotation = spawnPosition.facingAngle;
 
         player.updateStreamerObjects();
-        player.position = spawnPosition.position;
+        player.position = spawnPosition.position.translate({ z: 0.125 });
+
+        // Unfreeze the player, which will enable them to start moving.
+        player.controllable = true;
 
         // If the location has world boundaries, activate those for the |player| as well.
         const boundaries = this.#location_.getWorldBoundaries();
@@ -77,7 +89,11 @@ export class FightGame extends DeathmatchGame {
         // If world boundaries had been applied for the |player|, we need to remove them again.
         if (this.#location_.getWorldBoundaries() !== null)
             player.resetWorldBoundaries();
-        
+
+        // Make sure that the player is controllable again, important in case they are removed from
+        // the game before they can spawn, for example because they've used /leave.
+        player.controllable = true;
+
         await super.onPlayerRemoved(player);
     }
 }

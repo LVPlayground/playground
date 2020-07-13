@@ -44,7 +44,7 @@ export default class Games extends Feature {
         
         // Implements the commands with which players can start and stop games.
         this.commands_ = new GameCommands(
-            finance, limits, nuwani, settings, this.manager_, this.registry_);
+            finance, limits, nuwani, settings, spectate, this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------

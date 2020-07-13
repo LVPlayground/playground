@@ -25,6 +25,7 @@ export class GameCommands {
     limits_ = null;
     nuwani_ = null;
     settings_ = null;
+    spectate_ = null;
 
     commands_ = null;
     disposed_ = false;
@@ -34,11 +35,12 @@ export class GameCommands {
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, limits, nuwani, settings, manager, registry) {
+    constructor(finance, limits, nuwani, settings, spectate, manager, registry) {
         this.finance_ = finance;
         this.limits_ = limits;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
+        this.spectate_ = spectate;
 
         this.manager_ = manager;
 
@@ -152,6 +154,9 @@ export class GameCommands {
     // to verify that the player is able to do this right now. Will either sign them up to an
     // existing game, or create a new game for them specifically.
     async startGame(description, player, params) {
+        if (params.type === GameCommandParams.kTypeWatch)
+            return await this.watchGame(description, player);
+
         const settings = await this.determineSettings(description, player, params);
         if (!settings)
             return;  // the |player| aborted out of the flow
@@ -521,6 +526,17 @@ export class GameCommands {
             return parseFloat(answer);
 
         return answer;
+    }
+    
+    // ---------------------------------------------------------------------------------------------
+    // Game watching flow
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| wants to watch a game with the given |description|. When the
+    // specific game is known, and they aren't preoccupied yet, they will start to spectate the
+    // game's SpectateGroup as an outsider (and thus have access to all participants).
+    async watchGame(description, player) {
+        // TODO: Implement the ability to watch games.
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -226,7 +226,7 @@ describe('GameCommands', (it, beforeEach) => {
         });
 
         const params = new GameCommandParams();
-        params.customise = true;
+        params.type = GameCommandParams.kTypeCustomise;
 
         let settings = null;
 
@@ -319,7 +319,7 @@ describe('GameCommands', (it, beforeEach) => {
         });
 
         const params = new GameCommandParams();
-        params.customise = true;
+        params.type = GameCommandParams.kTypeCustomise;
 
         // (1) Ensure validation of numeric values.
         gunther.respondToDialog({ listitem: 2 /* Numeric value */ }).then(

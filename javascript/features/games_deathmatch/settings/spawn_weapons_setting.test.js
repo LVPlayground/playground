@@ -36,7 +36,7 @@ describe('SpawnWeaponsSetting', (it, beforeEach) => {
         });
 
         const params = new GameCommandParams();
-        params.customise = true;
+        params.type = GameCommandParams.kTypeCustomise;
 
         let settings = null;
 

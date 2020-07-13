@@ -93,7 +93,9 @@ export class FightRegistry {
     onCommand(settings, customise, player, registrationId) {
         const params = new GameCommandParams();
 
-        params.customise = !!customise;
+        if (customise)
+            params.type = GameCommandParams.kTypeCustomise;
+
         params.registrationId = registrationId;
         params.settings = clone(settings);
 

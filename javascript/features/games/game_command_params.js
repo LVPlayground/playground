@@ -6,8 +6,13 @@
 // automatically built game commands, as well as by commands provided through other features such
 // as "/race" and "/fights". All members are optional.
 export class GameCommandParams {
-    // Boolean indicating whether the player wants to customise the game.
-    customise = null;
+    // Types of commands that can be encapsulated by this object.
+    static kTypeDefault = 0;
+    static kTypeCustomise = 1;
+    static kTypeWatch = 2;
+
+    // The type of command that is being executed. Must be one of the above constants.
+    type = GameCommandParams.kTypeDefault;
 
     // Number indicating which instance of the game the player wants to join.
     registrationId = null;

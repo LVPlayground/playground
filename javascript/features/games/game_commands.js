@@ -131,7 +131,9 @@ export class GameCommands {
     async onCommand(description, customise, player, registrationId) {
         const params = new GameCommandParams();
 
-        params.customise = !!customise;
+        if (customise)
+            params.type = GameCommandParams.kTypeCustomise;
+
         params.registrationId = registrationId;
 
         return this.startGame(description, player, params);
@@ -172,7 +174,7 @@ export class GameCommands {
             // either (a) no |registrationId| is given, and this isn't a custom game, or (b) the
             // |registrationId| is given, and it matches the |pendingRegistration|'s ID.
             if (!equals(settings, pendingRegistration.settings) || params.registrationId) {
-                if (!params.registrationId && params.customise)
+                if (!params.registrationId && params.type === GameCommandParams.kTypeCustomise)
                     continue;  // a new custom game has been created
 
                 if (params.registrationId && pendingRegistration.id !== params.registrationId)
@@ -326,7 +328,7 @@ export class GameCommands {
 
         // If the customise flag has not been set, return the |settings| immediately as we're done.
         // Otherwise we begin the game customization flow.
-        if (!params.customise)
+        if (params.type !== GameCommandParams.kTypeCustomise)
             return settings;
 
         // If no settings have been defined for this game, then there's nothing to customize. Ask

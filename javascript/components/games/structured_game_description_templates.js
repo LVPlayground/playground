@@ -34,16 +34,14 @@ function positionPropertyValidator(positionArray) {
 // Validator function for importing the given |rectangleObject|, which must contain all of the
 // minimum and maximum X/Y coordinates. Will be returned as a new Rect instance.
 function positionRectanglePropertyValidator(rectangleObject) {
-    if (!rectangleObject.hasOwnProperty('minimumX'))
-        return null;  // empty rectangle
-    
     const dimensions = {
-        minimumX: -20000,
-        maximumX: 20000,
-        minimumY: -20000,
-        maximumY: 20000,
+        minimumX: -4096,
+        maximumX: 4096,
+        minimumY: -4096,
+        maximumY: 4096,
     };
 
+    let changed = false;
     for (const property of Object.getOwnPropertyNames(dimensions)) {
         if (!rectangleObject.hasOwnProperty(property))
             throw new Error(`The boundary box must define a "${property}" property.`);
@@ -54,7 +52,10 @@ function positionRectanglePropertyValidator(rectangleObject) {
 
         if (value < -4096 || value > 4096)
             throw new Error(`The "${property}" of a bounding box must be within [-4096, 4096].`);
-        
+
+        if (value !== dimensions[property])
+            changed = true;
+
         dimensions[property] = value;
     }
 
@@ -64,6 +65,11 @@ function positionRectanglePropertyValidator(rectangleObject) {
     if (dimensions.minimumY >= dimensions.maximumY)
         throw new Error(`The minimum X in a boundary box must be lower than the maximum X.`);
 
+    // (a) If none of the |dimensions| have changed, then this game does not require boundaries.
+    if (!changed)
+        return null;
+
+    // (b) Otherwise, return a Rect instance to represent the area.
     return new Rect(
         dimensions.minimumX, dimensions.minimumY, dimensions.maximumX, dimensions.maximumY);
 }
@@ -142,18 +148,22 @@ export const kPositionRectangleProperty = {
         {
             name: 'minimumX',
             type: StructuredGameDescription.kTypeNumber,
+            defaultValue: -4096,
         },
         {
             name: 'maximumX',
             type: StructuredGameDescription.kTypeNumber,
+            defaultValue: 4096,
         },
         {
             name: 'minimumY',
             type: StructuredGameDescription.kTypeNumber,
+            defaultValue: -4096,
         },
         {
             name: 'maximumY',
             type: StructuredGameDescription.kTypeNumber,
+            defaultValue: 4096,
         }
     ],
 

@@ -57,7 +57,7 @@ describe('FightNameGenerator', (it, beforeEach) => {
         
         assert.equal(
             generator(clone(defaultSettings).set('fights/location', 'Counter Strike 1.6: Inferno')),
-            'Inferno Match');
+            'CS: Inferno Match');
 
         // (2) Specified names should take precedence over the location name.
         assert.equal(
@@ -68,13 +68,13 @@ describe('FightNameGenerator', (it, beforeEach) => {
         assert.equal(
             generator(clone(defaultSettings).set('fights/location', 'Counter Strike 1.6: Inferno')
                                             .set('deathmatch/teams', 'Balanced teams')),
-            'Team Inferno Match');
+            'Team CS: Inferno Match');
 
         // (4) Use of lag compensation will influence the name.
         assert.equal(
             generator(clone(defaultSettings).set('fights/location', 'Counter Strike 1.6: Inferno')
                                             .set('deathmatch/lag_compensation', false)),
-            'Inferno Match (lag shot)');
+            'CS: Inferno Match (lag shot)');
         
         // (5) Use of Miniguns will influence the name.
         assert.equal(

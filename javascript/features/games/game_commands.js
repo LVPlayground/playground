@@ -68,10 +68,12 @@ export class GameCommands {
         // Registers the |commandName| with the server, so that everyone can use it.
         server.commandManager.buildCommand(commandName)
             .sub('custom')
-                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ true))
+                .build(GameCommands.prototype.onCommand.bind(this, description, 'customise'))
+            .sub('watch')
+                .build(GameCommands.prototype.onCommand.bind(this, description, 'watch'))
             .sub(CommandBuilder.NUMBER_PARAMETER)
-                .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ false))
-            .build(GameCommands.prototype.onCommand.bind(this, description, /* custom */ false));
+                .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null))
+            .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null));
         
         this.commands_.add(commandName);
     }
@@ -128,11 +130,18 @@ export class GameCommands {
 
     // Called when the |player| has executed the command necessary to start the game described in
     // the given |description|. Triggers the same code path as games initialized by other features.
-    async onCommand(description, customise, player, registrationId) {
+    async onCommand(description, option, player, registrationId) {
         const params = new GameCommandParams();
 
-        if (customise)
-            params.type = GameCommandParams.kTypeCustomise;
+        switch (option) {
+            case 'customise':
+                params.type = GameCommandParams.kTypeCustomise;
+                break;
+
+            case 'watch':
+                params.type = GameCommandParams.kTypeWatch;
+                break;
+        }
 
         params.registrationId = registrationId;
 

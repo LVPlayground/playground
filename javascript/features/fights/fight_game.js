@@ -77,7 +77,7 @@ export class FightGame extends DeathmatchGame {
 
         // If the location has world boundaries, activate those for the |player| as well.
         const boundaries = this.#location_.getWorldBoundaries();
-        if (boundaries && false) {
+        if (boundaries) {
             player.setWorldBoundaries(
                 boundaries.maxX, boundaries.minX, boundaries.maxY, boundaries.minY);
         }

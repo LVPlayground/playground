@@ -99,7 +99,7 @@ export class FightRegistry {
         params.registrationId = registrationId;
         params.settings = clone(settings);
 
-        return this.#games_().startGame(FightGame, player, params);
+        return this.#games_().executeGameCommand(FightGame, player, params);
     }
 
     // ---------------------------------------------------------------------------------------------

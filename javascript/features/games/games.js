@@ -55,10 +55,9 @@ export default class Games extends Feature {
         this.registry_.registerGame(new GameDescription(gameConstructor, options, userData));
     }
 
-    // Starts the |gameConstructor| game for the given |player|. The constructor must have been
-    // registered with the game registry already. The |params| must be a GameCommandParams instance,
-    // and can be used to customize how the game should be started.
-    startGame(gameConstructor, player, params) {
+    // Execute the game command for the given |gameConstructor| for the given |player|. What happens
+    // will be defined by the |params| property, which must be a GameCommandParams instance.
+    executeGameCommand(gameConstructor, player, params) {
         const description = this.registry_.getDescription(gameConstructor);
         if (!description)
             throw new Error(`The given game (${gameConstructor}) has not yet been registered.`);

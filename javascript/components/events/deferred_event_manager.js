@@ -95,8 +95,11 @@ export class DeferredEventManager {
                 break;
 
             case 'OnPlayerChecksumAvailable':
-                const feature = server.featureManager.loadFeature('nuwani_commands');
-                feature.playerCommands_.onChecksumResponse(event);
+                player = server.playerManager.getById(event.playerid);
+                if (player) {
+                    for (const observer of this.sampcacObservers_)
+                        observer.onPlayerMemoryChecksum(player, event.address, event.checksum);
+                }
                 break;
 
             case 'OnPlayerEditDynamicObject':

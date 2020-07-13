@@ -38,6 +38,13 @@ export class EventMonitor extends SAMPCACEventObserver {
         console.log(`[sampcac] Kicked ${player.name} for: ${reason}`);
     }
 
+    // Called when the given |checksum| has been calculated for the |player| at the given memory
+    // |address|, which has to be in the GTA_SA.exe memory space. The checksum is an 8-bit integer.
+    onPlayerMemoryChecksum(player, address, checksum) {
+        console.log(format('[sampcac] Memory for %s at 0x%06X (checksum): %d', player.name, address,
+            checksum));
+    }
+
     // Called when the memory at the given |address| has been read in their GTA_SA.exe memory space,
     // with the actual memory contents being written to |buffer| as an Uint8Buffer.
     onPlayerMemoryRead(player, address, buffer) {

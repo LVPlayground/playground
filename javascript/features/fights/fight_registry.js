@@ -80,21 +80,30 @@ export class FightRegistry {
     registerCommand(command, settings) {
         server.commandManager.buildCommand(command)
             .sub('custom')
-                .build(FightRegistry.prototype.onCommand.bind(this, settings, /* custom= */ true))
+                .build(FightRegistry.prototype.onCommand.bind(this, settings, 'customise'))
+            .sub('watch')
+                .build(FightRegistry.prototype.onCommand.bind(this, settings, 'watch'))
             .sub(CommandBuilder.NUMBER_PARAMETER)
-                .build(FightRegistry.prototype.onCommand.bind(this, settings, /* custom= */ false))
-            .build(FightRegistry.prototype.onCommand.bind(this, settings, /* custom= */ false));
+                .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null))
+            .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null));
         
         this.#commands_.add(command);
     }
 
     // Called when the |player| has issued a command. We'll construct the game command parameters
     // and use their API in order to formally request starting the game.
-    onCommand(settings, customise, player, registrationId) {
+    onCommand(settings, option, player, registrationId) {
         const params = new GameCommandParams();
 
-        if (customise)
-            params.type = GameCommandParams.kTypeCustomise;
+        switch (option) {
+            case 'customise':
+                params.type = GameCommandParams.kTypeCustomise;
+                break;
+
+            case 'watch':
+                params.type = GameCommandParams.kTypeWatch;
+                break;
+        }
 
         params.registrationId = registrationId;
         params.settings = clone(settings);

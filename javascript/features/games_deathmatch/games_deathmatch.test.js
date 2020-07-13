@@ -220,6 +220,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         gunther.armour = 0;
         gunther.color = kOriginalColor;
 
+        assert.equal([ ...gunther.getWeaponsForTesting() ].length, 0);
+
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
 
@@ -237,6 +239,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.throws(() => game.getStatisticsForPlayer(gunther));
 
         assert.equal(gunther.color, kOriginalColor);
+        assert.equal([ ...gunther.getWeaponsForTesting() ].length, 0);
     });
 
     it('should support the different objectives for each game', async (assert) => {

@@ -229,6 +229,9 @@ export class DeathmatchGame extends GameBase {
         if (this.#skin_ >= 0)
             player.skin = state.originalSkin;
 
+        // Reset the player's weapons so that they can't take game-weapons with them.
+        player.resetWeapons();
+
         // Destroy the game's countdown for the |player| if one had been created.
         if (this.#countdown_)
             this.#countdown_.destroyForPlayer(player);

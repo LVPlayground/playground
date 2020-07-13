@@ -48,8 +48,8 @@
     "environment": {
         "boundaries": {
             "minimumX": 2485.0,
-            "maximumX": 2656.0,
-            "minimumY": 2760.0,
+            "maximumX": 2760.0,
+            "minimumY": 2656.0,
             "maximumY": 2866.0
         }
     },

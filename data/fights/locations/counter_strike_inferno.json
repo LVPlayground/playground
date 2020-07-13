@@ -47,10 +47,10 @@
 
     "environment": {
         "boundaries": {
-            "minimumX": -3895.8374,
-            "maximumX": -3815.4319,
-            "minimumY": -3725.9531,
-            "maximumY": -3685.1521
+            "minimumX": -3896.2046,
+            "maximumX": -3721.3298,
+            "minimumY": -3809.2153,
+            "maximumY": -3685.8604
         }
     },
 

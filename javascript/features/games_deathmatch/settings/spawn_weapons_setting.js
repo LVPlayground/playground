@@ -52,7 +52,7 @@ const kSpawnWeapons = new Map([
 
 // Weapon sets that can be purchased wholesale, to help players from having to manually select the
 // same weapons over and over again. Should not have more than four or five sets in here.
-const kSpawnWeaponSets = new Map([
+export const kSpawnWeaponSets = new Map([
     [ 'Fun Weapons', [ 10 /* Purple Dildo */, 41 /* Spraycan */ ] ],
     [ 'Run Weapons', [ 26 /* Sawnoff Shotgun */, 28 /* Micro SMG */ ] ],
     [ 'Walk Weapons', [ 24 /* Desert Eagle */, 31 /* M4 */, 34 /* Sniper Rifle */ ] ],

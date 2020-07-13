@@ -5,6 +5,8 @@
 import { clone } from 'base/clone.js';
 import { fightNameGenerator } from 'features/fights/fight_name_generator.js';
 
+import { kSpawnWeaponSets } from 'features/games_deathmatch/settings/spawn_weapons_setting.js';
+
 describe('FightNameGenerator', (it, beforeEach) => {
     let defaultSettings = null;
     let generator = null;
@@ -38,6 +40,15 @@ describe('FightNameGenerator', (it, beforeEach) => {
         defaultSettings.set('fights/pickups', true);
     });
 
+    // Creates a weapon set with the given |name|.
+    function createWeaponSet(name) {
+        const set = [];
+        for (const weapon of kSpawnWeaponSets.get(name))
+            set.push({ weapon, ammo: 100 });
+
+        return set;
+    }
+
     it('should be able to generate names specific to a fight', assert => {
         // (1) The location should form the base of the name.
         assert.equal(
@@ -64,5 +75,33 @@ describe('FightNameGenerator', (it, beforeEach) => {
             generator(clone(defaultSettings).set('fights/location', 'Counter Strike 1.6: Inferno')
                                             .set('deathmatch/lag_compensation', false)),
             'Inferno Match (lag shot)');
+        
+        // (5) Use of Miniguns will influence the name.
+        assert.equal(
+            generator(clone(defaultSettings).set('internal/name', 'Bubble')
+                                            .set('deathmatch/spawn_weapons',
+                                                 [ { weapon: 36, ammo: 100 } ])),
+            'Bubble Rocket Match');
+
+        // (6) Use of Rockets will influence the name.
+        assert.equal(
+            generator(clone(defaultSettings).set('internal/name', 'Bubble')
+                                            .set('deathmatch/spawn_weapons',
+                                                 [ { weapon: 38, ammo: 100 } ])),
+            'Bubble Minigun Match');
+
+        // (7) An exact RW-weapon package will specialise the name.
+        assert.equal(
+            generator(clone(defaultSettings).set('internal/name', 'Bubble')
+                                            .set('deathmatch/spawn_weapons',
+                                                 createWeaponSet('Run Weapons'))),
+            'Bubble RW Match');
+
+        // (8) An exact WW-weapon package will specialise the name.
+        assert.equal(
+            generator(clone(defaultSettings).set('internal/name', 'Bubble')
+                                            .set('deathmatch/spawn_weapons',
+                                                 createWeaponSet('Walk Weapons'))),
+            'Bubble WW Match');
     });
 });

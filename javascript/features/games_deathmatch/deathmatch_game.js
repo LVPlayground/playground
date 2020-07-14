@@ -11,8 +11,8 @@ import { GameBase } from 'features/games/game_base.js';
 import { RandomizedTeamsResolver } from 'features/games_deathmatch/teams/randomized_teams_resolver.js';
 
 // Colours that will be assigned to participants of certain teams.
-const kTeamColorAlpha = Color.fromHex('D84315AA');  // red
-const kTeamColorBravo = Color.fromHex('0277BDAA');  // blue
+const kTeamColorAlpha = Color.fromHex('FF3D00AA');  // red
+const kTeamColorBravo = Color.fromHex('00B0FFAA');  // blue
 
 // Implementation of the `Game` interface which extends it with deathmatch-related functionality. It
 // exposes methods that should be called before game-specific behaviour, i.e. through super calls.

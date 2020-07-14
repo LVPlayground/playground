@@ -8,7 +8,13 @@ native IsValidVehicle(vehicleid);
 
 // Provided by the SAMPCAC plugin.
 #if Feature::EnableSAMPCAC == 1
+public const CAC_INCLUDE_MAJOR = 0;
+public const CAC_INCLUDE_MINOR = 10;
+public const CAC_INCLUDE_PATCH = 0;
+
 native CAC_GetStatus(player_id);
+
+#pragma unused CAC_INCLUDE_MAJOR, CAC_INCLUDE_MINOR, CAC_INCLUDE_PATCH
 #endif
 
 // Provided by the PlaygroundJS plugin.

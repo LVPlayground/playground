@@ -461,7 +461,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/v delete'));
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[1], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+        assert.equal(gunther.messages[1], Message.VEHICLE_DELETE_HELP);
     });
 
     it('should have comprehensive output when requesting help', async(assert) => {
@@ -470,7 +470,8 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isTrue(await gunther.issueCommand('/v help'));
             assert.equal(gunther.messages.length, 2);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
-            assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_HELP_GLOBAL, 'save'));
+            assert.equal(
+                gunther.messages[1], Message.format(Message.VEHICLE_HELP_GLOBAL, 'delete/save'));
 
             gunther.clearMessages();
         }

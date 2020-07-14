@@ -143,6 +143,12 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
         });
     }
 
+    // Called when the |player| wishes to delete the vehicle they're driving. If the |vehicle| is
+    // associated with a house vehicle, we will want to manage deletion ourselves.
+    async onVehicleDeleteCommand(player, target, vehicle) {
+        return false;
+    }
+
     // Returns whether the |vehicle| is eligible to be saved as a house vehicle. We don't allow
     // planes or other weird vehicles, although Management members are able to override.
     isVehicleEligible(player, vehicle) {

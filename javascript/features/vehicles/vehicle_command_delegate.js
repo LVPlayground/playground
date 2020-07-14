@@ -9,4 +9,8 @@ export class VehicleCommandDelegate {
     // Called when the |player| wishes to save the vehicle they're driving. Must return a sequence
     // of options ({ label, listener }) that can be considered by the system.
     async getVehicleSaveCommandOptions(player, target, vehicle) { return []; }
+
+    // Called when the |player| wishes to delete the vehicle they're driving. Must return TRUE when
+    // the vehicle is managed by this delegate, and, depending on flow, may've been deleted.
+    async onVehicleDeleteCommand(player, target, vehicle) { return false; }
 }

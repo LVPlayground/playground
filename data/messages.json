@@ -530,6 +530,7 @@
   "VEHICLE_ANNOUNCE_RESET": "%s (Id:%d) has reset the vehicle layout.",
   "VEHICLE_ANNOUNCE_SAVED": "%s (Id:%d) has stored a %s in the database.",
   "VEHICLE_DELETED": "@success The %s has been deleted.",
+  "VEHICLE_DELETE_HELP": "@error You can only delete vehicles when you're an administrator or have a house.",
   "VEHICLE_ENTER_ALREADY_DRIVING": "@error You're already driving an %s - leave the vehicle first!",
   "VEHICLE_ENTER_NONE_NEAR": "@error There is no vehicle close enough near you to enter.",
   "VEHICLE_ENTER_SEAT_INVALID": "@error This vehicle doesn't have the vehicle you'd like to sit in!",

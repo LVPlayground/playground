@@ -77,6 +77,7 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         assert.includes(gunther.lastDialog, 'Are you sure');
 
         // (4) The vehicle can be saved successfully.
+
     });
 
     it('should only allow automobiles and bikes to be saved', async (assert) => {
@@ -124,6 +125,14 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
     });
 
     it(`should fully serialize a vehicle's modification state when saving it`, async (assert) => {
-        
+
+    });
+
+    it('should make it possible to delete house vehicles again', async (assert) => {
+        // (1) The option should not be available when not in a house-bound vehicle.
+
+        // (2) Being in a house-bound vehicle that you don't own should give an error message.
+
+        // (3) Being in an owned house-bound vehicle should delete the vehicle.
     });
 });

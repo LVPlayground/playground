@@ -77,7 +77,6 @@ class VehicleCommands {
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
                 .sub('delete')
-                    .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
                 .sub('health')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -248,7 +247,35 @@ class VehicleCommands {
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
-        const vehicle = subject.vehicle;
+        let target = player;
+        if (player.isAdministrator() && subject)
+            target = subject;
+
+        const vehicle = target.vehicle;
+
+        // Bail out if the |player| is not currently in a vehicle - there's nothing to delete.. This
+        // is a bit silly and a huge waste of server processing cycles. Ugh!
+        if (!vehicle) {
+            if (player === target)
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            else
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
+            
+            return;
+        }
+
+        // Check if any of the delegates is able to handle the deletion. If they can, bail out.
+        for (const delegate of this.delegates_) {
+            if (await delegate.onVehicleDeleteCommand(player, target, vehicle))
+                return;
+        }
+
+        // If the |player| is not an administrator, bail out at this point. They most likely have
+        // misunderstood the command, so a reminder is helpful.
+        if (!player.isAdministrator() || player.isTemporaryAdministrator()) {
+            player.sendMessage(Message.VEHICLE_DELETE_HELP);
+            return;
+        }
 
         // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
@@ -360,12 +387,14 @@ class VehicleCommands {
 
         if (player.isAdministrator()) {
             globalOptions.push('enter', 'help', 'reset');
-            vehicleOptions.push('health', 'respawn', 'save');
+            vehicleOptions.push('health', 'respawn');
 
             if (!player.isTemporaryAdministrator())
-                vehicleOptions.push('delete');
+                vehicleOptions.push('delete', 'save');
+            else
+                globalOptions.push('delete', 'save')
         } else {
-            globalOptions.push('save');
+            globalOptions.push('delete', 'save');
         }
 
         if (this.playground_().canAccessCommand(player, 'v'))

@@ -223,8 +223,9 @@ class HouseManager {
 
     // Serializes the given |vehicle| for the |parkingLot| owned by |location|. If there is an
     // existing vehicle, it will be removed prior to saving the new one. Occupancy will be migrated.
+    // The |vehicle| may ne NULL, which means that it should be removed altogether.
     async storeVehicle(location, parkingLot, vehicle) {
-
+        // TODO...
     }
 
     // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|

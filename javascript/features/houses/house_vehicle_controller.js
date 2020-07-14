@@ -64,6 +64,23 @@ export default class HouseVehicleController {
         this.streamableVehicles_.set(houseVehicle, streamableVehicle);
     }
 
+    // Finds the location and parking lot associated with the |vehicle|, if any. When found, the
+    // result will be returned as an object structured like { location, houseVehicle }.
+    findLocationForVehicle(vehicle) {
+        for (const [ location, houseVehicles ] of this.locationVehicles_) {
+            for (const houseVehicle of houseVehicles) {
+                const streamableVehicle = this.streamableVehicles_.get(houseVehicle);
+                if (!streamableVehicle || !streamableVehicle.live)
+                    continue;  // the |streamableVehicle| has not been created yet
+
+                if (streamableVehicle.live === vehicle)
+                    return { location, houseVehicle };
+            }
+        }
+
+        return null;
+    }
+
     // Removes the |houseVehicle| that used to be associated with the |location|.
     removeVehicle(location, houseVehicle) {
         const houseVehicles = this.locationVehicles_.get(location);

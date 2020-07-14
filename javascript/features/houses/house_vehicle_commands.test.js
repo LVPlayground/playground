@@ -12,6 +12,7 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
     let gunther = null;
     let manager = null;
     let russell = null;
+    let streamer = null;
 
     beforeEach(async() => {
         await createTestEnvironment();
@@ -22,8 +23,13 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         manager = feature.manager_;
         russell = server.playerManager.getById(/* Russell= */ 1);
+        streamer = server.featureManager.loadFeature('streamer');
+
+        // Move Gunther to be near the vehicle that's been saved for them.
+        gunther.position = new Vector(500, 490, 500);
 
         await gunther.identify({ userId: 42 });
+        await streamer.streamForTesting([ gunther, russell ]);
     });
 
     it('should offer the ability to save house vehicles', async (assert) => {
@@ -78,6 +84,7 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
 
         // (4) The vehicle can be saved successfully.
 
+        // ...
     });
 
     it('should only allow automobiles and bikes to be saved', async (assert) => {
@@ -125,14 +132,58 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
     });
 
     it(`should fully serialize a vehicle's modification state when saving it`, async (assert) => {
-
+        // ...
     });
 
     it('should make it possible to delete house vehicles again', async (assert) => {
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 520,  // Infernus
+            position: new Vector(0, 0, 0),
+            rotation: 250,
+        });
+
+        // Have |gunther| enter the |vehicle|, so that it's clear what has to be saved.
+        gunther.enterVehicle(vehicle);
+
         // (1) The option should not be available when not in a house-bound vehicle.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.VEHICLE_DELETE_HELP);
 
         // (2) Being in a house-bound vehicle that you don't own should give an error message.
+        assert.equal(manager.vehicleController.count, 1);
 
-        // (3) Being in an owned house-bound vehicle should delete the vehicle.
+        const streamableVehicle = [ ...manager.vehicleController.streamableVehicles_.values() ][0];
+        assert.isNotNull(streamableVehicle.live);
+
+        // Make |gunther| enter the live representation of the |streamableVehicle|.
+        russell.enterVehicle(streamableVehicle.live);
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/v delete'));
+        assert.equal(russell.messages.length, 0);
+        assert.includes(russell.lastDialog, 'is owned by Gunther, you cannot delete it!');
+
+        // (3) Being in an owned house-bound vehicle should delete the vehicle unless you bail out.
+        gunther.enterVehicle(streamableVehicle.live);
+
+        gunther.respondToDialog({ response: 1 /* Acknowledge */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.includes(gunther.lastDialog, 'delete this Infernus');
+        assert.includes(gunther.lastDialog, `that's owned by Gunther?`);
+
+        // (4) Being in an owned house-bound vehicle should delete the vehicle.
+        gunther.respondToDialog({ response: 1 /* Acknowledge */ }).then(
+            () => gunther.respondToDialog({ response: 1 /* Acknowledge */ }));
+
+        assert.isTrue(await gunther.issueCommand('/v delete'));
+        assert.includes(gunther.lastDialog, 'Infernus has been removed');
+
+        // ....
     });
 });

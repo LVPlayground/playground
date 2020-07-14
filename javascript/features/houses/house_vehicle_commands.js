@@ -137,7 +137,7 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
 
         await this.manager_.storeVehicle(location, parkingLot, vehicle);
 
-        return await confirm(player, {
+        return await alert(player, {
             title: 'House vehicle options',
             message: `Ace! The ${vehicle.model.name} has been stored for you.`,
         });
@@ -146,7 +146,41 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
     // Called when the |player| wishes to delete the vehicle they're driving. If the |vehicle| is
     // associated with a house vehicle, we will want to manage deletion ourselves.
     async onVehicleDeleteCommand(player, target, vehicle) {
-        return false;
+        const result = this.manager_.vehicleController.findLocationForVehicle(vehicle);
+        if (!result)
+            return false;
+
+        const { location, houseVehicle } = result;
+
+        // (1) Unless the |player| is an administrator, require the |location| to be owned by the
+        // given |target| to make sure players don't remove each others vehicles.
+        if (!player.isAdministrator() && location.settings.ownerId !== target.account.userId) {
+            await alert(player, {
+                title: 'House vehicle management',
+                message: `This ${vehicle.model.name} is owned by ${location.settings.ownerName}, ` +
+                         `you cannot delete it!`
+            });
+
+            return true;  // handled
+        }
+
+        // (2) Ask the |player| if they're really certain about wanting to delete this vehicle.
+        const confirmation = await confirm(player, {
+            title: 'House vehicle management',
+            message: `Are you sure that you want to delete this ${vehicle.model.name}\n` +
+                     `that's owned by ${location.settings.ownerName}? This cannot be reversed.`
+        });
+
+        if (!confirmation)
+            return true;  // handled
+        
+        await this.manager_.storeVehicle(location, houseVehicle.parkingLot, /* vehicle= */ null);
+        await alert(player, {
+            title: 'House vehicle management',
+            message: `Gotcha. The ${vehicle.model.name} has been removed.`,
+        });
+
+        return true;  // handled
     }
 
     // Returns whether the |vehicle| is eligible to be saved as a house vehicle. We don't allow

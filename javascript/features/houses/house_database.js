@@ -421,6 +421,12 @@ class HouseDatabase {
                     return;
                 }
 
+                let components = [];
+                if (row.components.length) {
+                    for (const component of row.components.split(','))
+                        components.push(parseInt(component));
+                }
+
                 houses.get(locationId).vehicles.push({
                     id: row.house_vehicle_id,
                     modelId: row.model_id,
@@ -428,8 +434,7 @@ class HouseDatabase {
                     primaryColor: row.primary_color,
                     secondaryColor: row.secondary_color,
                     paintjob: row.paintjob,
-                    components: row.components.length ? row.components.split(',')
-                                                      : [],
+                    components: components,
 
                     parkingLotId: row.house_parking_lot_id
                 });

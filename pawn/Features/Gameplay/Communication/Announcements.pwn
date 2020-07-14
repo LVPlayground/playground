@@ -76,8 +76,18 @@ class Announcements {
      */
     public announcePlayerConnected(playerId) {
         // Announce this player's connection to other in-game players.
+#if Feature::EnableSAMPCAC == 1
+        if (CAC_GetStatus(playerId)) {
+            format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground {A5D6A7}(sampcac){CCCCCC}.",
+                Player(playerId)->nicknameString(), playerId);
+        } else {
+            format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",
+                Player(playerId)->nicknameString(), playerId);
+        }
+#else
         format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",
             Player(playerId)->nicknameString(), playerId);
+#endif
 
         this->distributeAnnouncement(ConnectionMessageAnnouncement, Color::ConnectionMessage, m_formatBuffer);
 

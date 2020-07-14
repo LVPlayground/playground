@@ -6,6 +6,11 @@
 native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
+// Provided by the SAMPCAC plugin.
+#if Feature::EnableSAMPCAC == 1
+native CAC_GetStatus(player_id);
+#endif
+
 // Provided by the PlaygroundJS plugin.
 native IsPlayerEligibleForBenefit(playerid, benefit);
 native IsPlayerMinimized(playerId);

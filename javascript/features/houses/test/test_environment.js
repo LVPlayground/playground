@@ -2,14 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Economy from 'features/economy/economy.js';
 import Houses from 'features/houses/houses.js';
 import MockLocation from 'features/location/test/mock_location.js';
 
 // Exports a function that fully initializes a test environment for the houses feature.
 export default async function createTestEnvironment() {
     server.featureManager.registerFeaturesForTests({
-        economy: Economy,
         houses: Houses,
         location: MockLocation,
     });

@@ -1,21 +1,22 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import EconomyCalculator from 'features/economy/economy_calculator.js';
+import { EconomyCalculator } from 'features/economy/economy_calculator.js';
 import { Feature } from 'components/feature_manager/feature.js';
-import ResidentialValueMap from 'features/economy/residential_value_map.js';
-import VehicleValueMap from 'features/economy/vehicle_value_map.js';
+import { ResidentialValueMap } from 'features/economy/residential_value_map.js';
 
 // The economy feature provides a lower-level interface enabling other features to figure out the
 // right price to charge for a certain thing, or the right prize to award for a certain event.
-class Economy extends Feature {
+export default class Economy extends Feature {
+    economyCalculator_ = null;
+    residentialValueMap_ = null;
+
     constructor() {
         super();
 
         this.economyCalculator_ = new EconomyCalculator();
         this.residentialValueMap_ = new ResidentialValueMap();
-        this.vehicleValueMap_ = new VehicleValueMap();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -61,14 +62,6 @@ class Economy extends Feature {
             /* parkingLotCount */  featureValue);
     }
 
-    // Calculates and returns the price of placing a vehicle with |modelId| at the |position|.
-    // A variance factor will be applied to the price.
-    calculateHouseVehiclePrice(position, modelId) {
-        return this.economyCalculator_.calculateHouseVehiclePrice(
-            /* residentialValue */ this.residentialValueMap_.query(position),
-            /* vehicleValue */     this.vehicleValueMap_.query(modelId));
-    }
-
     // Returns whether the |position| is located in one of the residential exclusion zones, that is,
     // areas on the map where we don't allow residential activity.
     isResidentialExclusionZone(position) {
@@ -87,5 +80,3 @@ class Economy extends Feature {
         this.economyCalculator_.dispose();
     }
 }
-
-export default Economy;

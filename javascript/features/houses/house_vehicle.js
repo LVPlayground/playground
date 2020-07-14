@@ -37,4 +37,13 @@ export class HouseVehicle {
         this.paintjob = vehicle.paintjob ?? null;
         this.components = vehicle.components ?? [];
     }
+
+    applyVehicleInfo(vehicleInfo) {
+        this.modelId = vehicleInfo.modelId;
+
+        this.primaryColor = vehicleInfo.primaryColor ?? null;
+        this.secondaryColor = vehicleInfo.secondaryColor ?? null;
+        this.paintjob = vehicleInfo.paintjob ?? null;
+        this.components = vehicleInfo.components ?? [];
+    }
 }

@@ -239,7 +239,7 @@ class HouseManager {
             await this.deleteVehicle(location, parkingLot, houseVehicle);
         else if (houseVehicle && vehicle)
             await this.updateVehicle(location, parkingLot, houseVehicle, vehicle);
-        else
+        else if (!houseVehicle && vehicle)
             await this.createVehicle(location, parkingLot, vehicle);
     }
 
@@ -262,7 +262,60 @@ class HouseManager {
     }
 
     // Called when the |houseVehicle| should be updated based on given |vehicle|.
-    async updateVehicle(location, parkingLot, houseVehicle, vehicle) {}
+    async updateVehicle(location, parkingLot, houseVehicle, vehicle) {
+        const streamableVehicle = this.vehicleController_.getStreamableVehicle(houseVehicle);
+
+        let occupants = new Map();
+        let position = null;
+
+        // (1) If the |streamableVehicle| exists and is live, it has to be removed. Store all the
+        // occupants in the |occupants| map in case we want to put them back in the vehicle.
+        if (streamableVehicle && streamableVehicle.live) {
+            position = streamableVehicle.live.position;
+
+            for (const player of streamableVehicle.live.getOccupants()) {
+                occupants.set(player, player.vehicleSeat);
+
+                // Teleport the player out of the vehicle. This will prevent them from showing up as
+                // hidden later on: https://wiki.sa-mp.com/wiki/PutPlayerInVehicle.
+                player.position = vehicle.position.translate({ z: 2 });
+            }
+
+            // Clear the list of occupants if the stored vehicle's model Id will change.
+            if (streamableVehicle.modelId !== vehicle.modelId)
+                occupants.clear();
+
+            // Remove the |houseVehicle| from the vehicle controller altogether.
+            this.vehicleController_.removeVehicle(location, houseVehicle);
+        }
+
+        const vehicleInfo = this.serializeVehicle(vehicle);
+
+        // (2) Update the vehicle's information in the database. This will make sure that the
+        // changes applied to the vehicle will persist between playing sessions.
+        await this.database_.updateVehicle(houseVehicle, vehicleInfo);
+
+        // (3) Apply the updated vehicle information to the |houseVehicle|.
+        houseVehicle.applyVehicleInfo(vehicleInfo);
+
+        // (4) Re-create the vehicle with the VehicleController, which will make it appear in the
+        // world again. If there were |occupants|, we make sure they're put back in too.
+        const updatedStreamableVehicle = this.vehicleController_.createVehicle(
+            location, houseVehicle, /* immediate= */ true);
+
+        if (!occupants.size || !updatedStreamableVehicle.live)
+            return;  // no occupants, bail out
+
+        wait(100).then(() => {
+            if (!updatedStreamableVehicle.live)
+                return;  // the vehicle has been removed since
+
+            for (const [ player, seat ] of occupants) {
+                if (player.isConnected())
+                    player.enterVehicle(updatedStreamableVehicle.live, seat);
+            }
+        });
+    }
 
     // Called when the |houseVehicle| should be removed from the given |location|.
     async deleteVehicle(location, parkingLot, houseVehicle) {

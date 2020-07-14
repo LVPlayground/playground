@@ -159,6 +159,15 @@ const CREATE_VEHICLE_QUERY = `
     VALUES
         (?, ?, ?, NOW())`;
 
+// Query for updating a vehicle in the database.
+const UPDATE_VEHICLE_QUERY = `
+    UPDATE
+        houses_vehicles
+    SET
+        houses_vehicles.model_id = ?
+    WHERE
+        houses_vehicles.house_vehicle_id = ?`;
+
 // Query for reading the visitor logs for a given house.
 const READ_VISITOR_LOGS_QUERY = `
     SELECT
@@ -545,6 +554,11 @@ class HouseDatabase {
     async updateHouseStreamUrl(location, streamUrl) {
         await server.database.query(
             UPDATE_STREAM_URL_SETTING_QUERY, streamUrl, location.settings.id);
+    }
+
+    // Updates the |vehicle| in the database with the given |vehicleInfo|.
+    async updateVehicle(vehicle, vehicleInfo) {
+        await server.database.query(UPDATE_VEHICLE_QUERY, vehicleInfo.modelId, vehicle.id);
     }
 
     // Removes the |location| from the database.

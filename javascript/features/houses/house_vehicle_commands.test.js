@@ -135,9 +135,58 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
     });
 
     it('should recreate the vehicle when it has been replaced', async (assert) => {
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 411,  // Infernus
+            position: new Vector(0, 0, 0),
+            rotation: 250,
+        });
+
+        // Have |gunther| enter the |vehicle|, so that it's clear what has to be saved.
+        gunther.enterVehicle(vehicle);
+
         // (1) If nobody is currently in the vehicle, replace and respawn straight away.
+        assert.equal(manager.vehicleController.count, 1);
+        {
+            const streamableVehicle = [ ...manager.vehicleController.streamableVehicles_ ][0][1];
+            assert.isNotNull(streamableVehicle.live);
+
+            assert.equal(streamableVehicle.live.occupantCount, 0);
+
+            gunther.respondToDialog({ listitem: 0 /* Guntherplaza #1 */ }).then(
+                () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+                () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+            
+            assert.isTrue(await gunther.issueCommand('/v save'));
+
+            assert.isNull(streamableVehicle.live);
+            assert.strictEqual(gunther.vehicle, vehicle);
+        }
 
         // (2) If occupants are in the vheicle, they should be moved over.
+        assert.equal(manager.vehicleController.count, 1);
+        {
+            const streamableVehicle = [ ...manager.vehicleController.streamableVehicles_ ][0][1];
+            assert.isNotNull(streamableVehicle.live);
+
+            // Make Gunther enter the live representation of the |streamableVehicle|.
+            gunther.enterVehicle(streamableVehicle.live);
+
+            gunther.respondToDialog({ listitem: 0 /* Guntherplaza #1 */ }).then(
+                () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+                () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+            assert.isTrue(await gunther.issueCommand('/v save'));
+
+            await server.clock.advance(100);  // wait until the reentry routine has ran
+
+            assert.isNull(streamableVehicle.live);
+            assert.isNotNull(gunther.vehicle);
+    
+            const streamableVehicle2 = [ ...manager.vehicleController.streamableVehicles_ ][0][1];
+            assert.isNotNull(streamableVehicle2.live);
+
+            assert.strictEqual(gunther.vehicle, streamableVehicle2.live);
+        }
     });
 
     it(`should fully serialize a vehicle's modification state when saving it`, async (assert) => {

@@ -146,6 +146,8 @@ class MockHouseDatabase {
 
     async updateHouseWelcomeMessage(location, welcomeMessage) {}
 
+    async updateVehicle(vehicle, vehicleInfo) {}
+
     async removeLocation(location) {}
 
     async removeLocationParkingLot(parkingLot) {}

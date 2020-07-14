@@ -33,8 +33,9 @@ export default class HouseVehicleController {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Creates the |houseVehicle| associated with the |location|.
-    createVehicle(location, houseVehicle) {
+    // Creates the |houseVehicle| associated with the |location|. The |immediate| flag may be used
+    // to force creation of the vehicle on the server, which will make it available instantly.
+    createVehicle(location, houseVehicle, immediate = false) {
         if (!this.locationVehicles_.has(location))
             this.locationVehicles_.set(location, new Set());
 
@@ -58,10 +59,12 @@ export default class HouseVehicleController {
             respawnDelay: this.settings_().getValue('vehicles/respawn_persistent_delay_sec'),
         });
 
-        const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo);
+        const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo, immediate);
 
         this.locationVehicles_.get(location).add(houseVehicle);
         this.streamableVehicles_.set(houseVehicle, streamableVehicle);
+
+        return streamableVehicle;
     }
 
     // Finds the location and parking lot associated with the |vehicle|, if any. When found, the
@@ -80,6 +83,9 @@ export default class HouseVehicleController {
 
         return null;
     }
+
+    // Returns the streamable vehicle for the given |houseVehicle|.
+    getStreamableVehicle(houseVehicle) { return this.streamableVehicles_.get(houseVehicle); }
 
     // Removes the |houseVehicle| that used to be associated with the |location|.
     removeVehicle(location, houseVehicle) {

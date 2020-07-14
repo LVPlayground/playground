@@ -15,6 +15,8 @@ import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
 import { PlayerSetting } from 'entities/player_setting.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
+import { alert } from 'components/dialogs/alert.js';
+
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
 
@@ -588,7 +590,11 @@ class HouseCommands {
         });
 
         menu.addItem('Manage your vehicles', vehicleValue, async(player) => {
-            await this.onHouseSettingsVehicles(player, location);
+            await alert(player, {
+                title: 'Manage your vehicles',
+                message: 'You are now able to use "/v save" while driving any vehicle to save\n' +
+                         'it to a parking lot, or "/v delete" in one of your vehicles to delete it.'
+            });
         });
 
         // Give house extensions the ability to provide their additional functionality.
@@ -627,99 +633,6 @@ class HouseCommands {
                              : Message.HOUSE_SETTINGS_SELL_CONFIRMED_ADMIN), offer)
             });
         });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Called when a player enters the Vehicle section of the `/house settings` command. Allows them
-    // to modify the vehicles that are associated with their house.
-    async onHouseSettingsVehicles(player, location) {
-        if (!location.parkingLotCount) {
-            return await MessageBox.display(player, {
-                title: 'Unable to modify your vehicles!',
-                message: Message.HOUSE_SETTINGS_NO_PARKING_LOTS,
-                leftButton: 'Yes',
-                rightButton: 'No'
-            });
-        }
-
-        let index = 0;
-
-        const menu = new Menu('Which parking lot to modify?', ['Parking lot', 'Current vehicle']);
-
-        // TODO: Enable players to select any vehicle through a vehicle selector.
-        // https://github.com/LVPlayground/playground/issues/273
-        const allowedVehicles = new Map([
-            [481, 'BMX'],
-            [589, 'Club'],
-            [480, 'Comet'],
-            [562, 'Elegy'],
-            [587, 'Euros'],
-            [521, 'FCR-900'],
-            [400, 'Landstalker'],
-            [522, 'NRG-500'],
-            [411, 'Infernus'],
-            [451, 'Turismo']
-        ]);
-
-        // Create the initial dialog, displaying a list of their parking lots.
-        for (const parkingLot of location.parkingLots) {
-            const vehicle = location.settings.vehicles.get(parkingLot);
-            const vehicleLabel = vehicle ? '{FFFF00}' + allowedVehicles.get(vehicle.modelId)
-                                         : '-';
-
-            // Add a menu item for the vehicle that may or may not be in this parking lot.
-            menu.addItem('Parking lot #' + (++index), vehicleLabel, async(player) => {
-                if (vehicle /* isOccupied */) {
-                    const message = Message.format(Message.HOUSE_SETTINGS_VEHICLE_SELL,
-                                                   allowedVehicles.get(vehicle.modelId));
-
-                    const confirmation =
-                        await Dialog.displayMessage(player, 'Dispose of your vehicle?', message,
-                                                    'Yes' /* leftButton */, 'No' /* rightButton */);
-
-                    if (!confirmation.response)
-                        return;
-
-                    await this.manager_.removeVehicle(location, parkingLot, vehicle);
-
-                    // Display a confirmation dialog to the player to inform them of their action.
-                    return await MessageBox.display(player, {
-                        title: 'The vehicle has been disposed of!',
-                        message: Message.HOUSE_SETTINGS_VEHICLE_SOLD
-                    });
-                }
-
-                // Create the purchase menu that enables players to purchase a vehicle.
-                const purchaseMenu =
-                    new Menu('Which vehicle do you want to buy?', ['Vehicle', 'Price']);
-
-                for (const [modelId, modelName] of allowedVehicles) {
-                    const price = 0;
-
-                    // TODO: Actually charge money for the vehicles.
-                    purchaseMenu.addItem(modelName, Message.format('%$', price), async(player) => {
-                        await this.manager_.createVehicle(location, parkingLot, {
-                            modelId: modelId
-                        });
-
-                        const message =
-                            Message.format('You have successfully purchased a %s! The vehicle is ' +
-                                           'waiting for you outside.', modelName);
-
-                        // TODO: Inform administrators of the new vehicle.
-
-                        // Display a confirmation dialog to the player to inform them.
-                        await MessageBox.display(player, {
-                            title: 'The vehicle has been purchased!',
-                            message: message
-                        });
-                    });
-                }
-
-                await purchaseMenu.displayForPlayer(player);
-            });
-        }
 
         await menu.displayForPlayer(player);
     }

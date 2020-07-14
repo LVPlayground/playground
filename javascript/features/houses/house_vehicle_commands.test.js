@@ -76,15 +76,24 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
 
         // (3) The player can abort out of the confirmation dialog.
         gunther.respondToDialog({ listitem: 0 /* Save a house vehicle */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Guntherplaza #1 */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Guntherplaza #2 */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
-        
+
         assert.isTrue(await gunther.issueCommand('/v save'));
         assert.includes(gunther.lastDialog, 'Are you sure');
 
         // (4) The vehicle can be saved successfully.
+        gunther.respondToDialog({ listitem: 0 /* Save a house vehicle */ }).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Guntherplaza #2 */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }))
 
-        // ...
+        const vehicleCount = manager.vehicleController.count;
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.includes(gunther.lastDialog, 'Ace! The Infernus has been stored for you.');
+
+        assert.isAbove(manager.vehicleController.count, vehicleCount);
     });
 
     it('should only allow automobiles and bikes to be saved', async (assert) => {

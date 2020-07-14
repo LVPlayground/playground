@@ -245,7 +245,21 @@ class HouseManager {
 
     // Called when the |vehicle| should be created in the |parkingLot| belonging to the given
     // |location|. It will be fully serialized before being stored.
-    async createVehicle(location, parkingLot, vehicle) {}
+    async createVehicle(location, parkingLot, vehicle) {
+        const vehicleInfo = this.serializeVehicle(vehicle);
+        const vehicleId = await this.database_.createVehicle(location, parkingLot, vehicleInfo);
+
+        // Store the |vehicleId| on the |vehicleInfo|, so that it can be stored in the instance.
+        vehicleInfo.id = vehicleId;
+
+        const houseVehicle = new HouseVehicle(vehicleInfo, parkingLot);
+
+        // Associate the |vehicle| with the vehicles created by the |location|'s house.
+        location.settings.vehicles.set(parkingLot, houseVehicle);
+
+        // Create the vehicle with the VehicleController.
+        this.vehicleController_.createVehicle(location, houseVehicle);
+    }
 
     // Called when the |houseVehicle| should be updated based on given |vehicle|.
     async updateVehicle(location, parkingLot, houseVehicle, vehicle) {}
@@ -261,57 +275,18 @@ class HouseManager {
         location.settings.vehicles.delete(parkingLot);
     }
 
+    // Serializes the given |vehicle| in an object that's usable for the house vehicle system. If
+    // you change the syntax here, you must change it in the HouseDatabase as well.
+    serializeVehicle(vehicle) {
+        return {
+            modelId: vehicle.modelId,
 
+            primaryColor: vehicle.primaryColor,
+            secondaryColor: vehicle.secondaryColor,
+            paintjob: vehicle.paintjob,
 
-    // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|
-    // must be an object having {modelId}.
-    async __createVehicle(location, parkingLot, vehicleInfo) {
-        if (!this.locations_.has(location))
-            throw new Error('The given |location| does not exist in this HouseManager.');
-
-        if (!location.hasParkingLot(parkingLot))
-            throw new Error('The given |parkingLot| does not belong to the |location|.');
-
-        if (location.settings.vehicles.has(parkingLot))
-            throw new Error('The given |parkingLot| is already occupied by a vehicle.');
-
-        const vehicleId = await this.database_.createVehicle(location, parkingLot, vehicleInfo);
-        const vehicleData = {
-            id: vehicleId
+            components: vehicle.getComponents(),
         };
-
-        // Copy over all |vehicleInfo| properties to the new |vehicleData| copy.
-        Object.keys(vehicleInfo).forEach(key => vehicleData[key] = vehicleInfo[key]);
-
-        // Create the actual vehicle based on the information.
-        const vehicle = new HouseVehicle(vehicleData, parkingLot);
-
-        // Associate the |vehicle| with the vehicles created by the |location|'s house.
-        location.settings.vehicles.set(parkingLot, vehicle);
-
-        // Create the vehicle with the VehicleController.
-        this.vehicleController_.createVehicle(location, vehicle);
-    }
-
-    // Removes the |vehicle| stored in the |parkingLot| associated with |location|.
-    async __removeVehicle(location, parkingLot, vehicle) {
-        if (!this.locations_.has(location))
-            throw new Error('The given |location| does not exist in this HouseManager.');
-
-        if (!location.hasParkingLot(parkingLot))
-            throw new Error('The given |parkingLot| does not belong to the |location|.');
-
-        if (location.settings.vehicles.get(parkingLot) !== vehicle)
-            throw new Error('The given |parkingLot| is not occupied by the |vehicle|.');
-
-        // Remove the vehicle from the database.
-        await this.database_.removeVehicle(vehicle);
-
-        // Remove the vehicle from the vehicle controller.
-        this.vehicleController_.removeVehicle(location, vehicle);
-
-        // Remove the vehicle from the house's svehicle settings.
-        location.settings.vehicles.delete(parkingLot);
     }
 
     // ---------------------------------------------------------------------------------------------

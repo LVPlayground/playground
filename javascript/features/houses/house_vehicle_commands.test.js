@@ -141,12 +141,35 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
     });
 
     it(`should fully serialize a vehicle's modification state when saving it`, async (assert) => {
-        // ...
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 411,  // Infernus
+            position: new Vector(0, 0, 0),
+            rotation: 250,
+        });
+
+        vehicle.addComponent(1008);
+        vehicle.addComponent(1075);
+        vehicle.addComponent(1098);  // overwrites 1075
+
+        vehicle.primaryColor = 12;
+        vehicle.secondaryColor = 32;
+
+        vehicle.paintjob = 3;
+
+        assert.deepEqual(manager.serializeVehicle(vehicle), {
+            modelId: 411,
+    
+            primaryColor: 12,
+            secondaryColor: 32,
+            paintjob: 3,
+
+            components: [ 1008, 1098 ],
+        });
     });
 
     it('should make it possible to delete house vehicles again', async (assert) => {
         const vehicle = server.vehicleManager.createVehicle({
-            modelId: 520,  // Infernus
+            modelId: 520,  // Hydra
             position: new Vector(0, 0, 0),
             rotation: 250,
         });

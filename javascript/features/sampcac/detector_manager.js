@@ -20,28 +20,6 @@ export class DetectorManager {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Returns the address resolver for the given |player|, with a pending read at the |address|.
-    getAddressResolverForPlayer(player, address) {
-        if (this.responseResolvers_.has(player))
-            return this.responseResolvers_.get(player).get(address) ?? null;
-        
-        return null;
-    }
-
-    // Sets the memory resolver for the given |player| for a read at |address| to the |resolver|.
-    // Handles NULL resolvers for deleting values properly as well.
-    setAddressResolverForPlayer(player, address, resolver) {
-        if (!this.responseResolvers_.has(player))
-            this.responseResolvers_.set(player, new Map());
-
-        const resolvers = this.responseResolvers_.get(player);
-        resolver !== null ? resolvers.set(address, resolver)
-                          : resolvers.delete(address);
-
-        if (!resolvers.size)
-            this.responseResolvers_.delete(player);
-    }
-
     // Requests a memory read from the |player| at the given |address| (in GTA_SA.exe address space)
     // for the given number of |bytes|. Returns either a number, a Uint8Array, or NULL When failed.
     async requestMemoryRead(player, address, bytes) {

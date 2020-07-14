@@ -6,6 +6,9 @@ import { Menu } from 'components/menu/menu.js';
 import { VehicleCommandDelegate } from 'features/vehicles/vehicle_command_delegate.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
+import { alert } from 'components/dialogs/alert.js';
+import { confirm } from 'components/dialogs/confirm.js';
+
 // Responsible for allowing players to save any vehicle as their house vehicles, even when they have
 // tuned and/or customised it to their liking with the server's regular abilities.
 export class HouseVehicleCommands extends VehicleCommandDelegate {
@@ -84,7 +87,7 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
                                               : null,
 
                     // Meta-information used when actually modifying the vehicle.
-                    location, parkingLot, houseVehicle,
+                    location, parkingLot,
                 });
             }
         }
@@ -99,11 +102,11 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
 
         // (3) Add all the entries in the |options| array to the |dialog|, so that the player can
         // select them. Some visual styling will be applied.
-        for (const { house, counter, vehicleName, location, parkingLot, houseVehicle } of options) {
+        for (const { house, counter, vehicleName, location, parkingLot } of options) {
             const counterLabel = `#${counter}`;
             const vehicleLabel = vehicleName ? `{FFFF00}${vehicleName}` : `{9E9E9E}vacant`;
             const listener = HouseVehicleCommands.prototype.handleSaveHouseVehicleFlow.bind(
-                this, player, vehicle, location, parkingLot, houseVehicle);
+                this, player, vehicle, location, parkingLot, vehicleName);
 
             dialog.addItem(house, counterLabel, vehicleLabel, listener);
         }
@@ -112,9 +115,32 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
     }
 
     // Triggered when the |player| has selected which |parkingLot| the |vehicle| should be stored
-    // to. The |houseVehicle| may or may not be filled with another vehicle already.
-    async handleSaveHouseVehicleFlow(player, vehicle, location, parkingLot, houseVehicle) {
-        // TODO...
+    // to. The |vehicleName| may or may not be populated with the existing vehicle name.
+    async handleSaveHouseVehicleFlow(player, vehicle, location, parkingLot, vehicleName) {
+        let confirmation = null;
+
+        if (vehicleName) {
+            confirmation = confirm(player, {
+                title: 'House vehicle options',
+                message: `Are you sure that you want to overwrite the ${vehicleName}?`
+            });
+        } else {
+            confirmation = confirm(player, {
+                title: 'House vehicle options',
+                message: `Are you sure that you want to save this ${vehicle.model.name}?`,
+            });
+        }
+
+        // If the |player| does not confirm saving the vehicle, bail out now.
+        if (!await confirmation)
+            return;
+
+        await this.manager_.storeVehicle(location, parkingLot, vehicle);
+
+        return await confirm(player, {
+            title: 'House vehicle options',
+            message: `Ace! The ${vehicle.model.name} has been stored for you.`,
+        });
     }
 
     // Returns whether the |vehicle| is eligible to be saved as a house vehicle. We don't allow

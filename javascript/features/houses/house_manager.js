@@ -219,6 +219,14 @@ class HouseManager {
         this.invokeExtensions('onHouseCreated', location);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Serializes the given |vehicle| for the |parkingLot| owned by |location|. If there is an
+    // existing vehicle, it will be removed prior to saving the new one. Occupancy will be migrated.
+    async storeVehicle(location, parkingLot, vehicle) {
+
+    }
+
     // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|
     // must be an object having {modelId}.
     async createVehicle(location, parkingLot, vehicleInfo) {
@@ -248,6 +256,29 @@ class HouseManager {
         // Create the vehicle with the VehicleController.
         this.vehicleController_.createVehicle(location, vehicle);
     }
+
+    // Removes the |vehicle| stored in the |parkingLot| associated with |location|.
+    async removeVehicle(location, parkingLot, vehicle) {
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (!location.hasParkingLot(parkingLot))
+            throw new Error('The given |parkingLot| does not belong to the |location|.');
+
+        if (location.settings.vehicles.get(parkingLot) !== vehicle)
+            throw new Error('The given |parkingLot| is not occupied by the |vehicle|.');
+
+        // Remove the vehicle from the database.
+        await this.database_.removeVehicle(vehicle);
+
+        // Remove the vehicle from the vehicle controller.
+        this.vehicleController_.removeVehicle(location, vehicle);
+
+        // Remove the vehicle from the house's svehicle settings.
+        location.settings.vehicles.delete(parkingLot);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Updates the |setting| of the |location| to |value|. The actual application of the setting
     // update is unique to the setting that is being changed. The following settings are available:
@@ -523,27 +554,6 @@ class HouseManager {
 
         this.entranceController_.updateLocation(location);
         this.vehicleController_.removeVehiclesForLocation(location);
-    }
-
-    // Removes the |vehicle| stored in the |parkingLot| associated with |location|.
-    async removeVehicle(location, parkingLot, vehicle) {
-        if (!this.locations_.has(location))
-            throw new Error('The given |location| does not exist in this HouseManager.');
-
-        if (!location.hasParkingLot(parkingLot))
-            throw new Error('The given |parkingLot| does not belong to the |location|.');
-
-        if (location.settings.vehicles.get(parkingLot) !== vehicle)
-            throw new Error('The given |parkingLot| is not occupied by the |vehicle|.');
-
-        // Remove the vehicle from the database.
-        await this.database_.removeVehicle(vehicle);
-
-        // Remove the vehicle from the vehicle controller.
-        this.vehicleController_.removeVehicle(location, vehicle);
-
-        // Remove the vehicle from the house's svehicle settings.
-        location.settings.vehicles.delete(parkingLot);
     }
 
     // ---------------------------------------------------------------------------------------------

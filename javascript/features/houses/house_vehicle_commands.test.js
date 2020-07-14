@@ -69,10 +69,12 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         ]);
 
         // (3) The player can abort out of the confirmation dialog.
-        gunther.respondToDialog({ listitem: 0 /* Gunterplaza #1 */ }).then(
+        gunther.respondToDialog({ listitem: 0 /* Save a house vehicle */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Guntherplaza #1 */ })).then(
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
         
         assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.includes(gunther.lastDialog, 'Are you sure');
 
         // (4) The vehicle can be saved successfully.
     });
@@ -103,15 +105,16 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         assert.isNull(gunther.lastDialog);
 
         // (3) Spot-check that Management members are able to override this.
-        gunther.level = Player.LEVEL_MANAGEMENT;
+        russell.level = Player.LEVEL_MANAGEMENT;
+
         assert.isTrue(
-            commands.isVehicleEligible(gunther, { model: VehicleModel.getById(520 /* Hydra */) }));
+            commands.isVehicleEligible(russell, { model: VehicleModel.getById(520 /* Hydra */) }));
 
         // (4) Run a location selection flow and verify that the option exists.
-        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
 
-        assert.isTrue(await gunther.issueCommand('/v save'));
-        assert.includes(gunther.lastDialog, 'Save as a house vehicle');
+        assert.isTrue(await russell.issueCommand('/v Gunther save'));
+        assert.includes(russell.lastDialog, 'Save as a house vehicle');
     });
 
     it('should recreate the vehicle when it has been replaced', async (assert) => {

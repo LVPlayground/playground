@@ -19,6 +19,7 @@ export class MockDeferredEventManager extends DeferredEventManager {
             { event: 'cac_onmemoryread', type: 'CAC_OnMemoryRead' },
             { event: 'cac_onplayerkick', type: 'CAC_OnPlayerKick' },
             { event: 'cac_onscreenshottaken', type: 'CAC_OnScreenshotTaken' },
+            { event: 'playerchecksumavailable', type: 'OnPlayerChecksumAvailable' },
             { event: 'playerresolveddeath', type: 'OnPlayerResolvedDeath' },
             { event: 'playertakedamage', type: 'OnPlayerTakeDamage' },
             { event: 'playerweaponshot', type: 'OnPlayerWeaponShot' },

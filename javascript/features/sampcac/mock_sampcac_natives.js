@@ -8,16 +8,14 @@ import { SAMPCACNatives } from 'features/sampcac/sampcac_natives.js';
 export class MockSAMPCACNatives extends SAMPCACNatives {
     #glitches_ = new Map();
     #options_ = new Map();
-    #players_ = new WeakSet();
-
-    getStatus(player) { return this.#players_.has(player); }
+    #players_ = new WeakMap();
 
     // Sets the status for |player| to the given |status|, which should be an instance of the
     // MockSAMPCACStatus class exported by this file.
     setStatusForTesting(player, status) { this.#players_.set(player, status); }
 
     getClientVersion(player) {
-        if (this.getStatus(player))
+        if (this.#players_.has(player))
             return [ 0, 10, 0 ];
         
         return [ 0, 0, 0 ];
@@ -25,13 +23,33 @@ export class MockSAMPCACNatives extends SAMPCACNatives {
 
     getServerVersion() { return [ 0, 10, 0 ]; }
     getHardwareID(player) {
-        if (this.getStatus(player))
+        if (this.#players_.has(player))
             return 'kJzsJJ39Fhgjn8ZK9j4WwDImjY2q2hN6bl0lB+KWpqDqgjAo';
         
         return '';
     }
 
-    readMemory(player, address, size) { /* TODO: Do something sensible */ }
+    readMemory(player, address, size) {
+        const status = this.#players_.get(player);
+        if (status && status.hasMemory(address)) {
+            dispatchEvent('cac_onmemoryread', {
+                player_id: player.id,
+                address: address,
+                content: status.readMemory(address),
+            });
+        }
+    }
+
+    readMemoryChecksum(player, address, size) {
+        const status = this.#players_.get(player);
+        if (status && status.hasMemoryChecksum(address)) {
+            dispatchEvent('playerchecksumavailable', {
+                playerid: player.id,
+                address: address,
+                checksum: status.readMemoryChecksum(address),
+            });
+        }
+    }
 
     setGlitchStatus(glitch, status) { this.#glitches_.set(glitch, status); }
     setGlitchStatusForPlayer(player, glitch, status) {}
@@ -51,5 +69,14 @@ export class MockSAMPCACNatives extends SAMPCACNatives {
 // Describes the SAMPCAC status for a particular player. Can be activated by calling the
 // `setStatusForTesting` method on the mocked SAMPCACNatives object.
 export class MockSAMPCACStatus {
-    // TODO...
+    #bytes_ = new Map();
+    #checksums_ = new Map();
+
+    hasMemory(address) { return this.#bytes_.has(address); }
+    readMemory(address) { return this.#bytes_.get(address) ?? null; }
+    writeMemory(address, data) { this.#bytes_.set(address, data); }
+
+    hasMemoryChecksum(address) { return this.#checksums_.has(address); }
+    readMemoryChecksum(address) { return this.#checksums_.get(address) ?? null; }
+    writeMemoryChecksum(address, data) { this.#checksums_.set(address, data); }
 }

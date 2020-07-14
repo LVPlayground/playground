@@ -9,8 +9,12 @@ import { format } from 'base/format.js';
 // Monitors incoming events from SAMPCAC and deals with them appropriately. Is fed events from the
 // DeferredEventManager, as none of them are either time-critical or cancelable.
 export class EventMonitor extends SAMPCACEventObserver {
-    constructor() {
+    manager_ = null;
+
+    constructor(manager) {
         super();
+
+        this.manager_ = manager;
 
         server.deferredEventManager.addObserver(this);
     }
@@ -38,18 +42,16 @@ export class EventMonitor extends SAMPCACEventObserver {
         console.log(`[sampcac] Kicked ${player.name} for: ${reason}`);
     }
 
-    // Called when the given |checksum| has been calculated for the |player| at the given memory
-    // |address|, which has to be in the GTA_SA.exe memory space. The checksum is an 8-bit integer.
+    // Called when the given |checksum| has been calculated for the |player|. Will be forwarded to
+    // the detector manager which will resolve the enqueued promise with it.
     onPlayerMemoryChecksum(player, address, checksum) {
-        console.log(format('[sampcac] Memory for %s at 0x%06X (checksum): %d', player.name, address,
-            checksum));
+        this.manager_.onMemoryResponse(player, address, checksum);
     }
 
     // Called when the memory at the given |address| has been read in their GTA_SA.exe memory space,
     // with the actual memory contents being written to |buffer| as an Uint8Buffer.
     onPlayerMemoryRead(player, address, buffer) {
-        console.log(format('[sampcac] Memory for %s at 0x%06X: [ %s ]', player.name, address,
-            [ ...buffer ].map(byte => format('0x%02X', byte)).join(', ')));
+        this.manager_.onMemoryResponse(player, address, buffer);
     }
 
     // Called when the |player| has taken a screenshot.

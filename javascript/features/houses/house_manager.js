@@ -61,6 +61,9 @@ class HouseManager {
     // Gets a promise that is to be resolved when the feature is ready.
     get ready() { return this.dataLoadedPromise_; }
 
+    // Gets the vehicle controller that manages house-associated vehicles.
+    get vehicleController() { return this.vehicleController_; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Registers |extension| as an extension feature of the housing system. It's safe to add the

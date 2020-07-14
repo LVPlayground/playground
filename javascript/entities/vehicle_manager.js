@@ -160,7 +160,9 @@ export class VehicleManager {
         const vehicle = this.vehicles_.get(event.vehicleid);
         if (!vehicle)
             return;
-        
+
+        vehicle.setPaintjobInternal(event.paintjobid);
+
         this.notifyObservers('onVehiclePaintjob', player, vehicle, event.paintjobid);
     }
 
@@ -172,6 +174,8 @@ export class VehicleManager {
         const vehicle = this.vehicles_.get(event.vehicleid);
         if (!vehicle)
             return;
+
+        vehicle.setColorsInternal(event.color1, event.color2);
 
         this.notifyObservers('onVehicleRespray', player, vehicle, event.color1, event.color2);
     }

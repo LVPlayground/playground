@@ -125,6 +125,11 @@ export class Vehicle extends Supplementable {
         if (options.virtualWorld)
             this.virtualWorld = options.virtualWorld;
 
+        this.#primaryColor_ = options.primaryColor;
+        this.#secondaryColor_ = options.secondaryColor;
+
+        this.#paintjob_ = null;
+
         if (options.paintjob)
             this.paintjob = options.paintjob;
         
@@ -237,6 +242,13 @@ export class Vehicle extends Supplementable {
     get respawnDelay() { return this.#respawnDelay_; }
 
     isConnected() { return this.id_ !== Vehicle.kInvalidId; }
+
+    setColorsInternal(primaryColor, secondaryColor) {
+        this.#primaryColor_ = primaryColor;
+        this.#secondaryColor_ = secondaryColor;
+    }
+
+    setPaintjobInternal(paintjob) { this.#paintjob_ = paintjob; }
 
     // ---------------------------------------------------------------------------------------------
     // World positioning and state information.

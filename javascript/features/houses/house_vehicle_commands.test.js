@@ -3,10 +3,12 @@
 // be found in the LICENSE file.
 
 import { Vector } from 'base/vector.js';
+import { VehicleModel } from 'entities/vehicle_model.js';
 
 import createTestEnvironment from 'features/houses/test/test_environment.js';
 
 describe('HouseVehicleCommands', (it, beforeEach) => {
+    let commands = null;
     let gunther = null;
     let manager = null;
     let russell = null;
@@ -16,6 +18,7 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
 
         const feature = server.featureManager.loadFeature('houses');
 
+        commands = feature.vehicleCommands_;
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         manager = feature.manager_;
         russell = server.playerManager.getById(/* Russell= */ 1);
@@ -66,8 +69,49 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         ]);
 
         // (3) The player can abort out of the confirmation dialog.
+        gunther.respondToDialog({ listitem: 0 /* Gunterplaza #1 */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+        
+        assert.isTrue(await gunther.issueCommand('/v save'));
 
         // (4) The vehicle can be saved successfully.
+    });
+
+    it('should only allow automobiles and bikes to be saved', async (assert) => {
+        // (1) Spot-check a select few vehicles that can't be saved.
+        const rejectionList = [ 520 /* Hydra */, 606 /* Luggage trailer */, 563 /* Raindance */ ];
+
+        for (const modelId of rejectionList) {
+            assert.setContext('model=' + modelId);
+            assert.isFalse(
+                commands.isVehicleEligible(gunther, { model: VehicleModel.getById(modelId) }));
+        }
+
+        // (2) Run a location selection flow and verify that the option is missing.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        const vehicle = server.vehicleManager.createVehicle({
+            modelId: 520,  // Infernus
+            position: new Vector(0, 0, 0),
+            rotation: 250,
+        });
+
+        // Have |gunther| enter the |vehicle|, so that it's clear what has to be saved.
+        gunther.enterVehicle(vehicle);
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.isNull(gunther.lastDialog);
+
+        // (3) Spot-check that Management members are able to override this.
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        assert.isTrue(
+            commands.isVehicleEligible(gunther, { model: VehicleModel.getById(520 /* Hydra */) }));
+
+        // (4) Run a location selection flow and verify that the option exists.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/v save'));
+        assert.includes(gunther.lastDialog, 'Save as a house vehicle');
     });
 
     it('should recreate the vehicle when it has been replaced', async (assert) => {

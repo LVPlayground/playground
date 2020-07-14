@@ -19,17 +19,20 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
 
     // Called when the |player| has executed "/v save". Decides whether they own a house, and if so,
     // whether that house has parking lots the vehicle can be saved to.
-    async getVehicleSaveCommandOptions(player) {
-        const locations = this.manager_.getHousesForPlayer(player);
+    async getVehicleSaveCommandOptions(player, target, vehicle) {
+        const locations = this.manager_.getHousesForPlayer(target);
         if (!locations.length)
-            return [];  // the |player| does not own any houses
+            return [];  // the |subject| does not own any houses
 
         let totalParkingLotCount = 0;
         for (const location of locations)
             totalParkingLotCount += location.parkingLotCount;
 
         if (!totalParkingLotCount)
-            return [];  // the |player| does not own any houses that have parking lots
+            return [];  // the |subject| does not own any houses that have parking lots
+
+        if (!this.isVehicleEligible(player, vehicle))
+            return [];  // the |vehicle| is not eligible to be saved
 
         return [
             {
@@ -42,8 +45,8 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
     // Called when the |player| would like to store the |vehicle| as one of their house vehicles. We
     // always show them a dialog with their parking lot options, and a confirmation dialog, as they
     // may by accident overwrite another one of their vehicles.
-    async onSaveHouseVehicleCommand(player, vehicle) {
-        const locations = this.manager_.getHousesForPlayer(player);
+    async onSaveHouseVehicleCommand(player, target, vehicle) {
+        const locations = this.manager_.getHousesForPlayer(target);
         const dialog = new Menu('House vehicle options', [
             'House',
             'Parking lot',
@@ -77,8 +80,8 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
                     // Display information used for presenting the dialog.
                     house: location.settings.name,
                     counter: ++counter,
-                    vehicle: houseVehicle ? VehicleModel.getById(houseVehicle.modelId).name
-                                          : null,
+                    vehicleName: houseVehicle ? VehicleModel.getById(houseVehicle.modelId).name
+                                              : null,
 
                     // Meta-information used when actually modifying the vehicle.
                     location, parkingLot, houseVehicle,
@@ -96,9 +99,9 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
 
         // (3) Add all the entries in the |options| array to the |dialog|, so that the player can
         // select them. Some visual styling will be applied.
-        for (const { house, counter, vehicle, location, parkingLot, houseVehicle } of options) {
+        for (const { house, counter, vehicleName, location, parkingLot, houseVehicle } of options) {
             const counterLabel = `#${counter}`;
-            const vehicleLabel = vehicle ? `{FFFF00}${vehicle}` : `{9E9E9E}vacant`;
+            const vehicleLabel = vehicleName ? `{FFFF00}${vehicleName}` : `{9E9E9E}vacant`;
             const listener = HouseVehicleCommands.prototype.handleSaveHouseVehicleFlow.bind(
                 this, player, vehicle, location, parkingLot, houseVehicle);
 
@@ -112,5 +115,20 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
     // to. The |houseVehicle| may or may not be filled with another vehicle already.
     async handleSaveHouseVehicleFlow(player, vehicle, location, parkingLot, houseVehicle) {
         // TODO...
+    }
+
+    // Returns whether the |vehicle| is eligible to be saved as a house vehicle. We don't allow
+    // planes or other weird vehicles, although Management members are able to override.
+    isVehicleEligible(player, vehicle) {
+        if (player.isManagement())
+            return true;
+
+        const vehicleModel = vehicle.model;
+        if (!vehicleModel)
+            return false;
+
+        return !vehicleModel.isAirborne() &&
+               !vehicleModel.isRemoteControllable() &&
+               !vehicleModel.isTrailer();
     }
 }

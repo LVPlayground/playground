@@ -8,5 +8,5 @@
 export class VehicleCommandDelegate {
     // Called when the |player| wishes to save the vehicle they're driving. Must return a sequence
     // of options ({ label, listener }) that can be considered by the system.
-    async getVehicleSaveCommandOptions(player) { return []; }
+    async getVehicleSaveCommandOptions(player, target, vehicle) { return []; }
 }

@@ -28,7 +28,6 @@ Furthermore, administrators are able to use the following commands:
   * **/v density**: Displays the density of vehicles within streaming radius around you.
   * **/v enter [seat?]**: Enters the vehicle closest to you, optionally in `seat` (0-8).
   * **/v reset**: Resets the server to its original vehicle layout.
-  * **/v save**: Saves the vehicle that you're currently driving in the database.
   * **/v [player]? access [players/vips/administrators/management]?**: Restricts the vehicle to a
     particular `level`.
   * **/v [player]? color [0-255]? [0-255]?**: Displays or updates the colors of either your own vehicle, or
@@ -37,6 +36,7 @@ Furthermore, administrators are able to use the following commands:
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
     that of `player`.
   * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
+  * **/v [player]? save**: Saves the vehicle that you're currently driving in the database.
 
 _Note that temporary administrators are not allowed to use either `/v save` or `/v delete`._
 

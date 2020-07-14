@@ -8,6 +8,7 @@ import { VehicleModel } from 'entities/vehicle_model.js';
 
 import * as benefits from 'features/collectables/collectable_benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
+import { Message } from 'base/message.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
 const kMaximumVehicleDistance = 10;
@@ -74,8 +75,6 @@ class VehicleCommands {
             .sub('reset')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
-            .sub('save')
-                .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
                 .sub('delete')
                     .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
@@ -88,6 +87,8 @@ class VehicleCommands {
                 .sub('respawn')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
+                .sub('save')
+                    .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
                 .build(/* deliberate fall-through */)
             .sub(CommandBuilder.WORD_PARAMETER)
                 .restrict(player => this.playground_().canAccessCommand(player, 'v'))
@@ -354,15 +355,17 @@ class VehicleCommands {
     // Called when the |player| executes `/v help`. Displays more information about the command, as
     // well as the available sub-commands to the |player|.
     onVehicleHelpCommand(player) {
-        const globalOptions = [ 'save' ];
+        const globalOptions = [];
         const vehicleOptions = [];
 
         if (player.isAdministrator()) {
             globalOptions.push('enter', 'help', 'reset');
-            vehicleOptions.push('health', 'respawn');
+            vehicleOptions.push('health', 'respawn', 'save');
 
             if (!player.isTemporaryAdministrator())
                 vehicleOptions.push('delete');
+        } else {
+            globalOptions.push('save');
         }
 
         if (this.playground_().canAccessCommand(player, 'v'))
@@ -408,13 +411,21 @@ class VehicleCommands {
     // Called when the |player| executes `/v save`, which means they wish to save the vehicle in the
     // database to make it a persistent vehicle. Delegates will also be considered before making
     // this decision, as players might want to save e.g. their house vehicle.
-    async onVehicleSaveCommand(player) {
-        const vehicle = player.vehicle;
+    async onVehicleSaveCommand(player, subject) {
+        let target = player;
+        if (player.isAdministrator() && subject)
+            target = subject;
+
+        const vehicle = target.vehicle;
 
         // Bail out if the |player| is not currently in a vehicle - there's nothing to save. They
         // can see general usage guidelines after having entered one.
         if (!vehicle) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            if (player === target)
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            else
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
+            
             return;
         }
 
@@ -423,10 +434,10 @@ class VehicleCommands {
         // Check whether one of the registered delegates is able to handle the vehicle's save. They
         // return a sequence of options, which could be displayed in a dialog.
         for (const delegate of this.delegates_)
-            options.push(...await delegate.getVehicleSaveCommandOptions(player));
+            options.push(...await delegate.getVehicleSaveCommandOptions(player, target, vehicle));
 
         // If the |player| is an administrator and has the ability to save vehicles, add that to the
-        // given |options| as well.
+        // given |options| as well. This does allow them to save vehicles of other players.
         if (player.isAdministrator() && !player.isTemporaryAdministrator()) {
             options.push({
                 label: `Save to the vehicle layout`,
@@ -436,7 +447,7 @@ class VehicleCommands {
 
         // There are three options here: (1) no options, show a help message, (2) one option, fast
         // path and immediately call the listener, or (3) multiple options, show a dialog.
-        if (options.length === 1) return await options[0].listener(player, vehicle);
+        if (options.length === 1) return await options[0].listener(player, target, vehicle);
 
         if (!options.length) {
             player.sendMessage(Message.VEHICLE_SAVE_HELP);
@@ -450,17 +461,17 @@ class VehicleCommands {
         const dialog = new Menu('Vehicle options');
 
         for (const { label, listener } of options)
-            dialog.addItem(label, listener.bind(null, player, vehicle));
+            dialog.addItem(label, listener.bind(null, player, target, vehicle));
 
         return await dialog.displayForPlayer(player);
     }
 
     // Called when the |player|'s |vehicle| has to be permanently saved to the database. This option
     // is only available to permanent administrators, and will persist between sessions.
-    async onVehiclePermanentlySaveCommand(player, vehicle) {
+    async onVehiclePermanentlySaveCommand(player, target, vehicle) {
         // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, player.name);
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
             return;
         }
 

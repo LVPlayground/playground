@@ -49,6 +49,18 @@ class Vehicles extends Feature {
         this.decorations_ = new VehicleDecorations(settings, announce);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Public API of the Vehicles feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Adds the given |delegate| to the set of delegates that can handle vehicle commands.
+    addCommandDelegate(delegate) { this.commands_.addCommandDelegate(delegate); }
+
+    // Removes the given |delegate| from the set of delegates that can handle vehicle commands.
+    removeCommandDelegate(delegate) { this.commands_.removeCommandDelegate(delegate); }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.commands_.dispose();
         this.commands_ = null;

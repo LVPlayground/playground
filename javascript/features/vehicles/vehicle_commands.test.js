@@ -198,18 +198,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         }
     });
 
-    // TODO: We'll actually want to make this available to all the players.
-    // See the following issue: https://github.com/LVPlayground/playground/issues/330
-    it('should limit /v to administrators only', async(assert) => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-        assert.equal(russell.level, Player.LEVEL_PLAYER);
-
-        assert.isTrue(await russell.issueCommand('/v'));
-        assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0],
-                     Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'specific people'));
-    });
-
     it('should support spawning vehicles by their model Id', async(assert) => {
         for (const invalidModel of ['-15', '42', '399', '612', '1337']) {
             assert.isTrue(await gunther.issueCommand('/v ' + invalidModel));
@@ -469,7 +457,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/v save'));
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+        assert.equal(gunther.messages[0], Message.VEHICLE_SAVE_HELP);
 
         assert.isTrue(await gunther.issueCommand('/v delete'));
         assert.equal(gunther.messages.length, 2);
@@ -480,8 +468,9 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.level = Player.LEVEL_PLAYER;
         {
             assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 1);
+            assert.equal(gunther.messages.length, 2);
             assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.equal(gunther.messages[1], Message.format(Message.VEHICLE_HELP_GLOBAL, 'save'));
 
             gunther.clearMessages();
         }

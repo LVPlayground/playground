@@ -8,7 +8,7 @@
  */
 class Version {
     public const Major = 50;
-    public const Minor = 5;
+    public const Minor = 8;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
@@ -35,6 +35,9 @@ class Feature {
     // https://github.com/oscar-broman/samp-weapon-config
     //
     public const EnableServerSideWeaponConfig = 0;
+
+    // Controls whether SAMPCAC natives are available on the server.
+    public const EnableSAMPCAC = 1;
 
     /** **************************************************************************************** **/
 };

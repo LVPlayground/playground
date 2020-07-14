@@ -505,7 +505,7 @@ class HouseDatabase {
     // |location|. The |vehicleInfo| must be an object having {modelId}.
     async createVehicle(location, parkingLot, vehicleInfo) {
         const components = vehicleInfo.components.length ? vehicleInfo.components.join(',')
-                                                         : [];
+                                                         : '';
 
         const data = await server.database.query(
             CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, vehicleInfo.modelId,
@@ -568,7 +568,7 @@ class HouseDatabase {
     // Updates the |vehicle| in the database with the given |vehicleInfo|.
     async updateVehicle(vehicle, vehicleInfo) {
         const components = vehicleInfo.components.length ? vehicleInfo.components.join(',')
-                                                         : [];
+                                                         : '';
 
         await server.database.query(
             UPDATE_VEHICLE_QUERY, vehicleInfo.modelId, vehicleInfo.primaryColor,

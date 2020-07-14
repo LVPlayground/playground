@@ -247,7 +247,7 @@ export class Vehicle extends Supplementable {
 
     get position() { return new Vector(...pawnInvoke('GetVehiclePos', 'iFFF', this.#id_)); }
     set position(value) {
-        pawnInfoke('SetVehiclePos', 'ifff', this.#id_, value.x, value.y, value.z);
+        pawnInvoke('SetVehiclePos', 'ifff', this.#id_, value.x, value.y, value.z);
 
         if (this.#trailer_)
             this.attachTrailerInternal(this.#trailer_);

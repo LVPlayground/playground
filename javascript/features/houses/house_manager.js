@@ -310,6 +310,8 @@ class HouseManager {
             if (!updatedStreamableVehicle.live)
                 return;  // the vehicle has been removed since
 
+            updatedStreamableVehicle.live.position = position;
+
             for (const [ player, seat ] of occupants) {
                 if (player.isConnected())
                     player.enterVehicle(updatedStreamableVehicle.live, seat);

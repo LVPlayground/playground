@@ -225,12 +225,47 @@ class HouseManager {
     // existing vehicle, it will be removed prior to saving the new one. Occupancy will be migrated.
     // The |vehicle| may ne NULL, which means that it should be removed altogether.
     async storeVehicle(location, parkingLot, vehicle) {
-        // TODO...
+        if (!this.locations_.has(location))
+            throw new Error('The given |location| does not exist in this HouseManager.');
+
+        if (!location.hasParkingLot(parkingLot))
+            throw new Error('The given |parkingLot| does not belong to the |location|.');
+        
+        const houseVehicle = location.settings.vehicles.get(parkingLot);
+        
+        // Three options: (1) The |houseVehicle| has to be removed, (2) the |houseVehicle| has to
+        // be updated, or (3) a new HouseVehicle has to be created.
+        if (houseVehicle && !vehicle)
+            await this.deleteVehicle(location, parkingLot, houseVehicle);
+        else if (houseVehicle && vehicle)
+            await this.updateVehicle(location, parkingLot, houseVehicle, vehicle);
+        else
+            await this.createVehicle(location, parkingLot, vehicle);
     }
+
+    // Called when the |vehicle| should be created in the |parkingLot| belonging to the given
+    // |location|. It will be fully serialized before being stored.
+    async createVehicle(location, parkingLot, vehicle) {}
+
+    // Called when the |houseVehicle| should be updated based on given |vehicle|.
+    async updateVehicle(location, parkingLot, houseVehicle, vehicle) {}
+
+    // Called when the |houseVehicle| should be removed from the given |location|.
+    async deleteVehicle(location, parkingLot, houseVehicle) {
+        await this.database_.removeVehicle(houseVehicle);
+
+        // Remove the vehicle from the vehicle controller.
+        this.vehicleController_.removeVehicle(location, houseVehicle);
+
+        // Remove the vehicle from the house's svehicle settings.
+        location.settings.vehicles.delete(parkingLot);
+    }
+
+
 
     // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|
     // must be an object having {modelId}.
-    async createVehicle(location, parkingLot, vehicleInfo) {
+    async __createVehicle(location, parkingLot, vehicleInfo) {
         if (!this.locations_.has(location))
             throw new Error('The given |location| does not exist in this HouseManager.');
 
@@ -259,7 +294,7 @@ class HouseManager {
     }
 
     // Removes the |vehicle| stored in the |parkingLot| associated with |location|.
-    async removeVehicle(location, parkingLot, vehicle) {
+    async __removeVehicle(location, parkingLot, vehicle) {
         if (!this.locations_.has(location))
             throw new Error('The given |location| does not exist in this HouseManager.');
 

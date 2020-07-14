@@ -184,6 +184,6 @@ describe('HouseVehicleCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/v delete'));
         assert.includes(gunther.lastDialog, 'Infernus has been removed');
 
-        // ....
+        assert.isNull(streamableVehicle.live);
     });
 });

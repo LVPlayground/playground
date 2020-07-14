@@ -277,40 +277,6 @@ describe('HouseManager', (it, beforeEach) => {
         assert.equal(location.settings.welcomeMessage, '');
     });
 
-    it('should be able to create and remove vehicles for a house', async(assert) => {
-        const serverVehicleCount = streamer.sizeForTesting;
-
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        gunther.position = new Vector(500, 500, 500);
-
-        const location = await manager.findClosestLocation(gunther);
-        assert.isFalse(location.isAvailable());
-
-        assert.equal(location.parkingLotCount, 2);
-
-        const parkingLot = Array.from(location.parkingLots)[1];
-        assert.isNotNull(parkingLot);
-
-        assert.isFalse(location.settings.vehicles.has(parkingLot));
-
-        await manager.createVehicle(location, parkingLot, {
-            modelId: 520 /* Infernus */
-        });
-
-        assert.isTrue(location.settings.vehicles.has(parkingLot));
-        assert.equal(streamer.sizeForTesting, serverVehicleCount + 1);
-
-        const vehicle = location.settings.vehicles.get(parkingLot);
-
-        assert.equal(vehicle.modelId, 520 /* Infernus */);
-        assert.equal(vehicle.parkingLot, parkingLot);
-
-        await manager.removeVehicle(location, parkingLot, vehicle);
-
-        assert.isFalse(location.settings.vehicles.has(parkingLot));
-        assert.equal(streamer.sizeForTesting, serverVehicleCount);
-    });
-
     it('should remove associated vehicles when removing the house', async(assert) => {
         const originalVehicleStreamerSize = streamer.sizeForTesting;
 

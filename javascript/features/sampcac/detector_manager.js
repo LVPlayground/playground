@@ -57,7 +57,7 @@ export class DetectorManager {
                            : this.natives_.readMemory(player, address, bytes);
 
         const result = await promise;
-        
+
         // Delete the |address| request from the resolvers, and clean up the entire map in cache
         // when there are no further requests in flight for the |player|.
         resolvers.delete(address);
@@ -76,11 +76,11 @@ export class DetectorManager {
     onMemoryResponse(player, address, response) {
         if (!this.responseResolvers_.has(player))
             return;  // the |player| does not have any pending requests
-        
+
         const resolvers = this.responseResolvers_.get(player);
         if (!resolvers.has(address))
             return;  // the |player| does not have any pending requests for the |address|
-        
+
         // Resolve the appropriate resolver with the |response|.
         resolvers.get(address).resolver(response);
     }
@@ -91,7 +91,7 @@ export class DetectorManager {
         if (this.responseResolvers_.has(player)) {
             for (const { resolver } of this.responseResolvers_.get(player).values())
                 resolver(/* response= */ null);
-            
+
             this.responseResolvers_.delete(player);
         }
     }

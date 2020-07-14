@@ -4,8 +4,6 @@
 
 import { SAMPCACEventObserver } from 'components/events/sampcac_event_observer.js';
 
-import { format } from 'base/format.js';
-
 // Monitors incoming events from SAMPCAC and deals with them appropriately. Is fed events from the
 // DeferredEventManager, as none of them are either time-critical or cancelable.
 export class EventMonitor extends SAMPCACEventObserver {

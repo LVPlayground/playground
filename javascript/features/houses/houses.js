@@ -37,9 +37,6 @@ class Houses extends Feature {
         // Portals from the Location feature will be used for house entrances and exits.
         const location = this.defineDependency('location');
 
-        // The `/house` command is currently restricted to Management.
-        const playground = this.defineDependency('playground');
-
         // Certain things about houses can be configured with "/lvp settings".
         const settings = this.defineDependency('settings');
 
@@ -55,8 +52,7 @@ class Houses extends Feature {
 
         this.manager_.loadHousesFromDatabase();
 
-        this.commands_ = new HouseCommands(
-            this.manager_, announce, economy, finance, limits, location, playground);
+        this.commands_ = new HouseCommands(this.manager_, announce, economy, finance, limits, location);
 
         this.natives_ = new HouseNatives(this.manager_);
     }

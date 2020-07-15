@@ -55,7 +55,18 @@ export class BalancedTeamsResolver extends TeamResolver {
         const teams = [];
 
         let currentTeam = DeathmatchGame.kTeamAlpha;
-        for (const [ player, score ] of scoresArray) {
+        while (scoresArray.length > 0) {
+            const [ player, score ] = scoresArray.shift();
+
+            // (3) If the |player| is the last player to assign, and the teams are balanced in
+            // number of participants, prefer the weakest team for them instead.
+            if (!scoresArray.length && this.#teamAlpha_.size === this.#teamBravo_.size) {
+                if (this.#teamAlphaScore_ > this.#teamBravoScore_)
+                    currentTeam = DeathmatchGame.kTeamBravo;
+                else if (this.#teamBravoScore_ > this.#teamAlphaScore_)
+                    currentTeam = DeathmatchGame.kTeamAlpha;
+            }
+
             teams.push({ player, team: currentTeam });
 
             if (currentTeam === DeathmatchGame.kTeamAlpha) {
@@ -72,7 +83,7 @@ export class BalancedTeamsResolver extends TeamResolver {
             }
         }
 
-        // (3) Return the |teams| per the API contract, and we're done.
+        // (4) Return the |teams| per the API contract, and we're done.
         return teams;
     }
 

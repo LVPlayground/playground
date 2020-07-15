@@ -126,4 +126,26 @@ describe('BalancedTeamsResolver', (it, beforeEach) => {
 
         assert.isTrue(teams[DeathmatchGame.kTeamBravo].has(gunther));
     });
+
+    it('should sensibly balance over forcing even-odd for odd numbers of participants', assert => {
+        const players = [ gunther, russell, lucy ];
+
+        // Have Gunther, Russell and Lucy join the game. They will be ranked in that order based on
+        // their skill, so strict even/odd would put Gunther (110) and Lucy (70) in Team Alpha, and
+        // Russell (105) in Team Bravo. Objectively Lucy would have to join Team Bravo instead.
+        const teams = {
+            [DeathmatchGame.kTeamAlpha]: new Set(),
+            [DeathmatchGame.kTeamBravo]: new Set(),
+        };
+
+        for (const { player, team } of resolver.resolve(players))
+            teams[team].add(player);
+        
+        assert.equal(teams[DeathmatchGame.kTeamAlpha].size, 1);
+        assert.equal(teams[DeathmatchGame.kTeamBravo].size, 2);
+
+        assert.isTrue(teams[DeathmatchGame.kTeamAlpha].has(gunther));
+        assert.isTrue(teams[DeathmatchGame.kTeamBravo].has(russell));
+        assert.isTrue(teams[DeathmatchGame.kTeamBravo].has(lucy));
+    });
 });

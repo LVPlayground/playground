@@ -59,6 +59,7 @@ export class GameDescription {
     environment_ = null;
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
+    preferCustom_ = false;
     price_ = kDefaultPrice;
     scoreType_ = GameDescription.kScoreNumber;
     tick_ = kDefaultTickIntervalMs;
@@ -132,6 +133,9 @@ export class GameDescription {
 
     // Gets the minimum number of players who need to be online to participate in this game.
     get minimumPlayers() { return this.minimumPlayers_; }
+
+    // Gets whether this game prefers customised sign-up experiences.
+    get preferCustom() { return this.preferCustom_; }
 
     // Gets the price for which someone can participate in this minigame.
     get price() { return this.price_; }
@@ -349,6 +353,13 @@ export class GameDescription {
             }
             
             this.minimumPlayers_ = options.minimumPlayers;
+        }
+
+        if (options.hasOwnProperty('preferCustom')) {
+            if (typeof options.preferCustom !== 'boolean')
+                throw new Error(`[${this.name}] The game's preferCustom flag must be a boolean.`);
+
+            this.preferCustom_ = options.preferCustom;
         }
 
         if (options.hasOwnProperty('price')) {

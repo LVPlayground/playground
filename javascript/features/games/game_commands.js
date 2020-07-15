@@ -348,7 +348,7 @@ export class GameCommands {
                 registration.type === GameRegistration.kTypePublic);
 
             // If the game either doesn't prefer custom games, or has public sign-ups, bail out.
-            if (!params.preferCustom || publicRegistrations.length)
+            if ((!params.preferCustom && !description.preferCustom) || publicRegistrations.length)
                 return settings;
         }
 

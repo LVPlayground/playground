@@ -55,6 +55,7 @@ describe('GameDescription', it => {
         assert.isNull(description.command);
         assert.equal(description.maximumPlayers, kDefaultMaximumPlayers);
         assert.equal(description.minimumPlayers, kDefaultMinimumPlayers);
+        assert.isFalse(description.preferCustom);
         assert.equal(description.price, kDefaultPrice);
         assert.equal(description.tick, kDefaultTickIntervalMs);
     });
@@ -73,6 +74,8 @@ describe('GameDescription', it => {
         const description = new GameDescription(Game, {
             name: 'My game',
             goal: 'Have a countdown screen',
+
+            preferCustom: true,
 
             countdown: 5,
             countdownCamera: [
@@ -100,6 +103,8 @@ describe('GameDescription', it => {
         assert.equal(environment.time, 'Night');
         assert.equal(environment.weather, 'Foggy');
         assert.equal(environment.gravity, 'Low');
+
+        assert.isTrue(description.preferCustom);
     });
 
     it('is able to provide a series of configurable settings', assert => {

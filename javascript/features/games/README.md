@@ -85,6 +85,7 @@ Option              | Description
 `continuous`        | Whether this is a continuous game rather than one requiring sign-up. (Default is `false`.)
 `minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
 `maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)
+`preferCustom`      | Whether customised games are preferred when there are no active sign-ups. (Default is `false`.)
 `price`             | The price players have to pay in order to participate. (Default is $250.) May be set to `0`.
 `scoreType`         | Type of data the score contains. ({`number`, `time`})
 `tick`              | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)

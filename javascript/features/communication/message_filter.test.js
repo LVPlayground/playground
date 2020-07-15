@@ -45,6 +45,26 @@ describe('MessageFilter', (it, beforeEach) => {
         assert.equal(filter.filter(gunther, 'Hey Luce!'), 'Hey Luce!');
     });
 
+    it('should limit the length of a message to 128-[len(nickname)] characters', assert => {
+        const longText =
+            '..................................................................................' +
+            '...........................................';
+
+        const longWords =
+            'fall marsh book waste dare proof jump graze ring tower shed lease doll trunk lake ' +
+            'agony year lemon cake essay lock heart tent';
+
+        // (1) Cut with the nickname "Russell", giving a maximum length of 115.
+        assert.equal(filter.filter(gunther, longText).length, 115);
+        assert.equal(filter.filter(gunther, longWords).length, 112);  // essay...
+
+        gunther.name = 'OwmKwrjkRmPlwQjaQaEhZoSy';
+
+        // (2) Cut with the nickname "OwmKwrjkRmPlwQjaQaEhZoSy", giving a maximum length of 98.
+        assert.equal(filter.filter(gunther, longText).length, 98);
+        assert.equal(filter.filter(gunther, longWords).length, 95);  // year...
+    });
+
     it('should be able to completely recapitalize a sentence', assert => {
         // (1) Remove excess exclamation and question marks
         assert.equal(filter.recapitalize('HUH??!!'), 'Huh?!');

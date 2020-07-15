@@ -32,6 +32,9 @@ const REMOVE_REPLACEMENT_QUERY = `
     LIMIT
         1`;
 
+// Maximum length of a message in main chat, in number of characters.
+const kMaximumMessageLength = 122;
+
 // Minimum message length before considering recapitalization.
 const kRecapitalizeMinimumMessageLength = 10;
 
@@ -116,6 +119,12 @@ export class MessageFilter {
 
             message = this.applyReplacement(message, replacement);
         }
+
+        // (3) Cap the length of a message to a determined maximum, as messages otherwise would
+        // disappear into the void with no information given to the sending player at all.
+        const maximumLength = kMaximumMessageLength - player.name.length;
+        if (message.length > maximumLength)
+            message = this.trimMessage(message, maximumLength);
 
         return message;
     }
@@ -208,6 +217,23 @@ export class MessageFilter {
 
             return casedReplacement + replacement.after.substring(casedLength);
         });
+    }
+
+    // Trims the given |message| to the given |maximumLength|. We'll find the closest word from
+    // that position and break there when it's close enough, otherwise apply a hard break.
+    trimMessage(message, maximumLength) {
+        const kCutoffText = '...';
+
+        // Determines exactly where the |message| should be cut.
+        const messageCutoffIndex = maximumLength - kCutoffText.length;
+        const messageCutoffWhitespace = message.lastIndexOf(' ', messageCutoffIndex);
+
+        // If the last whitespace character is within 8 characters of the message length limit, cut
+        // there. Otherwise cut the |message| exactly at the limit.
+        if (messageCutoffIndex - messageCutoffWhitespace <= 8)
+            return message.substring(0, messageCutoffWhitespace) + kCutoffText;
+        else
+            return message.substring(0, messageCutoffIndex) + kCutoffText;
     }
 
     // ---------------------------------------------------------------------------------------------

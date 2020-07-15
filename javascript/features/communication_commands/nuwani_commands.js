@@ -108,6 +108,7 @@ export class NuwaniCommands {
         if (!this.nuwaniPlayers_.has(nickname)) {
             this.nuwaniPlayers_.set(nickname, new class {
                 account = { mutedUntil: null };
+                name = nickname;
 
                 sendMessage(message) {
                     contextMap.get(nickname).respond(

@@ -49,6 +49,8 @@ export default class Fights extends Feature {
             goal: 'Defeat all other players to win the fight.',
             command: 'match',
 
+            preferCustom: true,
+
             minimumPlayers,
             maximumPlayers: 16,
             price: 0,

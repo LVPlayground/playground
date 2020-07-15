@@ -53,6 +53,8 @@ describe('FightGame', (it, beforeEach) => {
     it('should be able to pick random spawn positions in individual games', async (assert) => {
         assert.isTrue(server.commandManager.hasCommand('match'));
 
+        gunther.respondToDialog({ listitem: 0 /* Start the game! */ });
+
         assert.isTrue(await gunther.issueCommand('/match'));
         assert.isTrue(await russell.issueCommand('/match'));
 

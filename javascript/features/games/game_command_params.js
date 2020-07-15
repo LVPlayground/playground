@@ -14,6 +14,9 @@ export class GameCommandParams {
     // The type of command that is being executed. Must be one of the above constants.
     type = GameCommandParams.kTypeDefault;
 
+    // Whether a custom game should be suggested when there are no active games taking sign-up.
+    preferCustom = false;
+
     // Number indicating which instance of the game the player wants to join.
     registrationId = null;
 

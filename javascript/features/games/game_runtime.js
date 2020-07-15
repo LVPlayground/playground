@@ -46,6 +46,9 @@ export class GameRuntime extends GameActivity {
     // Gets the set of players who are currently in the game. Exposed to the Game.
     get players() { return this.players_; }
 
+    // Gets the settings map that defines how this game should be ran.
+    get settingsForTesting() { return this.settings_; }
+
     // Getst the state the game is in. Only exposed for testing purposes.
     get state() { return this.state_; }
 

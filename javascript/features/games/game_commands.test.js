@@ -4,8 +4,9 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameCommandParams } from 'features/games/game_command_params.js';
-import { GameDescription } from 'features/games/game_description.js';
+import { GameDescription, kDefaultTickIntervalMs } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
+import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
 import { Setting } from 'entities/setting.js';
 
@@ -31,6 +32,16 @@ describe('GameCommands', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
         lucy = server.playerManager.getById(/* Lucy= */ 2);
     });
+
+    // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
+    // deterministic manner to match what would happen in a production environment.
+    async function runGameLoop() {
+        for (let tick = 0; tick <= 2; ++tick) {
+            await server.clock.advance(kDefaultTickIntervalMs);
+            for (let i = 0; i < 5; ++i)
+                await Promise.resolve();
+        }
+    }
 
     it('should be able to create and remove commands on demand', assert => {
         class MyGame extends Game {}
@@ -506,5 +517,74 @@ describe('GameCommands', (it, beforeEach) => {
 
         assert.isNull(manager.getPlayerActivity(gunther));
         assert.equal(finance.getPlayerCash(gunther), 5000);
+    });
+
+    it('should support game commands that prefer a customised flow', async (assert) => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Support sign-up flows that prefer customised settings',
+            command: 'bubblegame',
+            minimumPlayers: 2,
+            maximumPlayers: 4,
+            price: 1000,
+
+            settingsFrozen: GameDescription.kDefaultSettings,
+            settings: [
+                new Setting('bubble', 'number', Setting.TYPE_NUMBER, 30, 'Numeric value'),
+            ],
+        });
+
+        // Create the command, give Gunther/Russell enough money to participate, and fix the timeout
+        commands.createCommandForGame(description);
+
+        finance.givePlayerCash(gunther, 5000);
+        finance.givePlayerCash(russell, 5000);
+
+        settings.setValue('games/registration_expiration_sec', 25);
+
+        // Have Gunther start the Bubble game, but mimic a custom command that has the preferCustom
+        // flag set. This should start the customisation flow as no games are currently running.
+        const params = new GameCommandParams();
+        params.type = GameCommandParams.kTypeDefault;
+        params.preferCustom = true;
+
+        gunther.respondToDialog({ listitem: 2 /* Numeric value */ }).then(
+            () => gunther.respondToDialog({ inputtext: '50' })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
+
+        await commands.startGame(description, gunther, params);
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.equal(finance.getPlayerCash(gunther), 4000);
+
+        // Have Russell sign up by using the "bubblegame" command as well. They should *not* get
+        // the customisation flow, as a game is already in progress.
+        await commands.startGame(description, russell, params);
+
+        assert.isNotNull(manager.getPlayerActivity(russell));
+        assert.equal(finance.getPlayerCash(russell), 4000);
+
+        await server.clock.advance(25 * 1000);  // advance the time past expiration
+        await runGameLoop();
+
+        assert.isNotNull(manager.getPlayerActivity(gunther));
+        assert.isNotNull(manager.getPlayerActivity(russell));
+
+        const activity = manager.getPlayerActivity(russell);
+        assert.instanceOf(activity, GameRuntime);
+
+        // Verify that the customised settings as set by Gunther have been applied to the game.
+        assert.isTrue(activity.settingsForTesting.has('bubble/number'));
+        assert.equal(activity.settingsForTesting.get('bubble/number'), 50);
+
+        // Have both Gunther and Russell leave the game, to wind things down.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.isTrue(await russell.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        assert.equal(manager.activeRuntimesForTesting.size, 0);
     });
 });

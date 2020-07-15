@@ -340,10 +340,17 @@ export class GameCommands {
                 hasCustomisableSettings = true;
         }
 
-        // If the customise flag has not been set, return the |settings| immediately as we're done.
-        // Otherwise we begin the game customization flow.
-        if (params.type !== GameCommandParams.kTypeCustomise)
-            return settings;
+        // If the customise flag has not been set, return the |settings| immediately as we're done
+        // unless the game prefers customisable versions.
+        if (params.type !== GameCommandParams.kTypeCustomise) {
+            const registrations = this.manager_.getPendingGameRegistrations(description);
+            const publicRegistrations = registrations.filter(registration =>
+                registration.type === GameRegistration.kTypePublic);
+
+            // If the game either doesn't prefer custom games, or has public sign-ups, bail out.
+            if (!params.preferCustom || publicRegistrations.length)
+                return settings;
+        }
 
         // If no settings have been defined for this game, then there's nothing to customize. Ask
         // the player what they're intending to happen in this scenario.

@@ -35,8 +35,10 @@ declare global {
     function removeEventListener(eventName: string, listener: Function): void;
     function reportTestsFinished(totalTests: number, failedTests: number): void;
     function require(specifier: string): any;
+    function signMessage(privateKey: string, message: string): string;
     function startTrace();
     function stopTrace(filename?: string);
+    function verifyMessage(publicKey: string, signature: string, message: string): string;
     function wait(milliseconds: number): Promise<void>;
 
     interface Console {

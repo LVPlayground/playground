@@ -27,7 +27,6 @@ export class AuthenticationInfo {
     #clientEmail_ = null;
     #clientId_ = null;
     #privateKey_ = null;
-    #privateKeyId_ = null;
     #projectId_ = null;
     #tokenUrl_ = null;
 
@@ -40,7 +39,8 @@ export class AuthenticationInfo {
     // Gets the unique ID, as a number, of the service account client.
     get clientId() { return this.#clientId_; }
 
-    // TODO: Private key ---------------------------------------------------------------------------
+    // Gets the private key as an ASN.1 encoded string.
+    get privateKey() { return this.#privateKey_; }
 
     // Gets the Project ID that this client is part of.
     get projectId() { return this.#projectId_; }
@@ -58,6 +58,7 @@ export class AuthenticationInfo {
         this.#authenticationUrl_ = configuration.auth_uri;
         this.#clientEmail_ = configuration.client_email;
         this.#clientId_ = parseInt(configuration.client_id, 10);
+        this.#privateKey_ = configuration.private_key;
         this.#projectId_ = configuration.project_id;
         this.#tokenUrl_ = configuration.token_uri;
     }

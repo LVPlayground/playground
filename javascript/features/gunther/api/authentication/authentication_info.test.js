@@ -20,5 +20,8 @@ describe('AuthenticationInfo', it => {
         // Expect HTTPS endpoints to be used for the authentication.
         assert.equal(new URL(authentication.authenticationUrl).protocol, 'https');
         assert.equal(new URL(authentication.tokenUrl).protocol, 'https');
+
+        // Sign a moot message with the private key, to confirm that it can be loaded.
+        assert.doesNotThrow(() => signMessage(authentication.privateKey, 'Hello, world'));
     });
 });

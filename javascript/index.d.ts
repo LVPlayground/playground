@@ -15,6 +15,8 @@ import 'entities/index.d.ts';
 declare global {
     // Global functions provided by PlaygroundJS.
     function addEventListener(eventName: string, listener: Function): void;
+    function atob(encoded: string): string;
+    function btoa(plaintext: string): string;
     function captureProfile(duration: number, filename: string): void;
     function clearModuleCache(filenamePrefix: string): void;
     function dispatchEvent(eventName: string, event?: any): void;

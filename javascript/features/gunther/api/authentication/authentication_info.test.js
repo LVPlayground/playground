@@ -14,6 +14,8 @@ describe('AuthenticationInfo', it => {
         assert.typeOf(authentication.authenticationUrl, 'string');
         assert.typeOf(authentication.clientEmail, 'string');
         assert.typeOf(authentication.clientId, 'number');
+        assert.typeOf(authentication.privateKey, 'string');
+        assert.typeOf(authentication.privateKeyId, 'string');
         assert.typeOf(authentication.projectId, 'string');
         assert.typeOf(authentication.tokenUrl, 'string');
 

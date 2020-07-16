@@ -80,7 +80,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'leaderboard', 'teleportation',
 
         // Communication features
-        'communication_commands', 'reaction_tests',
+        'communication_commands', 'gunther', 'reaction_tests',
 
         // -----------------------------------------------------------------------------------------
         // Games and minigames

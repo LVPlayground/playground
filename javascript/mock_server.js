@@ -47,6 +47,7 @@ import Friends from 'features/friends/friends.js';
 import Games from 'features/games/games.js';
 import GamesDeathmatch from 'features/games_deathmatch/games_deathmatch.js';
 import Gangs from 'features/gangs/gangs.js';
+import Gunther from 'features/gunther/gunther.js';
 import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
@@ -113,6 +114,7 @@ class MockServer {
             games: Games,
             games_deathmatch: GamesDeathmatch,
             gangs: Gangs,
+            gunther: Gunther,
             haystack: Haystack,
             leaderboard: Leaderboard,
             limits: Limits,

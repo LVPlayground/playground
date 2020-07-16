@@ -17,6 +17,8 @@ class Commands extends Feature {
         const commandManager = server.commandManager;
 
         // Informational commands whose data will be loaded from a JSON file.
+        
+        commandManager.registerCommand('credits', InfoDialogCommand.create('data/commands/credits.json'));
         commandManager.registerCommand('guide', InfoDialogCommand.create('data/commands/guide.json'));
         commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
         commandManager.registerCommand('irc', InfoDialogCommand.create('data/commands/irc.json'));
@@ -37,6 +39,7 @@ class Commands extends Feature {
         this.positioningCommands_.dispose();
         this.ircChatCommands_.dispose();
 
+        server.commandManager.removeCommand('credits');
         server.commandManager.removeCommand('guide');
         server.commandManager.removeCommand('help');
         server.commandManager.removeCommand('irc');

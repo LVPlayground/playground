@@ -108,7 +108,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
     }
-
+    
     if(GetPlayerState(playerid) == PLAYER_STATE_WASTED && Player(playerid)->isAdministrator() == false)
     {
         SendClientMessage(playerid,Color::Red,"* You cannot use commands when you are wasted!");
@@ -453,7 +453,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     {
         SendClientMessage(playerid,COLOR_LIGHTBLUE, "Donating to Las Venturas Playground is highly appreciated and offers a lot of");
         SendClientMessage(playerid,COLOR_LIGHTBLUE,"additional and fun features for players; from access to a VIP room, forum board,");
-        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please visit https://sa-mp.nl/donate");
+        SendClientMessage(playerid,COLOR_LIGHTBLUE,"IRC channel, ingame ranks, commands and much more! Please check out /vip and visit https://sa-mp.nl/donate");
         return 1;
     }
 
@@ -525,20 +525,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     }
 #endif
 
-    // There's plenty of people missing here?
-    if(strcmp(cmd, "/credits", true) == 0) 
-    {
-        new szVerString[128];
-        format(szVerString, 128, "Las Venturas Playground v%d.%d (build: %d, revision: %d) Credits:", Version::Major, Version::Minor, __BUILD__, __REVISION__);
-        SendClientMessage(playerid, Color::Error, szVerString);
-        SendClientMessage(playerid, Color::Success, " Developers: {CCFFFF}Russell, Peter, Kase, Jay, MrBondt, cake, thiaZ, Matthias, Xanland, TransporterX,");
-        SendClientMessage(playerid, Color::Success, " {CCFFFF}Fireburn, Wesley, JUTD, iou, tomozj, Badeend, Harry.");
-        SendClientMessage(playerid, Color::Success, " Testers & Mappers: {CCFFFF}xBlueXFoxx, [Dx]SuicidalSpree, LilBoy, Plugy, LasTRace, Maikovich, Tpimp, Epiccc, LetzFetz, Joeri, Beaner,");
-        SendClientMessage(playerid, Color::Success, " {CCFFFF}Biesmen, ZheMafo, Sadik, Rien, nielz, MacSto, Lithirm, Hitman, Halo, Gibbs, Cyrix404, Bloodster, Fuse, Darius, BRKHN, Holden.");
-        SendClientMessage(playerid, Color::Success, " Special Thanks: {CCFFFF}striker, Sophia, eF.Pedro, Pugwipe, [Griffin], Chillosophy, JUTD, theHolyCow.");
-        SendClientMessage(playerid, Color::Success, " Others: {CCFFFF}Pablo_Borsellino (pBoom), Slim.- (SF Airport), Incognito (Streamer Plugin), Y_Less (sscanf).");
-        return 1;
-    }
 
 #if Feature::DisableFights == 0
 

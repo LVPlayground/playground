@@ -34,6 +34,4 @@ describe('base64', it => {
         assert.equal(atob('Zm9vYmE='), 'fooba');
         assert.equal(atob('Zm9vYmFy'), 'foobar');
     });
-
-    it.fails();
 });

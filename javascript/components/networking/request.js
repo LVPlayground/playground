@@ -63,7 +63,11 @@ export class Request extends Body {
 
         this.#method_ = init.method ?? 'GET';
         this.#url_ = input;
-        this.#headers_ = new Headers(init.headers ?? null);
+
+        if (init.headers instanceof Headers)
+            this.#headers_ = init.headers;
+        else
+            this.#headers_ = new Headers(init.headers ?? null);
 
         if (init.redirect && !kValidRedirect.includes(init.redirect))
             throw new Error(`Invalid redirect value given: ${init.redirect}.`);

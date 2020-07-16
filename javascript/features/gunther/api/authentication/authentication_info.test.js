@@ -7,6 +7,12 @@ import { URL } from 'components/networking/url.js';
 
 describe('AuthenticationInfo', it => {
     it('should be able to fully load the configuration file, when it exists', assert => {
+        // Verify that the testing data for authentication can be used to sign messages.
+        const authenticationForTesting = AuthenticationInfo.loadForTesting();
+
+        assert.doesNotThrow(() => signMessage(authenticationForTesting.privateKey, 'Hello, world'));
+
+        // Proceed with the production tests if Gunther's authentication data has been set.
         const authentication = AuthenticationInfo.loadFromDisk();
         if (!authentication)
             return null;  // the file does not exist

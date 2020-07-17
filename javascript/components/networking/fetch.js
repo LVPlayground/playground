@@ -63,8 +63,11 @@ export async function fetch(input, init = {}) {
 // either, that's the job of the actual `fetch()` method.
 async function fetchIndividualRequest(request, url, redirected) {
     const requestBuffer = createRequestBuffer(request, url);
-    if (responseMapForTests.has(url.href))
-        return responseMapForTests.get(url.href);
+    if (responseMapForTests.has(url.href)) {
+        const installedResponse = responseMapForTests.get(url.href);
+        return typeof installedResponse === 'function' ? installedResponse(request, url, redirected)
+                                                       : installedResponse;
+    }
 
     const responseBuffer = await issueNetworkRequest(requestBuffer, url);
     if (!responseBuffer)

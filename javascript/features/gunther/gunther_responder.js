@@ -64,7 +64,8 @@ export class GuntherResponder {
     // Processes the |queryResult| for the given |player|. This helps personalise a few things,
     // particularly inclusion of their nickname in the message.
     processResponse(player, queryResult) {
-        console.log(queryResult);
+        if (!server.isTest())
+            console.log(queryResult);
 
         let responseText = queryResult.fulfillmentText;
 

@@ -61,7 +61,7 @@ export class TokenRequest {
                 token: data.access_token,
                 expiration: server.clock.monotonicallyIncreasingTime() + data.expires_in * 1000,
             };
-        } else if (true || !server.isTest()) {
+        } else if (!server.isTest()) {
             console.log(`[TokenRequest] Error: ${await response.text()}`);
         }
 

@@ -67,6 +67,10 @@ export class PlayerAccountSupplement extends Supplement {
         if (databaseRow.muted > 0)
             this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
 
+        // Color information will be stored on the player's colour state, when configured.
+        if (databaseRow.custom_color !== 0)
+            player.colors.customColor = Color.fromRGBA(databaseRow.custom_color);
+
         // Statistics that will be stored by the PlayerStatsSupplement instead.
         player.stats.enduring.onlineTime = databaseRow.online_time;
         player.stats.enduring.deathCount = databaseRow.death_count;
@@ -89,6 +93,7 @@ export class PlayerAccountSupplement extends Supplement {
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
+            custom_color: player.colors.customColor?.toNumberRGBA() ?? 0,
             // TODO: include |online_time|
             kill_count: player.stats.enduring.killCount,
             death_count: player.stats.enduring.deathCount,

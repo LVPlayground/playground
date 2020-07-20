@@ -143,11 +143,6 @@ class AccountData <playerId (MAX_PLAYERS)> {
      * @param resultId Id of the database result containing the values.
      */
     private applyMutableData(resultId) {
-        // mutable: custom_color
-        new customColor = DatabaseResult(resultId)->readInteger("custom_color");
-        if (customColor != 0 && Player(playerId)->isVip())
-            ColorManager->setPlayerCustomColor(playerId, customColor);
-
         // mutable: money_bounty
         HitmanTracker(playerId)->setBounty(DatabaseResult(resultId)->readInteger("money_bounty"));
 

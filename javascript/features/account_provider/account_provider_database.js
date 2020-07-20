@@ -7,6 +7,7 @@ const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
         users_mutable.online_time,
+        users_mutable.custom_color,
         users_mutable.kill_count,
         users_mutable.death_count,
         users_mutable.money_bank,
@@ -29,6 +30,7 @@ const ACCOUNT_SAVE_QUERY = `
     UPDATE
         users_mutable
     SET
+        users_mutable.custom_color = ?,
         users_mutable.kill_count = ?,
         users_mutable.death_count = ?,
         users_mutable.money_bank = ?,
@@ -58,11 +60,12 @@ export class AccountProviderDatabase {
     // the `loadAccountData()` method. Generally composited by the AccountData structure.
     async saveAccountData(accountData) {
         await server.database.query(
-            ACCOUNT_SAVE_QUERY, accountData.kill_count, accountData.death_count,
-            accountData.money_bank, accountData.money_cash, accountData.stats_reaction,
-            accountData.stats_damage_given, accountData.stats_damage_taken,
-            accountData.stats_shots_hit, accountData.stats_shots_missed,
-            accountData.stats_shots_taken, accountData.muted, accountData.user_id);
+            ACCOUNT_SAVE_QUERY, accountData.custom_color, accountData.kill_count,
+            accountData.death_count, accountData.money_bank, accountData.money_cash,
+            accountData.stats_reaction, accountData.stats_damage_given,
+            accountData.stats_damage_taken, accountData.stats_shots_hit,
+            accountData.stats_shots_missed, accountData.stats_shots_taken, accountData.muted,
+            accountData.user_id);
 
         return true;
     }

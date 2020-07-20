@@ -53,6 +53,7 @@ import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
+import PlayerColors from 'features/player_colors/player_colors.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerStats from 'features/player_stats/player_stats.js';
@@ -119,6 +120,7 @@ class MockServer {
             leaderboard: Leaderboard,
             limits: Limits,
             nuwani: MockNuwani,
+            player_colors: PlayerColors,
             player_commands: PlayerCommands,
             player_settings: PlayerSettings,
             player_stats: PlayerStats,
@@ -147,6 +149,7 @@ class MockServer {
     // be limited to foundational features that have no dependencies of their own.
     initialize() {
         this.featureManager_.loadFeature('account_provider');
+        this.featureManager_.loadFeature('player_colors');
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -253,6 +256,7 @@ class MockServer {
     // left-over global state. This avoids hundreds of tests from failing in succession.
     async safeDispose() {
         Player.provideSupplement('account', null);
+        Player.provideSupplement('colors', null);
         Player.provideSupplement('settings', null);
         Player.provideSupplement('stats', null);
     }

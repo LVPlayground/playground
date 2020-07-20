@@ -33,12 +33,13 @@ other foundational features, without circular dependencies.
 
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
-[AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.account` supplement, loads and saves account data.
+[AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.prototype.account` supplement, loads and saves account data.
 [Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
 [Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
 [Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
 [Nuwani](nuwani/)                    | ✔ 2020     | Provides our ability to interact with IRC and Discord.
-[PlayerStats](player_stats/)         | ✔ 2020     | Provides the `Player.stats` supplement, tracks player metrics.
+[PlayerColors](player_colors/)       | ✔ 2020     | Provides the `Player.prototype.colors` supplement and color management.
+[PlayerStats](player_stats/)         | ✔ 2020     | Provides the `Player.prototype.stats` supplement, tracks player metrics.
 [SAMPCAC](sampcac/)                  | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
 [Settings](settings/)                | ✔ 2020     | Manages persistent settings on the server.
 
@@ -79,7 +80,7 @@ Feature                                          | Code Health | Description
 [Leaderboard](leaderboard/)                      | ❓ 2020     | The `/leaderboard` command, and database routines to calculate it.
 [Location](location/)                            | ❓ 2020     | -
 [NuwaniCommands](nuwani_commands/)               | ❓ 2020     | The `/nuwani` command, enabling Management to control the bot system.
-[PlayerCommands](player_commands/)               | ❓ 2020    | Provides commands for the player also useable for admins. E.g. to buy weapons.
+[PlayerCommands](player_commands/)               | ❓ 2020     | Provides commands for the player also useable for admins. E.g. to buy weapons.
 [PlayerFavours](player_favours/)                 | ❓ 2020     | -
 [PlayerSettings](player_settings/)               | ❓ 2020     | -
 [Playground](playground/)                        | ❓ 2020     | -

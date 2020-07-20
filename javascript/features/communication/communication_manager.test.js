@@ -4,6 +4,8 @@
 
 import { AdministratorChannel } from 'features/communication/channels/administrator_channel.js';
 
+import { format } from 'base/format.js';
+
 describe('CommunicationManager', (it, beforeEach, afterEach) => {
     let gunther = null;
     let manager = null;
@@ -70,6 +72,11 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
     });
 
     it('should allow players to mention other players in public chat', async (assert) => {
+        function colorForPlayer(player) {
+            return format(
+                '{%06X}@%s{FFFFFF}', player.colors.currentColor.toNumberRGB(), player.name);
+        }
+
         // (1) Verify that all nicknames can be matched
         const nicknameTestCasePlayerId = 42;
         const nicknameTestCases = [
@@ -88,7 +95,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
             await gunther.issueMessage(`Hey @${testCase}, how are you?`);
             assert.equal(gunther.messages.length, 1);
-            assert.includes(gunther.messages.pop(), `{FFFFFF}@${testCase}{FFFFFF}`);
+            assert.includes(gunther.messages.pop(), colorForPlayer(testPlayer));
 
             assert.equal(testPlayer.soundIdForTesting, 1058);
 
@@ -107,7 +114,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
 
             await gunther.issueMessage(testCase);
             assert.equal(gunther.messages.length, 1);
-            assert.includes(gunther.messages.pop(), `{FFFFFF}@Russell{FFFFFF}`);
+            assert.includes(gunther.messages.pop(), colorForPlayer(russell));
 
             await server.clock.advance(10 * 1000);  // get past the spam filter
         }
@@ -115,7 +122,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         // (3) Verify that players cannot mention themselves, or invalid players.
         await gunther.issueMessage('Hey @Gunther, how are you?');
         assert.equal(gunther.messages.length, 1);
-        assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}@Gunther{FFFFFF}`);
+        assert.doesNotInclude(gunther.messages.pop(), `@Gunther{FFFFFF}`);
 
         // (4) Verify that it doesn't catch cases that aren't mentions.
         await gunther.issueMessage('info@domain.com');
@@ -123,11 +130,11 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         assert.doesNotInclude(gunther.messages.pop(), `{FFFFFF}info@domain.com{FFFFFF}`);
 
         // (5) Verify that it's got the ability to use the mentioned player's colour.
-        russell.color = Color.fromRGB(50, 150, 250);
+        russell.colors.customColor = Color.fromRGB(50, 150, 250);
 
         await gunther.issueMessage('Heya @Russell, how are you?');
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages.pop(), `{3296FA}@Russell{FFFFFF}`);
+        assert.includes(gunther.messages.pop(), colorForPlayer(russell));
     });
 
     it('should allow delegates to intercept received messages', async (assert) => {

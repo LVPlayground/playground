@@ -152,54 +152,6 @@ class ColorManager {
     }
 
     /**
-     * Sets the color associated with the gang this player has joined. The color can be updated at
-     * any time as well, for example because the gang changes their color.
-     *
-     * @param playerId Id of the player to set the gang-level color for.
-     * @param color The color itself, in 0xRRGGBBAA format, to set for the gang color.
-     */
-    public setPlayerGangColor(playerId, color) {
-        m_playerColorStack[playerId][GangColorIndex] = color;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Releases the player's gang color and frees up the slot. Unless the player is in a minigame,
-     * their color will be reverted back to either their custom or the default color.
-     *
-     * @param playerId Id of the player to release the gang-level color for.
-     */
-    public releasePlayerGangColor(playerId) {
-        m_playerColorStack[playerId][GangColorIndex] = InvalidColorId;
-        if (m_playerColorIndex[playerId] == GangColorIndex)
-            this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Sets the color for this player which will override any other value. This should be very
-     * sparsely used given the impact it has.
-     *
-     * @param playerId Id of the player to set the override color for.
-     * @param color The color, in 0xRRGGBBAA format, to override with.
-     */
-    public setPlayerOverrideColor(playerId, color) {
-        m_playerColorStack[playerId][OverrideColorIndex] = color;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Releases the player's override color again. This will change the player's color back to
-     * whatever now has the highest priority, likely their gang or default color.
-     *
-     * @param playerId Id of the player to release the override color for.
-     */
-    public releasePlayerOverrideColor(playerId) {
-        m_playerColorStack[playerId][OverrideColorIndex] = InvalidColorId;
-        if (m_playerColorIndex[playerId] == OverrideColorIndex)
-            this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
      * Sets the minigame color which this player has been assigned for the minigame they're currently
      * involved in. These colors have a higher priority than most colors in the system.
      *

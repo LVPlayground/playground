@@ -144,7 +144,6 @@ class FixPlayerCommands {
             ShowPlayerNameTagForPlayer(playerId, subjectId, true);
         }
         ColorManager->releasePlayerMinigameColor(playerId);
-        ColorManager->releasePlayerOverrideColor(playerId);
 
         SetPlayerWantedLevel(playerId, 0);
         RemovePlayerFromAnyGame(playerId);

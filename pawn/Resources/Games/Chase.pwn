@@ -19,13 +19,6 @@ bool: LegacyIsPlayerChased(playerId) {
     return false;
 }
 
-bool: LegacyIsChaseRunning() {
-    if (!chaseData[0])
-        return false;
-
-    return true;
-}
-
 // CChase__Initialize
 // Is called at the start of the gamemode in order to run other internals of
 // this class.
@@ -98,9 +91,6 @@ CChase__Start(tID)
 
     CChase__TDShow(0, 3);
 
-    // Change every player their color to white, except for the chased player (red).
-    CChase__InitializeColorForPlayer();
-
     ClearPlayerMenus(tID);
 }
 
@@ -161,9 +151,6 @@ CChase__Stop(reason, playerid)
         GiveRegulatedMoney(chaseData[1], ChaseEscaped);
         WonMinigame[chaseData[1]]++;
     }
-
-    // Initialize the markers of the other players for everyone.
-    CChase__ReleaseColorForPlayer();
 
     // Basics at the end
     chaseData[5] = 3;
@@ -348,48 +335,5 @@ CChase__CheckShip()
 
         SetPlayerFacingAngle(chaseData[1],274.1228);            // And face them away!
         SendClientMessage(chaseData[1], Color::Red, "Stay away from the ship! That's simply lame!");
-    }
-}
-
-// Initializes the colors of all players.
-CChase__InitializeColorForPlayer() {
-    new chasedPlayer = chaseData[1];
-    for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
-        if (Player(player)->isNonPlayerCharacter() == true || IsPlayerInMinigame(player))
-            continue;
-
-        new color = Color::NonPlayerCharacterColor;
-        if (player == chasedPlayer)
-            color = Color::Red;
-
-        ColorManager->setPlayerOverrideColor(player, color);
-    }
-}
-
-// Releases the colors of all players which we previously overrode.
-CChase__ReleaseColorForPlayer() {
-    for (new player = 0; player <= PlayerManager->highestPlayerId(); ++player) {
-        if (Player(player)->isNonPlayerCharacter() == false)
-            ColorManager->releasePlayerOverrideColor(player);
-    }
-}
-
-/**
- * A small class to be able to add functionality to other parts of LVP without having to place them
- * outside this file.
- *
- * @author Xander "Xanland" Hoogland <home@xanland.nl>
- */
-class Chase {
-    /**
-     * Sets the color of a player joining the server to white when there is a chase actually
-     * running.
-     *
-     * @param playerId Id of the player who just connected to the server.
-     */
-    @list(OnPlayerConnect)
-    public onPlayerConnect(playerId) {
-        if(LegacyIsChaseRunning())
-            ColorManager->setPlayerOverrideColor(playerId, Color::NonPlayerCharacterColor);
     }
 }

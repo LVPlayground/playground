@@ -574,55 +574,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "hide", true, 4) && Player(playerId)->isAdministrator() == true) {
-        if (Command->parameterCount(params) != 3)
-            goto HideHelp;
-
-        new hideParameter[4];
-        Command->stringParameter(params, 2, hideParameter, sizeof(hideParameter));
-
-        if (!strcmp(hideParameter, "on", true, 2)) {
-            if (PlayerInfo[subjectId][playerIsHidden] == 1) {
-                SendClientMessage(playerId, Color::Error, "This player is already hidden.");
-                return 1;
-            }
-
-            PlayerInfo[subjectId][playerIsHidden] = 1;
-            ColorManager->setPlayerMarkerHidden(subjectId, true);
-
-            SendClientMessage(playerId, Color::Success, "Player hidden.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has hidden %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(hideParameter, "off", true, 3)) {
-            if (PlayerInfo[subjectId][playerIsHidden] == 0) {
-                SendClientMessage(playerId, Color::Error, "This player is already visible.");
-                return 1;
-            }
-
-            PlayerInfo[subjectId][playerIsHidden] = 0;
-            ColorManager->setPlayerMarkerHidden(subjectId, false);
-
-            SendClientMessage(playerId, Color::Success, "Player unhidden.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has unhidden %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        HideHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /p [player] hide [on/off]");
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "handofgod", true, 9)) {
         new Float: position[3];
         GetPlayerPos(subjectId, position[0], position[1], position[2]);

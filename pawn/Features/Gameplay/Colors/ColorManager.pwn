@@ -103,38 +103,6 @@ class ColorManager {
     }
 
     /**
-     * Returns the color the player has in normal gameplay. This disregards temporary colors such
-     * as those set by minigames.
-     *
-     * @param playerId Id of the player to get their actual color for.
-     * @return integer The color this player will be playing with.
-     */
-    public playerColor(playerId) {
-        if (m_playerColorStack[playerId][GangColorIndex] != InvalidColorId)
-            return m_playerColorStack[playerId][GangColorIndex];
-
-        if (m_playerColorStack[playerId][CustomColorIndex] != InvalidColorId)
-            return m_playerColorStack[playerId][CustomColorIndex];
-
-        return m_playerColorStack[playerId][DefaultColorIndex];
-    }
-
-    /**
-     * Returns the custom player color if they have any, or NULL if they don't have any. This is
-     * slightly different from how we store it internally (where -1 is an invalid color), but it's
-     * how the database will be handling colors.
-     *
-     * @param playerId Id of the player to get the custom color from.
-     * @return integer The custom color assigned to this player, if any.
-     */
-    public playerCustomColor(playerId) {
-        if (m_playerColorStack[playerId][CustomColorIndex] == InvalidColorId)
-            return 0;
-
-        return m_playerColorStack[playerId][CustomColorIndex];
-    }
-
-    /**
      * Changes the custom color associated with this player. This is a feature available to all VIP
      * members of the server, as well as to all members of the LVP Staff.
      *

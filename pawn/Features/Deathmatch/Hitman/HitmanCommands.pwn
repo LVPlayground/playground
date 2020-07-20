@@ -24,7 +24,7 @@ class HitmanCommands {
             if (Player(player)->isConnected() == true && Player(player)->isNonPlayerCharacter() == false
                 && HitmanTracker(player)->playerBounty() > 0) {
                 format(message, sizeof(message), " {CCCCCC}(%d) {%06x}%s {FFFFFF}- $%s", player,
-                    ColorManager->playerColor(player) >>> 8, Player(player)->nicknameString(),
+                    GetPlayerColor(player) >>> 8, Player(player)->nicknameString(),
                     formatPrice(HitmanTracker(player)->playerBounty()));
 
                 SendClientMessage(playerId, Color::Information, message);

@@ -40,6 +40,11 @@ export class Color {
                          parseInt(hex.substr(4, 2), 16), parseInt(hex.substr(6, 2), 16) || alpha);
     }
 
+    // Creates a new Color instance based on the given |hue|, |saturation| and |value|.
+    static fromHsv(hue, saturation, value, alpha = 255) {
+        return new Color(PrivateSymbol, ...fromHsv(hue, saturation, value), alpha);
+    }
+
     // Constructor of the Color class. Not to be used except by the public static methods above.
     constructor(privateSymbol, r, g, b, a) {
         if (privateSymbol !== PrivateSymbol)
@@ -89,11 +94,80 @@ export class Color {
                 ('0' + this.a_.toString(16)).substr(-2)).toUpperCase();
     }
 
+    // Exports the color as a [ hue, saturation, value ] array.
+    toHsv() { return toHsv(this.r_, this.g_, this.b_); }
+
+    // Exports the color as a [ hue, saturation, value, alpha ] array.
+    toHsva() { return [ ...toHsv(this.r_, this.g_, this.b_), this.alpha / 255 ]; }
+
     // Returns the current color with the given |alpha| channel.
     withAlpha(alpha) {
         return new Color(PrivateSymbol, this.r_, this.g_, this.b_, alpha);
     }
 };
+
+// Utility function to transform the given |hue|, |saturation| and |value| to the RGB color space.
+// Adapted from http://en.wikipedia.org/wiki/HSV_color_space
+function fromHsv(hue, saturation, value) {
+    var plane = Math.floor(hue * 6);
+    var remainder = hue * 6 - plane;
+    var p = value * (1 - saturation);
+    var q = value * (1 - remainder * saturation);
+    var t = value * (1 - (1 - remainder) * saturation);
+
+    let red, green, blue;
+
+    switch (plane % 6){
+        case 0: red = value, green = t, blue = p; break;
+        case 1: red = q, green = value, blue = p; break;
+        case 2: red = p, green = value, blue = t; break;
+        case 3: red = p, green = q, blue = value; break;
+        case 4: red = t, green = p, blue = value; break;
+        case 5: red = value, green = p, blue = q; break;
+    }
+
+    return [
+        Math.round(red * 255),
+        Math.round(green * 255),
+        Math.round(blue * 255),
+    ];
+}
+
+// Utility function to transform the given |red|, |green|, |blue| RGB channels to the HSV space.
+// Also adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+function toHsv(red, green, blue) {
+    const normalizedRed = red / 255;
+    const normalizedGreen = green / 255;
+    const normalizedBlue = blue / 255;
+
+    const max = Math.max(normalizedRed, normalizedGreen, normalizedBlue);
+    const min = Math.min(normalizedRed, normalizedGreen, normalizedBlue);
+    const diff = max - min;
+
+    let hue = null;
+    let saturation = !max ? 0 : diff / max;
+    let value = max;
+
+    if (min === max) {
+        hue = 0;  // greyscale
+    } else {
+        switch (max) {
+            case normalizedRed:
+                hue = (normalizedGreen - normalizedBlue) / diff + (normalizedGreen < normalizedBlue ? 6 : 0);
+                break;
+            case normalizedGreen:
+                hue = (normalizedBlue - normalizedRed) / diff + 2;
+                break;
+            case normalizedBlue:
+                hue = (normalizedRed - normalizedGreen) / diff + 4;
+                break;
+        }
+
+        hue /= 6;
+    }
+
+    return [ hue, saturation, value ];
+}
 
 // Define common colors as static properties on the Color class.
 Color.BLUE = Color.fromRGB(0, 0, 255);

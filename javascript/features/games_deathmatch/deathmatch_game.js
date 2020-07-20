@@ -222,7 +222,7 @@ export class DeathmatchGame extends GameBase {
         // Reset the modified state for each of the game settings back to their original values for
         // the given |player|. This makes sure we don't permanently alter their state.
         this.resetMapMarkerSettingForPlayer(player, state);
-        this.resetTeamColorSettingForPlayer(player, state);
+        this.resetTeamColorSettingForPlayer(player);
         this.resetTeamDamageSettingForPlayer(player, state);
 
         // Reset the player back to their original skin if we had changed it.
@@ -476,14 +476,13 @@ export class DeathmatchGame extends GameBase {
         else if (team === DeathmatchGame.kTeamBravo)
             state.color = kTeamColorBravo;
 
-        player.color = state.color;
+        player.colors.gameColor = state.color;
     }
 
     // Resets the |player|'s color back to what it was. We always re-set their color, as markers may
     // also amend the |player|'s color and we shouldn't re-set it twice.
-    resetTeamColorSettingForPlayer(player, state) {
-        if (state && this.isTeamBased())
-            player.color = state.originalColor;
+    resetTeamColorSettingForPlayer(player) {
+        player.colors.gameColor = null;
     }
 
     // ---------------------------------------------------------------------------------------------

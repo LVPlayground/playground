@@ -31,6 +31,9 @@ export default class GamesDeathmatch extends Feature {
     constructor() {
         super();
 
+        // Allows us to change the participant colours when teams are used.
+        this.defineDependency('player_colors');
+
         // This feature is a layer on top of the Games feature, which provides core functionality.
         this.games_ = this.defineDependency('games');
         this.games_.addReloadObserver(this, () => this.registerGames());

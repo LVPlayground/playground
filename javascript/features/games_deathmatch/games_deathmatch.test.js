@@ -427,7 +427,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             maximumPlayers: 4,
         });
 
-        gunther.color = kOriginalColor;
+        gunther.colors.customColor = kOriginalColor;
+        assert.deepEqual(gunther.color, kOriginalColor);
 
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
 
@@ -459,6 +460,8 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(gunther.gravity, 0.012);
         assert.equal(gunther.armour, 100);
 
+        assert.notDeepEqual(gunther.color, kOriginalColor);
+
         assert.deepEqual([ ...gunther.getWeaponsForTesting() ], [
             [ 24 /* Desert Eagle */, 150 ],
             [ 31 /* M4 */, 400 ],
@@ -472,7 +475,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.equal(gunther.syncedData.minigameName, '');
 
-        assert.equal(gunther.color, kOriginalColor);
+        assert.deepEqual(gunther.color, kOriginalColor);
         assert.equal(gunther.syncedData.lagCompensationMode, Player.kDefaultLagCompensationMode);
         assert.equal(gunther.gravity, Player.kDefaultGravity);
 

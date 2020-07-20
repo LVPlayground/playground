@@ -901,6 +901,4 @@ TakeTempAdministratorRightsFromPlayer(playerId, bool: fromInGame = false) {
 
     if (!wasVip)
         PlayerSettings(playerId)->setTeleportationDisabled(false);
-
-    ColorManager->restorePreviousPlayerCustomColor(playerId);
 }

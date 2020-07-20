@@ -83,9 +83,6 @@ class ColorManager {
     // Whether the player's marker on the mini-map should be hidden.
     new bool: m_playerMarkerHidden[MAX_PLAYERS];
 
-    // An array with the stored custom colors for each of the players.
-    new m_storedPlayerCustomColor[MAX_PLAYERS];
-
     /**
      * Set the player's color to the default value for their player Id when they connect to Las
      * Venturas Playground, and resets any previous color state which may have been present.
@@ -101,7 +98,6 @@ class ColorManager {
         m_playerColorIndex[playerId] = 0;
 
         m_playerMarkerHidden[playerId] = false;
-        m_storedPlayerCustomColor[playerId] = InvalidColorId;
 
         SetPlayerColor(playerId, m_playerColorStack[playerId][DefaultColorIndex]);
     }
@@ -152,37 +148,6 @@ class ColorManager {
 
     public releasePlayerCustomColor(playerId) {
         m_playerColorStack[playerId][CustomColorIndex] = InvalidColorId;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Stores a copy of the current player's custom color in a local buffer. This is necessary
-     * because giving a player temporary administrator rights shouldn't override the
-     * custom color we store for them in the database.
-     *
-     * @param playerId Id of the player to store the existing custom color for.
-     */
-    public storeExistingPlayerCustomColor(playerId) {
-        if (m_storedPlayerCustomColor[playerId] != InvalidColorId)
-            return; // only store the first color.
-
-        m_storedPlayerCustomColor[playerId] = m_playerColorStack[playerId][CustomColorIndex];
-    }
-
-    /**
-     * Restores the previous custom color set for a player if we are aware of any. Just like is the
-     * case with the storeExistingPlayerCustomColor() method, this is necessary to support giving
-     * players custom-like colors for temporary staff rights.
-     *
-     * @param playerId Id of the player to restore the previous custom color for.
-     */
-    public restorePreviousPlayerCustomColor(playerId) {
-        if (m_storedPlayerCustomColor[playerId] == InvalidColorId)
-            return;
-
-        m_playerColorStack[playerId][CustomColorIndex] = m_storedPlayerCustomColor[playerId];
-        m_storedPlayerCustomColor[playerId] = InvalidColorId;
-
         this->synchronizePlayerColorIndex(playerId);
     }
 

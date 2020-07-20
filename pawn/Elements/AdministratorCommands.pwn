@@ -824,9 +824,6 @@ GodHelp:
         tempLevel[subjectId] = 2;
         format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());
 
-        ColorManager->storeExistingPlayerCustomColor(subjectId);
-        ColorManager->setPlayerCustomColor(subjectId, Color::AdministratorColor);
-
         SendClientMessage(subjectId, Color::Success, "You have been granted temporary rights.");
 
         format(g_message, sizeof(g_message), "%s (Id:%d) is now temp. admin.",

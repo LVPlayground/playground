@@ -311,14 +311,3 @@ class ColorManager {
         return g_defaultPlayerColors[playerId % sizeof(g_defaultPlayerColors)];
     }
 };
-
-forward OnUpdatePlayerGangColor(playerid, color);
-public OnUpdatePlayerGangColor(playerid, color) {
-    if (!Player(playerid)->isConnected())
-        return;
-
-    if (!color)
-        ColorManager->releasePlayerGangColor(playerid);
-    else
-        ColorManager->setPlayerGangColor(playerid, color);
-}

@@ -2,9 +2,9 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Color } from 'base/color.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
-import { Color } from 'base/color.js';
 
 const mockedGangInfo = {
     hko: {
@@ -12,7 +12,7 @@ const mockedGangInfo = {
         tag: 'HKO',
         name: 'Hello Kitty Online',
         goal: 'Spreading love and peace',
-        color: 0xFF3399FF,
+        color: Color.fromRGBA(0xFF, 0x33, 0x99, 0xAA),
         chatEncryptionExpiry: 0
     }
 };

@@ -13,6 +13,9 @@ class Gangs extends Feature {
     constructor() {
         super();
 
+        // Amends player colours based on the gang that they're part of.
+        this.defineDependency('player_colors');
+
         // Used for announcing gang-related events to players and administrators.
         const announce = this.defineDependency('announce');
 

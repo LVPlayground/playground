@@ -98,7 +98,9 @@ export class DeathMatchManger {
         this.playerTeam_.delete(player);
         
         player.activity = Player.PLAYER_ACTIVITY_NONE;
+        player.colors.gameColor = null;
         player.team = Player.kNoTeam;
+
         if(!isNaN(location.gravity)) 
             player.gravity = Player.kDefaultGravity;
 
@@ -200,7 +202,7 @@ export class DeathMatchManger {
         if (this.playerTeam_.has(player)) {
             const team = this.playerTeam_.get(player).team;
 
-            wait(1).then(() => player.color = team === RED_TEAM ? Color.RED : Color.BLUE);
+            player.colors.gameColor = team === RED_TEAM ? Color.RED : Color.BLUE;
 
             if (location.noTeamDamage)
                 player.team = team;

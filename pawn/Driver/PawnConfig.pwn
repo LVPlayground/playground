@@ -9,6 +9,9 @@
 new bool: g_abuseDisableOutOfRangeDamage = true;
 new g_abuseFakeCarEntryPreventionEnterMs = 3000;
 new g_abuseFakeCarEntryPreventionExitMs = 1750;
+new g_abuseHighFramerateDamageIgnoredSec = 10;
+new g_abuseHighFramerateDamageSampleSec = 3;
+new g_abuseHighFramerateDamageThreshold = 105;
 new bool: g_abuseIgnoreSolePassengerDamage = true;
 new bool: g_abuseKickReasonsPublic = true;
 new g_abuseKillAttributionTimeSec = 10;
@@ -27,11 +30,14 @@ new bool: g_vehicleKeysBlockedInLasVenturas = true;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 15
+// Next ID: 18
 enum PawnConfigProperty {
     kAbuseDisableOutOfRangeDamage = 14,
     kAbuseFakeCarEntryPreventionEnterMs = 11,
     kAbuseFakeCarEntryPreventionExitMs = 12,
+    kAbuseHighFPSDamageIgnoredSec = 15,
+    kAbuseHighFPSDamageSampleSec = 16,
+    kAbuseHighFPSDamageThreshold = 17,
     kAbuseIgnoreSolePassengerDamage = 5,
     kAbuseKickReasonPublic = 6,
     kAbuseKillAttributionTimeSec = 7,
@@ -60,6 +66,15 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
 
         case kAbuseFakeCarEntryPreventionExitMs:
             g_abuseFakeCarEntryPreventionExitMs = intValue;
+
+        case kAbuseHighFPSDamageIgnoredSec:
+            g_abuseHighFramerateDamageIgnoredSec = intValue;
+
+        case kAbuseHighFPSDamageSampleSec:
+            g_abuseHighFramerateDamageSampleSec = intValue;
+
+        case kAbuseHighFPSDamageThreshold:
+            g_abuseHighFramerateDamageThreshold = intValue;
 
         case kAbuseIgnoreSolePassengerDamage:
             g_abuseIgnoreSolePassengerDamage = !!intValue;

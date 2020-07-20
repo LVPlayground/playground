@@ -28,6 +28,9 @@ native ReportTrailerUpdate(vehicleid, trailerid);
 #define VEHICLE_KEYS_BINDING_BLINKER_LEFT   KEY_LOOK_LEFT
 #define VEHICLE_KEYS_BINDING_GRAVITY        KEY_ANALOG_UP
 
+// Warn the player once every X milliseconds about their damage being disabled due to High FPS.
+new const kHighFpsWarningTimeMs = 60 * 1000;
+
 // Polygon that encloses the area of Las Venturas, on the insides of the highway.
 new const Float: kLasVenturasAreaPolygon[] = {
     1353.59, 832.49,
@@ -56,6 +59,11 @@ new STREAMER_TAG_AREA: g_areaLasVenturas;
 
 // Time (in milliseconds) until when damage issued by a particular player should be disabled.
 new g_damageDisabledExpirationTime[MAX_PLAYERS] = { 0, ... };
+
+// Counter for number of subsequent High FPS detections, and time at which the last warning was
+// issued to a particular player, to let them know damage was disabled.
+new g_highFramerateCounter[MAX_PLAYERS] = { 0, ... };
+new g_highFramerateWarningTime[MAX_PLAYERS] = { 0, ... };
 
 // Boolean that indicates whether a particular player is currently in Las Venturas.
 new bool: g_inLasVenturas[MAX_PLAYERS] = { false, ... };
@@ -139,6 +147,8 @@ InitializeAreas() {
 
 public OnPlayerConnect(playerid) {
     g_aimbotSuspicionCount[playerid] = 0;
+    g_highFramerateCounter[playerid] = 0;
+    g_highFramerateWarningTime[playerid] = 0;
     g_lastTakenDamageIssuerId[playerid] = -1;
     g_lastTakenDamageTime[playerid] = 0;
     g_sprayTagStartTime[playerid] = 0;
@@ -180,6 +190,50 @@ public OnPlayerDisconnect(playerid, reason) {
 
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerDisconnect(reason);
+}
+
+// Processes framerates of all connected human players and marks them as regular or high FPS. When
+// they've been marked as high FPS for a certain number of seconds, their damage might be disabled.
+ProcessHighFrameratePlayers() {
+    new const currentTime = GetTickCount();
+
+    for (new playerId = 0; playerId < GetPlayerPoolSize(); ++playerId) {
+        if (!IsPlayerConnected(playerId) || IsPlayerNPC(playerId))
+            continue;  // skip unconnected players and NPCs
+
+        // Reset and bail when the |playerId|'s framerate is within acceptable bounds
+        if (PlayerManager->framesPerSecond(playerId) < g_abuseHighFramerateDamageThreshold) {
+            g_highFramerateCounter[playerId] = 0;
+            continue;
+        }
+
+        if (++g_highFramerateCounter[playerId] < g_abuseHighFramerateDamageSampleSec)
+            continue;  // not enough subsequent samples yet
+
+        // (1) Disable the |playerId|'s damage for the configured amount of seconds.
+        g_damageDisabledExpirationTime[playerId] = max(
+            g_damageDisabledExpirationTime[playerId],
+            currentTime + g_abuseHighFramerateDamageIgnoredSec * 1000);
+
+        // (2) Share a warning with the |playerId|, but at most once per |kHighFpsWarningTimeMs|.
+        if (g_highFramerateWarningTime[playerId] == 0 ||
+                (currentTime - g_highFramerateWarningTime[playerId]) > kHighFpsWarningTimeMs) {
+            g_highFramerateWarningTime[playerId] = currentTime;
+
+            new warningMessage[128];
+            format(
+                warningMessage, sizeof(warningMessage),
+                "* Your ability to inflict damage has been disabled because your FPS topped %d.",
+                g_abuseHighFramerateDamageThreshold);
+
+            SendClientMessage(playerId, Color::Error, warningMessage);
+
+            // (3) Log this to the console as well, so that we can inspect how often this happens.
+            printf("[highfps] %s (Id:%d) has been detected as a High FPS player with an FPS of %d.",
+                Player(playerId)->nicknameString(), playerId,
+                PlayerManager->framesPerSecond(playerId));
+        }
+    }
 }
 
 // Returns whether vehicle keys are available to the |playerid|, based on their current state.
@@ -468,8 +522,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
     // to avoid players from abusing vehicle bugs to give them an advantage in a fight.
     if ((oldstate == PLAYER_STATE_DRIVER || oldstate == PLAYER_STATE_PASSENGER)
             && g_abuseFakeCarEntryPreventionExitMs > 0) {
-        g_damageDisabledExpirationTime[playerid] =
-            GetTickCount() + g_abuseFakeCarEntryPreventionExitMs;
+        g_damageDisabledExpirationTime[playerid] = max(
+            g_damageDisabledExpirationTime[playerid],
+            GetTickCount() + g_abuseFakeCarEntryPreventionExitMs);
     }
 
     return LegacyPlayerStateChange(playerid, newstate, oldstate);
@@ -656,8 +711,9 @@ public OnPlayerUpdate(playerid) {
         switch (animationIndex) {
             case 1043 /* CAR_OPEN_LHS */, 1044 /* CAR_OPEN_RHS */,
                  1026 /* CAR_GETIN_LHS */, 1027 /* CAR_GETIN_RHS */: {
-                g_damageDisabledExpirationTime[playerid] =
-                    GetTickCount() + g_abuseFakeCarEntryPreventionEnterMs;
+                g_damageDisabledExpirationTime[playerid] = max(
+                        g_damageDisabledExpirationTime[playerid],
+                        GetTickCount() + g_abuseFakeCarEntryPreventionEnterMs);
             }
         }
     }

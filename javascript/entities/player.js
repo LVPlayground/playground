@@ -295,6 +295,10 @@ export class Player extends Supplementable {
 
     respawn() { pawnInvoke('SpawnPlayer', 'i', this.#id_); }
 
+    setColorForPlayer(player, color) {
+        pawnInvoke('SetPlayerMarkerForPlayer', 'iii', player.id, this.#id_, color.toNumberRGBA());
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Environment
     // ---------------------------------------------------------------------------------------------

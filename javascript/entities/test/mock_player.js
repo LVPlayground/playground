@@ -36,6 +36,7 @@ export class MockPlayer extends Player {
     #velocity_ = new Vector(0, 0, 0);
 
     #color_ = Color.WHITE;
+    #colorOverrides_ = new Map();
     #health_ = 100.0;
     #armour_ = 0.0;
     #skin_ = 308;  // San Fierro Paramedic (EMT)
@@ -209,7 +210,7 @@ export class MockPlayer extends Player {
     set armour(value) { this.#armour_ = value; }
 
     get color() { return this.#color_; }
-    set rawColor(value) { this.#color_ = value; }
+    set rawColor(value) { this.#color_ = value; this.#colorOverrides_.clear(); }
 
     get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
     set controllable(value) { /* no need to mock write-only values */ }
@@ -240,6 +241,9 @@ export class MockPlayer extends Player {
 
         return defaultPrevented;
     }
+
+    getColorForPlayerForTesting(player) { return this.#colorOverrides_.get(player) ?? this.color; }
+    setColorForPlayer(player, color) { this.#colorOverrides_.set(player, color); }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Environment

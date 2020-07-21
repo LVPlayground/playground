@@ -14,10 +14,10 @@ export class PlayerColorsSupplement extends Supplement {
     #manager_ = null;
     #player_ = null;
 
-    // Boolean indicating whether this player should be visible, and a weak set listing the players
-    // to whom this player should be invisible.
+    // Boolean indicating whether this player should be visible, and a weak map listing the
+    // visibility overrides that have been created for this player.
     #visible_ = true;
-    #invisibility_ = new WeakSet();
+    #visibilityOverrides_ = new WeakMap();
 
     // Level 3: Custom color that players can determine themselves.
     #customColor_ = null;
@@ -49,15 +49,26 @@ export class PlayerColorsSupplement extends Supplement {
         this.#manager_.synchronizeForPlayer(this.#player_);
     }
 
-    // Returns or sets whether this player should be visible to the |target|.
-    isVisibleForPlayer(target) { return !this.#invisibility_.has(target); }
-    setVisibilityForPlayer(target, visible) {
-        if (visible)
-            this.#invisibility_.delete(target);
-        else
-            this.#invisibility_.add(target);
+    // Returns whether the |target| is able to see the current player. This depends on their base
+    // visibility as well as the overrides that have been created.
+    isVisibleForPlayer(target) {
+        if (this.#visibilityOverrides_.has(target))
+            return this.#visibilityOverrides_.get(target);
 
-        this.#manager_.synchronizeForPlayer(this.#player_);
+        return this.#visible_;
+    }
+
+    // Sets whether the |target| can see the current player. This supersedes the global visibility
+    // setting for this player, even when it changes while an override is held.
+    setVisibilityOverrideForPlayer(target, visible) {
+        this.#visibilityOverrides_.set(target, !!visible);
+        this.#manager_.synchronizeVisibilityForPlayer(this.#player_, target);
+    }
+
+    // Releases any held visibility override the current player has for the |target|.
+    releaseVisibilityOverrideForPlayer(target) {
+        this.#visibilityOverrides_.delete(target);
+        this.#manager_.synchronizeVisibilityForPlayer(this.#player_, target);
     }
 
     // Gets the base color (level 1) that's determined solely based on the player's ID.

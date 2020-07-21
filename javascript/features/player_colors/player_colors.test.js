@@ -90,15 +90,87 @@ describe('PlayerColors', (it, beforeEach) => {
         const russell = server.playerManager.getById(/* Russell= */ 1);
         const lucy = server.playerManager.getById(/* Lucy= */ 2);
 
+        gunther.colors.gameColor = Color.fromRGBA(0, 0, 255, kDefaultAlpha);
+
         // (1) Support for global, server-wide invisibility for a player.
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
         assert.equal(gunther.color.a, kDefaultAlpha);
 
         gunther.colors.visible = false;
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
         assert.equal(gunther.color.a, 0);
 
         gunther.colors.visible = true;
+
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
         assert.equal(gunther.color.a, kDefaultAlpha);
 
         // (2) Support for individual, per-player-for-player overrides of visibility.
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
+
+        gunther.colors.setVisibilityOverrideForPlayer(russell, /* visible= */ false);
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
+
+        gunther.colors.visible = false;
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
+        assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
+
+        gunther.colors.visible = true;
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+
+        // (3) Verify that changing colours does not mess up overrides, but does change color.
+        assert.equal(gunther.getColorForPlayerForTesting(russell).toHexRGBA(), '0000FF00');
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
+
+        gunther.colors.gameColor = Color.fromRGBA(255, 255, 0, kDefaultAlpha);
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).toHexRGBA(), 'FFFF0000');
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
+
+        // (4) Verify that inverting the override (invisible by default, make visible) works.
+        gunther.colors.setVisibilityOverrideForPlayer(russell, /* visible= */ true);
+        gunther.colors.visible = false;
+
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
+
+        // (5) Verify that releasing the visibility override works as expected.
+        gunther.colors.releaseVisibilityOverrideForPlayer(russell);
+
+        assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
+        assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
+
+        gunther.colors.visible = true;
+
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+
+        assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
     });
 });

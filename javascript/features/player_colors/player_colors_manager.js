@@ -4,19 +4,19 @@
 
 import { PlayerEventObserver } from 'components/events/player_event_observer.js';
 
+import { kDefaultAlpha } from 'features/player_colors/default_colors.js';
+
 // The Manager is responsible for aligning server state with our internal representation, and for
 // making sure that new players have the appropriate colours assigned to them.
 export class PlayerColorsManager extends PlayerEventObserver {
     #colors_ = null;
-    #invisibilityList_ = null;
-    #invisibility_ = null;
+    #overrides_ = null;
 
     constructor() {
         super();
 
         this.#colors_ = new WeakMap();
-        this.#invisibilityList_ = new WeakMap();
-        this.#invisibility_ = new WeakSet();
+        this.#overrides_ = new WeakMap();
     }
 
     // Observe the player manager to get connection and level change notifications. Not done in the
@@ -35,13 +35,58 @@ export class PlayerColorsManager extends PlayerEventObserver {
     // how they're currently represented on the server, that will be amended, as will invisiblity
     // settings which are controlled per-player.
     synchronizeForPlayer(player) {
-        const { currentColor, didColorChange } = this.synchronizeColorForPlayer(player);
+        const didColorChange = this.synchronizeColorForPlayer(player);
+        if (!didColorChange)
+            return;
 
-        // TODO: Support per-player visibility.
+        // Map containing the override colours that have already been determined. This will be reset
+        // in full when SetPlayerColor is called, as it sends the same RPC to the SA-MP clients.
+        const overrideMap = new WeakMap();
+
+        for (const target of server.playerManager) {
+            if (target.isNonPlayerCharacter())
+                continue;  // don't bother updating colours for NPCs
+
+            if (target === player)
+                continue;  // don't bother updating the player for.. themselves
+
+            this.synchronizeVisibilityForPlayer(player, target, overrideMap);
+        }
+
+        this.#overrides_.set(player, overrideMap);
     }
 
-    // Synchronizes the current color for the given |player|. Returns a structure with two fields:
-    // { currentColor, didColorChange }, to be used in the wider synchronization algorithm.
+    // Synchronizes whether the |target| can see the |player|. These will be updated based on the
+    // determined |player|'s current color, and then overrides on top of that.
+    synchronizeVisibilityForPlayer(player, target, overrideMap = null) {
+        overrideMap = overrideMap ?? this.#overrides_.get(player);
+
+        const playerBaseColor = this.#colors_.get(player);
+        const playerTargetColor =
+            player.colors.isVisibleForPlayer(target) ? playerBaseColor.withAlpha(kDefaultAlpha)
+                                                     : playerBaseColor.withAlpha(0);
+
+        // If the |playerTargetColor| equals the |playerBaseColor|, then no override is necessary.
+        // Delete any that have been created so far, after updating this with the player.
+        if (playerTargetColor === playerBaseColor) {
+            if (overrideMap.has(target)) {
+                overrideMap.delete(target);
+
+                player.setColorForPlayer(target, playerBaseColor);
+            }
+
+            return;
+        }
+
+        // Otherwise the |playerTargetColor| is different from the |playerBaseColor|, which means
+        // that a new override has to be created for this pair of players.
+        overrideMap.set(target, playerTargetColor);
+
+        player.setColorForPlayer(target, playerTargetColor);
+    }
+
+    // Synchronizes the current color for the given |player|. Returns whether the colour has changed
+    // for the given |player|, and further synchronization might have to happen.
     synchronizeColorForPlayer(player) {
         const currentBaseColor = player.colors.gameColor ||
                                  player.colors.gangColor ||
@@ -53,17 +98,14 @@ export class PlayerColorsManager extends PlayerEventObserver {
         const currentColor = player.colors.visible ? currentBaseColor
                                                    : currentBaseColor.withAlpha(0);
 
-        // Compare whether the |player|'s colour changed right now, to avoid a second check.
-        const didColorChange = this.#colors_.get(player) !== currentColor;
-        if (didColorChange) {
-            // (1) Update their colour in our internal state.
-            this.#colors_.set(player, currentColor);
+        // If the |currentColor| is the same as the stored color, bail out.
+        if (this.#colors_.get(player) === currentColor)
+            return false;
 
-            // (2) Update their colour on the server at large.
-            player.rawColor = currentColor;
-        }
+        this.#colors_.set(player, currentColor);
 
-        return { currentColor, didColorChange };
+        player.rawColor = currentColor;
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------

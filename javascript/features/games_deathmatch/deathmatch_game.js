@@ -402,12 +402,12 @@ export class DeathmatchGame extends GameBase {
             if (target === player) continue;
 
             if (!state.invisible.has(target)) {
-                player.colors.setVisibilityForPlayer(target, /* visible= */ false);
+                player.colors.setVisibilityOverrideForPlayer(target, /* visible= */ false);
                 state.invisible.add(target);
             }
 
             if (!targetState.invisible.has(player)) {
-                target.colors.setVisibilityForPlayer(player, /* visible= */ false);
+                target.colors.setVisibilityOverrideForPlayer(player, /* visible= */ false);
                 targetState.invisible.add(player);
             }
         }
@@ -417,12 +417,12 @@ export class DeathmatchGame extends GameBase {
             if (target === player) continue;
 
             if (state.invisible.has(target)) {
-                player.colors.setVisibilityForPlayer(target, /* visible= */ true);
+                player.colors.setVisibilityOverrideForPlayer(target, /* visible= */ true);
                 state.invisible.delete(target);
             }
 
             if (targetState.invisible.has(player)) {
-                target.colors.setVisibilityForPlayer(player, /* visible= */ true);
+                target.colors.setVisibilityOverrideForPlayer(player, /* visible= */ true);
                 targetState.invisible.delete(player);
             }
         }
@@ -434,15 +434,11 @@ export class DeathmatchGame extends GameBase {
         for (const [ target, targetState ] of this.#state_) {
             if (target === player) continue;
 
-            if (playerState.invisible.has(target)) {
-                player.colors.setVisibilityForPlayer(target, /* visible= */ true);
-                playerState.invisible.delete(target);
-            }
+            player.colors.releaseVisibilityOverrideForPlayer(target);
+            playerState.invisible.delete(target);
 
-            if (targetState.invisible.has(player)) {
-                target.colors.setVisibilityForPlayer(player, /* visible= */ true);
-                targetState.invisible.delete(player);
-            }
+            target.colors.releaseVisibilityOverrideForPlayer(player);
+            targetState.invisible.delete(player);
         }
     }
 

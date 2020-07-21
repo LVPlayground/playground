@@ -119,6 +119,7 @@ export class Player extends Supplementable {
     #serial_ = null;
     #ipAddress_ = null;
     #isNpc_ = null;
+    #version_ = null;
 
     #selectObjectResolver_ = null;
 
@@ -144,6 +145,7 @@ export class Player extends Supplementable {
         this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
         this.#ipAddress_ = pawnInvoke('GetPlayerIp', 'iS', this.#id_);
         this.#isNpc_ = !!pawnInvoke('IsPlayerNPC', 'i', this.#id_);
+        this.#version_ = this.#isNpc_ ? 'NPC' : pawnInvoke('GetPlayerVersion', 'iS', this.#id_);
     }
 
     notifyDisconnecting() { this.#connectionState_ = Player.kConnectionClosing; }
@@ -171,6 +173,8 @@ export class Player extends Supplementable {
     get gpci() { return this.#gpci_; }
   
     get serial() { return this.#serial_; }
+
+    get version() { return this.#version_; }
 
     get packetLossPercentage() {
         return toFloat(pawnInvoke('NetStats_PacketLossPercent', 'i', this.#id_))

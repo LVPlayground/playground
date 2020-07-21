@@ -23,6 +23,7 @@ export class MockPlayer extends Player {
     #ping_ = 30;
     #ipAddress_ = null;
     #isNpc_ = null;
+    #version_ = null;
 
     #isServerAdmin_ = false;
 
@@ -80,6 +81,7 @@ export class MockPlayer extends Player {
         this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
         this.#ipAddress_ = params.ip || '127.0.0.1';
         this.#isNpc_ = params.npc || false;
+        this.#version_ = params.version || '0.3.7-mock';
 
         this.#lastDialogPromiseResolve_ = null;
         this.#lastDialogPromise_ = new Promise(resolve => {
@@ -99,6 +101,8 @@ export class MockPlayer extends Player {
     get gpci() { return this.#gpci_; }
   
     get serial() { return this.#serial_; }
+
+    get version() { return this.#version_; }
 
     get packetLossPercentage() { return this.#packetLossPercentage_; }
     set packetLossPercentageForTesting(value) { this.#packetLossPercentage_ = value; }

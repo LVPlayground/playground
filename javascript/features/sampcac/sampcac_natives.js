@@ -10,11 +10,17 @@ export class SAMPCACNatives {
     static kGameOptionManualReloading = 1;
     static kGameOptionDriveOnWater = 2;
     static kGameOptionFireproof = 3;
+    static kGameOptionSprint = 4;
     static kGameOptionInfiniteSprint = 5;
     static kGameOptionInfiniteOxygen = 6;
     static kGameOptionInfiniteAmmo = 7;
     static kGameOptionNightVision = 8;
     static kGameOptionThermalVision = 9;
+
+    // Options that can be passed to the kGameOptionSprint value.
+    static kSprintDefault = 0;
+    static kSprintAllSurfaces = 1;
+    static kSprintDisabled = 2;
 
     // Glitches that can be toggled with SAMPCAC.
     static kGlitchQuickReload = 0;

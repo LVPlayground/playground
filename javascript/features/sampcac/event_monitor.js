@@ -49,7 +49,7 @@ export class EventMonitor extends SAMPCACEventObserver {
     // Called when the memory at the given |address| has been read in their GTA_SA.exe memory space,
     // with the actual memory contents being written to |buffer| as an Uint8Buffer.
     onPlayerMemoryRead(player, address, buffer) {
-        this.manager_.onMemoryResponse(player, address, buffer);
+        this.manager_.onMemoryResponse(player, address, [ ...buffer ]);
     }
 
     // Called when the |player| has taken a screenshot.

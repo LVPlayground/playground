@@ -2,20 +2,122 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Detector } from 'features/sampcac/detector.js';
+import { DetectorResults } from 'features/sampcac/detector_results.js';
+
+import { equals } from 'base/equals.js';
+
+// File (not checked in) in which detectors are located. Not required.
+const kDetectorConfiguration = 'detectors.json';
+
 // Time after which we consider a memory read to have timed out.
 export const kMemoryReadTimeoutMs = 3500;
 
 // Manages the SAMPCAC detectors that are available on the server. Will load its information from
 // a configuration file, unless tests are active, in which case they can be injected.
 export class DetectorManager {
+    detectors_ = null;
     natives_ = null;
     responseResolvers_ = null;
 
     constructor(natives) {
+        this.detectors_ = null;
         this.natives_ = natives;
         this.responseResolvers_ = new Map();
 
         server.playerManager.addObserver(this);
+    }
+
+    // Initializes the detectors from scratch. Will be lazily called the first time a detection run
+    // is started for a particular player, or the detectors are being reloaded by management.
+    initializeDetectors() {
+        this.detectors_ = new Set();
+
+        let configuration = null;
+        try {
+            configuration = JSON.parse(readFile(kDetectorConfiguration));
+        } catch {
+            return;  // bail out, the file does not exist
+        }
+
+        if (!Array.isArray(configuration))
+            throw new Error(`Expected the detector configuration to be an array.`);
+
+        for (const detectorConfiguration of configuration)
+            this.detectors_.add(new Detector(detectorConfiguration));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Runs the necessary checks on the given |player|, and returns an instance of DetectorResults
+    // to communicate back the |player|'s state. Could take multiple seconds.
+    async detect(player) {
+        if (this.detectors_ === null)
+            this.initializeDetectors();
+
+        const results = new DetectorResults();
+
+        // (1) Populate the meta-data fields of the results.
+        results.version = player.version;
+
+        if (this.natives_.getStatus(player)) {
+            results.sampcacVersion = this.natives_.getClientVersion(player).join('.');
+            results.sampcacHardwareId = this.natives_.getHardwareID(player);
+        }
+
+        results.minimized = player.isMinimized();
+
+        // (2) Run each of the detectors for the |player| in parallel and populate the results in
+        // the |results.detectors| map. There is no expectation for that map to be sorted.
+        results.detectors = new Map();
+
+        const tasks = [];
+
+        for (const detector of this.detectors_) {
+            tasks.push(this.requestDetection(player, detector).then(result => {
+                results.detectors.set(detector.name, result);
+            }));
+        }
+
+        // Wait for all the |tasks| to have been completed.
+        await Promise.all(tasks);
+
+        // (3) Return the |results| to the caller who requested this detection run.
+        return results;
+    }
+
+    // Requests the |detector| to run for the given |player|. Will return the result of the request
+    // as one of the DetectorResult.kResult* constants.
+    async requestDetection(player, detector) {
+        const response = await this.requestMemoryRead(player, detector.address, detector.bytes);
+        if (response === null)
+            return DetectorResults.kResultUnavailable;
+
+        // (1) Determine whether the |response| is a checksum (true) or an array of bytes (false).
+        const isChecksum = typeof response === 'number';
+
+        // (2) Consider the |response| based on the type of |detector| we're dealing with.
+        switch (detector.type) {
+            case Detector.kTypeAllowList:
+                if (isChecksum && detector.resultChecksum === response)
+                    return DetectorResults.kResultClean;
+
+                if (!isChecksum && equals(detector.resultBytes, response))
+                    return DetectorResults.kResultClean;
+
+                break;
+
+            case Detector.kTypeBlockList:
+                if (isChecksum && detector.resultChecksum === response)
+                    return DetectorResults.kResultDetected;
+                
+                if (!isChecksum && equals(detector.resultBytes, response))
+                    return DetectorResults.kResultDetected;
+
+                break;
+        }
+
+        return DetectorResults.kResultUndeterminable;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -53,8 +155,8 @@ export class DetectorManager {
 
         // Request a checksum for GTA_SA.exe's .text section as the contents are well known, so we
         // don't need the granularity and can reduce the data being transfered.
-        address < 0x856A00 ? this.natives_.readMemoryChecksum(player, address, bytes)
-                           : this.natives_.readMemory(player, address, bytes);
+        this.natives_.readMemory(player, address, bytes);
+        this.natives_.readMemoryChecksum(player, address, bytes)
 
         const result = await promise;
 

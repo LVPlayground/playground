@@ -33,6 +33,16 @@ export default class SAMPCAC extends Feature {
         this.monitor_ = new EventMonitor(this.manager_);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Public API of the SAMPCAC feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Runs the necessary checks on the given |player|, and returns an instance of DetectorResults
+    // to communicate back the |player|'s state. Could take multiple seconds.
+    async detect(player) { return await this.manager_.detect(player); }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         this.monitor_.dispose();
         this.monitor_ = null;

@@ -80,6 +80,9 @@ export class PlayerColorsManager extends PlayerEventObserver {
 
         // Otherwise the |playerTargetColor| is different from the |playerBaseColor|, which means
         // that a new override has to be created for this pair of players.
+        if (overrideMap.get(target) === playerTargetColor)
+            return;  // the override already exists
+
         overrideMap.set(target, playerTargetColor);
 
         player.setColorForPlayer(target, playerTargetColor);
@@ -120,12 +123,26 @@ export class PlayerColorsManager extends PlayerEventObserver {
 
     // Called when the |player| has freshly spawned into the world.
     onPlayerSpawn(player) {
-        // TODO: Do we have to synchronize colours here?
+        const overrideMap = this.#overrides_.get(player);
+        if (!overrideMap || !overrideMap.size)
+            return;  // there are no overrides for the given |player|
+
+        for (const target of server.playerManager) {
+            const overrideColor = overrideMap.get(target);
+            if (!overrideColor)
+                continue;  // no override has been created for the given |target|
+
+            player.setColorForPlayer(target, overrideColor);
+        }
     }
 
     // Called when the |target| has just streamed in for the given |player|.
     onPlayerStreamIn(player, target) {
-        // TODO: Do we have to synchronize colours here?
+        const overrideMap = this.#overrides_.get(target);
+        if (!overrideMap || !overrideMap.has(player))
+            return;  // there are no overrides for the given |player| for the given |target|
+
+        target.setColorForPlayer(player, overrideMap.get(player));
     }
 
     // ---------------------------------------------------------------------------------------------

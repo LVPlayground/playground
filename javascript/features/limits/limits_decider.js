@@ -214,9 +214,19 @@ export class LimitsDecider extends PlayerEventObserver {
         this.deathmatchDamageIssuedTime_.set(issuer, currentTime);
     }
 
-    // Called when the |player| has taken a shot, irrespective of whether it hit anything.
-    onPlayerWeaponShot(player) {
-        this.deathmatchWeaponShotTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    // Called when the |player| has taken a shot, irrespective of whether it hit anything. When the
+    // shot has hit a vehicle rather than a player, and the vehicle is occupied by a driver, then
+    // the driver will be tagged as having just taken damage instead.
+    onPlayerWeaponShot(player, weaponId, hitType, hitId, hitPosition) {
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+
+        this.deathmatchWeaponShotTime_.set(player, currentTime);
+
+        if (hitType === 2 /* BULLET_HIT_TYPE_VEHICLE */) {
+            const vehicleId = server.vehicleManager.getById(hitId);
+            if (vehicleId && vehicleId.driver)
+                this.deathmatchDamageTakenTime_.set(vehicleId.driver, currentTime);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -492,6 +492,8 @@
   "POSITIONING_FORWARD": "@success I like to move it, move it (forward)!",
 
   "PUNISHMENT_ADMIN_UNBAN": "%d (Id:%d) has unbanned %s: %s",
+  "PUNISHMENT_SCAN_ERROR_NPC": "@error It's not possible to scan non-player characters.",
+  "PUNISHMENT_SCAN_STARTING": "{CCCCCC}* Started scanning %s (Id:%d), this could take several seconds...",
 
   "RACE_ERROR_NO_RACES_AVAILABLE": "@error Sorry, there are no races available right now.",
   "RACE_ERROR_INVALID_RACE_ID": "@error Sorry, that is not a known race. Type /race for an overview!",

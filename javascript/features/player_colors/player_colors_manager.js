@@ -8,11 +8,15 @@ import { PlayerEventObserver } from 'components/events/player_event_observer.js'
 // making sure that new players have the appropriate colours assigned to them.
 export class PlayerColorsManager extends PlayerEventObserver {
     #colors_ = null;
+    #invisibilityList_ = null;
+    #invisibility_ = null;
 
     constructor() {
         super();
 
         this.#colors_ = new WeakMap();
+        this.#invisibilityList_ = new WeakMap();
+        this.#invisibility_ = new WeakSet();
     }
 
     // Observe the player manager to get connection and level change notifications. Not done in the
@@ -28,26 +32,38 @@ export class PlayerColorsManager extends PlayerEventObserver {
     getCurrentColorForPlayer(player) { return this.#colors_.get(player) ?? null; }
 
     // Synchronizes colour state for the given |player|. If the determined top-level color is not
-    // how they're currently represented on the server, that will be amended.
+    // how they're currently represented on the server, that will be amended, as will invisiblity
+    // settings which are controlled per-player.
     synchronizeForPlayer(player) {
-        const currentColor = this.#colors_.get(player);
-        const priorityColor = player.colors.gameColor ||
-                              player.colors.gangColor ||
-                              player.colors.customColor ||
-                              player.colors.levelColor ||
-                              player.colors.baseColor;
+        const { currentColor, didColorChange } = this.synchronizeColorForPlayer(player);
 
-        // If the |player|'s priority color and current color are the same, bail out.
-        if (currentColor === priorityColor)
-            return;
-
-        // Otherwise, update the |player|'s current color to the new priority color.
-        this.#colors_.set(player, priorityColor);
-
-        // TODO: Support visibility.
         // TODO: Support per-player visibility.
+    }
 
-        player.rawColor = priorityColor;
+    // Synchronizes the current color for the given |player|. Returns a structure with two fields:
+    // { currentColor, didColorChange }, to be used in the wider synchronization algorithm.
+    synchronizeColorForPlayer(player) {
+        const currentBaseColor = player.colors.gameColor ||
+                                 player.colors.gangColor ||
+                                 player.colors.customColor ||
+                                 player.colors.levelColor ||
+                                 player.colors.baseColor;
+
+        // The |player|'s current colour might have to be amended based on their visibility.
+        const currentColor = player.colors.visible ? currentBaseColor
+                                                   : currentBaseColor.withAlpha(0);
+
+        // Compare whether the |player|'s colour changed right now, to avoid a second check.
+        const didColorChange = this.#colors_.get(player) !== currentColor;
+        if (didColorChange) {
+            // (1) Update their colour in our internal state.
+            this.#colors_.set(player, currentColor);
+
+            // (2) Update their colour on the server at large.
+            player.rawColor = currentColor;
+        }
+
+        return { currentColor, didColorChange };
     }
 
     // ---------------------------------------------------------------------------------------------

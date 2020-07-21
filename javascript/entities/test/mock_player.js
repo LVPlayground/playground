@@ -42,7 +42,6 @@ export class MockPlayer extends Player {
     #specialAction_ = Player.kSpecialActionNone;
     #state_ = Player.kStateOnFoot;
     #isMinimized_ = false;
-    #invisibility_ = new Set();
 
     #drunkLevel_ = 0;
     #fightingStyle_ = Player.kFightingStyleNormal;

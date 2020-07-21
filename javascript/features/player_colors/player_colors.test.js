@@ -4,6 +4,8 @@
 
 import { Color } from 'base/color.js';
 
+import { kDefaultAlpha } from 'features/player_colors/default_colors.js';
+
 describe('PlayerColors', (it, beforeEach) => {
     let feature = null;
     let gunther = null;
@@ -82,5 +84,21 @@ describe('PlayerColors', (it, beforeEach) => {
         gunther.colors.customColor = null;
 
         assert.strictEqual(gunther.colors.currentColor, gunther.colors.baseColor);
+    });
+
+    it('should support both global and invididual invisibility', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+        const lucy = server.playerManager.getById(/* Lucy= */ 2);
+
+        // (1) Support for global, server-wide invisibility for a player.
+        assert.equal(gunther.color.a, kDefaultAlpha);
+
+        gunther.colors.visible = false;
+        assert.equal(gunther.color.a, 0);
+
+        gunther.colors.visible = true;
+        assert.equal(gunther.color.a, kDefaultAlpha);
+
+        // (2) Support for individual, per-player-for-player overrides of visibility.
     });
 });

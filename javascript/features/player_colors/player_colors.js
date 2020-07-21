@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { ColorPicker } from 'features/player_colors/color_picker.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { PlayerColorsManager } from 'features/player_colors/player_colors_manager.js';
 import { PlayerColorsSupplement } from 'features/player_colors/player_colors_supplement.js';
@@ -27,6 +28,16 @@ export default class PlayerColors extends Feature {
         // Initialize the Manager, which will create the necessary supplements.
         this.manager_.initialize();
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // API of the PlayerColors feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Takes the |player| through the color picker flow by displaying the picker to them. The caller
+    // of this function is expected to do the necessary Limits tests.
+    async displayColorPickerForPlayer(player) { return await ColorPicker.displayForPlayer(player); }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         Player.provideSupplement('colors', null);

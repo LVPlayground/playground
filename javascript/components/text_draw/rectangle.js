@@ -11,16 +11,18 @@ import { TextDraw } from 'components/text_draw/text_draw.js';
 // after a fair amount of trail and error, but it seems to work reliably despite the documentation
 // pointing out that these are entirely the wrong values.
 export class Rectangle extends TextDraw {
-  constructor(x, y, width, height, color) {
+  constructor(x, y, width, height, color, selectable = null) {
     super({
-      position: [x, y],
-      textSize: [x + width, 1],
-      letterSize: [1, Math.pow((height - 3) / 10, 1.0122)],
+      position: [ x, y ],
+      textSize: [ x + width, 1 ],
+      letterSize: [ 1, Math.pow((height - 3) / 10, 1.0122) ],
       alignment: TextDraw.ALIGN_LEFT,
 
       useBox: true,
       boxColor: color,
-      text: '_'
+      text: '_',
+
+      selectable
     });
   }
 };

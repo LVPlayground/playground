@@ -128,12 +128,12 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(lucy.team, Player.kNoTeam);
 
         // All the players should be able to see each other.
-        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
-        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
-        assert.isTrue(gunther.isVisibleToPlayerForTesting(lucy));
-        assert.isTrue(russell.isVisibleToPlayerForTesting(lucy));
-        assert.isTrue(lucy.isVisibleToPlayerForTesting(gunther));
-        assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(russell.colors.isVisibleForPlayer(gunther));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+        assert.isTrue(russell.colors.isVisibleForPlayer(lucy));
+        assert.isTrue(lucy.colors.isVisibleForPlayer(gunther));
+        assert.isTrue(lucy.colors.isVisibleForPlayer(russell));
 
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.isTrue(await lucy.issueCommand('/bubble'));
@@ -150,27 +150,18 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         // Gunther and Russell should be able to see each other, but not Lucy. Lucy shouldn't be
         // able to see either, based on the game's configuration.
-        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
-        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
-        assert.isFalse(gunther.isVisibleToPlayerForTesting(lucy));
-        assert.isFalse(russell.isVisibleToPlayerForTesting(lucy));
-        assert.isFalse(lucy.isVisibleToPlayerForTesting(gunther));
-        assert.isFalse(lucy.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(russell.colors.isVisibleForPlayer(gunther));
+        assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
+        assert.isFalse(russell.colors.isVisibleForPlayer(lucy));
+        assert.isFalse(lucy.colors.isVisibleForPlayer(gunther));
+        assert.isFalse(lucy.colors.isVisibleForPlayer(russell));
 
         assert.equal(gunther.team, game.getTeamForPlayer(gunther));
         assert.equal(russell.team, game.getTeamForPlayer(russell));
         assert.equal(lucy.team, game.getTeamForPlayer(lucy));
 
         assert.equal(gunther.team, russell.team);
-
-        assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0xAA);
-        assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0x00);  // invisible
-
-        assert.equal(russell.getColorForPlayerForTesting(gunther).a, 0xAA);
-        assert.equal(russell.getColorForPlayerForTesting(lucy).a, 0x00);  // invisible
-        
-        assert.equal(lucy.getColorForPlayerForTesting(gunther).a, 0x00);  // invisible
-        assert.equal(lucy.getColorForPlayerForTesting(russell).a, 0x00);  // invisible
 
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.isTrue(await russell.issueCommand('/leave'));
@@ -186,17 +177,15 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.equal(lucy.team, Player.kNoTeam);
 
         // All the players should be able to see each other again.
-        assert.isTrue(gunther.isVisibleToPlayerForTesting(russell));
-        assert.isTrue(russell.isVisibleToPlayerForTesting(gunther));
-        assert.isTrue(gunther.isVisibleToPlayerForTesting(lucy));
-        assert.isTrue(russell.isVisibleToPlayerForTesting(lucy));
-        assert.isTrue(lucy.isVisibleToPlayerForTesting(gunther));
-        assert.isTrue(lucy.isVisibleToPlayerForTesting(russell));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
+        assert.isTrue(russell.colors.isVisibleForPlayer(gunther));
+        assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
+        assert.isTrue(russell.colors.isVisibleForPlayer(lucy));
+        assert.isTrue(lucy.colors.isVisibleForPlayer(gunther));
+        assert.isTrue(lucy.colors.isVisibleForPlayer(russell));
     });
 
     it('should award players spawn armour and weapons, as configured', async (assert) => {
-        const kOriginalColor = Color.fromHex('FFFF00AA');  // admin yellow
-
         class BubbleGame extends DeathmatchGame {}
 
         feature.registerGame(BubbleGame, {
@@ -217,8 +206,9 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             maximumPlayers: 4,
         });
 
+        const currentColor = gunther.colors.currentColor;
+
         gunther.armour = 0;
-        gunther.color = kOriginalColor;
 
         assert.equal([ ...gunther.getWeaponsForTesting() ].length, 0);
 
@@ -238,7 +228,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         assert.throws(() => game.getStatisticsForPlayer(gunther));
 
-        assert.equal(gunther.color, kOriginalColor);
+        assert.deepEqual(gunther.color, currentColor);
         assert.equal([ ...gunther.getWeaponsForTesting() ].length, 0);
     });
 

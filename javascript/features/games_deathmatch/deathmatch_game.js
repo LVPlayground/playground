@@ -402,12 +402,12 @@ export class DeathmatchGame extends GameBase {
             if (target === player) continue;
 
             if (!state.invisible.has(target)) {
-                this.makeTargetInvisibleForPlayer(player, target, state.color);
+                player.colors.setVisibilityForPlayer(target, /* visible= */ false);
                 state.invisible.add(target);
             }
 
             if (!targetState.invisible.has(player)) {
-                this.makeTargetInvisibleForPlayer(target, player, targetState.color);
+                target.colors.setVisibilityForPlayer(player, /* visible= */ false);
                 targetState.invisible.add(player);
             }
         }
@@ -417,43 +417,30 @@ export class DeathmatchGame extends GameBase {
             if (target === player) continue;
 
             if (state.invisible.has(target)) {
-                this.makeTargetVisibleForPlayer(player, target, state.color);
+                player.colors.setVisibilityForPlayer(target, /* visible= */ true);
                 state.invisible.delete(target);
             }
 
             if (targetState.invisible.has(player)) {
-                this.makeTargetVisibleForPlayer(target, player, targetState.color);
+                target.colors.setVisibilityForPlayer(player, /* visible= */ true);
                 targetState.invisible.delete(player);
             }
         }
     }
 
-    // Makes the given |target| invisible for the given |player|.
-    makeTargetInvisibleForPlayer(player, target, playerColor) {
-        player.setColorForPlayer(target, playerColor.withAlpha(0));
-        player.toggleVisibilityToPlayer(target, /* visible= */ false);
-    }
-
-    // Makes the given |target| visible again for the given |player|. The player's |color| can be
-    // re-set as well, but this could be skipped when the |player| leaves the minigame.
-    makeTargetVisibleForPlayer(player, target, playerColor = null) {
-        if (playerColor !== null)
-            player.setColorForPlayer(target, playerColor);
-
-        player.toggleVisibilityToPlayer(target, /* visible= */ true);
-    }
-
     // Resets the map marker settings for the |player| as they are leaving the game. We the list of
     // participants and reset visibility for any invisible players.
-    resetMapMarkerSettingForPlayer(player, state) {
+    resetMapMarkerSettingForPlayer(player, playerState) {
         for (const [ target, targetState ] of this.#state_) {
-            if (state.invisible.has(target)) {
-                this.makeTargetVisibleForPlayer(player, target);
-                state.invisible.delete(target);
+            if (target === player) continue;
+
+            if (playerState.invisible.has(target)) {
+                player.colors.setVisibilityForPlayer(target, /* visible= */ true);
+                playerState.invisible.delete(target);
             }
 
             if (targetState.invisible.has(player)) {
-                this.makeTargetVisibleForPlayer(target, player);
+                target.colors.setVisibilityForPlayer(player, /* visible= */ true);
                 targetState.invisible.delete(player);
             }
         }
@@ -469,14 +456,10 @@ export class DeathmatchGame extends GameBase {
         if (!this.isTeamBased())
             throw new Error(`Cannot apply team colours in individual games.`);
 
-        const state = this.#state_.get(player);
-
         if (team === DeathmatchGame.kTeamAlpha)
-            state.color = kTeamColorAlpha;
+            player.colors.gameColor = kTeamColorAlpha;
         else if (team === DeathmatchGame.kTeamBravo)
-            state.color = kTeamColorBravo;
-
-        player.colors.gameColor = state.color;
+            player.colors.gameColor = kTeamColorBravo;
     }
 
     // Resets the |player|'s color back to what it was. We always re-set their color, as markers may

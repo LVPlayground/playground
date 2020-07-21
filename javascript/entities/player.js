@@ -260,7 +260,10 @@ export class Player extends Supplementable {
     // ---------------------------------------------------------------------------------------------
 
     get color() { return Color.fromNumberRGBA(pawnInvoke('GetPlayerColor', 'i', this.#id_)); }
-    set color(value) { pawnInvoke('SetPlayerColor', 'ii', this.#id_, value.toNumberRGBA()); }
+
+    // Note: you probably want to use player.colors.XXX instead. See the PlayerColorsSupplement in
+    // //features/player_colors/player_colors_supplement.js.
+    set rawColor(value) { pawnInvoke('SetPlayerColor', 'ii', this.#id_, value.toNumberRGBA()); }
 
     get health() { return pawnInvoke('GetPlayerHealth', 'iF', this.#id_); }
     set health(value) { pawnInvoke('SetPlayerHealth', 'if', this.#id_, value); }
@@ -291,14 +294,6 @@ export class Player extends Supplementable {
     isMinimized() { return isPlayerMinimized(this.#id_); }
 
     respawn() { pawnInvoke('SpawnPlayer', 'i', this.#id_); }
-
-    setColorForPlayer(target, color) {
-        pawnInvoke('SetPlayerMarkerForPlayer', 'iii', target.id, this.#id_, color.toNumberRGBA());
-    }
-
-    toggleVisibilityToPlayer(target, visible) {
-        pawnInvoke('ShowPlayerNameTagForPlayer', 'iii', target.id, this.#id_, !!visible ? 1 : 0);
-    }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Environment

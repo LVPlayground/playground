@@ -47,7 +47,7 @@ export class PlayerColorsManager extends PlayerEventObserver {
         // TODO: Support visibility.
         // TODO: Support per-player visibility.
 
-        player.color = priorityColor;
+        player.rawColor = priorityColor;
     }
 
     // ---------------------------------------------------------------------------------------------

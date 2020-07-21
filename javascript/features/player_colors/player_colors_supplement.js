@@ -14,8 +14,10 @@ export class PlayerColorsSupplement extends Supplement {
     #manager_ = null;
     #player_ = null;
 
-    // Boolean indicating whether this player should be visible.
+    // Boolean indicating whether this player should be visible, and a weak set listing the players
+    // to whom this player should be invisible.
     #visible_ = true;
+    #invisibility_ = new WeakSet();
 
     // Level 3: Custom color that players can determine themselves.
     #customColor_ = null;
@@ -44,6 +46,17 @@ export class PlayerColorsSupplement extends Supplement {
             throw new Error(`The visibility value must be given as a boolean.`);
         
         this.#visible_ = value;
+        this.#manager_.synchronizeForPlayer(this.#player_);
+    }
+
+    // Returns or sets whether this player should be visible to the |target|.
+    isVisibleForPlayer(target) { return !this.#invisibility_.has(target); }
+    setVisibilityForPlayer(target, visible) {
+        if (visible)
+            this.#invisibility_.delete(target);
+        else
+            this.#invisibility_.add(target);
+
         this.#manager_.synchronizeForPlayer(this.#player_);
     }
 

@@ -6,8 +6,8 @@
 // on expected readings, or on unexpected reasons. Immutable after construction.
 export class Detector {
     // Type of supported detectors.
-    static kTypeAllowList;
-    static kTypeBlockList;
+    static kTypeAllowList = 0;
+    static kTypeBlockList = 1;
 
     #address_ = null;
     #bytes_ = null;

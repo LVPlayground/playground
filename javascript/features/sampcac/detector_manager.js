@@ -101,18 +101,26 @@ export class DetectorManager {
             case Detector.kTypeAllowList:
                 if (isChecksum && detector.resultChecksum === response)
                     return DetectorResults.kResultClean;
+                else if (isChecksum && detector.resultChecksum !== null)
+                    return DetectorResults.kResultClean;
 
                 if (!isChecksum && equals(detector.resultBytes, response))
                     return DetectorResults.kResultClean;
+                else if (!isChecksum && detector.resultBytes !== null)
+                    return DetectorResults.kResultDetected;
 
                 break;
 
             case Detector.kTypeBlockList:
                 if (isChecksum && detector.resultChecksum === response)
                     return DetectorResults.kResultDetected;
-                
+                else if (isChecksum && detector.resultChecksum !== null)
+                    return DetectorResults.kResultClean;
+
                 if (!isChecksum && equals(detector.resultBytes, response))
                     return DetectorResults.kResultDetected;
+                else if (!isChecksum && detector.resultBytes !== null)
+                    return DetectorResults.kResultClean;
 
                 break;
         }

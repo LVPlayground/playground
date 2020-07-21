@@ -8,7 +8,7 @@
  */
 class Version {
     public const Major = 51;
-    public const Minor = 0;
+    public const Minor = 2;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects

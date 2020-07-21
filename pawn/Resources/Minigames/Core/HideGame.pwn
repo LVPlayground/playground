@@ -1217,13 +1217,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         NewsController->show(sMessage);
 
         ReleasePlayerGameColor(iPlayerID);
-
-        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-            if (Player(forPlayerId)->isConnected() == false)
-                continue;
-
-            ShowPlayerNameTagForPlayer(forPlayerId, iPlayerID, 1);
-        }
+        SetPlayerVisibility(iPlayerID, true);
 
         CHideGame__LoadPos( iPlayerID );
         CHideGame__ResetPlayerVariables( iPlayerID );
@@ -1249,12 +1243,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
             iWinner = playerId;
             ReleasePlayerGameColor(iWinner);
 
-            for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-                    continue;
-
-                ShowPlayerNameTagForPlayer(forPlayerId, iWinner, 1);
-            }
+            SetPlayerVisibility(iWinner, true);
 
             CHideGame__LoadPos( iWinner );
             break;
@@ -1463,12 +1452,7 @@ public CHideGame__Start()
             // Save their data.
             CHideGame__SavePos(playerId);
 
-            for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false)
-                    continue;
-
-                ShowPlayerNameTagForPlayer(forPlayerId, playerId, 0);
-            }
+            SetPlayerVisibility(playerId, false);
 
             // Set the position.
             aHidePlayerState[playerId] = HS_STATE_PLAYING;

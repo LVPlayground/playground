@@ -14,10 +14,5 @@ SetPlayerUpForGrenadeParty( playerid )
     ResetPlayerWeapons( playerid );
     GiveWeapon( playerid, 16, 3000);
     SetPlayerVirtualWorld(playerid, 107);
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-    {
-        ShowPlayerNameTagForPlayer( i, playerid, 0 );
-    }
-
     SetPlayerVisibility(playerid, false);
 }

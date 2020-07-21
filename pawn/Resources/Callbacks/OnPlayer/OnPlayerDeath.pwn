@@ -119,10 +119,6 @@ LegacyPlayerDeath(playerid, killerid, reason) {
         ResetWorldBounds(playerid);
     }
 
-    // A hidden RCON admin killing players will be shown as a regular /kill.
-    if (killerid != Player::InvalidId && IsPlayerAdmin(killerid) && PlayerInfo[killerid][playerIsHidden])
-        killerid = Player::InvalidId;
-
     // ---- VALID KILLER CASES ---------------------------------------------------------------------
 
     if (killerid != Player::InvalidId && Player(killerid)->isConnected() == true) {

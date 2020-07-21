@@ -209,7 +209,6 @@
 #include Resources/Callbacks/OnPlayer/OnPlayerDeath.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerCommandText.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerSpawn.pwn
-#include Resources/Callbacks/OnPlayer/OnPlayerStreamIn.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerStreamOut.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerSelectedMenuRow.pwn
 #include Resources/Callbacks/OnPlayer/OnPlayerExitedMenu.pwn

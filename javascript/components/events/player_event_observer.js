@@ -8,6 +8,9 @@ export class PlayerEventObserver {
     // Called when a player has died, potentially by another player. |killer| may be NULL.
     onPlayerDeath(player, killer, reason) {}
 
+    // Called when the |target| has just streamed in for the given |player|.
+    onPlayerStreamIn(player, target) {}
+
     // Called when a player has reported taking damage by the |issuer|. Both are guaranteed to be
     // valid Player instances. The other information is meta-data.
     onPlayerTakeDamage(player, issuer, amount, weaponId, bodyPart) {}

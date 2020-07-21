@@ -68,12 +68,6 @@ SetPlayerUpForMinigun(playerId) {
     ResetPlayerWeapons(playerId);
     GiveWeapon(playerId, 38, 999999);
 
-    for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-        if (Player(forPlayerId)->isConnected() == false)
-            continue;
-
-        ShowPlayerNameTagForPlayer(forPlayerId, playerId, 0);
-    }
-
     SetPlayerGameColor(playerId, Color::MinigameTransparentRed);
+    SetPlayerVisibility(playerId, false);
 }

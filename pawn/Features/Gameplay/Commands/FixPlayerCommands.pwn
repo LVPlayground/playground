@@ -138,14 +138,6 @@ class FixPlayerCommands {
         ReleasePlayerGameColor(playerId);
         SetPlayerVisibility(playerId, true);
 
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); ++subjectId) {
-            if (Player(subjectId)->isConnected() == false)
-                continue;
-
-            ShowPlayerNameTagForPlayer(subjectId, playerId, true);
-            ShowPlayerNameTagForPlayer(playerId, subjectId, true);
-        }
-
         SetPlayerWantedLevel(playerId, 0);
         RemovePlayerFromAnyGame(playerId);
         SetInvolvedInJavaScriptGame(playerId, false);

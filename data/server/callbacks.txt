@@ -67,7 +67,7 @@ forward OnPlayerExitedMenu(playerid);
 forward OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
 forward OnPlayerKeyStateChange(playerid, newkeys, oldkeys);
 forward OnRconLoginAttempt( ip[], password[], success );
-forward OnPlayerStreamIn(playerid, forplayerid);
+[Deferred] forward OnPlayerStreamIn(playerid, forplayerid);
 forward OnPlayerStreamOut(playerid, forplayerid);
 forward OnVehicleStreamIn(vehicleid, forplayerid);
 forward OnVehicleStreamOut(vehicleid, forplayerid);

@@ -36,13 +36,6 @@ OnPlayerLVPConnect(playerid) {
     if (!strcmp(Player(playerid)->nicknameString(), iRecordName, false))
         iServerChampion = playerid;
 
-    for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); subjectId++) {
-        if (Player(subjectId)->isConnected() == false)
-            continue;
-
-        ShowPlayerNameTagForPlayer(playerid, subjectId, 1);
-    }
-
     GetPlayerName(playerid, PlayerInfo[playerid][playerName], 32);
     iRconLoginAttempts[playerid] = 0;
 

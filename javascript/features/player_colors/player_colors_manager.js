@@ -2,18 +2,25 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { PlayerEventObserver } from 'components/events/player_event_observer.js';
+
 // The Manager is responsible for aligning server state with our internal representation, and for
 // making sure that new players have the appropriate colours assigned to them.
-export class PlayerColorsManager {
+export class PlayerColorsManager extends PlayerEventObserver {
     #colors_ = null;
 
     constructor() {
+        super();
+
         this.#colors_ = new WeakMap();
     }
 
     // Observe the player manager to get connection and level change notifications. Not done in the
     // constructor because we have a chicken-and-egg problem between the Manager and the supplement.
-    initialize() { server.playerManager.addObserver(this, /* replayHistory= */ true); }
+    initialize() {
+        server.deferredEventManager.addObserver(this);
+        server.playerManager.addObserver(this, /* replayHistory= */ true);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -37,6 +44,9 @@ export class PlayerColorsManager {
         // Otherwise, update the |player|'s current color to the new priority color.
         this.#colors_.set(player, priorityColor);
 
+        // TODO: Support visibility.
+        // TODO: Support per-player visibility.
+
         player.color = priorityColor;
     }
 
@@ -50,7 +60,16 @@ export class PlayerColorsManager {
     // Called when the level of the given |player| has changed.
     onPlayerLevelChange(player) { this.synchronizeForPlayer(player); }
 
+    // Called when the |target| has just streamed in for the given |player|. We need to ensure
+    // invisibility in this method, as that seems to reset through streaming.
+    onPlayerStreamIn(player, target) {
+
+    }
+
     // ---------------------------------------------------------------------------------------------
 
-    dispose() { server.playerManager.removeObserver(this); }
+    dispose() {
+        server.playerManager.removeObserver(this);
+        server.deferredEventManager.removeObserver(this);
+    }
 }

@@ -68,12 +68,6 @@ SetPlayerUpForSniper(playerId) {
     ResetPlayerWeapons(playerId);
     GiveWeapon(playerId, 34, 3000);
 
-    for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-        if (Player(forPlayerId)->isConnected() == false)
-            continue;
-
-        ShowPlayerNameTagForPlayer(forPlayerId, playerId, 0);
-    }
-
     SetPlayerGameColor(playerId, Color::MinigameTransparentRed);
+    SetPlayerVisibility(playerId, false);
 }

@@ -249,7 +249,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerSelectedMenuRow.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerSpawn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>

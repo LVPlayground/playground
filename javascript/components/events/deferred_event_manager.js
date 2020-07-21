@@ -42,7 +42,7 @@ export class DeferredEventManager {
     // Handles the given |event|, generally fed from the deferred event dispatcher. Will execute
     // arbitrary code that could throw, which should not disrupt the dispatcher.
     handleSingleEvent(type, event) {
-        let player, killer, issuer, position;
+        let player, killer, issuer, position, target;
 
         switch (type) {
             case 'CAC_OnCheatDetect':
@@ -140,7 +140,17 @@ export class DeferredEventManager {
             case 'OnPlayerShootDynamicObject':
                 server.objectManager.onPlayerShootObject(event);
                 break;
-            
+
+            case 'OnPlayerStreamIn':
+                player = server.playerManager.getById(event.playerid);
+                target = server.playerManager.getById(event.forplayerid);
+
+                if (player && target) {
+                    for (const observer of this.playerObservers_)
+                        observer.onPlayerStreamIn(target, player);
+                }
+                break;
+
             case 'OnPlayerTakeDamage':
                 player = server.playerManager.getById(event.playerid);
                 issuer = server.playerManager.getById(event.issuerid);

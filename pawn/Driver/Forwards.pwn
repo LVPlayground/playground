@@ -11,6 +11,7 @@ public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, respons
 public OnPlayerPickUpDynamicPickup(playerid, STREAMER_TAG_PICKUP:pickupid) {}
 public OnPlayerSelectDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, modelid, Float:x, Float:y, Float:z) {}
 public OnPlayerShootDynamicObject(playerid, weaponid, STREAMER_TAG_OBJECT:objectid, Float:x, Float:y, Float:z) {}
+public OnPlayerStreamIn(playerid, forplayerid) {}
 
 forward CAC_OnCheatDetect(player_id, cheat_id, opt1, opt2);
 public CAC_OnCheatDetect(player_id, cheat_id, opt1, opt2) {}

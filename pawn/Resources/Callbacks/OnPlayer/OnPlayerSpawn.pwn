@@ -77,18 +77,6 @@ OriginalOnPlayerSpawn(playerId) {
     }
 #endif
 
-    // Show player nametags to everyone if the player isn't hidden.
-    if (PlayerInfo[playerId][playerIsHidden] == 0) {
-        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-            if (Player(forPlayerId)->isConnected() == true)
-                continue;
-
-            ShowPlayerNameTagForPlayer(forPlayerId, playerId, 1);
-        }
-
-        SetPlayerVisibility(playerid, true);
-    }
-
 #if Feature::DisableFights == 0
     // Remove the player from a minigame. If the player isn't in any minigame, make sure the skin
     // and color are correct.

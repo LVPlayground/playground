@@ -16,10 +16,5 @@ SetPlayerUpForRocket( playerid )
     GiveWeapon( playerid, 35, 3000);
 
     SetPlayerVirtualWorld(playerid, 108);
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-    {
-        ShowPlayerNameTagForPlayer( i, playerid, 0 );
-    }
-
     SetPlayerVisibility(playerid, false);
 }

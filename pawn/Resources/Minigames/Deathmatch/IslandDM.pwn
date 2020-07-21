@@ -79,7 +79,7 @@ SetupPlayerForIslandDM(playerid)
         SetPlayerGameColor(playerid, Color::MinigameTransparentBlue);
     }
     Streamer_Update(playerid);
-    islandDMToggleBlip(playerid, false);
+    SetPlayerVisibility(playerid, false);
 
     // Freeze the player for 4 seconds to give the objects a chance to load.
     TogglePlayerControllable(playerid, 0);
@@ -157,7 +157,7 @@ islandDMRemovePlayer(playerid)
     islandDMTeam[playerid] = NO_TEAM;
     SetPlayerTeam(playerid, NO_TEAM);
     PlayerInfo[playerid][PlayerStatus] = STATUS_NONE;
-    islandDMToggleBlip(playerid, true);
+    SetPlayerVisibility(playerid, true);
 
     ReleasePlayerGameColor(playerid);
 
@@ -180,7 +180,7 @@ islandDMRemovePlayer(playerid)
                 continue;
             }
 
-            islandDMToggleBlip(playerid, true);
+            SetPlayerVisibility(playerid, true);
             GameTextForPlayer(i, "~g~You win!", 5000, 5);
             GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
             islandDMTeam[i] = NO_TEAM;
@@ -214,7 +214,7 @@ islandDMRemovePlayer(playerid)
                 continue;
             }
 
-            islandDMToggleBlip(playerid, true);
+            SetPlayerVisibility(playerid, true);
             GameTextForPlayer(i, "~g~You win!", 5000, 5);
             GiveRegulatedMoney(i, MinigameVictory, 2 /* participants */);
             islandDMTeam[i] = NO_TEAM;
@@ -226,37 +226,5 @@ islandDMRemovePlayer(playerid)
         MinigameTypeInfo[Progress] = 0;
         MinigameTypeInfo[CurrentMinigame] = STATUS_NONE;
         SendClientMessageToAll(Color::Information, "* The Soldiers have won the Island DM!");
-    }
-}
-
-// This function shows / hides player blips for the island dm minigame
-islandDMToggleBlip(playerid, bool:show)
-{
-    // Alright just show every name tag for the player.
-    if(show == true)
-    {
-
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(!Player(i)->isConnected())
-            {
-                continue;
-            }
-
-            ShowPlayerNameTagForPlayer(playerid, i, true);
-        }
-        return;
-    }
-
-
-    // we may have to hide the map icons & nametags to!
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-    {
-        if(!Player(i)->isConnected() || IsPlayerNPC(i) || i == playerid)
-        {
-            continue;
-        }
-
-        ShowPlayerNameTagForPlayer(playerid, i, false);
     }
 }

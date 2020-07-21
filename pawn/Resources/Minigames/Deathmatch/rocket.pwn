@@ -21,5 +21,5 @@ SetPlayerUpForRocket( playerid )
         ShowPlayerNameTagForPlayer( i, playerid, 0 );
     }
 
-    ColorManager->setPlayerMarkerHidden(playerid, true);
+    SetPlayerVisibility(playerid, false);
 }

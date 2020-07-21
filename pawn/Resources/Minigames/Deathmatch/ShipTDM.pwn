@@ -46,7 +46,7 @@ SetupPlayerForShipTDM( playerid )
     m_sTDM_Members[ iPlayerTeamID ][ iTeamMembers ] = playerid;
     SetPlayerTeam( playerid, ( 70 + iPlayerTeamID ) );
 
-    ColorManager->setPlayerMarkerHidden(playerid, true);
+    SetPlayerVisibility(playerid, false);
 
     new iOtherTeamID = ( iPlayerTeamID == 1 ) ? TEAM_A : TEAM_B;
 
@@ -185,7 +185,7 @@ StopPlayerForShipTDM( playerid, reason )
     SetPlayerTeam( playerid, NO_TEAM );
 
     ReleasePlayerGameColor(playerid);
-    ColorManager->setPlayerMarkerHidden(playerid, false);
+    SetPlayerVisibility(playerid, true);
 
     new iOtherTeamID = 1;
     for (new i = 0; i < m_sTDM_Teams[ 1 ]; i++) {

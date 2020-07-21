@@ -228,7 +228,6 @@ ResetPlayerStats(playerId) {
     iLoan[playerId] = 0;
     isCaged[playerId] = false;
     PlayerInfo[playerId][playerIsHidden] = false;
-    ColorManager->setPlayerMarkerHidden(playerId, false);
 #if Feature::DisableFights == 0
     CFightClub__SetKillCount(playerId, 0);
     CFightClub__SetDeathCount(playerId, 0);

@@ -52,8 +52,10 @@ ResetPlayerMoneyJS
 GetAccountBalanceJS
 DepositToAccountJS
 
+# native SetPlayerVisibility(playerid, visible);
 # native SetPlayerGameColor(playerid, color);
 # native ReleasePlayerGameColor(playerid);
+SetPlayerVisibility
 SetPlayerGameColor
 ReleasePlayerGameColor
 

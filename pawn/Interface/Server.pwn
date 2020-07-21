@@ -38,6 +38,7 @@ native ResetPlayerMoneyJS(playerid);
 native GetAccountBalanceJS(playerid, balance[]);
 native DepositToAccountJS(playerid, amount);
 
+native SetPlayerVisibility(playerid, visible);
 native SetPlayerGameColor(playerid, color);
 native ReleasePlayerGameColor(playerid);
 

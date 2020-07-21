@@ -148,8 +148,6 @@
     <DiskObject>\Features\Gameplay.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\</DiskObject>
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>

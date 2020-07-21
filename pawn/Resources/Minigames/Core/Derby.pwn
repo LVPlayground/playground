@@ -1946,15 +1946,14 @@ CDerby__SetPlayerBlip(playerid)
 {
     if(CDerby__GetPlayerState(playerid) <= DERBY_STATE_SIGNUP)
     {
-        ColorManager->setPlayerMarkerHidden(playerid, false);
-
+        SetPlayerVisibility(playerid, true);
         return 1;
     }
     new iDerbyID = CDerby__GetPlayerDerby(playerid);
 
     if(!CDerby__IsBlipsEnabled(iDerbyID))
     {
-        ColorManager->setPlayerMarkerHidden(playerid, true);
+        SetPlayerVisibility(playerid, false);
     }
     return 1;
 }

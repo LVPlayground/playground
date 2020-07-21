@@ -14,6 +14,9 @@ export class PlayerColorsSupplement extends Supplement {
     #manager_ = null;
     #player_ = null;
 
+    // Boolean indicating whether this player should be visible.
+    #visible_ = true;
+
     // Level 3: Custom color that players can determine themselves.
     #customColor_ = null;
 
@@ -32,6 +35,17 @@ export class PlayerColorsSupplement extends Supplement {
 
     // Gets the colour through which the player is currently represented on the server.
     get currentColor() { return this.#manager_.getCurrentColorForPlayer(this.#player_); }
+
+    // Gets or sets whether this player should be visible. Making them invisible will hide both
+    // their map icon and their name text for other players.
+    get visible() { return this.#visible_; }
+    set visible(value) {
+        if (typeof value !== 'boolean')
+            throw new Error(`The visibility value must be given as a boolean.`);
+        
+        this.#visible_ = value;
+        this.#manager_.synchronizeForPlayer(this.#player_);
+    }
 
     // Gets the base color (level 1) that's determined solely based on the player's ID.
     get baseColor() { return getDefaultColorForPlayer(this.#player_); }

@@ -86,7 +86,7 @@ OriginalOnPlayerSpawn(playerId) {
             ShowPlayerNameTagForPlayer(forPlayerId, playerId, 1);
         }
 
-        ColorManager->setPlayerMarkerHidden(playerId, false);
+        SetPlayerVisibility(playerid, true);
     }
 
 #if Feature::DisableFights == 0

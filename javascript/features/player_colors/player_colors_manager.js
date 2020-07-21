@@ -118,10 +118,14 @@ export class PlayerColorsManager extends PlayerEventObserver {
     // Called when the level of the given |player| has changed.
     onPlayerLevelChange(player) { this.synchronizeForPlayer(player); }
 
-    // Called when the |target| has just streamed in for the given |player|. We need to ensure
-    // invisibility in this method, as that seems to reset through streaming.
-    onPlayerStreamIn(player, target) {
+    // Called when the |player| has freshly spawned into the world.
+    onPlayerSpawn(player) {
+        // TODO: Do we have to synchronize colours here?
+    }
 
+    // Called when the |target| has just streamed in for the given |player|.
+    onPlayerStreamIn(player, target) {
+        // TODO: Do we have to synchronize colours here?
     }
 
     // ---------------------------------------------------------------------------------------------

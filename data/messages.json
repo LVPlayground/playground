@@ -485,6 +485,7 @@
   "PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT" : "@error Sorry, you can't get weapons now because you %s.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET" : "@error Sorry, the player can't get weapons now because %s %s.",
   "PLAYER_COMMANDS_SPAWN_WEAPONS_WEAPON": "@success %s with ammo multiplier '%d' has been bought.",
+  "PLAYER_COMMANDS_REQUIRES_VIP": "@error Sorry, this command is only available for VIPs. Check out /vip!",
 
   "POSITIONING_CURRENT_POSITION": "Your current position is X: %d, Y: %d Z: %d, Rotation: %d",
   "POSITIONING_OTHER_USAGE_POS": "{FF9900}Other usage{FFFFFF}: /pos [x] [y] [z]",

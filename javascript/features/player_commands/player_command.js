@@ -2,26 +2,60 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// The playerCommand can be used by using /my [playerCommand] [params]
+// Represents a player-bound command. Accessible using either "/my [name]" or "/p [player] [name]"
+// when the player executing the command is an administrator. Has access to various dependencies.
 export class PlayerCommand {
+    #announce_ = null;
+    #finance_ = null;
+    #limits_ = null;
+
     constructor(announce, finance, limits) {
-        this.announce_ = announce;
-        this.finance_ = finance;
-        this.limits_ = limits;
+        this.#announce_ = announce;
+        this.#finance_ = finance;
+        this.#limits_ = limits;
     }
 
-    // Gets the name of the current command. Must be implemented by the command.
-    get name() {
-        throw new Error('Command::name getter must be implemented by the command.');
+    // Gets read-only access to the dependencies available to commands.
+    get announce() { return this.#announce_; }
+    get finance() { return this.#finance_; }
+    get limits() { return this.#limits_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Required API to be implemented by individual commands.
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the name of the command ("/{name}").
+    get name() { throw new Error('PlayerCommand::name is expected to be implemented.'); }
+
+    // Executes the command, which has been invoked by the |player|, for the |target|. The |target|
+    // may either be the |player| (when /my is used), or another player through administrator use.
+    execute(player, target) {}
+
+    // ---------------------------------------------------------------------------------------------
+    // Optional API to be implemented by individual commands.
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets the required level for this command to be available through the "/p [player]" command.
+    get administratorLevel() { return Player.LEVEL_ADMINISTRATOR; }
+
+    // Gets the parameters (& default values) available when players run this command.
+    get parameters() { return []; }
+
+    // Gets the required level for this command to be available through the "/my" command.
+    get playerLevel() { return Player.LEVEL_PLAYER; }
+
+    // Gets whether players have to be VIP in order to be able to execute this command.
+    get playerVip() { return false; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    toString() { return `[object PlayerCommand("/${this.name}")]`; }
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {
+        this.#announce_ = null;
+        this.#finance_ = null;
+        this.#limits_ = null;
     }
-
-    // Builds the command based on |commandBuilder|. Must be implemented by the command.
-    build(commandBuilder) {
-        throw new Error('Command::build() must be implemented by the command: /' + this.name);
-    }
-
-    // Build the admin version o the command based on |commandBuilder|
-    buildAdmin(commandBuilder) { }
-
-    dispose() {}
 }

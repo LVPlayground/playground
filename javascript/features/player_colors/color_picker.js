@@ -18,6 +18,9 @@ export class ColorPicker {
     // Displays the color picker for the given |player|. This will start the two-phase flow, and
     // return either a Color instance when selected, or null when aborted.
     static async displayForPlayer(player) {
+        if (server.isTest())
+            return Color.fromRGBA(255, 255, 0, 0x80);
+
         // (1) Have the |player| select the base color from which they will pick a shade.
         const baseColor =
             await displayColorPicker(player, kSelectBaseTitle, ColorPicker.getColorFamilies());

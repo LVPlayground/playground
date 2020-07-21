@@ -626,7 +626,7 @@ describe('GangCommands', (it, beforeEach) => {
 
         assert.isTrue(await player.issueCommand('/gang settings'));
 
-        assert.deepEqual(gang.color, Color.RED /* defined in color_manager.js */);
+        assert.deepEqual(gang.color, Color.fromRGBA(255, 255, 0, 0x80));
 
         assert.equal(player.messages.length, 1);
         assert.equal(player.lastDialog,

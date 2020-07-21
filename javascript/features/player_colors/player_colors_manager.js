@@ -62,6 +62,9 @@ export class PlayerColorsManager extends PlayerEventObserver {
         overrideMap = overrideMap ?? this.#overrides_.get(player);
 
         const playerBaseColor = this.#colors_.get(player);
+        if (!playerBaseColor)
+            return;  // race conditions exist in tests that cause a player to not be set
+
         const playerTargetColor =
             player.colors.isVisibleForPlayer(target) ? playerBaseColor.withAlpha(kDefaultAlpha)
                                                      : playerBaseColor.withAlpha(0);
@@ -143,6 +146,15 @@ export class PlayerColorsManager extends PlayerEventObserver {
             return;  // there are no overrides for the given |player| for the given |target|
 
         target.setColorForPlayer(player, overrideMap.get(player));
+    }
+
+    // Called when the |player| has disconnected from the server. Clean up their state.
+    onPlayerDisconnect(player) {
+        this.#colors_.delete(player);
+        this.#overrides_.delete(player);
+
+        for (const target of server.playerManager)
+            target.colors.releaseVisibilityOverrideForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

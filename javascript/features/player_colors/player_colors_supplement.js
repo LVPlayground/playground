@@ -14,10 +14,10 @@ export class PlayerColorsSupplement extends Supplement {
     #manager_ = null;
     #player_ = null;
 
-    // Boolean indicating whether this player should be visible, and a weak map listing the
+    // Boolean indicating whether this player should be visible, and a map listing the
     // visibility overrides that have been created for this player.
     #visible_ = true;
-    #visibilityOverrides_ = new WeakMap();
+    #visibilityOverrides_ = new Map();
 
     // Level 3: Custom color that players can determine themselves.
     #customColor_ = null;

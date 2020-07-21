@@ -11,6 +11,7 @@
     <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
     <DiskObject>\Driver\Drift\DriftUi.pwn</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
+    <DiskObject>\Driver\Forwards.pwn</DiskObject>
     <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
     <DiskObject>\Driver\ThirdParty\</DiskObject>
     <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
@@ -149,7 +150,6 @@
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\</DiskObject>
     <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\ColorPicker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
@@ -345,7 +345,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\Forwards.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

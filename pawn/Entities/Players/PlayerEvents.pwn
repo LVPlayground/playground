@@ -165,25 +165,6 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
 
         return 1;
     }
-
-    /**
-     * Invoked when the player clicks a selectable textdraw.
-     *
-     * @param clickedId Id of the textdraw which the player clicked on.
-     */
-    public onPlayerClickTextDraw(Text: clickedId) {
-        if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-            return 0;
-
-        // A fix for the CancelSelectTextDraw loop which calls this function with INVALID_TEXT_DRAW.
-        if (clickedId == Text: INVALID_TEXT_DRAW)
-            return 1;
-
-        // Forward the OnPlayerClickTextDraw callback to those who are interested in it.
-        Annotation::ExpandList<OnPlayerClickTextDraw>(playerId, clickedId);
-
-        return 1;
-    }
 };
 
 /**
@@ -192,4 +173,3 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  */
 public OnIncomingConnection(playerid, ip_address[], port) { PlayerEvents(playerid)->onIncomingConnection(ip_address, port); return 1; }
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) { PlayerEvents(playerid)->onPlayerClickMap(fX, fY, fZ); return 1; }
-public OnPlayerClickTextDraw(playerid, Text:clickedid) { return PlayerEvents(playerid)->onPlayerClickTextDraw(clickedid); }

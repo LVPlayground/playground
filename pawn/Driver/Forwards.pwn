@@ -5,6 +5,7 @@
 // Various callbacks have to be listened to in Pawn in order to be interceptable by JavaScript. This
 // file defines empty public methods for that purpose.
 
+public OnPlayerClickTextDraw(playerid, Text:clickedid) {}
 public OnPlayerText(playerid, text[]) {}
 public OnPlayerEditDynamicObject(playerid, STREAMER_TAG_OBJECT:objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz) {}
 public OnPlayerPickUpDynamicPickup(playerid, STREAMER_TAG_PICKUP:pickupid) {}

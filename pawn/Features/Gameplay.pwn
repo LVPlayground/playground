@@ -12,7 +12,6 @@
 // Color Manager's duty is to set the right nickname colors and to keep track of previous ones.
 // The Color Picker is available for VIPs to change their nickname color and preserve this.
 #include "Features/Gameplay/Colors/ColorManager.pwn"
-#include "Features/Gameplay/Colors/ColorPicker.pwn"
 
 // Enable the new nitro-system to have it more isolated. This feature handles everything with nitro:
 // whetether the vehicle is applicable and attaching nitro to a vehicle.

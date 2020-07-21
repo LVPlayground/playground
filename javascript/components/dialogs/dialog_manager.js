@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ColorPickerManager } from 'components/dialogs/color_picker_manager.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The dialog manager manages allocation of the dialog ids to individual dialogs that should be
@@ -19,8 +18,6 @@ export class DialogManager {
     this.callbacks_ = new ScopedCallbacks();
 
     // Attach the global event listeners which we need to reliably handle dialog responses.
-    this.callbacks_.addEventListener(
-        'colorpickerresponse', DialogManager.prototype.onColorPickerResponse.bind(this));
     this.callbacks_.addEventListener(
         'dialogresponse', DialogManager.prototype.onDialogResponse.bind(this));
     this.callbacks_.addEventListener(
@@ -43,18 +40,6 @@ export class DialogManager {
 
       this.dialogs_[dialogId] = { resolve: resolve, reject: reject };
     });
-  }
-
-  // Called when the player has issued a response to the color picker. This is triggered by Pawn,
-  // and the result will be forwarded to the ColorPickerManager.
-  onColorPickerResponse(event) {
-    const player = server.playerManager.getById(event.playerid);
-    if (!player)
-      return;  // the event was invoked for an invalid player
-
-    const color = event.color ? Color.fromNumberRGBA(event.color) : null /* dismissed */;
-
-    ColorPickerManager.sendResult(player, color);
   }
 
   // Called when |event.playerid| has selected an option from the dialog. All available information

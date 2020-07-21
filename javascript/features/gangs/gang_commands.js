@@ -2,7 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ColorPicker } from 'components/dialogs/color_picker.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { Dialog } from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
@@ -73,10 +72,11 @@ const SKIN_QUESTION = {
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager, announce, finance, settings) {
+    constructor(manager, announce, finance, playerColors, settings) {
         this.manager_ = manager;
         this.announce_ = announce;
         this.finance_ = finance;
+        this.playerColors_ = playerColors;
         this.settings_ = settings;
 
         // Map of players to the gangs they have been invited by.
@@ -483,7 +483,7 @@ class GangCommands {
             });
 
             menu.addItem('Member color', '-', async() => {
-                const color = await ColorPicker.show(player);
+                const color = await this.playerColors_().displayColorPickerForPlayer(player);
                 if (!color)
                     return;  // the leader decided to not update the gang's color
 

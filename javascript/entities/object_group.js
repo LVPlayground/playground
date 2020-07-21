@@ -4,7 +4,7 @@
 
 import { ScopedEntities } from 'entities/scoped_entities.js';
 
-// Private symbol ensuring that the ColorPicker constructor won't be used.
+// Private symbol ensuring that the ObjectGroup constructor won't be used.
 const PrivateSymbol = Symbol('Please use the static methods.');
 
 // An object group is an immutable group of objects, loaded from a JSON file, that is tied to a

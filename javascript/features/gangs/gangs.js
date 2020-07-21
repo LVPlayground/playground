@@ -13,20 +13,20 @@ class Gangs extends Feature {
     constructor() {
         super();
 
-        // Amends player colours based on the gang that they're part of.
-        this.defineDependency('player_colors');
-
         // Used for announcing gang-related events to players and administrators.
         const announce = this.defineDependency('announce');
 
         // Used to interact with the bank accounts owned by individual players.
         const finance = this.defineDependency('finance');
 
+        // Used to display a color picker when selecting a gang color.
+        const playerColors = this.defineDependency('player_colors');
+
         // Used to customize bits of functionality related to how gangs work.
         const settings = this.defineDependency('settings');
 
         this.manager_ = new GangManager();
-        this.commands_ = new GangCommands(this.manager_, announce, finance, settings);
+        this.commands_ = new GangCommands(this.manager_, announce, finance, playerColors, settings);
     }
 
     // ---------------------------------------------------------------------------------------------

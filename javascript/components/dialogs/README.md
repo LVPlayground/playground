@@ -3,21 +3,6 @@ The dialogs component provides access to SA-MP's [dialog feature](
 http://wiki.sa-mp.com/wiki/ShowPlayerDialog). It features both mid-level and high-level abstractions
 for the common types of dialogs.
 
-## Interface: ColorPicker
-The `ColorPicker` class (defined in [color_picker.js](color_picker.js)) will display a color picker
-to the player from which they can select one of 49 predefined colors. The picker itself has been
-implemented [in Pawn](/pawn/Features/Gameplay/Colors/ColorPicker.pwn).
-
-Example:
-```javascript
-ColorPicker.show(player).then(color => {
-    if (color)
-        console.log(player.name + ' selected: ' + color.toHexRGB());
-    else
-        console.log(player.name + ' did not select a color.');
-});
-```
-
 ## Interface: Message
 The `Message` class (defined in [message.js](message.js)) enables to to display a simple message in
 a centered dialog on the player's screen. Keep in mind that this will completely obstruct their

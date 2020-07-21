@@ -39,7 +39,7 @@ export class SpawnWeapons extends PlayerCommand {
         }
 
         if (!WeaponData.hasSpawnWeapon(weapon)) {
-            player.sendMessage(Message.PLAYER_COMMANDS_INVALID_SPAWN_WEAPON, weapon);
+            player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_INVALID_WEAPON, weapon);
             return;
         }
 

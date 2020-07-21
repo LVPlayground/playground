@@ -18,10 +18,11 @@ export default class PlayerCommands extends Feature {
         const announce = this.defineDependency('announce');
         const finance = this.defineDependency('finance');
         const limits = this.defineDependency('limits');
+        const playerColors = this.defineDependency('player_colors');
 
         // The PlayerCommandRegistry loads and keeps track of the individual available commands,
         // which will be loaded from files through a globbing pattern.
-        this.registry_ = new PlayerCommandRegistry(announce, finance, limits);
+        this.registry_ = new PlayerCommandRegistry(announce, finance, limits, playerColors);
 
         // Initialize immediately when running the production server, otherwise lazily.
         if (!server.isTest())

@@ -74,7 +74,7 @@ export class PlayerCommandRegistry {
 
         // Bail out if the |player| is using the command on themselves, it requires VIP access and
         // they don't have VIP access. Administrators cannot cheat this way either.
-        if (self === player && command.playerVip && !player.isVip()) {
+        if (self === player && command.requireVip && !player.isVip()) {
             player.sendMessage(Message.PLAYER_COMMANDS_REQUIRES_VIP);
             return;
         }

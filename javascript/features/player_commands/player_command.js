@@ -8,17 +8,20 @@ export class PlayerCommand {
     #announce_ = null;
     #finance_ = null;
     #limits_ = null;
+    #playerColors_ = null;
 
-    constructor(announce, finance, limits) {
+    constructor(announce, finance, limits, playerColors) {
         this.#announce_ = announce;
         this.#finance_ = finance;
         this.#limits_ = limits;
+        this.#playerColors_ = playerColors;
     }
 
     // Gets read-only access to the dependencies available to commands.
     get announce() { return this.#announce_; }
     get finance() { return this.#finance_; }
     get limits() { return this.#limits_; }
+    get playerColors() { return this.#playerColors_; }
 
     // ---------------------------------------------------------------------------------------------
     // Required API to be implemented by individual commands.
@@ -45,7 +48,7 @@ export class PlayerCommand {
     get playerLevel() { return Player.LEVEL_PLAYER; }
 
     // Gets whether players have to be VIP in order to be able to execute this command.
-    get playerVip() { return false; }
+    get requireVip() { return false; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -57,5 +60,6 @@ export class PlayerCommand {
         this.#announce_ = null;
         this.#finance_ = null;
         this.#limits_ = null;
+        this.#playerColors_ = null;
     }
 }

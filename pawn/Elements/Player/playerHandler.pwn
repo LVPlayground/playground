@@ -41,7 +41,6 @@ enum PlayerInfoEnum {
     playerID,
     playerName [ 32 ],
     playerMoney,
-    playerIsHidden,
     Language,
     playerTJailSes,
     fPackages,

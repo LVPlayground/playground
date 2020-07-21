@@ -227,7 +227,6 @@ ResetPlayerStats(playerId) {
     PlayerInfo[playerId][playerTJailSes] = 0;
     iLoan[playerId] = 0;
     isCaged[playerId] = false;
-    PlayerInfo[playerId][playerIsHidden] = false;
 #if Feature::DisableFights == 0
     CFightClub__SetKillCount(playerId, 0);
     CFightClub__SetDeathCount(playerId, 0);
@@ -842,7 +841,6 @@ LegacyFixPlayer(playerId) {
     g_VirtualWorld[playerId] = 0;
     PlayerHandOfGod[playerId] = 0;
     isCaged[playerId] = 0;
-    PlayerInfo[playerId][playerIsHidden] = 0;
 
 #if Feature::DisableFights == 0
     if (PlayerMatch[playerId] != -1)

@@ -1173,60 +1173,6 @@ MinigameHelp:
         return 1;
     }
 
-    if(!strcmp(szParameter, "hide", true, 4 ) && Player(playerid)->isAdministrator() == true)
-    {
-        param_shift( szParams2 );
-
-        if( !strlen( szParams2 ) )
-            goto HideHelp;
-
-        if( strcmp( szParams2, "on", true, 2 ) == 0 )
-        {
-            if( PlayerInfo[playerid][playerIsHidden] == 1) 
-            {
-                SendClientMessage(playerid, Color::Error, "* You are already hidden!");
-                return 1;
-            }
-
-            PlayerInfo[playerid][playerIsHidden] = 1;
-            SetPlayerVisibility(playerid, false);
-
-            new nickname[32], notification[128];
-            GetPlayerName(playerid, nickname, sizeof(nickname));
-
-            format(notification, sizeof(notification), "%s (Id:%d) has made themself invisible.", nickname, playerid);
-            Admin(playerid, notification);
-
-            SendClientMessage(playerid, Color::Success, "* You are now hidden!");
-            return 1;
-        }
-
-        if( strcmp( szParams2, "off", true, 3 ) == 0 )
-        {
-            if( PlayerInfo[playerid][playerIsHidden] == 0) 
-            {
-                SendClientMessage(playerid, Color::Error, "* You are already visible!");
-                return 1;
-            }
-
-            PlayerInfo[playerid][playerIsHidden] = 0;
-            SetPlayerVisibility(playerid, true);
-
-            new nickname[32], notification[128];
-            GetPlayerName(playerid, nickname, sizeof(nickname));
-
-            format(notification, sizeof(notification), "%s (Id:%d) has made themself visible.", nickname, playerid);
-            Admin(playerid, notification);
-
-            SendClientMessage(playerid, Color::Success, "* You are now visible again!");
-            return 1;
-        }
-
-HideHelp:
-        SendClientMessage( playerid, Color::White, "Usage: /my hide [on/off]");
-        return 1;
-    }
-
 MyHelp:
     SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/minigame/playerinfo/properties/ramp/skin/spawnweapons/spawnmoney/stats]");
 

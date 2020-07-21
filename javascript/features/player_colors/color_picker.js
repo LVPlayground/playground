@@ -42,8 +42,8 @@ export class ColorPicker {
     static getColorFamilyValues(baseColor) {
         const [ hue ] = baseColor.toHsv();
 
-        const saturationSteps = [ 1.0, 0.85, 0.7, 0.5, 0.3, 0.1 ];
-        const valueSteps = [ 1.0, 0.9, 0.8, 0.65, 0.5, 0.35 ];
+        const saturationSteps = [ 1.0, 0.85, 0.7, 0.5, 0.3, 0.15 ];
+        const valueSteps = [ 1.0, 0.9, 0.8, 0.65, 0.55, 0.45 ];
 
         const colors = [];
 

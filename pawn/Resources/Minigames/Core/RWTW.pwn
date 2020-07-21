@@ -465,7 +465,7 @@ rwRemovePlayerFromMinigame(playerid)
     if(rwGetState() == RW_STATE_SIGNUP)
         GiveRegulatedMoney(playerid, MinigameParticipation);
 
-    ColorManager->releasePlayerMinigameColor(playerid);
+    ReleasePlayerGameColor(playerid);
     TimeController->releasePlayerOverrideTime(playerid);
 
     if(rwGetState() == RW_STATE_COUNTDOWN)
@@ -691,7 +691,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
         SetPlayerTeam(playerid, RW_TEAM_RED);
         SetPlayerSkinEx(playerid, RW_RED_SKIN);
 
-        ColorManager->setPlayerMinigameColor(playerid, RW_RED_COLOUR);
+        SetPlayerGameColor(playerid, RW_RED_COLOUR);
 
         Streamer_UpdateEx(playerid, -1352.9841 + rwGetPlayerSignupID(playerid)* 3, 964.3445, 1088.7744);
         if(n_MapFix == true)
@@ -724,7 +724,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
         SetPlayerTeam(playerid, RW_TEAM_BLUE);
         SetPlayerSkinEx(playerid, RW_BLUE_SKIN);
 
-        ColorManager->setPlayerMinigameColor(playerid, RW_BLUE_COLOUR);
+        SetPlayerGameColor(playerid, RW_BLUE_COLOUR);
     }
 
     SetCameraBehindPlayer(playerid);

@@ -68,7 +68,7 @@ SetupPlayerForIslandDM(playerid)
         SetPlayerPos(playerid, n_TeamASpawn[iSpawnPos][0], n_TeamASpawn[iSpawnPos][1], n_TeamASpawn[iSpawnPos][2]);
         SetPlayerFacingAngle(playerid, n_TeamASpawn[iSpawnPos][3]);
 
-        ColorManager->setPlayerMinigameColor(playerid, Color::MinigameTransparentRed);
+        SetPlayerGameColor(playerid, Color::MinigameTransparentRed);
     }
     else
     {
@@ -76,7 +76,7 @@ SetupPlayerForIslandDM(playerid)
         SetPlayerPos(playerid, n_TeamBSpawn[iSpawnPos][0], n_TeamBSpawn[iSpawnPos][1], n_TeamBSpawn[iSpawnPos][2]);
         SetPlayerFacingAngle(playerid, n_TeamBSpawn[iSpawnPos][3]);
 
-        ColorManager->setPlayerMinigameColor(playerid, Color::MinigameTransparentBlue);
+        SetPlayerGameColor(playerid, Color::MinigameTransparentBlue);
     }
     Streamer_Update(playerid);
     islandDMToggleBlip(playerid, false);
@@ -159,7 +159,7 @@ islandDMRemovePlayer(playerid)
     PlayerInfo[playerid][PlayerStatus] = STATUS_NONE;
     islandDMToggleBlip(playerid, true);
 
-    ColorManager->releasePlayerMinigameColor(playerid);
+    ReleasePlayerGameColor(playerid);
 
     if(islandDMGetTeamCount(ISLAND_DM_TEAM_A) == 1)
     {

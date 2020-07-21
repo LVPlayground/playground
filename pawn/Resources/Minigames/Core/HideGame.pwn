@@ -1184,7 +1184,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
             if(CHideGame__GetPlayerState(hiderId) != HS_STATE_PLAYING)
                 continue;
 
-            ColorManager->releasePlayerMinigameColor(hiderId);
+            ReleasePlayerGameColor(hiderId);
 
             // Load their old position.
             CHideGame__LoadPos(hiderId);
@@ -1216,7 +1216,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
         NewsController->show(sMessage);
 
-        ColorManager->releasePlayerMinigameColor(iPlayerID);
+        ReleasePlayerGameColor(iPlayerID);
 
         for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
             if (Player(forPlayerId)->isConnected() == false)
@@ -1247,7 +1247,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
 
             // We get the winner.
             iWinner = playerId;
-            ColorManager->releasePlayerMinigameColor(iWinner);
+            ReleasePlayerGameColor(iWinner);
 
             for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
                 if (Player(forPlayerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
@@ -1260,7 +1260,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
             break;
         }
 
-        ColorManager->releasePlayerMinigameColor(iSeekerPlayer);
+        ReleasePlayerGameColor(iSeekerPlayer);
 
         CHideGame__LoadPos( iSeekerPlayer );
 
@@ -1476,7 +1476,7 @@ public CHideGame__Start()
             SetPlayerPos(playerId, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
             SendClientMessage(playerId, COLOR_LIGHTBLUE, "* You have 60 seconds to find yourself a hiding place! What are you waiting for? Go!");
 
-            ColorManager->setPlayerMinigameColor(playerId, 0xFFFFFF00);
+            SetPlayerGameColor(playerId, 0xFFFFFF00);
 
             SetPlayerVirtualWorld(playerId, HS_VIRTUAL_WORLD );
             if( aLocationInfo[ iMapRunning ] [ 1 ] != -1 )
@@ -1495,7 +1495,7 @@ public CHideGame__Start()
         SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 2 ] );
         SetPlayerPos( iSeekerPlayer, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
-        ColorManager->setPlayerMinigameColor(iSeekerPlayer, Color::Red);
+        SetPlayerGameColor(iSeekerPlayer, Color::Red);
 
         SetPlayerVirtualWorld( iSeekerPlayer, HS_VIRTUAL_WORLD );
 

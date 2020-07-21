@@ -1135,17 +1135,17 @@ CRobbery__InitializeMarkersForPlayer() {
             continue;
 
         if (CRobbery__GetPlayerTeam(contestentId) == ROBBERY_TEAMATTACK)
-            ColorManager->setPlayerMinigameColor(contestentId, Color::MinigameTransparentRed);
+            SetPlayerGameColor(contestentId, Color::MinigameTransparentRed);
 
         if (CRobbery__GetPlayerTeam(contestentId) == ROBBERY_TEAMDEFEND)
-            ColorManager->setPlayerMinigameColor(contestentId, Color::MinigameTransparentBlue);
+            SetPlayerGameColor(contestentId, Color::MinigameTransparentBlue);
     }
 }
 
 // Releases the markers of all other players which we previously overrode.
 CRobbery__ReleaseMarkersForPlayer(contestentId) {
     if (playerCasinoData[contestentId][status] == ROBSTATUS_PLAYING)
-        ColorManager->releasePlayerMinigameColor(contestentId);
+        ReleasePlayerGameColor(contestentId);
 }
 
 // CRobbery__SpawnPosition

@@ -143,7 +143,7 @@ class FixPlayerCommands {
             ShowPlayerNameTagForPlayer(subjectId, playerId, true);
             ShowPlayerNameTagForPlayer(playerId, subjectId, true);
         }
-        ColorManager->releasePlayerMinigameColor(playerId);
+        ReleasePlayerGameColor(playerId);
 
         SetPlayerWantedLevel(playerId, 0);
         RemovePlayerFromAnyGame(playerId);

@@ -75,5 +75,5 @@ SetPlayerUpForMinigun(playerId) {
         ShowPlayerNameTagForPlayer(forPlayerId, playerId, 0);
     }
 
-    ColorManager->setPlayerMinigameColor(playerId, Color::MinigameTransparentRed);
+    SetPlayerGameColor(playerId, Color::MinigameTransparentRed);
 }

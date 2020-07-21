@@ -218,7 +218,7 @@ CLyse__StorePlayerData(iPlayerID)
 // position and stuff needs re-loading.
 CLyse__LoadPlayerData(iPlayerID)
 {
-    ColorManager->releasePlayerMinigameColor(iPlayerID);
+    ReleasePlayerGameColor(iPlayerID);
 
     CShell__LoadGuns(iPlayerID);
 
@@ -627,7 +627,7 @@ CLyse__SpawnPlayer(iPlayerID)
         GameTextForPlayer(iPlayerID, "~n~~n~Capture the ~b~blue teams~y~ vehicle~w~~n~Defend ~g~your teams ~y~vehicle~w~!",7000, 3);
         SendClientMessage(iPlayerID, COLOR_YELLOW, "* Capture the blue teams vehicle whilst defending your own!");
 
-        ColorManager->setPlayerMinigameColor(iPlayerID, Color::Green);
+        SetPlayerGameColor(iPlayerID, Color::Green);
     }
 
 
@@ -640,7 +640,7 @@ CLyse__SpawnPlayer(iPlayerID)
         SetPlayerSkinEx(iPlayerID, 44);
         SetPlayerTeam(iPlayerID, TEAM_BLUE);
 
-        ColorManager->setPlayerMinigameColor(iPlayerID, COLOR_BLUE);
+        SetPlayerGameColor(iPlayerID, COLOR_BLUE);
 
         GameTextForPlayer(iPlayerID, "~n~~n~Capture the ~g~green teams~y~ vehicle~w~~n~Defend ~b~your teams ~y~vehicle~w~!",5000,5);
         SendClientMessage(iPlayerID, COLOR_PINK, "* Capture the green teams vehicle whilst defending your own!");

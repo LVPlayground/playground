@@ -52,6 +52,11 @@ ResetPlayerMoneyJS
 GetAccountBalanceJS
 DepositToAccountJS
 
+# native SetPlayerGameColor(playerid, color);
+# native ReleasePlayerGameColor(playerid);
+SetPlayerGameColor
+ReleasePlayerGameColor
+
 # Required for testing.
 TestFunction
 MurmurIIIHashGenerateHash

@@ -70,79 +70,6 @@ new g_defaultPlayerColors[200] = {
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class ColorManager {
-    // The value we use to identify unused slots in the player's color stack.
-    const InvalidColorId = 0xFFFFFFFF;
-
-    // A stack containing the colors which could apply to this user, in reversed order of priority
-    // (index [0] is their default color, whereas index[4] is their minigame color).
-    new m_playerColorStack[MAX_PLAYERS][5];
-
-    // The index in the player's color stack where they're currently at.
-    new m_playerColorIndex[MAX_PLAYERS];
-
-    // Whether the player's marker on the mini-map should be hidden.
-    new bool: m_playerMarkerHidden[MAX_PLAYERS];
-
-    /**
-     * Set the player's color to the default value for their player Id when they connect to Las
-     * Venturas Playground, and resets any previous color state which may have been present.
-     *
-     * @param playerId Id of the player who connected to the server.
-     */
-    @list(OnPlayerConnect)
-    public onPlayerConnect(playerId) {
-        for (new colorIndex = 0; colorIndex < 5; ++colorIndex)
-            m_playerColorStack[playerId][colorIndex] = InvalidColorId;
-
-        m_playerColorStack[playerId][DefaultColorIndex] = this->defaultColorForPlayerId(playerId);
-        m_playerColorIndex[playerId] = 0;
-
-        m_playerMarkerHidden[playerId] = false;
-
-        SetPlayerColor(playerId, m_playerColorStack[playerId][DefaultColorIndex]);
-    }
-
-    /**
-     * Changes the custom color associated with this player. This is a feature available to all VIP
-     * members of the server, as well as to all members of the LVP Staff.
-     *
-     * @param playerId Id of the player to set their custom color for.
-     * @param color The custom color itself, in 0xRRGGBBAA format, to set for this player.
-     */
-    public setPlayerCustomColor(playerId, color) {
-        m_playerColorStack[playerId][CustomColorIndex] = color;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    public releasePlayerCustomColor(playerId) {
-        m_playerColorStack[playerId][CustomColorIndex] = InvalidColorId;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Sets the minigame color which this player has been assigned for the minigame they're currently
-     * involved in. These colors have a higher priority than most colors in the system.
-     *
-     * @param playerId Id of the player to set the minigame color for.
-     * @param color The color, in 0xRRGGBBAA format, to set for this minigame.
-     */
-    public setPlayerMinigameColor(playerId, color) {
-        m_playerColorStack[playerId][MinigameColorIndex] = color;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * Releases the minigame color which was previously imposed on this player. Their color will be
-     * changed back to whatever color now has the highest priority.
-     *
-     * @param playerId Id of the player to reset the minigame color of.
-     */
-    public releasePlayerMinigameColor(playerId) {
-        m_playerColorStack[playerId][MinigameColorIndex] = InvalidColorId;
-        if (m_playerColorIndex[playerId] == MinigameColorIndex)
-            this->synchronizePlayerColorIndex(playerId);
-    }
-
     /**
      * Toggles whether the player's marker on the minimap should be hidden for all other players.
      * This is mostly useful for minigames. Don't forget to reset this!
@@ -150,40 +77,7 @@ class ColorManager {
      * @param playerId The player for whom to hide their marker on the map.
      * @param hidden Whether the player's marker should be hidden.
      */
-    public setPlayerMarkerHidden(playerId, bool: hidden) {
-        m_playerMarkerHidden[playerId] = hidden;
-        this->synchronizePlayerColorIndex(playerId);
-    }
-
-    /**
-     * After one of the player's colors in the stack has been changed, we may need to update their
-     * color to the highest value in the stack and update the player's color index with that index.
-     *
-     * @param playerId Id of the player to synchronize the color index for.
-     */
-    private synchronizePlayerColorIndex(playerId) {
-        for (new colorIndex = 4; colorIndex >= 0; --colorIndex) {
-            if (m_playerColorStack[playerId][colorIndex] == InvalidColorId)
-                continue;
-
-            m_playerColorIndex[playerId] = colorIndex;
-            break;
-        }
-
-        new color = m_playerColorStack[playerId][m_playerColorIndex[playerId]];
-        if (m_playerMarkerHidden[playerId] == true)
-            color &= 0xFFFFFF00;
-
-        SetPlayerColor(playerId, color);
-
-        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); forPlayerId++) {
-            if (Player(forPlayerId)->isConnected() == false || Player(forPlayerId)->isNonPlayerCharacter() == true)
-                continue;
-
-            SetPlayerMarkerForPlayer(forPlayerId, playerId, color);
-            ShowPlayerNameTagForPlayer(forPlayerId, playerId, !m_playerMarkerHidden[playerId]);
-        }
-    }
+    public setPlayerMarkerHidden(playerId, bool: hidden) {}
 
     /**
      * Returns the default color which would be applied to a certain player Id. This is used by

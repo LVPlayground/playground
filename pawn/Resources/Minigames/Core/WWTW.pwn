@@ -353,17 +353,17 @@ CWWTW__InitializeMarkersForPlayer() {
             continue;
 
         if (WWTW_PlayerData[contestentId][iPlayerTeam] == WWTW_TEAMATTACK)
-            ColorManager->setPlayerMinigameColor(contestentId, Color::MinigameTransparentRed);
+            SetPlayerGameColor(contestentId, Color::MinigameTransparentRed);
 
         if (WWTW_PlayerData[contestentId][iPlayerTeam] == WWTW_TEAMDEFEND)
-            ColorManager->setPlayerMinigameColor(contestentId, Color::MinigameTransparentBlue);
+            SetPlayerGameColor(contestentId, Color::MinigameTransparentBlue);
     }
 }
 
 // Releases the markers of all other players which we previously overrode.
 CWWTW__ReleaseMarkersForPlayer(contestentId) {
     if (WWTW_PlayerData[contestentId][iStatus] == WWTW_STATE_PLAYING)
-        ColorManager->releasePlayerMinigameColor(contestentId);
+        ReleasePlayerGameColor(contestentId);
 }
 
 // CWWTW__OnDeath

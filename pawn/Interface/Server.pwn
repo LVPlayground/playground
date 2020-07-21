@@ -38,6 +38,9 @@ native ResetPlayerMoneyJS(playerid);
 native GetAccountBalanceJS(playerid, balance[]);
 native DepositToAccountJS(playerid, amount);
 
+native SetPlayerGameColor(playerid, color);
+native ReleasePlayerGameColor(playerid);
+
 // Provided by the Communication feature in JavaScript.
 native CanPlayerTeleport(playerId);
 native ReportPlayerTeleport(playerId);

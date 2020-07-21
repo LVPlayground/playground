@@ -119,10 +119,10 @@ SetupPlayerForShipTDM( playerid )
 
     if (iPlayerTeamID == 0) {
         SetPlayerSkinEx(playerid, 122);
-        ColorManager->setPlayerMinigameColor(playerid, Color::MinigameTransparentRed);
+        SetPlayerGameColor(playerid, Color::MinigameTransparentRed);
     } else {
         SetPlayerSkinEx(playerid, 111);
-        ColorManager->setPlayerMinigameColor(playerid, Color::MinigameTransparentBlue);
+        SetPlayerGameColor(playerid, Color::MinigameTransparentBlue);
     }
     return 1;
 }
@@ -184,7 +184,7 @@ StopPlayerForShipTDM( playerid, reason )
     TogglePlayerControllable( playerid, 1 );
     SetPlayerTeam( playerid, NO_TEAM );
 
-    ColorManager->releasePlayerMinigameColor(playerid);
+    ReleasePlayerGameColor(playerid);
     ColorManager->setPlayerMarkerHidden(playerid, false);
 
     new iOtherTeamID = 1;

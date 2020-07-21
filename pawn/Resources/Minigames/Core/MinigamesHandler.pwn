@@ -227,7 +227,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
     PlayerInfo[playerId][PlayerStatus] = STATUS_NONE;
     MinigameTypeInfo[Players]--;
 
-    ColorManager->releasePlayerMinigameColor(playerId);
+    ReleasePlayerGameColor(playerId);
 
     // We won't have to spawn a non-existing player, a killed player (spawned already) or someone who
     // hasn't been prepared for the minigame. If we spawn a player, be sure to load theri saved guns.
@@ -274,7 +274,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                     WonMinigame[contestant]++;
 
                     SpawnPlayer(contestant);
-                    ColorManager->releasePlayerMinigameColor(contestant);
+                    ReleasePlayerGameColor(contestant);
                     LoadPlayerGuns(contestant);
 
                     BonusTime__CheckPlayer(contestant, 0);
@@ -304,7 +304,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
 
                         WonMinigame[contestant]++;
 
-                        ColorManager->releasePlayerMinigameColor(contestant);
+                        ReleasePlayerGameColor(contestant);
                         ResetWorldBounds(playerId);
                         SpawnPlayer(contestant);
                         LoadPlayerGuns(contestant);

@@ -141,7 +141,7 @@ CShell__SignPlayerOut(playerid)
 
         SetPlayerTeam(playerid, NO_TEAM);
 
-        ColorManager->releasePlayerMinigameColor(playerid);
+        ReleasePlayerGameColor(playerid);
         TimeController->releasePlayerOverrideTime(playerid);
 
         SetPlayerVirtualWorld(playerid,false);
@@ -235,7 +235,7 @@ CShell__End(winningTeam = -1)
             RemovePlayerFromVehicle(i);
             RemovePlayerFromVehicle(i);
             DisablePlayerCheckpoint(i);
-            ColorManager->releasePlayerMinigameColor(i);
+            ReleasePlayerGameColor(i);
             TimeController->releasePlayerOverrideTime(i);
             SetPlayerTeam(i,NO_TEAM);
             RemovePlayerMapIcon(i,12);
@@ -499,7 +499,7 @@ CShell__Spawn(playerid)
             SetVehicleParamsForPlayer(rivershellGreenTeamVehicleId,playerid,1,0);
             SetVehicleParamsForPlayer(rivershellBlueTeamVehicleId,playerid,1,1);
             SetPlayerSkinEx(playerid,154);
-            ColorManager->setPlayerMinigameColor(playerid, COLOR_BLUE);
+            SetPlayerGameColor(playerid, COLOR_BLUE);
         }
     case TEAM_GREEN:
         {
@@ -511,7 +511,7 @@ CShell__Spawn(playerid)
             SetVehicleParamsForPlayer(rivershellGreenTeamVehicleId,playerid,1,1);
             SetVehicleParamsForPlayer(rivershellBlueTeamVehicleId,playerid,1,0);
             SetPlayerSkinEx(playerid,162);
-            ColorManager->setPlayerMinigameColor(playerid, Color::Green);
+            SetPlayerGameColor(playerid, Color::Green);
         }
 
     }

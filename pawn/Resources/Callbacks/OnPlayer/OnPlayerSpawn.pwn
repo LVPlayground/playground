@@ -95,7 +95,7 @@ OriginalOnPlayerSpawn(playerId) {
     if (IsPlayerStatusMinigame(playerId))
         PlayerLigtUitMiniGame(playerId, KILLED);
     else
-        ColorManager->releasePlayerMinigameColor(playerId);
+        ReleasePlayerGameColor(playerId);
 #endif
 
     // Set the player's world.

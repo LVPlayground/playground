@@ -68,5 +68,6 @@ bool: IsLastShotOutOfRange(playerId, weaponId, hitType) {
     new const Float: distance = VectorSize(
         origin[0] - target[0], origin[1] - target[1], origin[2] - target[2]);
 
-    return kWeaponRange[weaponId] < distance;
+    // Allow a 10% divergence to reduce the number of false positives.
+    return kWeaponRange[weaponId] < floatdiv(distance, 1.1);
 }

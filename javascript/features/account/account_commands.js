@@ -915,7 +915,6 @@ export class AccountCommands {
         return strength >= 2;
     }
 
-
     dispose() {
         this.playground_().unregisterCommand('whois');
         this.playground_().unregisterCommand('whereis');

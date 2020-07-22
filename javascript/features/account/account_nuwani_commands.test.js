@@ -528,6 +528,27 @@ describe('AccountNuwaniCommands', (it, beforeEach, afterEach) => {
         assert.doesNotInclude(undercoverResult[0], 'is currently playing on the server');
     });
 
+    it('should be able to format a nice message for whereis queries', async (assert) => {
+        bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');
+
+        const usageResults = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whereis',
+        });
+
+        assert.equal(usageResults.length, 1);
+        assert.includes(usageResults[0], '!whereis');
+
+        const results = await issueCommand(bot, commandManager, {
+            source: kCommandSource,
+            command: '!whereis Gunther',
+        });
+
+        assert.equal(results.length, 1);
+        assert.includes(results[0], '127.0.0.1');
+        assert.includes(results[0], 'is a known proxy');
+    });
+
     it('should be able to find player identifies when they are undercover', async (assert) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 

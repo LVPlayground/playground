@@ -103,7 +103,13 @@ export class AccountNuwaniCommands {
                 { name: 'field', type: CommandBuilder.WORD_PARAMETER },
                 { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(AccountNuwaniCommands.prototype.onSetValueCommand.bind(this));
-        
+
+        // !whois [[player] | [ip]]
+        this.commandManager_.buildCommand('whereis')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'ip', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
+            .build(AccountNuwaniCommands.prototype.onWhereIsCommand.bind(this));
+
         // !whois [[player] | [ip] [serial]]
         this.commandManager_.buildCommand('whois')
             .restrict(Player.LEVEL_ADMINISTRATOR)
@@ -531,6 +537,55 @@ export class AccountNuwaniCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Enables administrators to look up information about the |param0|, which either is an IP
+    // address or the name or ID of an in-game player.
+    async onWhereIsCommand(context, param0) {
+        let ip = null;
+
+        if (isIpAddress(param0)) {
+            ip = param0;
+        } else {
+            const player = server.playerManager.find({ nameOrId: param0 ?? '' });
+            if (!player) {
+                context.respondWithUsage('!whereis [ [player] | [ip] ]');
+                return;
+            }
+
+            ip = player.ip;
+        }
+
+        // We have the IP address, now query the database for results on its location.
+        const results = await this.database_.whereIs(ip);
+        if (!results.proxy && !results.location) {
+            context.respond('4Error: No results were found in the database.');
+            return;
+        }
+
+        let text = '5Result: ' + ip;
+
+        // (1) Add the IP address' location when this is known.
+        if (results.location) {
+            text += ` is based in ${results.location.city}, ${results.location.country}`;
+        }
+
+        // (2) Add proxy information when this is known.
+        if (results.proxy) {
+            if (results.location)
+                text += ', and';
+            
+            const formatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+
+            text += ` is a known proxy provided by ${results.proxy.isp} (${results.proxy.domain})`;
+
+            if (results.proxy.usage.length)
+                text += `, intended for ${formatter.format(results.proxy.usage).toLowerCase()} use`;
+        }
+
+        context.respond(text + '.');
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Enables administrators to quickly look up which players are known for the given |ip| and
     // |serial|, based on results of recent playing sessions.
     async onWhoisCommand(context, param0, param1) {
@@ -613,6 +668,7 @@ export class AccountNuwaniCommands {
 
     dispose() {
         this.commandManager_.removeCommand('whois');
+        this.commandManager_.removeCommand('whereis');
         this.commandManager_.removeCommand('setvalue');
         this.commandManager_.removeCommand('getvalue');
         this.commandManager_.removeCommand('supported');

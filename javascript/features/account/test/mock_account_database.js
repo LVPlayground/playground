@@ -242,6 +242,38 @@ export class MockAccountDatabase extends AccountDatabase {
     async setUserVip(userId, vip) {}
 
     // Overridden.
+    async _whereIsQueries(ip) {
+        return [
+            {
+                // ip2proxy_px8
+                rows: [
+                    {
+                        country_name: 'United Kingdom',
+                        region_name: 'England',
+                        city_name: 'Croydon',
+                        isp: 'Sample ISP',
+                        domain: 'sample-isp.co.uk',
+                        usage_type: 'COM/ISP',
+                        as: 12345,
+                        asn: 'Sample IPS AS',
+                    }
+                ]
+            },
+            {
+                // ip2location_db11
+                rows: [
+                    {
+                        country_name: 'United Kingdom',
+                        region_name: 'England',
+                        city_name: 'London',
+                        time_zone: '+01:00',
+                    }
+                ]
+            }
+        ];
+    }
+
+    // Overridden.
     async _whoisQuery(numericIp, classC, classB, serial) {
         if (serial === 1337)
             return [];

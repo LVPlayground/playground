@@ -271,7 +271,39 @@ const PLAYER_BETA_SET_VIP = `
         users.is_vip = ?
     WHERE
         users.user_id = ?`;
-    
+
+// Query for identifying proxy information for a particular IP address.
+const WHEREIS_PROXY_QUERY = `
+    SELECT
+        ip2proxy_px8.country_name,
+        ip2proxy_px8.region_name,
+        ip2proxy_px8.city_name,
+        ip2proxy_px8.isp,
+        ip2proxy_px8.domain,
+        ip2proxy_px8.usage_type,
+        ip2proxy_px8.as,
+        ip2proxy_px8.asn
+    FROM
+        lvp_location.ip2proxy_px8
+    WHERE
+        inet_aton(?) BETWEEN ip2proxy_px8.ip_from AND ip2proxy_px8.ip_to
+    LIMIT
+        1`;
+
+// Query for identifying location information for a particular IP address.
+const WHEREIS_LOCATION_QUERY = `
+    SELECT
+        ip2location_db11.country_name,
+        ip2location_db11.region_name,
+        ip2location_db11.city_name,
+        ip2location_db11.time_zone
+    FROM
+        lvp_location.ip2location_db11
+    WHERE
+        inet_aton(?) BETWEEN ip2location_db11.ip_from AND ip2location_db11.ip_to
+    LIMIT
+        1`;
+
 // Query to investigate which players are likely candidates for a given IP address and serial
 // number. Uses a ton of heuristics to get to a reasonable sorting of results.
 const WHOIS_QUERY = `
@@ -888,7 +920,81 @@ export class AccountDatabase {
     async setUserVip(userId, vip) {
         await server.database.query(PLAYER_BETA_SET_VIP, (!!vip) ? 1 : 0, userId);
     }
-    
+
+    // Runs a query that figures out where the |ip| address is, and if it's a known proxy server of
+    // a particular type. Aids administrators in identifying who someone might be.
+    async whereIs(ip) {
+        const [ proxyResults, locationResults ] = await this._whereIsQueries(ip);
+        const results = {
+            proxy: null,
+            location: null,
+        };
+
+        // (1) Process results about the proxy lookup for the given |ip| address.
+        if (proxyResults && proxyResults.rows.length === 1) {
+            const row = proxyResults.rows[0];
+            results.proxy = {
+                country: row.country_name,
+                region: row.region_name,
+                city: row.city_name,
+
+                isp: row.isp,
+                domain: row.domain,
+                usage: this.parseUsageType(row.usage_type),
+
+                network: row.asn,
+                networkName: row.as,
+            };
+        }
+
+        // (2) Process results about the location lookup for the given |ip| address.
+        if (locationResults && locationResults.rows.length === 1) {
+            const row = locationResults.rows[0];
+            results.location = {
+                country: row.country_name,
+                region: row.region_name,
+                city: row.city_name,
+                timeZone: row.time_zone
+            };
+        }
+
+        // (3) Return the formatted results to the caller.
+        return results;
+    }
+
+    // Parses the given |usage|, which is a set of type acronyms divided by slashes.
+    parseUsageType(usage) {
+        const kMapping = {
+            COM: 'Commercial',
+            ORG: 'Organisation',
+            GOV: 'Government',
+            MIL: 'Military',
+            EDU: 'Education',
+            LIB: 'Library',
+            CDN: 'Content Delivery',
+            ISP: 'Internet Provider',
+            MOB: 'Mobile Carrier',
+            DCH: 'Network Infra',
+            SES: 'Search Engine',
+            RSV: 'Reserved',
+        };
+
+        const types = new Set();
+
+        for (const type of usage.split('/'))
+            types.add(kMapping[type] ?? 'Unknown');
+
+        return [ ...types ].sort();
+    }
+
+    // Actually executes the Where Is-related queries on the database.
+    async _whereIsQueries(ip) {
+        return await Promise.all([
+            server.database.query(WHEREIS_PROXY_QUERY, ip),
+            server.database.query(WHEREIS_LOCATION_QUERY, ip),
+        ]);
+    }
+
     // Query to find similar users based on a given IP address and serial number. Most of the logic
     // is contained within the query, but some post-processing is done in JavaScript.
     async whois(ip, serial) {

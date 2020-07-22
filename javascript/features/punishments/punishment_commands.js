@@ -10,6 +10,7 @@ import { Question } from 'components/dialogs/question.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
+import { format } from 'base/format.js';
 import { formatDate } from 'base/time.js';
 
 // Contains a series of commands that may be used by in-game administrators to inspect and manage
@@ -151,6 +152,7 @@ export class PunishmentCommands {
         dialog.addItem('SAMPCAC Version', results.sampcacVersion || '{9E9E9E}none');
         dialog.addItem('SAMPCAC HwID', results.sampcacHardwareId || '{9E9E9E}none');
         dialog.addItem('Minimized', results.minimized ? '{FF5722}yes' : '{4CAF50}no');
+        dialog.addItem('Uptime', this.formatUptime(results.uptime));
 
         // (2) Add each of the detectors to the |dialog|, if any have been loaded. They have to be
         // sorted prior to being added, as they've been stored in arbitrary order.
@@ -184,6 +186,27 @@ export class PunishmentCommands {
 
         // (3) Display the |dialog| to the |player|, and call it a day.
         await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Utility function to format the uptime, which we'd like to follow a syntax slightly different
+    // from most other times and dates, as granularity is more important here.
+    formatUptime(uptime) {
+        if (!uptime)
+            return '{9E9E9E}none';
+        
+        const days = Math.floor(uptime / 86400);
+        const hours = Math.floor(uptime / 3600) % 24;
+        const minutes = Math.floor(uptime / 60) % 60;
+        const seconds = Math.floor(uptime) % 60;
+
+        if (days > 1)
+            return format('%d days, %02d:%02d:%02d', days, hours, minutes, seconds);
+        else if (days === 1)
+            return format('1 day, %02d:%02d:%02d', hours, minutes, seconds);
+        else
+            return format('%02d:%02d:%02d', hours, minutes, seconds);
     }
 
     // ---------------------------------------------------------------------------------------------

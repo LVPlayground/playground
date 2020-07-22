@@ -7,6 +7,9 @@ import { DetectorResults } from 'features/sampcac/detector_results.js';
 
 import { equals } from 'base/equals.js';
 
+// Address from which we obtain the player's uptime.
+const kAddressPlayerUptime = 0x42983D;
+
 // File (not checked in) in which detectors are located. Not required.
 const kDetectorConfiguration = 'detectors.json';
 
@@ -73,6 +76,10 @@ export class DetectorManager {
 
         const tasks = [];
 
+        // (a) Query the |player|'s uptime as a task.
+        tasks.push(this.requestUptime(player).then(result => results.uptime = result / 1000));
+
+        // (b) Query each of the detectors individually for the |player|.
         for (const detector of this.detectors_) {
             tasks.push(this.requestDetection(player, detector).then(result => {
                 results.detectors.set(detector.name, result);
@@ -130,9 +137,15 @@ export class DetectorManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Requests the uptime of the |player|'s computer, in seconds. Does a SAMPCAC-based memory read,
+    // and waits for the result to come back from the player's machine.
+    async requestUptime(player) {
+        return await this.requestMemoryRead(player, kAddressPlayerUptime, 4, 72);
+    }
+
     // Requests a memory read from the |player| at the given |address| (in GTA_SA.exe address space)
     // for the given number of |bytes|. Returns either a number, a Uint8Array, or NULL When failed.
-    async requestMemoryRead(player, address, bytes) {
+    async requestMemoryRead(player, address, bytes, type = 5) {
         if (!this.responseResolvers_.has(player))
             this.responseResolvers_.set(player, new Map());
 
@@ -163,8 +176,10 @@ export class DetectorManager {
 
         // Request a checksum for GTA_SA.exe's .text section as the contents are well known, so we
         // don't need the granularity and can reduce the data being transfered.
-        this.natives_.readMemory(player, address, bytes);
-        this.natives_.readMemoryChecksum(player, address, bytes)
+        if (type !== 72)
+            this.natives_.readMemory(player, address, bytes);
+
+        this.natives_.readMemoryChecksum(player, address, bytes, type);
 
         const result = await promise;
 
@@ -188,8 +203,13 @@ export class DetectorManager {
             return;  // the |player| does not have any pending requests
 
         const resolvers = this.responseResolvers_.get(player);
-        if (!resolvers.has(address))
-            return;  // the |player| does not have any pending requests for the |address|
+        if (!resolvers.has(address)) {
+            if (!resolvers.has(kAddressPlayerUptime))
+                return;  // the |player| does not have any pending requests for the |address|
+
+            response = address;
+            address = kAddressPlayerUptime;
+        }
 
         // Resolve the appropriate resolver with the |response|.
         resolvers.get(address).resolver(response);

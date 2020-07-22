@@ -28,6 +28,9 @@ export class DetectorResults {
     // will be made available, as their client has to respond to it.
     minimized = null;
 
+    // The uptime of the player's computer, in seconds.
+    uptime = null;
+
     // ---------------------------------------------------------------------------------------------
     // Section: Detectors
     // ---------------------------------------------------------------------------------------------

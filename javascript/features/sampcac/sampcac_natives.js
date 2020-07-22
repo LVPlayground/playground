@@ -72,8 +72,8 @@ export class SAMPCACNatives {
 
     // Reads |size| bytes of memory at the given |address| in |player|'s memory, in the GTA_SA.exe
     // address space, with the result being a checksum. Returns whether the read was initiated.
-    readMemoryChecksum(player, address, size) {
-        return !!pawnInvoke('CAC_ReadMemoryChecksum', 'iiiii', player.id, 5, address, 0, size);
+    readMemoryChecksum(player, address, size, type) {
+        return !!pawnInvoke('CAC_ReadMemoryChecksum', 'iiiii', player.id, type, address, 0, size);
     }
 
     // Enables the |glitch| when |enabled| is set, otherwise disables it.

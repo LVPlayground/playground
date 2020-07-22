@@ -27,13 +27,16 @@ export class PlayerCommandRegistry {
         // (1) Build the set of player commands supported by Las Venturas Playground.
         for (const filename of glob(kCommandDirectory, '^((?!test).)*\.js$')) {
             const exports = await import(kCommandIncludePath + filename);
-            const constructor = Object.values(exports).pop();
+            for (const constructor of Object.values(exports)) {
+                if (!PlayerCommand.isPrototypeOf(constructor))
+                    continue;  // the |constructor| is not a PlayerCommand class
 
-            const command = new constructor(...this.#params_);
-            if (!(command instanceof PlayerCommand))
-                throw new Error(`Source file "${filename}" does not export a player command.`);
+                const command = new constructor(...this.#params_);
+                if (!(command instanceof PlayerCommand))
+                    throw new Error(`Source file "${filename}" does not export a player command.`);
 
-            this.#commands_.add(command);
+                this.#commands_.add(command);
+            }
         }
 
         // (2) Initialize the builders through which the individual commands will be registered.

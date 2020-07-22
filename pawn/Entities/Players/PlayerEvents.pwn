@@ -58,7 +58,8 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         // between both connections. When the two IPs connect in rapid order, temporary block the IP.
         // This will result in closed connections for ingame players using the same IP address.
         if (!strcmp(ipAddress, m_lastConnectionAddress, true)
-            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection) {
+            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection
+            && GetServerUptimeMs() > 60 * 1000 /* Ignore the first minute after start **/ ) {
             printf("Blocking [%s] for 30 minutes due to flooding.", ipAddress);
             BlockIpAddress(ipAddress, BlockageDuration); // block the IP address
         }

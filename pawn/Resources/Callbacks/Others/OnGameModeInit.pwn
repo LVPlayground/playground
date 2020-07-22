@@ -14,6 +14,11 @@
 // Keep track of whether the main() method has finished executing.
 new bool: g_mainFinishedExecuting = false;
 
+// Time (in milliseconds) at which the server started.
+new g_serverStartTime;
+
+GetServerUptimeMs() { return GetTickCount() - g_serverStartTime; }
+
 public OnGameModeInit() {
     // Block until the main() method has finished executing completely. Race conditions can occur in
     // which certain information or classes are not yet initialized when we don't do this. Pawn
@@ -22,6 +27,8 @@ public OnGameModeInit() {
         SetTimer("OnGameModeInit", 0, 0);
         return 1;
     }
+
+    g_serverStartTime = GetTickCount();
 
     // Part of Driver.
     SetTimer("UpdateVehicleTrailerStatus", 1000, 1);

@@ -270,6 +270,20 @@ export default class ReactionTests extends Feature {
         if (this.activeTestWinnerTime_ !== null)
             return;  // someone answered the previous reaction test, another was scheduled
 
+        // Some tests might prefer Gunther to share the answer rather than timing them out silently,
+        // when the answer might be beneficial for players on the server.
+        if (this.activeTest_.answerThroughGunter) {
+            const gunther = server.playerManager.getByName('Gunther');
+            if (gunther) {
+                dispatchEvent('playertext', {
+                    playerid: gunther.id,
+                    text: this.activeTest_.answer,
+                });
+
+                return;
+            }
+        }
+
         this.activeTest_.stop();
         this.activeTest_ = null;
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
@@ -177,12 +178,12 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance(timeout * 1000);
 
         await gunther.issueMessage(answer);  // goes to main chat
-        assert.equal(gunther.messages.length, 2);
+        assert.isAboveOrEqual(gunther.messages.length, 2);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 3);
+        assert.isAboveOrEqual(gunther.messages.length, 3);
     });
 
     it('should award achievements at certain milestones', async (assert) => {
@@ -235,5 +236,28 @@ describe('ReactionTests', (it, beforeEach) => {
         
         assert.isTrue(
             collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
+    });
+
+    it('should automatically answer through Gunther when certain tests timeout', async (assert) => {
+        // Only enable calculation strategies, which we know to enable this capability.
+        driver.strategies_ = [ CalculationStrategy ];
+
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+        const timeout = settings.getValue('playground/reaction_test_expire_sec');
+
+        assert.equal(lucy.messages.length, 0);
+
+        // Wait until we're certain that the first reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(lucy.messages.length, 1);
+
+        // Wait for the timeout. Gunther will automatically share the right answer.
+        await server.clock.advance(timeout * 1000);
+
+        assert.equal(lucy.messages.length, 3);
+        assert.includes(lucy.messages[1], 'has won the reaction test');
+        assert.includes(lucy.messages[2], gunther.name);
     });
 });

@@ -23,6 +23,9 @@ export class CalculationStrategy extends Strategy {
     // Gets the answer to the current reaction test. May be NULL.
     get answer() { return this.answer_; }
 
+    // Answers should be given by Gunther when the reaction test is about to time out.
+    get answerThroughGunter() { return true; }
+
     // Gets the calculation that the players were asked to resolve. May be NULL.
     get calculation() { return this.calculation_; }
 

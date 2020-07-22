@@ -10,9 +10,6 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PlayerEvents <playerId (MAX_PLAYERS)> {
-    // Maximum number of connections allowed from a single IP address.
-    const MaxConnectionsPerIp = 3;
-
     // Time in milliseconds between two timestamps of connections originating from the same IP address.
     const DefaultDelayConnection = 500;
 
@@ -52,7 +49,7 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         }
 
         // Check if the maximum number of players ingame from the same IP has been reached.
-        if (matchedPlayers >= MaxConnectionsPerIp) {
+        if (matchedPlayers >= GetMaximumConnectionsPerIP()) {
             printf("Player [%d] shares IP with %d ingame players.", playerId, matchedPlayers);
             Kick(playerId); // deny player entry
         }

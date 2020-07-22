@@ -16,6 +16,7 @@ new bool: g_abuseIgnoreSolePassengerDamage = true;
 new bool: g_abuseKickReasonsPublic = true;
 new g_abuseKillAttributionTimeSec = 10;
 new bool: g_abuseManualSawnoffDamage = false;
+new g_maximumConnectionsPerIP = 3;
 
 // Section: drifting
 new bool: g_driftingEnabled = false;
@@ -30,7 +31,7 @@ new bool: g_vehicleKeysBlockedInLasVenturas = true;
 
 // These are the unique Ids for each of the properties that can be updated. They must be identical
 // between the Pawn and the JavaScript code.
-// Next ID: 18
+// Next ID: 19
 enum PawnConfigProperty {
     kAbuseDisableOutOfRangeDamage = 14,
     kAbuseFakeCarEntryPreventionEnterMs = 11,
@@ -42,6 +43,7 @@ enum PawnConfigProperty {
     kAbuseKickReasonPublic = 6,
     kAbuseKillAttributionTimeSec = 7,
     kAbuseManualSawnoffDamage = 13,
+    kAbuseMaximumConnectionsPerIP = 18,
     kVehiclesDriftingEnabled = 1,
     kVehiclesDriftingMaxAngle = 2,
     kVehiclesDriftingMaxDistance = 8,
@@ -116,3 +118,6 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
 
 // Functions to allow legacy parts of the gamemode to access the values. Only when needed.
 AreKickReasonsPublic() { return g_abuseKickReasonsPublic ? 1 : 0; }
+
+// Returns the maximum number of allowable connections per IP address.
+GetMaximumConnectionsPerIP() { return g_maximumConnectionsPerIP; }

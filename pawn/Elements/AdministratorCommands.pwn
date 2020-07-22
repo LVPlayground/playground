@@ -610,63 +610,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "health", true, 6) && Player(playerId)->isAdministrator() == true) {
-        new healthAmount = Command->integerParameter(params, 2), Float: health;
-        GetPlayerHealth(subjectId, health);
-
-        if (healthAmount < 0 || healthAmount > 100) {
-            format(g_message, sizeof(g_message), "The health of %s (Id:%d) is %.1f",
-                Player(subjectId)->nicknameString(), subjectId, health);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            SendClientMessage(playerId, Color::Information, "Usage: /p [player] health [amount] to set health.");
-
-            return 1;
-        }
-
-        SetPlayerHealth(subjectId, healthAmount);
-
-        format(g_message, sizeof(g_message), "The health of %s (Id:%d) is now %d.",
-            Player(subjectId)->nicknameString(), subjectId, healthAmount);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has set the health for %s (Id:%d) to %d.",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId,
-            healthAmount);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if ((!strcmp(playerParameter, "armor", true, 6) || !strcmp(playerParameter, "armour", true, 7)) 
-        && Player(playerId)->isAdministrator() == true) {
-        new armourAmount = Command->integerParameter(params, 2), Float: armour;
-        GetPlayerArmour(subjectId, armour);
-
-        if (armourAmount < 0 || armourAmount > 100) {
-            format(g_message, sizeof(g_message), "The armour of %s (Id:%d) is %.1f",
-                Player(subjectId)->nicknameString(), subjectId, armour);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            SendClientMessage(playerId, Color::Information, "Usage: /p [player] armour [amount] to set armour.");
-
-            return 1;
-        }
-
-        SetPlayerArmour(subjectId, armourAmount);
-
-        format(g_message, sizeof(g_message), "The armour of %s (Id:%d) is now %d.",
-            Player(subjectId)->nicknameString(), subjectId, armourAmount);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has set the armour for %s (Id:%d) to %d.",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId,
-            armourAmount);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "god", true, 3) && Player(playerId)->isAdministrator() == true) {
         if (Command->parameterCount(params) != 3)
             goto GodHelp;

@@ -31,7 +31,8 @@ class PlayerRegisteredRequest {
     public __construct() {
         if (!QueryBuilder->create("SELECT " ...
                                   "    users.user_id, " ...
-                                  "    users_mutable.skin_id " ...
+                                  "    users_mutable.skin_id, " ...
+                                  "    users_mutable.require_sampcac " ...
                                   "FROM " ...
                                   "    users_nickname " ...
                                   "LEFT JOIN " ...
@@ -69,13 +70,16 @@ class PlayerRegisteredRequest {
      */
     public onReceivedResult(playerId, resultId) {
         new bool: registered = DatabaseResult(resultId)->count() > 0 && DatabaseResult(resultId)->next();
+
         new userId = 0, skinId = 0;
+        new bool: requireSampcac = false;
 
         if (registered == true) {
             userId = DatabaseResult(resultId)->readInteger("user_id");
             skinId = DatabaseResult(resultId)->readInteger("skin_id");
+            requireSampcac = DatabaseResult(resultId)->readInteger("require_sampcac") != 0;
         }
 
-        Account(playerId)->onRegisteredRequestComplete(registered, userId, skinId);
+        Account(playerId)->onRegisteredRequestComplete(registered, userId, skinId, requireSampcac);
     }
 };

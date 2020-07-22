@@ -639,6 +639,7 @@ export class AccountDatabase {
             money_spawn: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             online_time: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             preferred_radio_channel: { table: 'users_mutable', type: AccountDatabase.kTypeString },
+            require_sampcac: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             skin_id: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_carbombs: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_drivebys: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },

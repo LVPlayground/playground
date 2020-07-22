@@ -342,7 +342,7 @@ ExecuteSlapCommand(playerId, targetPlayerId) {
 // Author: Jay, Russell
 lvp_slap(playerId, params[]) {
     if(!params[0]) {
-        SendClientMessage(playerId, Color::Information, "Usage: /slap [player]");
+        SendClientMessage(playerId, Color::Information, "Usage: /slap [player], /slapback");
         return 1;
     }
 
@@ -363,8 +363,8 @@ lvp_slap(playerId, params[]) {
                              UndercoverAdministrator(playerId)->getOriginalUserId() == 31797;
 
     new timeSinceLastSlap = Time->currentTime() - g_LastSlapTime[playerId];
-    if (timeSinceLastSlap < 10 /* seconds */ && !isLuce) {
-        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 10 seconds.");
+    if (timeSinceLastSlap < 7 /* seconds */ && !isLuce) {
+        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 7 seconds.");
         return 1;
     }
 
@@ -397,8 +397,8 @@ lvp_slapb(playerId, params[]) {
     }
 
     new timeSinceLastSlap = Time->currentTime() - g_LastSlapTime[playerId];
-    if (timeSinceLastSlap < 10 /* seconds */) {
-        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 10 seconds.");
+    if (timeSinceLastSlap < 7 /* seconds */) {
+        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 7 seconds.");
         return 1;
     }
 

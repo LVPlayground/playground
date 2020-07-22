@@ -142,13 +142,15 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
     // Airports:
     // Quite simple how it works. When a player picks up the pickup, simply show the menu!
-    if(!g_PlayerMenu[playerid] && !IsPlayerInMinigame(playerid))
+    if(!g_PlayerMenu[playerid] && !IsPlayerInMinigame(playerid)) 
     {
-        if(Time->currentTime() - AirTime[playerid] < 60)
-        {
-            SendClientMessage(playerid,Color::Red,"There are no flights departing right now! Try again later.");
-            return 1;
-        }
+        if (Time->currentTime() - AirTime[playerid] < 60) {
+    if (pickupid == g_AirportPickup[0] || pickupid == g_AirportPickup[1] ||
+            pickupid == g_AirportPickup[2] || pickupid == g_AirportPickup[3]) {
+        SendClientMessage(playerid,Color::Red,"There are no flights departing right now! Try again later.");
+        return 1;
+    }
+}
         g_PlayerMenu[ playerid ] = 1;
 
         if (pickupid == g_AirportPickup[0])

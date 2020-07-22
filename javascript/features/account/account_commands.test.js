@@ -710,6 +710,21 @@ describe('AccountCommands', (it, beforeEach) => {
         ]);
     });
 
+    it('should be able to find out where a particular player is', async (assert) => {
+        await russell.identify();
+
+        playground.access.addException('whereis', russell);
+        gunther.setIpForTesting('37.48.87.211');
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whereis Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Where is Gunther?!');
+
+        assert.includes(russell.lastDialog, 'Proxy information');
+        assert.includes(russell.lastDialog, 'Location information');
+    });
+
     it('is able to format duration', async (assert) => {
         assert.equal(commands.formatDuration(0), '0:00:00');
         assert.equal(commands.formatDuration(1), '0:00:01');

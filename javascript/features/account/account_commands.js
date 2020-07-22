@@ -48,11 +48,17 @@ export class AccountCommands {
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
-        
+
         // /register
         server.commandManager.buildCommand('register')
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
-        
+
+        // /whereis [player]
+        server.commandManager.buildCommand('whereis')
+            .restrict(player => this.playground_().canAccessCommand(player, 'whereis'))
+            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .build(AccountCommands.prototype.onWhereisCommand.bind(this));
+
         // /whois [player]
         server.commandManager.buildCommand('whois')
             .restrict(player => this.playground_().canAccessCommand(player, 'whois'))
@@ -63,6 +69,7 @@ export class AccountCommands {
     // Registers the commands with configurable access with the Playground feature.
     registerTrackedCommands() {
         this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
+        this.playground_().registerCommand('whereis', Player.LEVEL_ADMINISTRATOR);
         this.playground_().registerCommand('whois', Player.LEVEL_ADMINISTRATOR);
     }
 
@@ -771,6 +778,50 @@ export class AccountCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |player| wishes to locate the |target| through the "/whereis" command. This
+    // isn't about their in-game location, but rather their physical location.
+    async onWhereisCommand(player, target) {
+        const results = await this.database_.whereIs(target.ip);
+        if (!results.proxy && !results.location) {
+            return await alert(player, {
+                title: `Where is ${target.name}?!`,
+                message: `I have no idea where ${target.name} is.. Sorry!`
+            });
+        }
+
+        const dialog = new Menu(`Where is ${target.name}?!`, [
+            'Field',
+            'Value',
+        ]);
+
+        // (1) When proxy information is known, 
+        if (results.proxy) {
+            dialog.addItem('{FFEB3B}Proxy information', '{9E9E9E}-');
+            dialog.addItem('Proxy location', `${results.proxy.country} (${results.proxy.city})`);
+            dialog.addItem('Proxy provider', `${results.proxy.isp} (${results.proxy.domain})`);
+            dialog.addItem('Proxy network', `${results.proxy.networkName}`);
+            dialog.addItem('Intended usage', results.proxy.usage.join(', '));
+        }
+
+        // (2) When location information is known, 
+        if (results.location) {
+            if (results.proxy)
+                dialog.addItem('----------', '----------');
+
+            dialog.addItem('{FFEB3B}Location information', '{9E9E9E}-');
+            dialog.addItem('Country', results.location.country);
+            dialog.addItem('Region', results.location.region);
+            dialog.addItem('City', results.location.city);
+
+            dialog.addItem('Timezone', results.location.timeZone);
+            // Current time estimation if we know DST?
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Enables administrators to quickly look up if the |targetPlayer| might be another player who's
     // recently been on the server. Results will be displayed with a level of certainty.
     async onWhoisCommand(player, targetPlayer) {
@@ -867,6 +918,7 @@ export class AccountCommands {
 
     dispose() {
         this.playground_().unregisterCommand('whois');
+        this.playground_().unregisterCommand('whereis');
         this.playground_().unregisterCommand('account');
 
         this.announce_ = null;
@@ -875,6 +927,7 @@ export class AccountCommands {
         this.playerIdentifier_ = null;
 
         server.commandManager.removeCommand('whois');
+        server.commandManager.removeCommand('whereis');
         server.commandManager.removeCommand('register');
         server.commandManager.removeCommand('account');
     }

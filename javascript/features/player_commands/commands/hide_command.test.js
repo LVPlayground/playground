@@ -31,11 +31,12 @@ describe('HideCommand', (it, beforeEach) => {
         assert.equal(russell.messages.length, 2);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.PLAYER_COMMANDS_UPDATED_SELF_ADMIN, russell.name, russell.id,
-                           'hidden'));
+            Message.format(Message.PLAYER_COMMANDS_HIDE_UPDATED_SELF_ADMIN, russell.name,
+                           russell.id, 'hidden'));
 
         assert.equal(
-            russell.messages[1], Message.format(Message.PLAYER_COMMANDS_UPDATED_SELF, 'hidden'));
+            russell.messages[1],
+            Message.format(Message.PLAYER_COMMANDS_HIDE_UPDATED_SELF, 'hidden'));
 
         // (3) Administrators can change visibility of other players.
         assert.isTrue(await russell.issueCommand('/p gunt hide on'));
@@ -44,18 +45,18 @@ describe('HideCommand', (it, beforeEach) => {
         assert.equal(russell.messages.length, 4);
         assert.includes(
             russell.messages[2],
-            Message.format(Message.PLAYER_COMMANDS_UPDATED_OTHER_ADMIN, russell.name, russell.id,
-                           gunther.name, gunther.id, 'hidden'));
+            Message.format(Message.PLAYER_COMMANDS_HIDE_UPDATED_OTHER_ADMIN, russell.name,
+                           russell.id, gunther.name, gunther.id, 'hidden'));
 
         assert.equal(
             russell.messages[3],
-            Message.format(Message.PLAYER_COMMANDS_UPDATED_OTHER, gunther.name, gunther.id,
+            Message.format(Message.PLAYER_COMMANDS_HIDE_UPDATED_OTHER, gunther.name, gunther.id,
                            'hidden'));
     
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.PLAYER_COMMANDS_UPDATED_FYI, russell.name, russell.id,
+            Message.format(Message.PLAYER_COMMANDS_HIDE_UPDATED_FYI, russell.name, russell.id,
                            'hidden'));
 
         // (4) It can display the current status of player visibility.

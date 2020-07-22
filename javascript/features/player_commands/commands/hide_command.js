@@ -47,18 +47,19 @@ export class HideCommand extends PlayerCommand {
         const updatedStatus = target.colors.visible ? 'visible' : 'hidden';
         if (player === target) {
             this.announce().announceToAdministrators(
-                Message.PLAYER_COMMANDS_UPDATED_SELF_ADMIN, player.name, player.id, updatedStatus);
+                Message.PLAYER_COMMANDS_HIDE_UPDATED_SELF_ADMIN, player.name, player.id,
+                updatedStatus);
 
-            player.sendMessage(Message.PLAYER_COMMANDS_UPDATED_SELF, updatedStatus);
+            player.sendMessage(Message.PLAYER_COMMANDS_HIDE_UPDATED_SELF, updatedStatus);
         } else {
             this.announce().announceToAdministrators(
-                Message.PLAYER_COMMANDS_UPDATED_OTHER_ADMIN, player.name, player.id, target.name,
-                target.id, updatedStatus);
+                Message.PLAYER_COMMANDS_HIDE_UPDATED_OTHER_ADMIN, player.name, player.id,
+                target.name, target.id, updatedStatus);
 
             player.sendMessage(
-                Message.PLAYER_COMMANDS_UPDATED_OTHER, target.name, target.id, updatedStatus);
+                Message.PLAYER_COMMANDS_HIDE_UPDATED_OTHER, target.name, target.id, updatedStatus);
             target.sendMessage(
-                Message.PLAYER_COMMANDS_UPDATED_FYI, player.name, player.id, updatedStatus);
+                Message.PLAYER_COMMANDS_HIDE_UPDATED_FYI, player.name, player.id, updatedStatus);
         }
     }
 }

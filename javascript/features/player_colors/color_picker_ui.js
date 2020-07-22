@@ -31,7 +31,7 @@ const kPickerWidth = 7 * kColorRectangleMarginX + 6 * kColorRectangleWidth;
 const kPickerHeight = 7 * kColorRectangleMarginY + 6 * kColorRectangleHeight + kHeaderHeight + 15;
 
 // After how many seconds do we automatically time out the colour picker?
-const kPickerTimeoutMs = 5 * 1000;
+const kPickerTimeoutMs = 15 * 1000;
 
 // Displays a color picker for the |player| with the given |colors|, which must be an array with 36
 // instances of the Color object. Will return a Color instance when selected, or NULL when aborted.

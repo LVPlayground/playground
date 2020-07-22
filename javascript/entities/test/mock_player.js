@@ -37,6 +37,7 @@ export class MockPlayer extends Player {
 
     #color_ = Color.WHITE;
     #colorOverrides_ = new Map();
+    #controllable_ = true;
     #health_ = 100.0;
     #armour_ = 0.0;
     #skin_ = 308;  // San Fierro Paramedic (EMT)
@@ -213,7 +214,9 @@ export class MockPlayer extends Player {
     set rawColor(value) { this.#color_ = value; this.#colorOverrides_.clear(); }
 
     get controllable() { throw new Error('Unable to get whether the player is controllable.'); }
-    set controllable(value) { /* no need to mock write-only values */ }
+    set controllable(value) { this.#controllable_ = value; }
+
+    get controllableForTesting() { return this.#controllable_; }
 
     get health() { return this.#health_; }
     set health(value) { this.#health_ = value; }

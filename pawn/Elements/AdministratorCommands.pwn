@@ -499,30 +499,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "freeze", true, 6)) {
-        TogglePlayerControllable(subjectId, 0);
-
-        SendClientMessage(playerId, Color::Success, "Player frozen.");
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has frozen %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if (!strcmp(playerParameter, "unfreeze", true, 8)) {
-        TogglePlayerControllable(subjectId, 1);
-
-        SendClientMessage(playerId, Color::Success, "Player unfrozen.");
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has unfrozen %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "weapon", true, 6) && Player(playerId)->isAdministrator() == true) {
         new weaponId = Command->integerParameter(params, 2);
         if (WeaponUtilities->isWeaponValid(weaponId) == false) {

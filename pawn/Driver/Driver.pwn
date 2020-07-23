@@ -57,6 +57,9 @@ new const kUnoccupiedSyncMarkTimeMs = 185000;
 // The area that describes the insides of Las Venturas. Made available and managed by the streamer.
 new STREAMER_TAG_AREA: g_areaLasVenturas;
 
+// Time at which a particular player connected to the server, in milliseconds.
+new g_connectionTime[MAX_PLAYERS] = { 0, ... };
+
 // Time (in milliseconds) until when damage issued by a particular player should be disabled.
 new g_damageDisabledExpirationTime[MAX_PLAYERS] = { 0, ... };
 
@@ -155,6 +158,7 @@ public OnPlayerConnect(playerid) {
     g_playerGravity[playerid] = g_defaultGravity;
     g_inLasVenturas[playerid] = false;
     g_isDisconnecting[playerid] = false;
+    g_connectionTime[playerid] = GetTickCount();
 
     g_playerDriftStartTime[playerid] = 0;
 
@@ -200,6 +204,9 @@ ProcessHighFrameratePlayers() {
     for (new playerId = 0; playerId < GetPlayerPoolSize(); ++playerId) {
         if (!IsPlayerConnected(playerId) || IsPlayerNPC(playerId))
             continue;  // skip unconnected players and NPCs
+
+        if ((currentTime - g_connectionTime[playerId]) < 60 * 1000)
+            continue;  // the |playerId| connected to the server less than a minute ago
 
         // Reset and bail when the |playerId|'s framerate is within acceptable bounds
         if (PlayerManager->framesPerSecond(playerId) < g_abuseHighFramerateDamageThreshold) {

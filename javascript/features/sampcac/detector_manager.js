@@ -113,7 +113,7 @@ export class DetectorManager {
                 if (isChecksum && detector.resultChecksum === response)
                     return DetectorResults.kResultClean;
                 else if (isChecksum && detector.resultChecksum !== null)
-                    return DetectorResults.kResultClean;
+                    return DetectorResults.kResultDetected;
 
                 if (!isChecksum && equals(detector.resultBytes, response))
                     return DetectorResults.kResultClean;

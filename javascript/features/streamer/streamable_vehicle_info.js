@@ -28,6 +28,9 @@ export class StreamableVehicleInfo {
         if (typeof modelId !== 'number' || modelId < 400 || modelId > 611)
             throw new Error(`Invalid vehicle model Id given: ${modelId}`);
         
+        if ([ 537, 538 ].includes(modelId))
+            throw new Error(`Illegal to dynamically create trains through this system.`);
+
         if (!(position instanceof Vector))
             throw new Error(`Invalid vehicle position given: ${position}`);
         

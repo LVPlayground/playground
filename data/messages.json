@@ -603,6 +603,7 @@
   "VEHICLE_SEIZED": "@success You've seized the vehicle, on you go.",
   "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",
   "VEHICLE_SPAWN_NOT_ALLOWED": "@error You are not allowed to spawn vehicles right now.",
+  "VEHICLE_SPAWN_NOT_ALLOWED_TRAIN": "@error You are unable to create trains using this feature.",
   "VEHICLE_SPAWN_NOT_FOUND": "@error We're not sure what vehicle {FF8282}%s{FFFFFF} is...",
   "VEHICLE_SPAWN_REJECTED": "@error Sorry, you can't spawn vehicles right now because %s.",
   "VEHICLE_UNLOCK_PASSENGER": "@error You can only unlock a vehicle when you're the driver!",

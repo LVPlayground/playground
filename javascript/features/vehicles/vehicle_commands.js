@@ -227,6 +227,11 @@ class VehicleCommands {
             return;
         }
 
+        if ([ 537, 538 ].includes(vehicleModel.id)) {
+            player.sendMessage(Message.VEHICLE_SPAWN_NOT_ALLOWED_TRAIN);
+            return;
+        }
+
         const streamableVehicle = this.manager_.createVehicle(player, vehicleModel.id);
         if (!streamableVehicle) {
             player.sendMessage(Message.VEHICLE_SPAWN_NOT_ALLOWED);

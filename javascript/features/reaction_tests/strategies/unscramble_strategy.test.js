@@ -51,8 +51,17 @@ describe('UnscrambleStrategy', (it, beforeEach) => {
         // (2) Heavily scramble the words, with on fixed letters.
         settings.setValue('playground/reaction_test_unscramble_fixed', 0);
 
-        strategy.start(announceFn, () => nuwani, 1234);
-        assert.notEqual(strategy.answer, strategy.scrambled);
+        // Some shorter answers ("MSX FM") have a decent probability of not being scrambled at all,
+        // so run this test three times and expect it to pass at least once.
+        let requiredAttempts = 0;
+
+        while (++requiredAttempts <= 4) {
+            strategy.start(announceFn, () => nuwani, 1234);
+            if (strategy.answer !== strategy.scrambled)
+                break;
+        }
+
+        assert.isBelowOrEqual(requiredAttempts, 3);
     });
 
     it('announces new tests to in-game players and Nuwani users', assert => {

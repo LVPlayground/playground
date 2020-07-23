@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import Abuse from 'features/abuse/abuse.js';
+import { SAMPCACNatives } from 'features/sampcac/sampcac_natives.js';
 
 // Whitelist for macro detection keys that we'll ignore. Quite a few of the function keys are
 // inccorectly being detected as marcos by SAMPCAC.
@@ -61,7 +62,13 @@ export class DetectorMonitor {
         if (this.isRateLimited(player, DetectorMonitor.kTypeAimbot))
             return;  // the report will be rate limited
 
-        this.issueReport(player, DetectorMonitor.kTypeAimbot, Abuse.kDetected, {
+        // The certainty depends on the sort of aim-bot that has been detected. We've seen some
+        // false detections with the fifth alternative, so mark that as a funny feeling.
+        const certainty =
+            variant === SAMPCACNatives.kCheatAimbotAlternative5 ? Abuse.kFunnyFeeling
+                                                                : Abuse.kDetected;
+
+        this.issueReport(player, DetectorMonitor.kTypeAimbot, certainty, {
             variant,  // aimbot variant the |player| was detected with, there are six
         });
     }

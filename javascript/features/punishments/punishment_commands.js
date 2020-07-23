@@ -42,6 +42,9 @@ export class PunishmentCommands {
         // /scan [player]
         server.commandManager.buildCommand('scan')
             .restrict(player => this.playground_().canAccessCommand(player, 'scan'))
+            .sub('reload')
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .build(PunishmentCommands.prototype.onScanReloadCommand.bind(this))
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(PunishmentCommands.prototype.onScanCommand.bind(this));
     }
@@ -199,6 +202,18 @@ export class PunishmentCommands {
 
         // (3) Display the |dialog| to the |player|, and call it a day.
         await dialog.displayForPlayer(player);
+    }
+
+    // Called when someone wishes to reload the SAMPCAC definition file. Generally only needed when
+    // changes have been made, but it's undesirable to reload the entire feature.
+    onScanReloadCommand(player) {
+        this.sampcac_().reload();
+
+        // Tell adminstrators about the definition file being reloaded.
+        this.announce_().announceToAdministrators(
+            Message.PUNISHMENT_SCAN_RELOADED_ADMIN, player.name, player.id);
+
+        player.sendMessage(Message.PUNISHMENT_SCAN_RELOADED);
     }
 
     // ---------------------------------------------------------------------------------------------

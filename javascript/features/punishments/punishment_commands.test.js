@@ -127,5 +127,9 @@ describe('PunishmentCommands', (it, beforeEach) => {
 
         assert.includes(gunther.lastDialog, 'SAMPCAC Version');
         assert.includes(gunther.lastDialog, gunther.version);
+
+        // (3) Reload the SAMPCAC configuration to make sure there's no errors.
+        assert.isTrue(await gunther.issueCommand('/scan reload'));
+        assert.equal(gunther.messages.pop(), Message.PUNISHMENT_SCAN_RELOADED);
     });
 });

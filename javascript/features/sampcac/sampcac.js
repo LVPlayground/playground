@@ -52,6 +52,9 @@ export default class SAMPCAC extends Feature {
     // to communicate back the |player|'s state. Could take multiple seconds.
     async detect(player) { return await this.manager_.detect(player); }
 
+    // Reloads the SAMPCAC detectors without having to reload the entire feature.
+    reload() { this.manager_.initializeDetectors(); }
+
     // ---------------------------------------------------------------------------------------------
 
     dispose() {

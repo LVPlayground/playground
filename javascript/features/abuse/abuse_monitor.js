@@ -123,6 +123,7 @@ export class AbuseMonitor {
             health: player.health,
             packetLossPercentage: player.packetLossPercentage,
             ping: player.ping,
+            skin: player.skin,
             state: player.state,
             version: player.version,
         };

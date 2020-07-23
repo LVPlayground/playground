@@ -25,6 +25,7 @@ export class DetectorMonitor {
     // Type of detection that has been made. Generalized from the SAMPCAC types, including our own.
     static kTypeAimbot = 'Aimbot';
     static kTypeMacro = 'Macro';
+    static kTypeNoRecoil = 'No recoil';
 
     #abuse_ = null;
     #natives_ = null;
@@ -70,6 +71,17 @@ export class DetectorMonitor {
 
         this.issueReport(player, DetectorMonitor.kTypeAimbot, certainty, {
             variant,  // aimbot variant the |player| was detected with, there are six
+        });
+    }
+
+    // Reports that the |player| has been detected for no-recoil usage, which enables them to fight
+    // with less breaks in between. The |variant| is indicative of the exact tool used.
+    reportNoRecoil(player, variant) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeNoRecoil))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeNoRecoil, Abuse.kDetected, {
+            variant,  // no-recoil variant the |player| was detected with, there are three
         });
     }
 

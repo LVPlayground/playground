@@ -48,15 +48,18 @@ export class EventMonitor extends SAMPCACEventObserver {
                 this.detectorMonitor_.reportMacro(player, option1);
                 break;
 
+            case SAMPCACNatives.kCheatNoRecoil:
+            case SAMPCACNatives.kCheatNoRecoilAlternative:
+            case SAMPCACNatives.kCheatNoRecoilAlternative2:
+                this.detectorMonitor_.reportNoRecoil(player, cheatId);
+                break;
+
             case SAMPCACNatives.kCheatTriggerbot:
             case SAMPCACNatives.kCheatTriggerbotAlternative:
             case SAMPCACNatives.kCheatAdditionalVisibility:
             case SAMPCACNatives.kCheatAdditionalVisibilityNameTags:
             case SAMPCACNatives.kCheatFakePing:
             case SAMPCACNatives.kCheatWeaponDataModified:
-            case SAMPCACNatives.kCheatNoRecoil:
-            case SAMPCACNatives.kCheatNoRecoilAlternative:
-            case SAMPCACNatives.kCheatNoRecoilAlternative2:
             case SAMPCACNatives.kCheatUntrustedLibrary:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative2:

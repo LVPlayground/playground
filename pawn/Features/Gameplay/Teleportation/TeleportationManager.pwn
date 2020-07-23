@@ -149,9 +149,10 @@ class TeleportationManager {
     public bool: isTeleportAvailable(playerId, subjectId, TeleportationType: teleportType) {
         new delay = teleportType == DefaultTeleport ? DefaultTeleportDelay : CarTeleportDelay, message[128];
 
-        // Carteleporting to the cruise is allowed once per minute, except for crew members.
-        if (subjectId == CruiseController->getCruiseLeaderId()
-            && Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay) {
+        // Carteleporting to the cruise is allowed once per minute, except for secret teleports.
+        if (subjectId == CruiseController->getCruiseLeaderId() &&
+                Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay &&
+                teleportType != SecretTeleport) {
             format(message, sizeof(message), "You may only %s to the cruise once per minute.",
                 (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
                 CarTeleportToCruiseDelay / 60);
@@ -162,7 +163,8 @@ class TeleportationManager {
 
         // Both teleport and carteleport is limited in use to avoid abuse, except for crew members.
         if (subjectId != CruiseController->getCruiseLeaderId() &&
-            Time->currentTime() - m_playerTeleportTime[playerId] < delay) {
+                Time->currentTime() - m_playerTeleportTime[playerId] < delay &&
+                teleportType != SecretTeleport) {
             format(message, sizeof(message), "You may only %s once every %d minutes.",
             (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
             (teleportType == DefaultTeleport ? DefaultTeleportDelay / 60 : CarTeleportDelay / 60));
@@ -177,7 +179,7 @@ class TeleportationManager {
             return false;
         }
 
-        if (Player(subjectId)->isNonPlayerCharacter() == true && teleportType != SecretTeleport) {
+        if (Player(subjectId)->isNonPlayerCharacter()) {
             SendClientMessage(playerId, Color::Error, "You can't teleport to NPCs.");
             return false;
         }
@@ -287,7 +289,7 @@ class TeleportationManager {
         new const price = GetEconomyValue(teleportType == DefaultTeleport ? TeleportWithoutVehicle
                                                                           : TeleportWithVehicle);
 
-        if (!Player(playerId)->isAdministrator() && GetPlayerMoney(playerId) < price && playerId != ownerId
+        if (teleportType != SecretTeleport && GetPlayerMoney(playerId) < price && playerId != ownerId
             && subjectId != CruiseController->getCruiseLeaderId()) {
             FinancialUtilities->formatPrice(price, teleportPrice, sizeof(teleportPrice));
             format(message, sizeof(message),

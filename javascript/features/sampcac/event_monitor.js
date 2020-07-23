@@ -3,15 +3,18 @@
 // be found in the LICENSE file.
 
 import { SAMPCACEventObserver } from 'components/events/sampcac_event_observer.js';
+import { SAMPCACNatives } from 'features/sampcac/sampcac_natives.js';
 
 // Monitors incoming events from SAMPCAC and deals with them appropriately. Is fed events from the
 // DeferredEventManager, as none of them are either time-critical or cancelable.
 export class EventMonitor extends SAMPCACEventObserver {
+    detectorMonitor_ = null;
     manager_ = null;
 
-    constructor(manager) {
+    constructor(manager, detectorMonitor) {
         super();
 
+        this.detectorMonitor_ = detectorMonitor;
         this.manager_ = manager;
 
         server.deferredEventManager.addObserver(this);
@@ -24,7 +27,41 @@ export class EventMonitor extends SAMPCACEventObserver {
     // Called when the |player| has been detected to use the given |cheatId|. Additional information
     // and specifics could be found in |option1| and |option2|.
     onPlayerCheatDetected(player, cheatId, option1, option2) {
-        console.log(`[sampcac] Detected ${player.name}: ${cheatId} (${option1}, ${option2})`);
+        if (!server.isTest())
+            console.log(`[sampcac] Detected ${player.name}: ${cheatId} (${option1}, ${option2})`);
+
+        switch (cheatId) {
+            case SAMPCACNatives.kCheatAimbot:
+            case SAMPCACNatives.kCheatAimbotAlternative:
+            case SAMPCACNatives.kCheatAimbotAlternative2:
+            case SAMPCACNatives.kCheatAimbotAlternative3:
+            case SAMPCACNatives.kCheatAimbotAlternative4:
+            case SAMPCACNatives.kCheatAimbotAlternative5:
+                this.detectorMonitor_.reportAimbot(player, cheatId);
+                break;
+
+            case SAMPCACNatives.kCheatMacro:
+                this.detectorMonitor_.reportMacro(player, option1);
+                break;
+
+            case SAMPCACNatives.kCheatTriggerbot:
+            case SAMPCACNatives.kCheatTriggerbotAlternative:
+            case SAMPCACNatives.kCheatAdditionalVisibility:
+            case SAMPCACNatives.kCheatAdditionalVisibilityNameTags:
+            case SAMPCACNatives.kCheatFakePing:
+            case SAMPCACNatives.kCheatWeaponDataModified:
+            case SAMPCACNatives.kCheatNoRecoil:
+            case SAMPCACNatives.kCheatNoRecoilAlternative:
+            case SAMPCACNatives.kCheatNoRecoilAlternative2:
+            case SAMPCACNatives.kCheatCleo:
+            case SAMPCACNatives.kCheatUntrustedLibrary:
+            case SAMPCACNatives.kCheatUntrustedLibraryAlternative:
+            case SAMPCACNatives.kCheatUntrustedLibraryAlternative2:
+            case SAMPCACNatives.kCheatUntrustedLibraryAlternative3:
+            case SAMPCACNatives.kCheatAny:
+                // TODO: Implement handling for these cheats.
+                break;
+        }
     }
 
     // Called when the |modelId| for the |player| has been modified. The |checksum| identifies what

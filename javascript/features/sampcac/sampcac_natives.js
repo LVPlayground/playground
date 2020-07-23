@@ -5,6 +5,30 @@
 // Native functions associated with SAMPCAC. Only proxies through to calling them. Can be replaced
 // by MockSAMPCACNatives for testing purposes.
 export class SAMPCACNatives {
+    // Cheats that can be detected by SAMPCAC.
+    static kCheatAimbot = 0;
+    static kCheatAimbotAlternative = 1;
+    static kCheatAimbotAlternative2 = 11;
+    static kCheatAimbotAlternative3 = 12;
+    static kCheatAimbotAlternative4 = 14;
+    static kCheatAimbotAlternative5 = 15;
+    static kCheatTriggerbot = 2;
+    static kCheatTriggerbotAlternative = 3;
+    static kCheatAdditionalVisibility = 5;  // ESP
+    static kCheatAdditionalVisibilityNameTags = 4;  // ESP
+    static kCheatMacro = 6;
+    static kCheatFakePing = 7;
+    static kCheatWeaponDataModified = 8;
+    static kCheatNoRecoil = 9;
+    static kCheatNoRecoilAlternative = 10;
+    static kCheatNoRecoilAlternative2 = 16;
+    static kCheatCleo = 13;
+    static kCheatUntrustedLibrary = 17;
+    static kCheatUntrustedLibraryAlternative = 18;
+    static kCheatUntrustedLibraryAlternative2 = 19;
+    static kCheatUntrustedLibraryAlternative3 = 20;
+    static kCheatAny = 21;
+
     // Game options that can be controlled with SAMPCAC.
     static kGameOptionVehicleBlips = 0;
     static kGameOptionManualReloading = 1;

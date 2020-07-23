@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { AbuseDetectors } from 'features/abuse/abuse_detectors.js';
+import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 import { AbuseMonitor } from 'features/abuse/abuse_monitor.js';
 import { Feature } from 'components/feature_manager/feature.js';
 
@@ -27,6 +28,24 @@ export default class Abuse extends Feature {
         this.monitor_ = new AbuseMonitor(announce, settings);
         this.detectors_ = new AbuseDetectors(settings, this.monitor_);
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Public API of the Abuse feature
+    // ---------------------------------------------------------------------------------------------
+
+    // Levels of certainty that can be awarded to reports.
+    static kFunnyFeeling = AbuseDetector.kFunnyFeeling;
+    static kSuspected = AbuseDetector.kSuspected;
+    static kDetected = AbuseDetector.kDetected;
+
+    // Reports that the given |player| has been detected for the given |detectorName|. A certainty
+    // level will be included, which must be one of the constants above. Optionally the |evidence|
+    // can be given, which can be any JSON-serializable piece of data.
+    reportAbuse(player, detectorName, certainty, evidence = null) {
+        this.monitor_.reportAbuse(player, detectorName, certainty, evidence);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.detectors_.dispose();

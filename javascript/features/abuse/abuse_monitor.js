@@ -1,51 +1,69 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 import { AbuseDatabase } from 'features/abuse/abuse_database.js';
 import { AbuseDetector } from 'features/abuse/abuse_detector.js';
+import { MockAbuseDatabase } from 'features/abuse/mock_abuse_database.js';
 
+import { clone } from 'base/clone.js';
 import { getComponentName } from 'entities/vehicle_components.js';
 
 // The abuse monitor keeps track of instances of abuse across the active players. A series of abuse
 // detectors are responsible for detecting it, after which it ends up here for decision making and
 // distribution of the knowledge to in-game administrators.
 export class AbuseMonitor {
-    constructor(announce, settings) {
-        this.announce_ = announce;
-        this.database_ = new AbuseDatabase();
-        this.settings_ = settings;
+    #announce_ = null;
+    #database_ = null;
+    #settings_ = null;
 
+    constructor(announce, settings) {
+        this.#announce_ = announce;
+        this.#settings_ = settings;
+
+        // Create the database instance. A mocked version will be used when running tests.
+        this.#database_ = server.isTest() ? new MockAbuseDatabase()
+                                          : new AbuseDatabase();
+
+        // Register the ReportAbuse() native, which allows Pawn to detect oddities as well.
         provideNative('ReportAbuse', 'iss', AbuseMonitor.prototype.reportAbusePawn.bind(this));
 
+        // Observe the vehicle manager to learn about illegal component modifications.
         server.vehicleManager.addObserver(this);
     }
 
     // Reports abuse by the given |player|, indicating that they've been observed exercising the
     // |detectorName| with the given level of |certainty|. In-game staff will be informed.
     reportAbuse(player, detectorName, certainty, evidence) {
-        // TODO: Implement rate limiting of reports.
         // TODO: Implement auto-banning and kicking based on |certainty|.
+        // TODO: Generate pseudo-unique report IDs rather than incremental ones.
+
+        let message = null;
 
         switch (certainty) {
             case AbuseDetector.kFunnyFeeling:
-                this.announce_().announceToAdministrators(
-                    Message.ABUSE_ADMIN_FUNNY_FEELING, player.name, player.id, detectorName);
+                message = Message.ABUSE_ADMIN_FUNNY_FEELING;
                 break;
-            
+
             case AbuseDetector.kSuspected:
-                this.announce_().announceToAdministrators(
-                    Message.ABUSE_ADMIN_SUSPECTED, player.name, player.id, detectorName);
+                message = Message.ABUSE_ADMIN_SUSPECTED;
                 break;
-            
+
             case AbuseDetector.kDetected:
-                this.announce_().announceToAdministrators(
-                    Message.ABUSE_ADMIN_DETECTED, player.name, player.id, detectorName);
+                message = Message.ABUSE_ADMIN_DETECTED;
                 break;
+
+            default:
+                throw new Error(`Invalid certainty provided: ${certainty}.`);
         }
 
-        if (!server.isTest() && evidence)
-            this.database_.storeEvidence({ player, detectorName, certainty, evidence });
+        // Make an announcement to all in-game administrators about this incident.
+        this.#announce_().announceToAdministrators(message, player.name, player.id, detectorName);
+
+        // Store the |evidence| in the database, and add more contextual information that will make
+        // it easier to look at the incident without being in-game.
+        this.#database_.storeEvidence(
+            player, detectorName, certainty, this.composeContextualEvidence(player, evidence));
     }
 
     // Called when abuse is being reported from Pawn, by the |playerid|.
@@ -53,16 +71,46 @@ export class AbuseMonitor {
         const player = server.playerManager.getById(playerid);
         if (!player)
             return 0;  // invalid |playerid| received
-        
+
         // The setting allows Pawn-based abuse detectors to be muted. We still output information to
         // the console, so that they can be investigated after the fact.
-        if (!this.settings_().getValue('abuse/pawn_based_detectors')) {
+        if (!this.#settings_().getValue('abuse/pawn_based_detectors')) {
             console.log(`[abuse] Detected ${player.name} for ${detectorName}: ${certainty}.`);
             return 0;
         }
 
         this.reportAbuse(player, detectorName, certainty);
         return 1;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Composes a contextual evidence object taking |evidence| as the input, and adding on lots of
+    // meta-information about the player, there state and whereabouts.
+    composeContextualEvidence(player, evidence) {
+        const contextualEvidence = clone(evidence) ?? {};
+        const position = player.position;
+
+        // (1) Information on where the |player| is in the world.
+        contextualEvidence.location = {
+            position: [ position.x, position.y, position.z ],
+            interiorId: player.interiorId,
+            virtualWorld: player.virtualWorld,
+        };
+
+        // (2) Information on the state of the player, and what they're currently doing.
+        contextualEvidence.state = {
+            armour: player.armour,
+            health: player.health,
+            packetLossPercentage: player.packetLossPercentage,
+            ping: player.ping,
+            state: player.state,
+            version: player.version,
+        };
+
+        // TODO: Add information about the weapons the player currently has.
+
+        return contextualEvidence;
     }
 
     // ---------------------------------------------------------------------------------------------

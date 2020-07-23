@@ -40,6 +40,10 @@ export class EventMonitor extends SAMPCACEventObserver {
                 this.detectorMonitor_.reportAimbot(player, cheatId);
                 break;
 
+            case SAMPCACNatives.kCheatCleo:
+                this.manager_.reportPlayerHasInstalledCleo(player);
+                break;
+
             case SAMPCACNatives.kCheatMacro:
                 this.detectorMonitor_.reportMacro(player, option1);
                 break;
@@ -53,7 +57,6 @@ export class EventMonitor extends SAMPCACEventObserver {
             case SAMPCACNatives.kCheatNoRecoil:
             case SAMPCACNatives.kCheatNoRecoilAlternative:
             case SAMPCACNatives.kCheatNoRecoilAlternative2:
-            case SAMPCACNatives.kCheatCleo:
             case SAMPCACNatives.kCheatUntrustedLibrary:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative2:

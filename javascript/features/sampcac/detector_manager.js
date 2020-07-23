@@ -19,11 +19,13 @@ export const kMemoryReadTimeoutMs = 3500;
 // Manages the SAMPCAC detectors that are available on the server. Will load its information from
 // a configuration file, unless tests are active, in which case they can be injected.
 export class DetectorManager {
+    cleo_ = null;
     detectors_ = null;
     natives_ = null;
     responseResolvers_ = null;
 
     constructor(natives) {
+        this.cleo_ = new WeakSet();
         this.detectors_ = null;
         this.natives_ = natives;
         this.responseResolvers_ = new Map();
@@ -49,6 +51,10 @@ export class DetectorManager {
         for (const detectorConfiguration of configuration)
             this.detectors_.add(new Detector(detectorConfiguration));
     }
+
+    // Marks the given |player| as having CLEO.asi installed. This is communicated with us through
+    // a cheat detection, even though we want to allow it for non-behavioural modifications.
+    reportPlayerHasInstalledCleo(player) { this.cleo_.add(player); }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -92,6 +98,14 @@ export class DetectorManager {
 
         // Wait for all the |tasks| to have been completed.
         await Promise.all(tasks);
+
+        // If the |player| has SAMPCAC installed, further mark whether they've also been flagged as
+        // a CLEO user. This is communicated outside of the general reporting mechanism.
+        if (results.sampcacVersion !== null) {
+            results.detectors.set(
+                'CLEO.asi', this.cleo_.has(player) ? DetectorResults.kResultDetected
+                                                   : DetectorResults.kResultClean);
+        }
 
         // (3) Return the |results| to the caller who requested this detection run.
         return results;

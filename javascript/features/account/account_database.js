@@ -275,34 +275,60 @@ const PLAYER_BETA_SET_VIP = `
 // Query for identifying proxy information for a particular IP address.
 const WHEREIS_PROXY_QUERY = `
     SELECT
-        ip2proxy_px8.country_name,
-        ip2proxy_px8.region_name,
-        ip2proxy_px8.city_name,
-        ip2proxy_px8.isp,
-        ip2proxy_px8.domain,
-        ip2proxy_px8.usage_type,
-        ip2proxy_px8.as,
-        ip2proxy_px8.asn
+        ip2proxy.country_name,
+        ip2proxy.region_name,
+        ip2proxy.city_name,
+        ip2proxy.isp,
+        ip2proxy.domain,
+        ip2proxy.usage_type,
+        ip2proxy.as,
+        ip2proxy.asn
     FROM
-        lvp_location.ip2proxy_px8
+        (
+            SELECT
+                ip2proxy_px8.ip_from,
+                ip2proxy_px8.country_name,
+                ip2proxy_px8.region_name,
+                ip2proxy_px8.city_name,
+                ip2proxy_px8.isp,
+                ip2proxy_px8.domain,
+                ip2proxy_px8.usage_type,
+                ip2proxy_px8.as,
+                ip2proxy_px8.asn
+            FROM
+                lvp_location.ip2proxy_px8
+            WHERE
+                ip2proxy_px8.ip_to >= INET_ATON(?)
+            LIMIT
+                1
+        ) AS ip2proxy
     WHERE
-        inet_aton(?) BETWEEN ip2proxy_px8.ip_from AND ip2proxy_px8.ip_to
-    LIMIT
-        1`;
+        ip2proxy.ip_from <= INET_ATON(?)`;
 
 // Query for identifying location information for a particular IP address.
 const WHEREIS_LOCATION_QUERY = `
-    SELECT
-        ip2location_db11.country_name,
-        ip2location_db11.region_name,
-        ip2location_db11.city_name,
-        ip2location_db11.time_zone
+        SELECT
+        ip2location.country_name,
+        ip2location.region_name,
+        ip2location.city_name,
+        ip2location.time_zone
     FROM
-        lvp_location.ip2location_db11
+        (
+            SELECT
+                ip2location_db11.ip_from,
+                ip2location_db11.country_name,
+                ip2location_db11.region_name,
+                ip2location_db11.city_name,
+                ip2location_db11.time_zone
+            FROM
+                lvp_location.ip2location_db11
+            WHERE
+                ip2location_db11.ip_to >= INET_ATON(?)
+            LIMIT
+                1
+        ) AS ip2location
     WHERE
-        inet_aton(?) BETWEEN ip2location_db11.ip_from AND ip2location_db11.ip_to
-    LIMIT
-        1`;
+        ip2location.ip_from <= INET_ATON(?)`;
 
 // Query to investigate which players are likely candidates for a given IP address and serial
 // number. Uses a ton of heuristics to get to a reasonable sorting of results.
@@ -991,8 +1017,8 @@ export class AccountDatabase {
     // Actually executes the Where Is-related queries on the database.
     async _whereIsQueries(ip) {
         return await Promise.all([
-            server.database.query(WHEREIS_PROXY_QUERY, ip),
-            server.database.query(WHEREIS_LOCATION_QUERY, ip),
+            server.database.query(WHEREIS_PROXY_QUERY, ip, ip),
+            server.database.query(WHEREIS_LOCATION_QUERY, ip, ip),
         ]);
     }
 

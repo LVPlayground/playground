@@ -59,12 +59,19 @@ export class PlayerCommandRegistry {
         }
 
         // (4) Register the "/my" command with the server. We already closed the last sub-command.
-        myBuilder.build(PlayerCommandRegistry.prototype.onMyCommand.bind(this));
+        myBuilder
+            .parameters([
+                { name: 'params', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+            ])
+            .build(PlayerCommandRegistry.prototype.onMyCommand.bind(this));
 
         // (5) Register the "/p" command with the server. The sub-command requiring the player
         // parameter is still open, so that has to be closed first.
         playerBuilder
-            .build(PlayerCommandRegistry.prototype.onPlayerCommand.bind(this))
+                .parameters([
+                     { name: 'params', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+                ])
+                .build(PlayerCommandRegistry.prototype.onPlayerCommand.bind(this))
             .build(PlayerCommandRegistry.prototype.onPlayerCommand.bind(this));
     }
 
@@ -90,16 +97,23 @@ export class PlayerCommandRegistry {
     // fully understood, and thus should be displayed a help message.
     onMyCommand(player, params) {
         // TODO: Migrate all the player commands to JavaScript, then display a help message here.
-        wait(0).then(() => pawnInvoke(
-            'OnPlayerCommand', 'is', player.id, '/my ' + params ?? ''));
+        if (server.isTest())
+            return;
+
+        wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, '/my ' + (params ?? '')));
     }
 
     // Called when the |player| has executed the "/p" command with parameters that could not be
     // fully understood, and thus has to be displayed a help message.
-    onPlayerCommand(player, params) {
+    onPlayerCommand(player, target, params) {
         // TODO: Migrate all the player commands to JavaScript, then display a help message here.
-        wait(0).then(() => pawnInvoke(
-            'OnPlayerCommand', 'is', player.id, '/p ' + params ?? ''));
+        if (server.isTest())
+            return;
+
+        const command = target ? `/p ${target.id} ${params}`
+                               : '/p';
+
+        wait(0).then(() => pawnInvoke('OnPlayerCommand', 'is', player.id, command));
     }
 
     // ---------------------------------------------------------------------------------------------

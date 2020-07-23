@@ -6,21 +6,9 @@ import { PlayerSetting } from 'entities/player_setting.js';
 
 import { format } from 'base/format.js';
 
-// Tag to be used for regular player-visible announcements.
-const AnnounceTag = 'notice-announce';
-
-// Tag to be used when announcing participation in a minigame.
-const AnnounceMinigameTag = 'notice-minigame';
-
-// Tag to be used for private administrator-visible announcements.
-const AdminTag = 'notice-admin';
-
-// Tag to be used for sending reports to admins on IRC.
-const ReportTag = 'notice-report';
-
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
-class AnnounceManager {
+export class AnnounceManager {
     nuwani_ = null;
 
     constructor(nuwani) {
@@ -46,7 +34,7 @@ class AnnounceManager {
         // Announce it asynchronously when not running a test to avoid reentrancy problems.
         Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
 
-        this.nuwani_().echo(AnnounceMinigameTag, player.name, player.id, name);
+        this.nuwani_().echo('notice-minigame', player.name, player.id, name);
     }
 
     // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
@@ -60,7 +48,7 @@ class AnnounceManager {
         server.playerManager.forEach(player =>
             player.sendMessage(formattedMessage));
 
-        this.nuwani_().echo(AnnounceTag, message);
+        this.nuwani_().echo('notice-announce', message);
     }
 
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
@@ -98,7 +86,7 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo(AdminTag, message);
+        this.nuwani_().echo('notice-admin', message);
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
@@ -115,11 +103,7 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo(ReportTag, player.name, player.id, reportedPlayer.name,
+        this.nuwani_().echo('notice-report', player.name, player.id, reportedPlayer.name,
                             reportedPlayer.id, reason);
     }
-
-    dispose() { }
 }
-
-export default AnnounceManager;

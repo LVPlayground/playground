@@ -1,13 +1,13 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AnnounceManager from 'features/announce/announce_manager.js';
+import { AnnounceManager } from 'features/announce/announce_manager.js';
 import { Feature } from 'components/feature_manager/feature.js';
 
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.
-class Announce extends Feature {
+export default class Announce extends Feature {
     constructor() {
         super();
 
@@ -17,7 +17,7 @@ class Announce extends Feature {
 
         // The announce feature reads the player.settings supplement.
         this.defineDependency('player_settings');
-        
+
         this.manager_ = new AnnounceManager(nuwani);
     }
 
@@ -50,7 +50,7 @@ class Announce extends Feature {
     announceToAdministrators(message, ...args) {
         this.manager_.announceToAdministrators(message, ...args);
     }
-    
+
     // Announces |message| to all in-game administrators who have the |announceSubcategory| and 
     // |subCommand| enabled. This will automatically generate an IRC message with the "admin" tag 
     // if uncategorized announcements are enabled in the settings. The |args| will only be used if 
@@ -65,12 +65,4 @@ class Announce extends Feature {
     announceReportToAdministrators(player, reportedPlayer, reason) {
         this.manager_.announceReportToAdministrators(player, reportedPlayer, reason);
     }
-
-    // ---------------------------------------------------------------------------------------------
-
-    dispose() {
-        this.manager_.dispose();
-    }
 }
-
-export default Announce;

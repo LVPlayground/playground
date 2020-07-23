@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AnnounceManager from 'features/announce/announce_manager.js';
+import { AnnounceManager } from 'features/announce/announce_manager.js';
 import { PlayerSetting } from 'entities/player_setting.js';
 
 describe('AnnounceManager', (it, beforeEach, afterEach) => {

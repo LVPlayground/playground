@@ -31,6 +31,9 @@ export default class GamesDeathmatch extends Feature {
     constructor() {
         super();
 
+        // Deathmatch games are critical to the server, thus this is a low-level feature.
+        this.markLowLevel();
+
         // Allows us to change the participant colours when teams are used.
         this.defineDependency('player_colors');
 

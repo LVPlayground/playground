@@ -34,14 +34,12 @@ other foundational features, without circular dependencies.
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
 [AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.prototype.account` supplement, loads and saves account data.
-[Announce](announce/)                | ❓ 2020     | Provides the ability to share announcements with players.
 [Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
 [Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
 [Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
 [Nuwani](nuwani/)                    | ✔ 2020     | Provides our ability to interact with IRC and Discord.
 [PlayerColors](player_colors/)       | ✔ 2020     | Provides the `Player.prototype.colors` supplement and color management.
 [PlayerStats](player_stats/)         | ✔ 2020     | Provides the `Player.prototype.stats` supplement, tracks player metrics.
-[SAMPCAC](sampcac/)                  | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
 [Settings](settings/)                | ✔ 2020     | Manages persistent settings on the server.
 
 ## 2. Low-level features
@@ -50,9 +48,12 @@ various other features because of the functionality they provide.
 
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
+[Abuse](abuse/)                      | ❓ 2020     | Provides the ability to report and share player abuse instances.
+[Announce](announce/)                | ❓ 2020     | Provides the ability to share announcements with players.
 [Collectables](collectables/)        | ✔ 2020     | Provides achievements, benefits thereof and the actual collectables.
 [Games](games/)                      | ✔ 2020     | Driver for all sorts of interactive games on the server.
 [GamesDeathmatch](games_deathmatch/) | ✔ 2020     | Driver for deathmatch-based games on the server.
+[SAMPCAC](sampcac/)                  | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
 [Spectate](spectate/)                | ✔ 2020     | Offers the ability to spectate specific player(s).
 [Streamer](streamer/)                | ✔ 2020     | Provides the ability to intelligently stream vehicles on the map.
 
@@ -61,7 +62,6 @@ May depend on any other feature as long as there are no circular dependencies.
 
 Feature                                          | Code Health | Description
 -------------------------------------------------|-------------|------------------------------------------------------------------
-[Abuse](abuse/)                                  | ❓ 2020     | -
 [Account](account/)                              | ✔ 2020     | Provides account-related commands to in-game players
 [CommunicationCommands](communication_commands/) | ✔ 2020     | Provides commands related to communication, e.g. `/pm`, `/mute` etc.
 [Cruise](cruise/)                                | ❓ 2020     | -

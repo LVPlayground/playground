@@ -100,7 +100,7 @@ export class FeatureManager {
         if (!this.loadedFeatures_.has(feature))
             return true;  // the feature has not been loaded yet, this is always safe
 
-        if (!this.loadedFeatures_.get(feature).isLiveReloadEnabled())
+        if (!this.loadedFeatures_.get(feature).supportsLiveReload())
             return false;  // the feature has opted out of live reload
 
         return true;
@@ -207,7 +207,7 @@ export class FeatureManager {
 
     // Defines a dependency from |feature| (instance) to |dependencyName|. Throws an exception when
     // the dependency does not exist, or a circular dependency is being created.
-    defineDependency(feature, dependencyName, isFoundational) {
+    defineDependency(feature, dependencyName, scope) {
         if (!this.registeredFeatures_.has(dependencyName)) {
             throw new Error('Cannot declare a dependency on "' + dependencyName + '": ' +
                             'invalid dependency name.');
@@ -227,8 +227,8 @@ export class FeatureManager {
         // Actually load the feature now that we know it's not a circular dependency.
         const dependency = this.loadFeature(dependencyName);
 
-        if (isFoundational && !dependency.isFoundational())
-            throw new Error('Foundational features may only depend on other foundational features.')
+        if (scope < dependency.getFeatureScope())
+            throw new Error('Features may not depend on higher-order features.')
 
         this.dependencyGraph_.createDependencyEdge(featureName, dependencyName);
 

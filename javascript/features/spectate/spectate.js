@@ -10,6 +10,10 @@ import { SpectateGroup } from 'features/spectate/spectate_group.js';
 export default class Spectate extends Feature {
     constructor() {
         super();
+
+        // Spectating others is a low-level capability, as it's integrated in various sub-systems
+        // including administrative tools and games.
+        this.markLowLevel();
     }
 
     // ---------------------------------------------------------------------------------------------

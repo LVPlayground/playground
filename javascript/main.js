@@ -37,7 +37,6 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         'account_provider',
-        'announce',
         'communication',
         'finance',
         'limits',
@@ -54,6 +53,8 @@ testRunner.run('.*\.test\.js').then(time => {
         // on by various other features because of the functionality they provide.
         // -----------------------------------------------------------------------------------------
 
+        'abuse',
+        'announce',
         'collectables',
         'games',
         'games_deathmatch',
@@ -65,7 +66,7 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
-        'abuse', 'economy', 'location', 'minigames',
+        'economy', 'location', 'minigames',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',

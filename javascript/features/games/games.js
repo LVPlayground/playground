@@ -19,6 +19,9 @@ export default class Games extends Feature {
     constructor() {
         super();
 
+        // Games are critical to the server, thus this is a low-level feature.
+        this.markLowLevel();
+
         // Participating in a game costs some money, but can also reward a prize.
         const finance = this.defineDependency('finance');
 

@@ -15,6 +15,9 @@ export default class Abuse extends Feature {
     constructor() {
         super();
 
+        // The ability to report and share player abuse is deemed a low-level capability.
+        this.markLowLevel();
+
         // The announce feature enables abuse to be reported to administrators.
         const announce = this.defineDependency('announce');
 

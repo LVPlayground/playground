@@ -29,6 +29,10 @@ export default class Collectables extends Feature {
     constructor() {
         super();
     
+        // Collectables provide achievements, which many other features interact with, thus this is
+        // considered a low-level feature.
+        this.markLowLevel();
+
         // Allows us to make announcements to administrators.
         const announce = this.defineDependency('announce');
 

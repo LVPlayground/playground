@@ -4,34 +4,46 @@
 
 // The Feature class must be the base class of all features.
 export class Feature {
-    constructor() {
-        this.foundationalFeature_ = false;
-        this.liveReloadEnabled_ = true;
-    }
+    // Available scopes of features that they can be defined as.
+    static kScopeFoundational = 0;
+    static kScopeLowLevel = 1;
+    static kScopeRegular = 2;
 
-    // Returns whether this is a foundational feature.
-    isFoundational() { return this.foundationalFeature_; }
+    #liveReloadEnabled_ = true;
+    #scope_ = Feature.kScopeRegular;
 
-    // Returns whether live reload has been enabled for this feature.
-    isLiveReloadEnabled() { return this.liveReloadEnabled_; }
+    constructor() {}
 
-    // Defines a dependency on |featureName|. An exception will be thrown if the dependency could
-    // not be declared, or when a circular dependency would be created. This method is safe to be
-    // called any number of times.
+    // ---------------------------------------------------------------------------------------------
+    // Section: mutators
+    // ---------------------------------------------------------------------------------------------
+
+    // Defines a dependency on |featureName|. Circular dependencies are not allowed, nor is it
+    // possible to depend on features with a higher scope than your own.
     defineDependency(featureName) {
-        return server.featureManager.defineDependency(this, featureName, this.foundationalFeature_);
+        return server.featureManager.defineDependency(this, featureName, this.#scope_);
     }
 
-    // Defines that the feature is not eligible for live reload.
-    disableLiveReload() {
-        this.liveReloadEnabled_ = false;
-    }
+    // Marks this feature as living at the Foundational scope.
+    markFoundational() { this.#scope_ = Feature.kScopeFoundational; }
 
-    // Marks this feature as a foundational feature. That means that it's not allowed to define any
-    // dependencies, as that goes against the rules of a foundational feature.
-    markFoundational() {
-        this.foundationalFeature_ = true;
-    }
+    // Marks this feature as living at the Low-level scope.
+    markLowLevel() { this.#scope_ = Feature.kScopeLowLevel; }
+
+    // Marks this feature as not being eligible for live reload.
+    disableLiveReload() { this.#liveReloadEnabled_ = false; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: meta information
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns the scope of this feature, which defines its allowed dependencies.
+    getFeatureScope() { return this.#scope_; }
+
+    // Returns whether this feature supports live reload, which should only rarely be disabled.
+    supportsLiveReload() { return this.#liveReloadEnabled_; }
+
+    // ---------------------------------------------------------------------------------------------
 
     // To be called when the feature shuts down. All known resources associated with the feature
     // will be disposed and removed from the gamemode as well.

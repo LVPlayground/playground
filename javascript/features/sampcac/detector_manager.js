@@ -63,6 +63,10 @@ export class DetectorManager {
         // (1) Populate the meta-data fields of the results.
         results.version = player.version;
 
+        // Append "-R1/R2" to distinguish from R3 and R4, which include the revision.
+        if (!results.version.includes('R'))
+            results.version += '-R1/R2';
+
         if (this.natives_.getStatus(player)) {
             results.sampcacVersion = this.natives_.getClientVersion(player).join('.');
             results.sampcacHardwareId = this.natives_.getHardwareID(player);

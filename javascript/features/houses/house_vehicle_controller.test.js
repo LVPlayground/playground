@@ -41,7 +41,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
 
         return new HouseVehicle({
             id: between(0, 10000),
-            modelId: between(400, 610)
+            modelId: between(400, 500)
 
         }, parkingLot);
     }

@@ -80,7 +80,7 @@ export class PlayerAccountSupplement extends Supplement {
         player.stats.enduring.shotsHit = databaseRow.stats_shots_hit;
         player.stats.enduring.shotsMissed = databaseRow.stats_shots_missed;
         player.stats.enduring.shotsTaken = databaseRow.stats_shots_taken;
-        
+
         this.isRegistered_ = true;
         this.isIdentified_ = true;
     }

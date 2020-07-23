@@ -82,7 +82,7 @@ export class MockPlayer extends Player {
         this.#serial_ = murmur3hash(this.#gpci_ || 'npc');
         this.#ipAddress_ = params.ip || '127.0.0.1';
         this.#isNpc_ = params.npc || false;
-        this.#version_ = params.version || '0.3.7-mock';
+        this.#version_ = params.version || '0.3.7-R4-mock';
 
         this.#lastDialogPromiseResolve_ = null;
         this.#lastDialogPromise_ = new Promise(resolve => {

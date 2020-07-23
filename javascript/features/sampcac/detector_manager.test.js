@@ -32,7 +32,7 @@ describe('DetectorManager', (it, beforeEach) => {
         const result = await resultPromise;
 
         assert.instanceOf(result, DetectorResults);
-        assert.equal(result.version, '0.3.7-mock');
+        assert.equal(result.version, '0.3.7-R4-mock');
         assert.typeOf(result.sampcacVersion, 'string');
         assert.typeOf(result.sampcacHardwareId, 'string');
         assert.isFalse(result.minimized);

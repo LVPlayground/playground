@@ -159,10 +159,19 @@ export class PunishmentCommands {
         if (results.detectors.size > 0) {
             dialog.addItem('----------', '----------');
 
-            const detectors = [ ...results.detectors ].sort((lhs, rhs) => {
+            let detectors = [ ...results.detectors ].sort((lhs, rhs) => {
                 return lhs[0].localeCompare(rhs[0]);
             });
 
+            // Unless the |player| is a Management member, we filter out out all detectors that came
+            // back negative or undeterminable. They don't have to know what we can detect.
+            if (!player.isManagement()) {
+                detectors = detectors.filter(detector => {
+                    return detector[1] === DetectorResults.kResultDetected;
+                });
+            }
+
+            // (a) Add all the |detectors| to the output dialog.
             for (const [ name, result ] of detectors) {
                 let resultLabel = '{BDBDBD}undeterminable';
 
@@ -182,6 +191,10 @@ export class PunishmentCommands {
 
                 dialog.addItem(name, resultLabel);
             }
+
+            // (b) If there were no detectors at all, show that to them too.
+            if (!detectors.length)
+                dialog.addItem('{4CAF50}No cheats detected');
         }
 
         // (3) Display the |dialog| to the |player|, and call it a day.

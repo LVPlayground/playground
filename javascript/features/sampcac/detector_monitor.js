@@ -51,9 +51,9 @@ export class DetectorMonitor {
     issueReport(player, type, certainty, evidence = {}) {
         // (1) Amend the given |evidence| with common SAMPCAC fields.
         evidence.sampcac = {
-            clientVersion: this.#natives_.getClientVersion(),
+            clientVersion: this.#natives_.getClientVersion(player),
             serverVersion: this.#natives_.getServerVersion(),
-            hardwareId: this.#natives_.getHardwareID(),
+            hardwareId: this.#natives_.getHardwareID(player),
         };
 
         // (2) Issue the abuse report with the responsible feature.

@@ -81,7 +81,7 @@ export class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('notice-admin', message);
+        this.nuwani_().echo('notice-admin', message.replace(/\{([a-f0-9]{6})\}/gi, ''));
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game

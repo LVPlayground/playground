@@ -7,7 +7,9 @@ import { AbuseDetector } from 'features/abuse/abuse_detector.js';
 import { MockAbuseDatabase } from 'features/abuse/mock_abuse_database.js';
 
 import { clone } from 'base/clone.js';
+import { format } from 'base/format.js';
 import { getComponentName } from 'entities/vehicle_components.js';
+import { random } from 'base/random.js';
 
 // The abuse monitor keeps track of instances of abuse across the active players. A series of abuse
 // detectors are responsible for detecting it, after which it ends up here for decision making and
@@ -35,8 +37,9 @@ export class AbuseMonitor {
     // Reports abuse by the given |player|, indicating that they've been observed exercising the
     // |detectorName| with the given level of |certainty|. In-game staff will be informed.
     reportAbuse(player, detectorName, certainty, evidence) {
+        const rid = this.generateUniqueReportId();
+
         // TODO: Implement auto-banning and kicking based on |certainty|.
-        // TODO: Generate pseudo-unique report IDs rather than incremental ones.
 
         let message = null;
 
@@ -57,13 +60,15 @@ export class AbuseMonitor {
                 throw new Error(`Invalid certainty provided: ${certainty}.`);
         }
 
-        // Make an announcement to all in-game administrators about this incident.
-        this.#announce_().announceToAdministrators(message, player.name, player.id, detectorName);
+        // Make an announcement to all in-game administrators about this incident. It includes the
+        // unique report ID through which the evidence can be retrieved later.
+        this.#announce_().announceToAdministrators(
+            message, player.name, player.id, detectorName, rid);
 
         // Store the |evidence| in the database, and add more contextual information that will make
         // it easier to look at the incident without being in-game.
         this.#database_.storeEvidence(
-            player, detectorName, certainty, this.composeContextualEvidence(player, evidence));
+            rid, player, detectorName, certainty, this.composeContextualEvidence(player, evidence));
     }
 
     // Called when abuse is being reported from Pawn, by the |playerid|.
@@ -84,6 +89,20 @@ export class AbuseMonitor {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Generates a unique report ID. This is based on calculating four random bytes and converting
+    // them to a string, which gives us 32 bits (16^8) of uniqueness. There might be a couple of
+    // duplicates in LVP's lifetime, but this is a substitute for forever incrementing numbers.
+    generateUniqueReportId() {
+        const bytes = [
+            format('%02x', random(0, 256)),
+            format('%02x', random(0, 256)),
+            format('%02x', random(0, 256)),
+            format('%02x', random(0, 256)),
+        ];
+
+        return bytes.join('');
+    }
 
     // Composes a contextual evidence object taking |evidence| as the input, and adding on lots of
     // meta-information about the player, there state and whereabouts.

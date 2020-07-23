@@ -74,10 +74,8 @@ describe('AbuseDetectors', (it, beforeEach, afterEach) => {
         }
         
         assert.equal(gunther.messages.length, 1);
-        assert.includes(
-            gunther.messages[0],
-            Message.format(Message.ABUSE_ADMIN_FUNNY_FEELING, gunther.name, gunther.id,
-                           'FakeDetector'));
+        assert.includes(gunther.messages[0], 'might be using');
+        assert.includes(gunther.messages[0], 'FakeDetector');
 
         detectors.detectorInfo_.delete(kFakeSetting);
     });

@@ -3,9 +3,9 @@
 
   "ABUSE_ANNOUNCE_DETECTED": "%s (Id:%d) has just abused %s (%s time).",
   "ABUSE_ANNOUNCE_KICKED": "%s (Id:%d) has been kicked for %s.",
-  "ABUSE_ADMIN_FUNNY_FEELING": "%s (Id:%d) might be using %s, please keep an eye out.",
-  "ABUSE_ADMIN_SUSPECTED": "%s (Id:%d) has been suspected of using %s.",
-  "ABUSE_ADMIN_DETECTED": "%s (Id:%d) has been found to be using %s.",
+  "ABUSE_ADMIN_FUNNY_FEELING": "%s (Id:%d) might be using %s, please keep an eye out (RID: #%s).",
+  "ABUSE_ADMIN_SUSPECTED": "%s (Id:%d) has been suspected of using %s (RID: #%s).",
+  "ABUSE_ADMIN_DETECTED": "%s (Id:%d) has been found to be using %s (RID: #%s).",
 
   "ACCOUNT_ADMIN_ALIAS_CREATED": "%s (Id:%d) has added %s as an alias for their account.",
   "ACCOUNT_ADMIN_ALIAS_DELETED": "%s (Id:%d) has deleted %s as an alias for their account.",

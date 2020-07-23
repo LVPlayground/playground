@@ -8,7 +8,7 @@ import { AbuseDatabase } from 'features/abuse/abuse_database.js';
 // but still inspects the given data and ensures a properly formatted query would work well.
 export class MockAbuseDatabase extends AbuseDatabase {
     // Overridden.
-    async storeEvidence(player, detectorName, certainty, evidence) {
+    async storeEvidence(rid, player, detectorName, certainty, evidence) {
         // Serialize the |evidence| to ensure that whatever's given is JSON-serializable.
         JSON.stringify(evidence);
     }

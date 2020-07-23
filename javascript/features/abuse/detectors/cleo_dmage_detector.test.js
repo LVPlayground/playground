@@ -55,10 +55,8 @@ describe('CleoDmageDetector', (it, beforeEach) => {
             });
 
             assert.equal(russell.messages.length, existingMessageCount + 1);
-            assert.includes(
-                russell.messages[existingMessageCount],
-                Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
-                               'CLEO Dmage'));
+            assert.includes(russell.messages[existingMessageCount], 'has been suspected');
+            assert.includes(russell.messages[existingMessageCount], 'CLEO Dmage');
         }
     });
 
@@ -95,10 +93,8 @@ describe('CleoDmageDetector', (it, beforeEach) => {
                 });
 
                 assert.equal(russell.messages.length, existingMessageCount + 1);
-                assert.includes(
-                    russell.messages[existingMessageCount],
-                    Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
-                                   'CLEO Dmage'));
+                assert.includes(russell.messages[existingMessageCount], 'has been suspected');
+                assert.includes(russell.messages[existingMessageCount], 'CLEO Dmage');
             }
         }
     });

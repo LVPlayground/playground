@@ -67,7 +67,7 @@ export class DetectorMonitor {
         // false detections with the fifth alternative, so mark that as a funny feeling.
         const certainty =
             variant === SAMPCACNatives.kCheatAimbotAlternative5 ? Abuse.kFunnyFeeling
-                                                                : Abuse.kDetected;
+                                                                : Abuse.kSuspected;
 
         this.issueReport(player, DetectorMonitor.kTypeAimbot, certainty, {
             variant,  // aimbot variant the |player| was detected with, there are six
@@ -80,7 +80,7 @@ export class DetectorMonitor {
         if (this.isRateLimited(player, DetectorMonitor.kTypeNoRecoil))
             return;  // the report will be rate limited
 
-        this.issueReport(player, DetectorMonitor.kTypeNoRecoil, Abuse.kDetected, {
+        this.issueReport(player, DetectorMonitor.kTypeNoRecoil, Abuse.kSuspected, {
             variant,  // no-recoil variant the |player| was detected with, there are three
         });
     }

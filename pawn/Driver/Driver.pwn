@@ -207,6 +207,9 @@ ProcessHighFrameratePlayers() {
             continue;
         }
 
+        if (IsPlayerMinimized(playerId))
+            continue;  // the |playerId| is minimized, which causes false readings
+
         if (++g_highFramerateCounter[playerId] < g_abuseHighFramerateDamageSampleSec)
             continue;  // not enough subsequent samples yet
 

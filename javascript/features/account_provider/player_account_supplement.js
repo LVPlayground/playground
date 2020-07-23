@@ -69,7 +69,7 @@ export class PlayerAccountSupplement extends Supplement {
 
         // Color information will be stored on the player's colour state, when configured.
         if (databaseRow.custom_color !== 0)
-            player.colors.customColor = Color.fromRGBA(databaseRow.custom_color);
+            player.colors.customColor = Color.fromNumberRGBA(databaseRow.custom_color);
 
         // Statistics that will be stored by the PlayerStatsSupplement instead.
         player.stats.enduring.onlineTime = databaseRow.online_time;

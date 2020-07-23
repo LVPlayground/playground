@@ -34,6 +34,7 @@ other foundational features, without circular dependencies.
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
 [AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.prototype.account` supplement, loads and saves account data.
+[Announce](announce/)                | ❓ 2020     | Provides the ability to share announcements with players.
 [Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
 [Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
 [Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
@@ -98,7 +99,6 @@ disappear in the future. May depend on any feature as long as there are no circu
 Feature                      | Code Health | Description
 -----------------------------|-------------|------------------------------------------------------------------
 [ActivityLog](activity_log/) | ❓ 2020     | -
-[Announce](announce/)        | ❓ 2020     | -
 [Commands](commands/)        | ❓ 2020     | -
 [Debug](debug/)              | ❓ 2020     | -
 [Minigames](minigames/)      | ❓ 2020     | Deprecated minigame driver, superseded by the [Games](games/) feature.

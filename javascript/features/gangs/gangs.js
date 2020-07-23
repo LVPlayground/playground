@@ -25,6 +25,9 @@ class Gangs extends Feature {
         // Used to customize bits of functionality related to how gangs work.
         const settings = this.defineDependency('settings');
 
+        // Uses player settings to store whether the gang skin should be used.
+        this.defineDependency('player_settings');
+
         this.manager_ = new GangManager();
         this.commands_ = new GangCommands(this.manager_, announce, finance, playerColors, settings);
     }

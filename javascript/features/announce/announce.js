@@ -11,12 +11,12 @@ export default class Announce extends Feature {
     constructor() {
         super();
 
+        // The ability to share announcements with players is deemed foundational.
+        this.markFoundational();
+
         // Depend on the Nuwani feature to be able to announce messages to IRC. Features wishing to
         // send their own IRC messages should depend on Nuwani individually.
         const nuwani = this.defineDependency('nuwani');
-
-        // The announce feature reads the player.settings supplement.
-        this.defineDependency('player_settings');
 
         this.manager_ = new AnnounceManager(nuwani);
     }

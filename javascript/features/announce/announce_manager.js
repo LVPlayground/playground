@@ -67,22 +67,17 @@ export class AnnounceManager {
 
         const formattedMessage = format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
-        const generalIdentifier = 
-            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
-        const specificIdentifier = 
-            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${subCommand}`;
-
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
                 return;
-                
+/**
             var item = player.settings.getValue(generalIdentifier);
             var subItem = player.settings.getValue(specificIdentifier);
 
             if (item === false || subItem === false) {
                 return;
             }
-
+*/
             player.sendMessage(formattedMessage);
         });
 

@@ -299,6 +299,10 @@ export class Player extends Supplementable {
         pawnInvoke('SetPlayerMarkerForPlayer', 'iii', player.id, this.#id_, color.toNumberRGBA());
     }
 
+    showNameTagForPlayer(player, visible) {
+        pawnInvoke('ShowPlayerNameTagForPlayer', 'iii', player.id, this.#id_, visible ? 1 : 0);
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Environment
     // ---------------------------------------------------------------------------------------------

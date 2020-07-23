@@ -110,7 +110,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
         assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
 
         gunther.colors.setVisibilityOverrideForPlayer(russell, /* visible= */ false);
@@ -118,7 +120,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
         assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
 
         gunther.colors.visible = false;
@@ -126,7 +130,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
         assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
 
         gunther.colors.visible = true;
@@ -135,7 +141,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
 
         // (3) Verify that changing colours does not mess up overrides, but does change color.
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).toHexRGBA(), '0000FF00');
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
 
         gunther.colors.gameColor = Color.fromRGBA(255, 255, 0, kDefaultAlpha);
@@ -143,7 +151,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
         assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).toHexRGBA(), 'FFFF0000');
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
 
         // (4) Verify that inverting the override (invisible by default, make visible) works.
@@ -153,7 +163,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
         assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
 
         // (5) Verify that releasing the visibility override works as expected.
@@ -162,7 +174,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isFalse(gunther.colors.isVisibleForPlayer(russell));
         assert.isFalse(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, 0);
+        assert.isFalse(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, 0);
 
         gunther.colors.visible = true;
@@ -170,7 +184,9 @@ describe('PlayerColors', (it, beforeEach) => {
         assert.isTrue(gunther.colors.isVisibleForPlayer(russell));
         assert.isTrue(gunther.colors.isVisibleForPlayer(lucy));
 
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(russell));
         assert.equal(gunther.getColorForPlayerForTesting(russell).a, kDefaultAlpha);
+        assert.isTrue(gunther.isNameTagShownForPlayerForTesting(lucy));
         assert.equal(gunther.getColorForPlayerForTesting(lucy).a, kDefaultAlpha);
     });
 });

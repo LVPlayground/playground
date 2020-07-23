@@ -40,6 +40,7 @@ export class MockPlayer extends Player {
     #controllable_ = true;
     #health_ = 100.0;
     #armour_ = 0.0;
+    #nameTagInvisible_ = new Set();
     #skin_ = 308;  // San Fierro Paramedic (EMT)
     #specialAction_ = Player.kSpecialActionNone;
     #state_ = Player.kStateOnFoot;
@@ -247,6 +248,12 @@ export class MockPlayer extends Player {
 
     getColorForPlayerForTesting(player) { return this.#colorOverrides_.get(player) ?? this.color; }
     setColorForPlayer(player, color) { this.#colorOverrides_.set(player, color); }
+
+    isNameTagShownForPlayerForTesting(player) { return !this.#nameTagInvisible_.has(player); }
+    showNameTagForPlayer(player, visible) {
+        visible ? this.#nameTagInvisible_.delete(player)
+                : this.#nameTagInvisible_.add(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Environment

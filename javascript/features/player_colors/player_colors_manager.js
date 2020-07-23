@@ -10,12 +10,14 @@ import { kDefaultAlpha } from 'features/player_colors/default_colors.js';
 // making sure that new players have the appropriate colours assigned to them.
 export class PlayerColorsManager extends PlayerEventObserver {
     #colors_ = null;
+    #invisibility_ = null;
     #overrides_ = null;
 
     constructor() {
         super();
 
         this.#colors_ = new WeakMap();
+        this.#invisibility_ = new WeakMap();
         this.#overrides_ = new WeakMap();
     }
 
@@ -62,12 +64,24 @@ export class PlayerColorsManager extends PlayerEventObserver {
         overrideMap = overrideMap ?? this.#overrides_.get(player);
 
         const playerBaseColor = this.#colors_.get(player);
-        if (!playerBaseColor)
+        if (!playerBaseColor || !this.#invisibility_.has(player))
             return;  // race conditions exist in tests that cause a player to not be set
 
-        const playerTargetColor =
-            player.colors.isVisibleForPlayer(target) ? playerBaseColor.withAlpha(kDefaultAlpha)
-                                                     : playerBaseColor.withAlpha(0);
+        const playerVisible = player.colors.isVisibleForPlayer(target);
+        const playerTargetColor = playerVisible ? playerBaseColor.withAlpha(kDefaultAlpha)
+                                                : playerBaseColor.withAlpha(0);
+
+        // Apply the |playerVisible| flag. We maintain a set of folks for whom the |player| has been
+        // marked as invisible, so need to keep that set in sync with reality.
+        const invisibilityMap = this.#invisibility_.get(player);
+        if (invisibilityMap.has(target) && playerVisible) {
+            invisibilityMap.delete(target);
+            player.showNameTagForPlayer(target, /* visible= */ true);
+
+        } else if (!invisibilityMap.has(target) && !playerVisible) {
+            invisibilityMap.add(target);
+            player.showNameTagForPlayer(target, /* visible= */ false);
+        }
 
         // If the |playerTargetColor| equals the |playerBaseColor|, then no override is necessary.
         // Delete any that have been created so far, after updating this with the player.
@@ -119,7 +133,10 @@ export class PlayerColorsManager extends PlayerEventObserver {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the given |player| has connected with the server.
-    onPlayerConnect(player) { this.synchronizeForPlayer(player); }
+    onPlayerConnect(player) {
+        this.#invisibility_.set(player, new WeakSet());
+        this.synchronizeForPlayer(player);
+    }
 
     // Called when the level of the given |player| has changed.
     onPlayerLevelChange(player) { this.synchronizeForPlayer(player); }
@@ -151,6 +168,7 @@ export class PlayerColorsManager extends PlayerEventObserver {
     // Called when the |player| has disconnected from the server. Clean up their state.
     onPlayerDisconnect(player) {
         this.#colors_.delete(player);
+        this.#invisibility_.delete(player);
         this.#overrides_.delete(player);
 
         for (const target of server.playerManager)

@@ -31,6 +31,11 @@ export class EventMonitor extends SAMPCACEventObserver {
             console.log(`[sampcac] Detected ${player.name}: ${cheatId} (${option1}, ${option2})`);
 
         switch (cheatId) {
+            case SAMPCACNatives.kCheatAdditionalVisibility:
+            case SAMPCACNatives.kCheatAdditionalVisibilityNameTags:
+                this.detectorMonitor_.reportExtrasensoryPerception(player, cheatId);
+                break;
+
             case SAMPCACNatives.kCheatAimbot:
             case SAMPCACNatives.kCheatAimbotAlternative:
             case SAMPCACNatives.kCheatAimbotAlternative2:
@@ -42,6 +47,10 @@ export class EventMonitor extends SAMPCACEventObserver {
 
             case SAMPCACNatives.kCheatCleo:
                 this.manager_.reportPlayerHasInstalledCleo(player);
+                break;
+
+            case SAMPCACNatives.kCheatFakePing:
+                this.detectorMonitor_.reportFakePing(player);
                 break;
 
             case SAMPCACNatives.kCheatMacro:
@@ -56,16 +65,21 @@ export class EventMonitor extends SAMPCACEventObserver {
 
             case SAMPCACNatives.kCheatTriggerbot:
             case SAMPCACNatives.kCheatTriggerbotAlternative:
-            case SAMPCACNatives.kCheatAdditionalVisibility:
-            case SAMPCACNatives.kCheatAdditionalVisibilityNameTags:
-            case SAMPCACNatives.kCheatFakePing:
-            case SAMPCACNatives.kCheatWeaponDataModified:
+                this.detectorMonitor_.reportTriggerBot(player, cheatId);
+                break;
+
             case SAMPCACNatives.kCheatUntrustedLibrary:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative2:
             case SAMPCACNatives.kCheatUntrustedLibraryAlternative3:
+                this.detectorMonitor_.reportUntrustedLibrary(player, cheatId);
+                break;
+
+            case SAMPCACNatives.kCheatWeaponDataModified:
+                this.detectorMonitor_.reportWeaponDataModified(player);
+                break;
+
             case SAMPCACNatives.kCheatAny:
-                // TODO: Implement handling for these cheats.
                 break;
         }
     }

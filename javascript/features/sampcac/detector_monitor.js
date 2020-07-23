@@ -24,8 +24,13 @@ export const kReportRateLimitMs = 10 * 1000;
 export class DetectorMonitor {
     // Type of detection that has been made. Generalized from the SAMPCAC types, including our own.
     static kTypeAimbot = 'Aimbot';
+    static kTypeExtrasensoryPerception = 'Extrasensory perception';
+    static kTypeFakePing = 'Fake ping';
     static kTypeMacro = 'Macro';
     static kTypeNoRecoil = 'No recoil';
+    static kTypeTriggerBot = 'Trigger bot';
+    static kTypeUntrustedLibrary = 'Untrusted library';
+    static kTypeWeaponData = 'Modified weapon data';
 
     #abuse_ = null;
     #natives_ = null;
@@ -74,15 +79,24 @@ export class DetectorMonitor {
         });
     }
 
-    // Reports that the |player| has been detected for no-recoil usage, which enables them to fight
-    // with less breaks in between. The |variant| is indicative of the exact tool used.
-    reportNoRecoil(player, variant) {
-        if (this.isRateLimited(player, DetectorMonitor.kTypeNoRecoil))
+    // Reports that the |player| has been found to be using extrasensory perception (ESP), more
+    // commonly known as someone who has disabled line-of-sight limitations.
+    reportExtrasensoryPerception(player, variant) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeExtrasensoryPerception))
             return;  // the report will be rate limited
 
-        this.issueReport(player, DetectorMonitor.kTypeNoRecoil, Abuse.kSuspected, {
-            variant,  // no-recoil variant the |player| was detected with, there are three
+        this.issueReport(player, DetectorMonitor.kTypeExtrasensoryPerception, Abuse.kSuspected, {
+            variant,  // ESP variant the |player| was detected with, there are two
         });
+    }
+
+    // Reports that the |player| has been found to be using a fake ping value, which might be to
+    // introduce lag which gives them an unfair advantage particularly in lag-shot matches.
+    reportFakePing(player) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeFakePing))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeFakePing, Abuse.kSuspected);
     }
 
     // Reports that the |player| has executed a macro with the |keyId|, which is one of the common
@@ -97,6 +111,48 @@ export class DetectorMonitor {
         this.issueReport(player, DetectorMonitor.kTypeMacro, Abuse.kSuspected, {
             keyId,  // the virtual key code that the macro was issued with
         });
+    }
+
+    // Reports that the |player| has been detected for no-recoil usage, which enables them to fight
+    // with less breaks in between. The |variant| is indicative of the exact tool used.
+    reportNoRecoil(player, variant) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeNoRecoil))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeNoRecoil, Abuse.kSuspected, {
+            variant,  // no-recoil variant the |player| was detected with, there are three
+        });
+    }
+
+    // Reports that the |player| has been found to use a trigger bot, which will automatically fire
+    // on their behalf taking away their need to manually shoot other players.
+    reportTriggerBot(player, variant) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeTriggerBot))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeTriggerBot, Abuse.kSuspected, {
+            variant,  // trigger bot variant the |player| was detected with, there are two
+        });
+    }
+
+    // Reports that the |player| has been found to have loaded an untrusted library. There are four
+    // that SAMPCAC detects, and I honestly have no idea what they mean.
+    reportUntrustedLibrary(player, variant) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeUntrustedLibrary))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeUntrustedLibrary, Abuse.kFunnyFeeling, {
+            variant,  // untrusted library variant the |player| was detected with, there are four
+        });
+    }
+
+    // Reports that the |player| has modified their weapons.dat file, also known as what many people
+    // report as being "damage.cs", but without any complicated tool to help them.
+    reportWeaponDataModified(player) {
+        if (this.isRateLimited(player, DetectorMonitor.kTypeWeaponData))
+            return;  // the report will be rate limited
+
+        this.issueReport(player, DetectorMonitor.kTypeWeaponData, Abuse.kDetected);
     }
 
     // ---------------------------------------------------------------------------------------------

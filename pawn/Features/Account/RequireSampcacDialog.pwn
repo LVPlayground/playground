@@ -26,7 +26,7 @@ class RequireSampcacDialog <playerId (MAX_PLAYERS)> {
                          RequireSampcacDialog::DialogId,
                          DIALOG_STYLE_MSGBOX,
                          "You must enable SAMPCAC to play here!",
-                         message, "Disconnect", "");
+                         message, "Quit", "");
     }
 
     /**

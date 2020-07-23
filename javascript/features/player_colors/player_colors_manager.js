@@ -143,26 +143,34 @@ export class PlayerColorsManager extends PlayerEventObserver {
 
     // Called when the |player| has freshly spawned into the world.
     onPlayerSpawn(player) {
+        const invisibilityMap = this.#invisibility_.get(player);
         const overrideMap = this.#overrides_.get(player);
-        if (!overrideMap || !overrideMap.size)
-            return;  // there are no overrides for the given |player|
+
+        if (!invisibilityMap || !overrideMap)
+            return;  // the |player|'s state hasn't been fully initialized
 
         for (const target of server.playerManager) {
-            const overrideColor = overrideMap.get(target);
-            if (!overrideColor)
-                continue;  // no override has been created for the given |target|
+            if (target === player) continue;
 
-            player.setColorForPlayer(target, overrideColor);
+            if (invisibilityMap.has(target))
+                player.showNameTagForPlayer(target, /* visible= */ false);
+
+            const overrideColor = overrideMap.get(target);
+            if (overrideColor)
+                player.setColorForPlayer(target, overrideColor);
         }
     }
 
     // Called when the |target| has just streamed in for the given |player|.
     onPlayerStreamIn(player, target) {
+        const invisibilityMap = this.#invisibility_.get(player);
         const overrideMap = this.#overrides_.get(target);
-        if (!overrideMap || !overrideMap.has(player))
-            return;  // there are no overrides for the given |player| for the given |target|
 
-        target.setColorForPlayer(player, overrideMap.get(player));
+        if (invisibilityMap && invisibilityMap.has(target))
+            player.showNameTagForPlayer(target, /* visible= */ false);
+
+        if (overrideMap && overrideMap.has(target))
+            player.setColorForPlayer(target, overrideMap.get(target));
     }
 
     // Called when the |player| has disconnected from the server. Clean up their state.

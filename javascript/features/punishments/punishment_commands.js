@@ -197,7 +197,7 @@ export class PunishmentCommands {
 
             // (b) If there were no detectors at all, show that to them too.
             if (!detectors.length)
-                dialog.addItem('{4CAF50}No cheats detected');
+                dialog.addItem('{4CAF50}No cheats detected', '{9E9E9E}-');
         }
 
         // (3) Display the |dialog| to the |player|, and call it a day.

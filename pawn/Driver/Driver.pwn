@@ -192,6 +192,13 @@ public OnPlayerDisconnect(playerid, reason) {
             g_lastTakenDamageIssuerId[i] = -1;
     }
 
+    // Remove any and all attached objects from the |playerid|, which otherwise stick around on the
+    // server and might be seen in random places by other players, if they were streamed in.
+    for (new slot = 0; slot < MAX_PLAYER_ATTACHED_OBJECTS; ++slot) {
+        if (IsPlayerAttachedObjectSlotUsed(playerid, slot))
+            RemovePlayerAttachedObject(playerid, slot);
+    }
+
     // Proceed with legacy processing.
     return PlayerEvents(playerid)->onPlayerDisconnect(reason);
 }

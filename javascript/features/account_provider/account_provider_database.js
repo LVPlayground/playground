@@ -12,6 +12,7 @@ const ACCOUNT_LOAD_QUERY = `
         users_mutable.death_count,
         users_mutable.money_bank,
         users_mutable.money_cash,
+        users_mutable.skin_decorations,
         users_mutable.stats_reaction,
         users_mutable.stats_damage_given,
         users_mutable.stats_damage_taken,
@@ -35,6 +36,7 @@ const ACCOUNT_SAVE_QUERY = `
         users_mutable.death_count = ?,
         users_mutable.money_bank = ?,
         users_mutable.money_cash = ?,
+        users_mutable.skin_decorations = ?,
         users_mutable.stats_reaction = ?,
         users_mutable.stats_damage_given = ?,
         users_mutable.stats_damage_taken = ?,
@@ -62,10 +64,10 @@ export class AccountProviderDatabase {
         await server.database.query(
             ACCOUNT_SAVE_QUERY, accountData.custom_color, accountData.kill_count,
             accountData.death_count, accountData.money_bank, accountData.money_cash,
-            accountData.stats_reaction, accountData.stats_damage_given,
-            accountData.stats_damage_taken, accountData.stats_shots_hit,
-            accountData.stats_shots_missed, accountData.stats_shots_taken, accountData.muted,
-            accountData.user_id);
+            accountData.skin_decorations, accountData.stats_reaction,
+            accountData.stats_damage_given,accountData.stats_damage_taken,
+            accountData.stats_shots_hit, accountData.stats_shots_missed,
+            accountData.stats_shots_taken, accountData.muted, accountData.user_id);
 
         return true;
     }

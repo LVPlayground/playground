@@ -17,6 +17,7 @@ export class PlayerAccountSupplement extends Supplement {
     bankAccountBalance_ = 0;
     cashBalance_ = 0;
     reactionTests_ = 0;
+    skinDecorations_ = [];
     mutedUntil_ = null;
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
@@ -45,6 +46,10 @@ export class PlayerAccountSupplement extends Supplement {
     get mutedUntil() { return this.mutedUntil_; }
     set mutedUntil(value) { this.mutedUntil_ = value; }
 
+    // Gets or sets the array of skin decorations this player should have.
+    get skinDecorations() { return this.skinDecorations_; }
+    set skinDecorations(value) { this.skinDecorations_ = value; }
+
     // Returns whether the player is registered with Las Venturas Playground.
     isRegistered() { return this.isRegistered_; }
 
@@ -61,7 +66,12 @@ export class PlayerAccountSupplement extends Supplement {
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.cashBalance_ = databaseRow.money_cash;
         this.reactionTests_ = databaseRow.stats_reaction;
+        this.skinDecorations_ = [];
         this.mutedUntil_ = null;
+
+        // |skin_decorations| are stored as a comma-divided list of model Ids.
+        if (databaseRow.skin_decorations && databaseRow.skin_decorations.length > 0)
+            this.skinDecorations_ = databaseRow.skin_decorations.split(',');
 
         // |muted| is stored as the number of remaining seconds on their punishment.
         if (databaseRow.muted > 0)
@@ -99,6 +109,7 @@ export class PlayerAccountSupplement extends Supplement {
             death_count: player.stats.enduring.deathCount,
             money_bank: this.bankAccountBalance_,
             money_cash: this.cashBalance_,
+            skin_decorations: this.skinDecorations_.join(','),
             stats_reaction: this.reactionTests_,
             stats_damage_given: player.stats.enduring.damageGiven,
             stats_damage_taken: player.stats.enduring.damageTaken,

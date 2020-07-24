@@ -55,6 +55,7 @@ import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerColors from 'features/player_colors/player_colors.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
+import PlayerDecorations from 'features/player_decorations/player_decorations.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerStats from 'features/player_stats/player_stats.js';
 import Punishments from 'features/punishments/punishments.js';
@@ -122,6 +123,7 @@ class MockServer {
             nuwani: MockNuwani,
             player_colors: PlayerColors,
             player_commands: PlayerCommands,
+            player_decorations: PlayerDecorations,
             player_settings: PlayerSettings,
             player_stats: PlayerStats,
             playground: MockPlayground,

@@ -16,6 +16,7 @@ export class MockAccountProviderDatabase extends AccountProviderDatabase {
             death_count: 0,
             money_bank: 0,
             money_cash: 0,
+            skin_decorations: '',
             stats_reaction: 0,
             stats_damage_given: 0,
             stats_damage_taken: 0,

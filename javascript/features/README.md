@@ -46,16 +46,17 @@ Feature                              | Code Health | Description
 May only depend on each other and foundational features, and are expected to be depended on by
 various other features because of the functionality they provide.
 
-Feature                              | Code Health | Description
--------------------------------------|-------------|------------------------------------------------------------------
-[Abuse](abuse/)                      | ❓ 2020     | Provides the ability to report and share player abuse instances.
-[Announce](announce/)                | ❓ 2020     | Provides the ability to share announcements with players.
-[Collectables](collectables/)        | ✔ 2020     | Provides achievements, benefits thereof and the actual collectables.
-[Games](games/)                      | ✔ 2020     | Driver for all sorts of interactive games on the server.
-[GamesDeathmatch](games_deathmatch/) | ✔ 2020     | Driver for deathmatch-based games on the server.
-[SAMPCAC](sampcac/)                  | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
-[Spectate](spectate/)                | ✔ 2020     | Offers the ability to spectate specific player(s).
-[Streamer](streamer/)                | ✔ 2020     | Provides the ability to intelligently stream vehicles on the map.
+Feature                                   | Code Health | Description
+------------------------------------------|-------------|------------------------------------------------------------------
+[Abuse](abuse/)                           | ❓ 2020     | Provides the ability to report and share player abuse instances.
+[Announce](announce/)                     | ❓ 2020     | Provides the ability to share announcements with players.
+[Collectables](collectables/)             | ✔ 2020     | Provides achievements, benefits thereof and the actual collectables.
+[Games](games/)                           | ✔ 2020     | Driver for all sorts of interactive games on the server.
+[GamesDeathmatch](games_deathmatch/)      | ✔ 2020     | Driver for deathmatch-based games on the server.
+[PlayerDecorations](player_decorations/)  | ✔ 2020     | Provide the ability for players to have a customised appearance.
+[SAMPCAC](sampcac/)                       | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
+[Spectate](spectate/)                     | ✔ 2020     | Offers the ability to spectate specific player(s).
+[Streamer](streamer/)                     | ✔ 2020     | Provides the ability to intelligently stream vehicles on the map.
 
 ## 3. Features
 May depend on any other feature as long as there are no circular dependencies.

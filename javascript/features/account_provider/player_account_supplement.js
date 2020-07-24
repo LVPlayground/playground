@@ -71,7 +71,7 @@ export class PlayerAccountSupplement extends Supplement {
 
         // |skin_decorations| are stored as a comma-divided list of model Ids.
         if (databaseRow.skin_decorations && databaseRow.skin_decorations.length > 0)
-            this.skinDecorations_ = databaseRow.skin_decorations.split(',');
+            this.skinDecorations_ = databaseRow.skin_decorations.split(',').map(id => parseInt(id));
 
         // |muted| is stored as the number of remaining seconds on their punishment.
         if (databaseRow.muted > 0)

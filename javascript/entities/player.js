@@ -121,6 +121,7 @@ export class Player extends Supplementable {
     #isNpc_ = null;
     #version_ = null;
 
+    #attachedObjects_ = new Map();
     #selectObjectResolver_ = null;
 
     #vehicle_ = null;
@@ -330,6 +331,38 @@ export class Player extends Supplementable {
 
     get weather() { throw new Error('Unable to get the current weather for players.'); }
     set weather(value) { pawnInvoke('SetPlayerWeather', 'ii', this.#id_, value); }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Appearance
+    // ---------------------------------------------------------------------------------------------
+
+    attachObject(slot, modelId, bone, offset, rotation, scale, primaryColor, secondaryColor) {
+        this.#attachedObjects_.set(slot, modelId);
+        this.attachObjectInternal(
+            slot, modelId, bone, offset, rotation, scale, primaryColor, secondaryColor);
+    }
+
+    getAttachedObjects() { return this.#attachedObjects_.entries(); }
+    hasAttachedObject(slot) { return this.#attachedObjects_.has(slot); }
+
+    removeAttachedObject(slot) {
+        this.#attachedObjects_.delete(slot);
+        this.removeAttachedObjectInternal(slot);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    attachObjectInternal(
+            slot, modelId, bone, offset, rotation, scale, primaryColor, secondaryColor) {
+        pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffffii', this.#id_, slot, modelId, bone,
+            offset.x, offset.y, offset.z, rotation.x, rotation.y, rotation.z, scale.x, scale.y,
+            scale.z, primaryColor ? primaryColor.toNumberRGBA() : 0,
+            secondaryColor ? secondaryColor.toNumberRGBA() : 0);
+    }
+
+    removeAttachedObjectInternal(slot) {
+        pawnInvoke('RemovePlayerAttachedObject', 'ii', this.#id_, slot);
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Interaction

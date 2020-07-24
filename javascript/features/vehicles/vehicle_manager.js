@@ -290,10 +290,7 @@ class VehicleManager {
     // vehicle will be reset prior to the actual respawn.
     respawnVehicle(vehicle) {
         const result = this.findStreamableVehicle(vehicle);
-        if (!result)
-            throw new Error(`Unable to respawn vehicles not managed by the Vehicle Manager.`);
-        
-        // Recursively respawn the vehicle and all trailers attached.
+
         while (vehicle) {
             const trailer = vehicle.trailer;
 
@@ -302,7 +299,7 @@ class VehicleManager {
         }
 
         // If the |vehicle| was an ephemeral vehicle, delete it from the server.
-        if (result.type === VehicleManager.kTypeEphemeral)
+        if (result && result.type === VehicleManager.kTypeEphemeral)
             this.streamer_().deleteVehicle(result.streamableVehicle);
     }
 

@@ -431,12 +431,6 @@ class VehicleCommands {
             return;
         }
 
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!this.manager_.isManagedVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
-            return;
-        }
-
         this.manager_.respawnVehicle(vehicle);
 
         player.sendMessage(Message.VEHICLE_RESPAWNED, vehicle.model.name);

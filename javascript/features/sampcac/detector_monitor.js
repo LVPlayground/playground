@@ -102,7 +102,7 @@ export class DetectorMonitor {
         if (this.isRateLimited(player, DetectorMonitor.kTypeMacro))
             return;  // the report will be rate limited
 
-        this.issueReport(player, DetectorMonitor.kTypeMacro, Abuse.kSuspected, {
+        this.issueReport(player, DetectorMonitor.kTypeMacro, Abuse.kFunnyFeeling, {
             keyId,  // the virtual key code that the macro was issued with
         });
     }

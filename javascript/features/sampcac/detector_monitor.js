@@ -68,13 +68,7 @@ export class DetectorMonitor {
         if (this.isRateLimited(player, DetectorMonitor.kTypeAimbot))
             return;  // the report will be rate limited
 
-        // The certainty depends on the sort of aim-bot that has been detected. We've seen some
-        // false detections with the fifth alternative, so mark that as a funny feeling.
-        const certainty =
-            variant === SAMPCACNatives.kCheatAimbotAlternative5 ? Abuse.kFunnyFeeling
-                                                                : Abuse.kSuspected;
-
-        this.issueReport(player, DetectorMonitor.kTypeAimbot, certainty, {
+        this.issueReport(player, DetectorMonitor.kTypeAimbot, Abuse.kSuspected, {
             variant,  // aimbot variant the |player| was detected with, there are six
         });
     }

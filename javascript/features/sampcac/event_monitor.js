@@ -41,7 +41,6 @@ export class EventMonitor extends SAMPCACEventObserver {
             case SAMPCACNatives.kCheatAimbotAlternative2:
             case SAMPCACNatives.kCheatAimbotAlternative3:
             case SAMPCACNatives.kCheatAimbotAlternative4:
-            case SAMPCACNatives.kCheatAimbotAlternative5:
                 this.detectorMonitor_.reportAimbot(player, cheatId);
                 break;
 
@@ -77,6 +76,11 @@ export class EventMonitor extends SAMPCACEventObserver {
 
             case SAMPCACNatives.kCheatWeaponDataModified:
                 this.detectorMonitor_.reportWeaponDataModified(player);
+                break;
+
+            // The following cheat detectors are entirely disabled because they're inaccurate and
+            // produce invalid results. Just drop the reports entirely.
+            case SAMPCACNatives.kCheatAimbotAlternative5:
                 break;
 
             case SAMPCACNatives.kCheatAny:

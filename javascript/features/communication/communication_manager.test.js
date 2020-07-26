@@ -81,6 +81,7 @@ describe('CommunicationManager', (it, beforeEach, afterEach) => {
         const nicknameTestCasePlayerId = 42;
         const nicknameTestCases = [
             'Rissell', 'Deer_Hunter', '[CP]Halsey', 'Death$tar', '=_Captain_=', '[A]Nick[B]==',
+            'leaty.tHO',
         ];
 
         for (const testCase of nicknameTestCases) {

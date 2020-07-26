@@ -6,7 +6,7 @@ import { Channel } from 'features/communication/channel.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Regular expression to grep nicknames from the public chat message.
-const kMentionExpression = /(?<!\w)@([0-9a-z\[\]\(\)\$@_=]{3,24})/gi;
+const kMentionExpression = /(?<!\w)@([0-9a-z\[\]\(\)\.\$@_=]{3,24})/gi;
 
 // Id of the sound to play when a player has been mentioned in chat.
 const kMentionSound = 1058;

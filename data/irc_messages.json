@@ -2,6 +2,8 @@
     "init": "<color:4>*** Global Gamemode Initialization",
 
     "join": "<color:2>[%d] <color:3>*** %s has joined the game.",
+    "join-sampcac": "<color:2>[%d] <color:3>*** %s has joined the game <color:6>(sampcac)<color:3>.",
+
     "login": "<color:2>[%d] <color:3>*** %s has logged in.",
     "guest": "<color:2>[%d] <color:3>*** %s has decided to play as %s (guest).",
 

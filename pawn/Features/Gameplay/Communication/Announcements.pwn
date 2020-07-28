@@ -75,9 +75,13 @@ class Announcements {
      * @param playerId Id of the player who connected to the server.
      */
     public announcePlayerConnected(playerId) {
+        new bool: sampcac = false;
+
         // Announce this player's connection to other in-game players.
 #if Feature::EnableSAMPCAC == 1
         if (CAC_GetStatus(playerId)) {
+            sampcac = true;
+
             format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground {A5D6A7}(sampcac){CCCCCC}.",
                 Player(playerId)->nicknameString(), playerId);
         } else {
@@ -103,7 +107,10 @@ class Announcements {
 
         // Announce this player's connection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        EchoMessage("join", "ds", m_formatBuffer);
+        if (sampcac)
+            EchoMessage("join-sampcac", "ds", m_formatBuffer);
+        else
+            EchoMessage("join", "ds", m_formatBuffer);
     }
 
     /**

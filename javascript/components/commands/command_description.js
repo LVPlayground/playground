@@ -10,10 +10,9 @@ export class CommandDescription {
     #description_ = null;
     #listener_ = null;
     #parameters_ = null;
-    #parentName_ = null;
     #subs_ = null;
 
-    // Gets the command that can be executed, which includes the prefix.
+    // Gets the command that can be executed, which includes the prefix and parent naming.
     get command() { return this.#command_; }
 
     // Gets the name of the command that can be executed, which excludes the prefix.
@@ -28,41 +27,37 @@ export class CommandDescription {
     // Gets the parameters that are expected by the listener when executing this command.
     get parameters() { return this.#parameters_; }
 
-    // Gets the name of the parent command that has to be ran before reaching this point.
-    get parentName() { return this.#parentName_; }
-
     // Gets the sub-commands that are part of this command description, as a map in which each key
     // is a CommandKey instance, and each value is a CommandDescription instance.
     get subs() { return this.#subs_.entries(); }
 
-    constructor({ command, commandName, description, listener, parameters, parentName, subs }) {
+    constructor({ command, commandName, description, listener, parameters, subs }) {
         this.#command_ = command;
         this.#commandName_ = commandName;
         this.#description_ = description;
         this.#listener_ = listener;
         this.#parameters_ = parameters;
-        this.#parentName_ = parentName;
         this.#subs_ = subs;
     }
 
     toString() {
-        let representation = `${this.#parentName_} ${this.#command_}`.trimStart();
+        let representation = this.#command_;
 
         // Prefer sub-command options over the local command option, but consider both in case there
         // are no sub-commands and we still have to display a representation.
         if (this.#subs_.size) {
-            const dynamic = [];
-            const static = [];
+            const dynamicSubs = [];
+            const staticSubs = [];
 
             for (const commandKey of this.#subs_) {
                 if (commandKey.value === null)
-                    dynamic.push(String(commandKey));
+                    dynamicSubs.push(String(commandKey));
                 else
-                    static.push(String(commandKey));
+                    staticSubs.push(String(commandKey));
             }
 
             // [[target]/foo/bar/baz]
-            representation += '[' + [ ...dynamic, ...static ].join('/') + ']';
+            representation += '[' + [ ...dynamicSubs, ...staticSubs ].join('/') + ']';
 
         } else if (this.#parameters_.length) {
             const parameters = [];

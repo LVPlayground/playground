@@ -28,8 +28,11 @@ export default class PlayerDecorations extends Feature {
     // Public API of the PlayerDecorations feature
     // ---------------------------------------------------------------------------------------------
 
-    // Resumes display of decorations for the given |player|.
-    resumeForPlayer(player) { this.sync_.resumeForPlayer(player); }
+    // Resumes display of decorations for the given |player|. Optionally the |applyImmediately| flag
+    // may be used to toggle whether the re-applied decorations should be set now, or at next spawn.
+    resumeForPlayer(player, applyImmediately = true) {
+        this.sync_.resumeForPlayer(player, applyImmediately);
+    }
 
     // Suspends display of decorations for the given |player|.
     suspendForPlayer(player) { this.sync_.suspendForPlayer(player); }

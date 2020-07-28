@@ -9,9 +9,11 @@ export class DecorationSync {
     static kDecorationSlotCount = 10;
 
     #registry_ = null;
+    #suspended_ = null;
 
     constructor(registry) {
         this.#registry_ = registry;
+        this.#suspended_ = new WeakSet();
 
         // Observe the player manager to be told about the login event, which is when we'll apply
         // the player's aesthetical decisions to their character.
@@ -22,7 +24,7 @@ export class DecorationSync {
 
     // Resumes display of decorations for the given |player|. This will make all the configured
     // decorations appear on their person.
-    resumeForPlayer(player) {
+    applyDecorationsForPlayer(player) {
         let filteredDecorations = [];
         let iterated = false;
         let slot = 0;
@@ -55,24 +57,48 @@ export class DecorationSync {
             player.account.skinDecorations = filteredDecorations;
     }
 
+    // Resumes display of decorations for the given |player|. This removes any of the suspensions
+    // that they may be subject to, causing the decorations to re-appear next time they spawn. The
+    // |applyImmediately| flag may be used to configure whether to re-set the decorations right now.
+    resumeForPlayer(player, applyImmediately = true) {
+        this.#suspended_.delete(player);
+
+        if (applyImmediately)
+            this.applyDecorationsForPlayer(player);
+    }
+
     // Suspends display of decorations for the given |player|. This will remove all the configured
-    // decorations from their person.
+    // decorations from their person, and stop them from re-appearing when they spawn again.
     suspendForPlayer(player) {
+        this.#suspended_.add(player);
+
         for (let slot = 0; slot < player.account.skinDecorations.length; ++slot)
             player.removeAttachedObject(slot);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Called when the |player| has connected to the server, and just identified with their account.
-    // This is where we start to apply their decorations.
-    onPlayerLogin(player) { this.resumeForPlayer(player); }
+    // Called when the |player| has spawned in the world. Unless their looks have been suspended,
+    // will immediately apply all the decorations they'll be subject to.
+    onPlayerSpawn(player) {
+        if (!player.account.isIdentified())
+            return;  // the |player| is not logged in to their account
+
+        if (this.#suspended_.has(player))
+            return;  // the |player| has had their decorations suspended
+
+        if (!player.account.skinDecorations.length)
+            return;  // the |player| has not configured any decorations
+
+        this.applyDecorationsForPlayer(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.playerManager.removeObserver(this);
 
+        this.#suspended_ = null;
         this.#registry_ = null;
     }
 }

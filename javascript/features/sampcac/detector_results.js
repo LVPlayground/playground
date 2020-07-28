@@ -28,6 +28,10 @@ export class DetectorResults {
     // will be made available, as their client has to respond to it.
     minimized = null;
 
+    // Boolean indicated whether it was possible to run a scan on the player. This is the case when
+    // they have SAMPCAC installed, and responses were returned.
+    supported = null;
+
     // The uptime of the player's computer, in seconds.
     uptime = null;
 

@@ -81,8 +81,18 @@ class Announcements {
             format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground {A5D6A7}(sampcac){CCCCCC}.",
                 Player(playerId)->nicknameString(), playerId);
         } else {
+            new version[16];
+            GetPlayerVersion(playerId, version, sizeof(version));
+
             format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",
                 Player(playerId)->nicknameString(), playerId);
+
+            // Inform the |playerId| of running an outdated version of SA-MP if they are.
+            if (strlen(version) >= 1 && !strcmp(version, "0.3.7-R4", true, 8)) {
+                SendClientMessage(
+                    playerId, Color::Error,
+                    "*** You are running an old version of SA-MP, consider updating to the latest version!");
+            }
         }
 #else
         format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",

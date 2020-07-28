@@ -25,13 +25,14 @@ describe('CommandBuilder', (it, beforeEach) => {
 
     it('should be able to build simple commands', assert => {
         buildCommand('test')
+            .description('This is a test command')
             .build(emptyListener);
 
         assert.isNotNull(description);
         assert.instanceOf(description, CommandDescription);
         assert.equal(description.command, '/test');
         assert.equal(description.commandName, 'test');
-        assert.equal(description.description, null);
+        assert.equal(description.description, 'This is a test command');
         assert.typeOf(description.listener, 'function');
         assert.equal(description.parameters.length, 0);
         assert.equal([ ...description.subs ].length, 0);

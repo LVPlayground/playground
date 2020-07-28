@@ -7,6 +7,7 @@ import { CommandDescription } from 'components/commands/command_description.js';
 // Provides the ability to build commands, for which the output is a CommandDescription object. When
 // building a command, the command's prefix has to be known ahead of time.
 export class CommandBuilder {
+    #description_ = null;
     #listener_ = null;
     #name_ = null;
     #parent_ = null;
@@ -19,6 +20,12 @@ export class CommandBuilder {
         this.#prefix_ = prefix;
     }
 
+    // Sets the given |description| to be associated with this command. Returns |this| instance.
+    description(description) {
+        this.#description_ = description;
+        return this;
+    }
+
     build(listener) {
         if (typeof listener !== 'function')
             throw new Error(`Commands must be built using a listener function.`);
@@ -27,7 +34,7 @@ export class CommandBuilder {
         const description = new CommandDescription({
             command: `${this.#prefix_}${this.#name_}`,
             commandName: this.#name_,
-            description: null,
+            description: this.#description_,
             listener: listener,
             parameters: [],
             subs: new Map(),

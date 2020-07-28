@@ -195,9 +195,14 @@ export class PunishmentCommands {
                 dialog.addItem(name, resultLabel);
             }
 
-            // (b) If there were no detectors at all, show that to them too.
-            if (!detectors.length)
-                dialog.addItem('{4CAF50}No cheats detected', '{9E9E9E}-');
+            // (b) If there were no detectors at all, show that to them too. The message will differ
+            // based on whether a scan was supported or not.
+            if (!detectors.length) {
+                if (results.supported)
+                    dialog.addItem('{4CAF50}No cheats detected', '{9E9E9E}-');
+                else
+                    dialog.addItem('{FF5722}Unable to run the detectors', '{9E9E9E}-');
+            }
         }
 
         // (3) Display the |dialog| to the |player|, and call it a day.

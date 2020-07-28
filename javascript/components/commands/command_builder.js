@@ -28,9 +28,13 @@ export class CommandBuilder {
 
     build(listener) {
         if (typeof listener !== 'function')
-            throw new Error(`Commands must be built using a listener function.`);
+            throw new Error(`${this}: cannot be built without a listener function.`);
 
-        // (1) Construct the CommandDescription instance for this command.
+        // (1) Require that a description has been given for this command, which is mandatory.
+        if (!this.#description_)
+            throw new Error(`${this}: a description is required`);
+
+        // (2) Construct the CommandDescription instance for this command.
         const description = new CommandDescription({
             command: `${this.#prefix_}${this.#name_}`,
             commandName: this.#name_,
@@ -40,7 +44,14 @@ export class CommandBuilder {
             subs: new Map(),
         });
 
-        // (2) Tell the defined listener about the description that's been created.
+        // (3) Tell the defined listener about the description that's been created.
         this.#listener_(description);
+    }
+
+    toString() {
+        if (this.#name_)
+            return `[object CommandBuilder("${this.name}")]`;
+        else
+            return `[object CommandBuilder]`;
     }
 }

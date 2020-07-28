@@ -6,6 +6,7 @@
       "LVP is a freeroam server, there are lots of cool features, such as:",
       "",
       "- /race",
+      "- /collectables",
       "- /jump",
       "- /properties",
       "- /teles",
@@ -22,7 +23,7 @@
         "Account Management & Information",
         "",
         "You are able to change your own password and nickname by using the \"/account\" command. In",
-        "addition, VIPs have the ability to create aliases for their account through this command as well.",
+        "addition, VIPs can create up to two aliases for their account through this command as well.",
         "",
         "If you would like to reset your statistics, or merge multiple accounts together, please create",
         "a topic in the \"Help Requests\" section on https://forum.sa-mp.nl/ where a Management member will",
@@ -32,7 +33,7 @@
     ],
 
     "Earning Money": [
-      "- Invest in properties - see /properties",
+      "- Invest in properties - see /properties", 
       "- Export vehicles - see /export",
       "- Win minigames - see /minigames",
       "- Complete delivery missions - see /deliver",
@@ -40,15 +41,23 @@
       "- Find the Bag of Cash",
       "- Take out a loan - see /borrow"
     ],
+    "Gang Stuff": [
+      "Usage: /gang [create/invite/join/kick/leave/members/settings/transactions",
+      "Usage: /gbank, /gwithdraw, /gbalance",
+      "",
+      "Want to create a gang zone? Make sure that five members have houses close together in the area",
+      "you'd like, and one will appear automagically. Feel free to ask administrators for more info",
+      "by contacting them using @(message)"
+    ],
     "Contacting Us": [
       "If you have questions or comments, you can use",
       "the following methods to contact the LVP staff:",
       "",
-      "IRC: irc.gtanet.com #lvp",
-      "Discord: discord.sa-mp.nl",
+      "IRC: https://sa-mp.nl/chat",
+      "Discord: https://sa-mp.nl/discord",
       "E-mail: info@sa-mp.nl",
-      "Website: www.sa-mp.nl",
-      "Forum: forum.sa-mp.nl"
+      "Website: https://sa-mp.nl",
+      "Forum: https://forum.sa-mp.nl"
     ],
     "Cruises": [
       "Cruises are recognizable by a lot of (tuned) vehicles,",
@@ -68,14 +77,15 @@
       "Vehicles are marked on your radar with small grey squares.",
       "To modify a vehicle drive to one of the garages or by using /tune.",
       "Vehicles can be spawned at all times by Crew and VIP members, but only during the cruise (/cruise car).",
-      "Players with 10 spray tags are able to spawn a Premier (/pre) and a Sultan (/sul)."
-      "Players with 100 spray tags are able to spawn a NRG (/nrg) and an Infernus (/inf)."
+      "Players with 10 spray tags are able to spawn a Premier (/pre) and a Sultan (/sul).",
+      "Players with 100 spray tags are able to spawn a NRG (/nrg) and an Infernus (/inf).",
       "Players who explode 10 Red Barrels are able to spawn an Elegy (/ele) and a Turismo (/tur)."
     ],
     "Banking": [
       "- Deposit your money - /bank [all | [amount]]",
       "- Withdraw money - /withdraw [all | [amount]]",
       "- Bank balance - /balance",
+      "- Send money - /givecash [id] [amount]",
       "- Borrow money - /borrow [amount]"
     ]
   }

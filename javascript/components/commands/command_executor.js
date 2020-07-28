@@ -18,8 +18,16 @@ export class CommandExecutor {
     // *some* form of communication back to the |context|.
     async executeCommand(context, command, commandText) {
         // TODO: Implement sub-commands and parameters.
-        // TODO: Implement permission checks.
 
-        return command.listener(context);
+        return this.executeCommandWithParameters(context, command);
+    }
+
+    // Executes the given |command| for the |context| with the given |parameters|. Permission checks
+    // will be done here to ensure that the |context| is allowed to execute it.
+    async executeCommandWithParameters(context, command, ...parameters) {
+        if (!this.#permissionDelegate_.canExecuteCommand(context, this.#contextDelegate_, command))
+            return false;
+
+        return command.listener(context, ...parameters);
     }
 }

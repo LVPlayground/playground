@@ -6,6 +6,7 @@
 // given command, based on their level, registration status and unique identifier.
 export class CommandPermissionDelegate {
     // Returns whether the |context| has permission to execute the given |command|, which is an
-    // instance of CommandDescription. The |contextDelegate| is included to make sense of |context|.
+    // instance of CommandDescription. The implementation is expected to issue a response to the
+    // |context| when they are not allowed to execute the command.
     canExecuteCommand(context, contextDelegate, command) { return false; }
 }

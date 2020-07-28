@@ -10,6 +10,8 @@ import { CommandParameter } from 'components/commands/command_parameter.js';
 import { CommandPermissionDelegate } from 'components/commands/command_permission_delegate.js';
 
 describe('CommandExecutor', (it, beforeEach) => {
+    let allowed = true;
+
     let contextDelegate = null;
     let permissionDelegate = null;
 
@@ -18,14 +20,16 @@ describe('CommandExecutor', (it, beforeEach) => {
     let gunther = null;
 
     beforeEach(() => {
-        // Implementation of the context delegate specifically written for this test.
-        contextDelegate = new class extends CommandContextDelegate {
+        allowed = true;
 
-        };
+        // Implementation of the context delegate specifically written for this test.
+        contextDelegate = new class extends CommandContextDelegate {};
 
         // Implementation of the permission delegate specifically written for this test.
         permissionDelegate = new class extends CommandPermissionDelegate {
-
+            canExecuteCommand(context, contextDelegate, command) {
+                return allowed;  // change |allowed| to block execution
+            }
         };
 
         command = null;
@@ -43,16 +47,22 @@ describe('CommandExecutor', (it, beforeEach) => {
         });
     }
 
-    it('should be able to execute basic commands with parameters', assert => {
-        let executed = false;
+    it('should be able to execute basic commands with parameters', async (assert) => {
+        let counter = 0;
 
+        // (1) Execute the command without changing the defaults. This should work.
         buildCommand('test')
             .description('This is a test command')
-            .build(() => executed = true);
+            .build(() => counter++);
 
-        executor.executeCommand(gunther, command, '');
+        assert.isDefined(await executor.executeCommand(gunther, command, ''));
+        assert.equal(counter, 1);
 
-        assert.isTrue(executed);
+        // (2) Execute the command without permission being granted. This should fail.
+        allowed = false;
+
+        assert.isFalse(await executor.executeCommand(gunther, command, ''));
+        assert.equal(counter, 1);
     });
 
     it('should be able to transform the immutable objects to strings', assert => {

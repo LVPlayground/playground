@@ -11,8 +11,13 @@ const kMarcoWhitelist = new Set([
     /* VK_RETURN= */ 13,
     /* VK_NUMLOCK= */ 144,
     /* VK_SCROLL= */ 145,
+    /* VK_VOLUME_MUTE= */ 173,
     /* VK_VOLUME_DOWN= */ 174,
     /* VK_VOLUME_UP= */ 175,
+    /* VK_MEDIA_NEXT_TRACK= */ 176,
+    /* VK_MEDIA_PREV_TRACK= */ 177,
+    /* VK_MEDIA_STOP= */ 178,
+    /* VK_MEDIA_PLAY_PAUSE= */ 179,
 ]);
 
 // Rate limit on detection reports. Some come in at a super high frequency (e.g. once per shot),

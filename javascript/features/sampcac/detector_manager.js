@@ -92,7 +92,9 @@ export class DetectorManager {
         // (b) Query each of the detectors individually for the |player|.
         for (const detector of this.detectors_) {
             tasks.push(this.requestDetection(player, detector).then(result => {
-                results.supported = true;
+                if (result !== DetectorResults.kResultUnavailable)
+                    results.supported = true;
+
                 results.detectors.set(detector.name, result);
             }));
         }

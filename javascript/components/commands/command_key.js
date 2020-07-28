@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandParameter } from 'components/command_manager/command_parameter.js';
+import { CommandParameter } from 'components/commands/command_parameter.js';
 
 // A command key describes the "keying" of a sub command. This would usually be a fixed word, but
 // can also be a substitution or a dynamic value of sorts, such as "a player".

@@ -65,27 +65,46 @@ describe('CommandExecutor', (it, beforeEach) => {
         assert.equal(counter, 1);
     });
 
+    it('should be able to execute complex commands with sub-commands', async (assert) => {
+        return; // ---------------------------------------------------------------------------------
+
+        let value = 0;
+
+        buildCommand('test')
+            .description('This is a test command')
+            .sub('banana')
+                .description('This one has a banana')
+                .build(() => value = 1)
+            .sub('pineapple')
+                .description('This one has a pineapple')
+                .build(() => value = 2)
+            .sub(CommandBuilder.kTypeText, 'fruit')
+                .description('This one is for all fruits')
+                .build(() => value = 3)
+            .build(() => value = 4);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, ''));
+        assert.equal(value, 4);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'pineapple'));
+        assert.equal(value, 2);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'banana'));
+        assert.equal(value, 1);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'kiwi'));
+        assert.equal(value, 3);
+    });
+
     it('should be able to transform the immutable objects to strings', assert => {
-        assert.equal('foo', new CommandKey({
-            name: 'foo',
-            optional: false,
-            type: CommandParameter.kTypeText,
-            value: 'foo'
-        }));
+        assert.equal(
+            'foo', new CommandKey('foo', /* optional= */ false, CommandParameter.kTypeText, 'foo'));
 
-        assert.equal('[foo]', new CommandKey({
-            name: 'foo',
-            optional: false,
-            type: CommandParameter.kTypeNumber,
-            value: null,
-        }));
+        assert.equal(
+            '[foo]', new CommandKey('foo', /* optional= */ false, CommandParameter.kTypeNumber));
 
-        assert.equal('[foo=you]', new CommandKey({
-            name: 'foo',
-            optional: true,
-            type: CommandParameter.kTypePlayer,
-            value: null,
-        }));
+        assert.equal(
+            '[foo=you]', new CommandKey('foo', /* optional= */ true, CommandParameter.kTypePlayer));
 
         assert.equal('[foo]', new CommandParameter({
             name: 'foo',

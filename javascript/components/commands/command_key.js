@@ -26,12 +26,18 @@ export class CommandKey {
 
     constructor(name, optional, type, value = null) {
         switch (type) {
+            case CommandParameter.kTypePlayer:
+                break;
+
             case CommandParameter.kTypeNumber:
             case CommandParameter.kTypeText:
                 if (optional)
                     throw new Error(`Only player-based keys can be marked as optional.`);
 
                 break;
+
+            default:
+                throw new Error(`Invalid parameter type for "${name}": ${type}.`);
         }
 
         this.#name_ = name;

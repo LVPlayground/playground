@@ -4,6 +4,12 @@
 
 import { CommandParameter } from 'components/commands/command_parameter.js';
 
+// Regular expression used to match numbers in a command text string.
+const kNumberExpression = /^([-+]?\d+(\.\d+)?|0x[0-9a-f]+)\b\s*/i;
+
+// Regular expression used to match text in a command text string.
+const kTextExpression = /^(.+?)\b\s*/;
+
 // Provides the ability to execute a command given a player, a command and a command text. Parses
 // the command textas necessary to figure out what exactly the player wants to do.
 export class CommandExecutor {
@@ -14,6 +20,8 @@ export class CommandExecutor {
         this.#contextDelegate_ = contextDelegate;
         this.#permissionDelegate_ = permissionDelegate;
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Executes the given |command| for the |context|, who have given |commandText| as a string of
     // parameters that should be interpret based on the |command|'s configuration. Will always send
@@ -29,6 +37,10 @@ export class CommandExecutor {
 
         // TODO: Send an error message when no |candidates| were found.
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: handling of sub-commands
+    // ---------------------------------------------------------------------------------------------
 
     // Executes a breadth-first search on the sub-commands that exist for the given |command| to see
     // how deep we can get while |commandText| matches those, ignoring parameters. An array will be
@@ -78,6 +90,62 @@ export class CommandExecutor {
                 break;
         }
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: ability to read data from the command text
+    // ---------------------------------------------------------------------------------------------
+
+    // Reads a number from the given |commandText|. Regular integers (both positive and negative),
+    // floating point values and hexadecimal numbers are supported by this method. Returns a
+    // structure following the syntax of { match, value }.
+    readNumber(commandText) {
+        const result = commandText.match(kNumberExpression);
+        if (!result)
+            return null;
+
+        // Case 1: Decimal numbers (0.123, -0.123).
+        if (result[2] !== undefined)
+            return { match: result[0], value: parseFloat(result[1]) };
+
+        // Case 2: Hexadecimal numbers (0x80, 0xAABBCCDD).
+        if (result[0].includes('x') || result[0].includes('X'))
+            return { match: result[0], value: parseInt(result[1].substring(2), 16) };
+
+        // Case 2: Integer numbers (123, -123).
+        return { match: result[0], value: parseInt(result[1], 10) };
+    }
+
+    // Reads a player from the given |commandText|. We allow for partial matching of a player's
+    // nickname, as well as a fully qualified player ID, which is given priority.
+    readPlayer(commandText) {
+        const numberResult = this.readNumber(commandText);
+        if (numberResult !== null) {
+            const player = server.playerManager.getById(numberResult.value);
+            if (player)
+                return { match: numberResult.match, value: player };
+        }
+
+        const textResult = this.readText(commandText);
+        if (textResult !== null) {
+            const player = server.playerManager.getByName(textResult.value, /* fuzzy= */ true);
+            if (player)
+                return { match: textResult.match, value: player };
+        }
+
+        return null;
+    }
+
+    // Reads a single word from the given |commandText|. The word has to be separated by a word
+    // boundary, which either is any amount of whitespace or the end of the string.
+    readText(commandText) {
+        const result = commandText.match(kTextExpression);
+        if (!result)
+            return null;
+
+        return { match: result[0], value: result[1] };
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Returns whether the |context| is allowed to execute the given |command|. This operation is
     // synchronous and provided delegates are expected to be fast.

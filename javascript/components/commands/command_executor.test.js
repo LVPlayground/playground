@@ -96,6 +96,57 @@ describe('CommandExecutor', (it, beforeEach) => {
         assert.equal(value, 3);
     });
 
+    it('is able to read data in various formats from the command text', assert => {
+        assert.isNull(executor.readNumber(''));
+        assert.isNull(executor.readNumber('banana'));
+        assert.isNull(executor.readNumber('{51}'));
+
+        assert.isNull(executor.readText(''));
+
+        // Section: reading numbers
+        assert.deepEqual(executor.readNumber('21'), { match: '21', value: 21 });
+        assert.deepEqual(executor.readNumber('-21'), { match: '-21', value: -21 });
+        assert.deepEqual(executor.readNumber('21 '), { match: '21 ', value: 21 });
+        assert.deepEqual(executor.readNumber('-21 '), { match: '-21 ', value: -21 });
+        assert.deepEqual(executor.readNumber('21 banana'), { match: '21 ', value: 21 });
+        assert.deepEqual(executor.readNumber('-21 banana'), { match: '-21 ', value: -21 });
+
+        assert.deepEqual(executor.readNumber('12.34'), { match: '12.34', value: 12.34 });
+        assert.deepEqual(executor.readNumber('-12.34'), { match: '-12.34', value: -12.34 });
+        assert.deepEqual(executor.readNumber('12.34 '), { match: '12.34 ', value: 12.34 });
+        assert.deepEqual(executor.readNumber('-12.34 '), { match: '-12.34 ', value: -12.34 });
+        assert.deepEqual(executor.readNumber('12.34 banana'), { match: '12.34 ', value: 12.34 });
+        assert.deepEqual(executor.readNumber('-12.34 banana'), { match: '-12.34 ', value: -12.34 });
+
+        assert.deepEqual(executor.readNumber('0x80'), { match: '0x80', value: 128 });
+        assert.deepEqual(executor.readNumber('0X80'), { match: '0X80', value: 128 });
+        assert.deepEqual(executor.readNumber('0x80 '), { match: '0x80 ', value: 128 });
+        assert.deepEqual(executor.readNumber('0X80 '), { match: '0X80 ', value: 128 });
+        assert.deepEqual(executor.readNumber('0x80 banana'), { match: '0x80 ', value: 128 });
+        assert.deepEqual(executor.readNumber('0X80 banana'), { match: '0X80 ', value: 128 });
+
+        // Section: reading text
+        assert.deepEqual(executor.readText('21'), { match: '21', value: '21' });
+        assert.deepEqual(executor.readText('21 '), { match: '21 ', value: '21' });
+        assert.deepEqual(executor.readText('21 banana'), { match: '21 ', value: '21' });
+
+        assert.deepEqual(executor.readText('banana'), { match: 'banana', value: 'banana' });
+        assert.deepEqual(executor.readText('banana phone'), { match: 'banana ', value: 'banana' });
+
+        // Section: reading players
+        assert.deepEqual(executor.readPlayer('0'), { match: '0', value: gunther });
+        assert.deepEqual(executor.readPlayer('0 '), { match: '0 ', value: gunther });
+        assert.deepEqual(executor.readPlayer('0 banana'), { match: '0 ', value: gunther });
+
+        assert.deepEqual(executor.readPlayer('gunt'), { match: 'gunt', value: gunther });
+        assert.deepEqual(executor.readPlayer('gunt '), { match: 'gunt ', value: gunther });
+        assert.deepEqual(executor.readPlayer('gunt banana'), { match: 'gunt ', value: gunther });
+
+        assert.deepEqual(executor.readPlayer('Gunther'), { match: 'Gunther', value: gunther });
+        assert.deepEqual(executor.readPlayer('Gunther '), { match: 'Gunther ', value: gunther });
+        assert.deepEqual(executor.readPlayer('Gunther ya'), { match: 'Gunther ', value: gunther });
+    });
+
     it('should be able to transform the immutable objects to strings', assert => {
         assert.equal(
             'foo', new CommandKey('foo', /* optional= */ false, CommandParameter.kTypeText, 'foo'));

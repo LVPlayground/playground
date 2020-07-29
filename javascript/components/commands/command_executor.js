@@ -32,7 +32,7 @@ export class CommandExecutor {
         for (const [ description, commandText, parameters ] of candidates) {
             // TODO: Match the |command|'s parameters against |commandText|.
 
-            return command.listener(context, ...parameters);
+            return description.listener(context, ...parameters);
         }
 
         // TODO: Send an error message when no |candidates| were found.
@@ -46,17 +46,17 @@ export class CommandExecutor {
     // how deep we can get while |commandText| matches those, ignoring parameters. An array will be
     // returned, in order of specificity, with the possible CommandDescription and parameter string.
     matchPossibleCommands(context, command, commandText) {
-        const queue = [ [ command, commandText, /* parameters= */ [] ] ];
+        const stack = [ [ command, commandText, /* parameters= */ [] ] ];
         const commands = [];
 
-        while (queue.length) {
-            const [ command, commandText, parameters ] = queue.shift();
+        while (stack.length) {
+            const [ command, commandText, parameters ] = stack.pop();
 
             if (!this.canExecuteCommand(context, command))
                 continue;  // the |context| does not have access to this |description|
 
             // Store the |command| as this has just become a candidate for execution.
-            commands.push([ command, commandText, parameters ]);
+            commands.unshift([ command, commandText, parameters ]);
 
             // Iterate over all the sub-commands that exist for the given |command|.
             for (const [ subCommandKey, subCommand ] of command.subs) {
@@ -71,23 +71,57 @@ export class CommandExecutor {
                                                    : [ ...parameters ];
 
                 // Store the result as one to visit in the future, which also checks permission.
-                queue.push([ subCommand, result.commandText, subParameters ]);
+                stack.push([ subCommand, result.commandText, subParameters ]);
             }
         }
 
-        // Reverse the |commands| to get them listed in order of specificity.
-        return commands.reverse();
+        return commands;
     }
 
     // Matches the given |commandKey| against the given |commandText|. An object will be returned
     // that follows the structure of { match, commandText, parameter? }, where |match| is a boolean,
     // |commandText| contains the remaining command text, and |parameter| the value.
     matchCommandKey(context, commandKey, commandText) {
+        let result = null;
+
         switch (commandKey.type) {
             case CommandParameter.kTypeNumber:
-            case CommandParameter.kTypePlayer:
-            case CommandParameter.kTypeText:
+                result = this.readNumber(commandText);
                 break;
+
+            case CommandParameter.kTypePlayer:
+                result = this.readPlayer(commandText);
+                break;
+
+            case CommandParameter.kTypeText:
+                result = this.readText(commandText);
+                break;
+        }
+
+        // If there is no |result|, nothing in the |commandText| was able to match. Bail out, unless
+        // this is an optional player parameter that defaults to the current |context|.
+        if (!result) {
+            if (commandKey.optional)
+                return { match: true, commandText, parameter: context };
+
+            return { match: false, commandText };
+        }
+
+        // Alternatively, determine if the |commandKey| has a fixed value, in which case the match
+        // should not be added to the parameters. It will be implied when routing the command.
+        if (commandKey.value) {
+            if (result.match === commandKey.value)
+                return { match: true, commandText: commandText.substring(result.match.length) };
+
+            return { match: false, commandText };
+        }
+
+        // Finally, the |commandKey| is a dynamic parameter which has been matched in the given
+        // |commandText|, which therefore has to be added as a parameter.
+        return {
+            match: true,
+            commandText: commandText.substring(result.match.length),
+            parameter: result.value,
         }
     }
 

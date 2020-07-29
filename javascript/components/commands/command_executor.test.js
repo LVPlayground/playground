@@ -66,8 +66,6 @@ describe('CommandExecutor', (it, beforeEach) => {
     });
 
     it('should be able to execute complex commands with sub-commands', async (assert) => {
-        return; // ---------------------------------------------------------------------------------
-
         let value = 0;
 
         buildCommand('test')

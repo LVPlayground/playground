@@ -89,7 +89,7 @@ export class CommandBuilder {
                 this.#subs_.set(commandKey, description);
             },
 
-            name: commandKey.name,
+            name: `${commandKey}`,
             parent: this,
             prefix: `${this.#prefix_}${this.#name_} `,
         });

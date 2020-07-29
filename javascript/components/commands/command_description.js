@@ -49,15 +49,15 @@ export class CommandDescription {
             const dynamicSubs = [];
             const staticSubs = [];
 
-            for (const commandKey of this.#subs_) {
+            for (const commandKey of this.#subs_.keys()) {
                 if (commandKey.value === null)
                     dynamicSubs.push(String(commandKey));
                 else
                     staticSubs.push(String(commandKey));
             }
 
-            // [[target]/foo/bar/baz]
-            representation += '[' + [ ...dynamicSubs, ...staticSubs ].join('/') + ']';
+            // [bar/baz/foo/[target]]
+            representation += ` [${[ ...staticSubs.sort(), ...dynamicSubs.sort() ].join('/')}]`;
 
         } else if (this.#parameters_.length) {
             const parameters = [];
@@ -66,7 +66,7 @@ export class CommandDescription {
                 parameters.push(String(parameter));
 
             // [foo] [bar=4] [baz]?
-            representation += '[' + parameters.join(' ') + ']';
+            representation += ` ${parameters.join(' ')}`;
         }
 
         return representation;

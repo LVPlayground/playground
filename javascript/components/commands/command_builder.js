@@ -33,6 +33,8 @@ export class CommandBuilder {
     #name_ = null;
     #parent_ = null;
     #prefix_ = null;
+    #restrictLevel_ = null;
+    #restrictTemporary_ = null;
     #subs_ = null;
 
     constructor({ listener, name, parent = null, prefix = null }) {
@@ -47,6 +49,14 @@ export class CommandBuilder {
     // commands as it can be used to explain to the player what it does. Returns |this| instance.
     description(description) {
         this.#description_ = description;
+        return this;
+    }
+
+    // Sets the default level restriction on this command to |level|. The |restrictTemporary| flag
+    // may optionally be given as well, which restricts it for temporary administrators.
+    restrict(level, restrictTemporary = false) {
+        this.#restrictLevel_ = level;
+        this.#restrictTemporary_ = !!restrictTemporary;
         return this;
     }
 
@@ -120,6 +130,8 @@ export class CommandBuilder {
             description: this.#description_,
             listener: listener,
             parameters: [],
+            restrictLevel: this.#restrictLevel_,
+            restrictTemporary: this.#restrictTemporary_,
             subs: this.#subs_,
         });
 

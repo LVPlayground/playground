@@ -36,6 +36,8 @@ describe('CommandBuilder', (it, beforeEach) => {
         assert.equal(description.description, 'This is a test command');
         assert.typeOf(description.listener, 'function');
         assert.equal(description.parameters.length, 0);
+        assert.isNull(description.restrictLevel);
+        assert.isNull(description.restrictTemporary);
         assert.equal([ ...description.subs ].length, 0);
 
         description = null;  // reset
@@ -43,13 +45,17 @@ describe('CommandBuilder', (it, beforeEach) => {
         // (2) Build a more complex command with sub-commands.
         buildCommand('test')
             .description('This is a test command')
+            .restrict(Player.LEVEL_ADMINISTRATOR, true)
             .sub('banana')
                 .description('This is a test command for a banana')
+                .restrict(Player.LEVEL_MANAGEMENT)
                 .build(emptyListener)
             .build(emptyListener);
 
         assert.isNotNull(description);
         assert.instanceOf(description, CommandDescription);
+        assert.equal(description.restrictLevel, Player.LEVEL_ADMINISTRATOR);
+        assert.isTrue(description.restrictTemporary);
         assert.equal([ ...description.subs ].length, 1);
 
         {
@@ -62,6 +68,8 @@ describe('CommandBuilder', (it, beforeEach) => {
             assert.equal(command.description, 'This is a test command for a banana');
             assert.typeOf(command.listener, 'function');
             assert.equal(command.parameters.length, 0);
+            assert.equal(command.restrictLevel, Player.LEVEL_MANAGEMENT);
+            assert.isFalse(command.restrictTemporary);
             assert.equal([ ...command.subs ].length, 0);
         }
 

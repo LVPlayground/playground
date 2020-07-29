@@ -23,7 +23,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     // A listener function that can be passed to the build() function, but does nothing.
     function emptyListener() {}
 
-    it('should be able to build simple commands', assert => {
+    it('should be able to build description objects for commands', assert => {
         buildCommand('test')
             .description('This is a test command')
             .build(emptyListener);
@@ -36,5 +36,31 @@ describe('CommandBuilder', (it, beforeEach) => {
         assert.typeOf(description.listener, 'function');
         assert.equal(description.parameters.length, 0);
         assert.equal([ ...description.subs ].length, 0);
+
+        description = null;  // reset
+
+        buildCommand('test')
+            .description('This is a test command')
+            .sub('banana')
+                .description('This is a test command for a banana')
+                .build(emptyListener)
+            .build(emptyListener);
+
+        assert.isNotNull(description);
+        assert.instanceOf(description, CommandDescription);
+        assert.equal([ ...description.subs ].length, 1);
+
+        {
+            const command = [ ...description.subs ][0][1];
+
+            assert.isNotNull(command);
+            assert.instanceOf(command, CommandDescription);
+            assert.equal(command.command, '/test banana');
+            assert.equal(command.commandName, 'banana');
+            assert.equal(command.description, 'This is a test command for a banana');
+            assert.typeOf(command.listener, 'function');
+            assert.equal(command.parameters.length, 0);
+            assert.equal([ ...command.subs ].length, 0);
+        }
     });
 });

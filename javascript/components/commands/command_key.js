@@ -24,7 +24,7 @@ export class CommandKey {
     // Gets the value when the |type| should be predetermined, i.e. a fixed string.
     get value() { return this.#value_; }
 
-    constructor({ name, optional, type, value }) {
+    constructor(name, optional, type, value = null) {
         switch (type) {
             case CommandParameter.kTypeNumber:
             case CommandParameter.kTypeText:

@@ -82,7 +82,17 @@ export class CommandBuilder {
                 break;
         }
 
-        // (2) Create and return a new CommandBuilder instance for the sub-command. The listener
+        // (2) Make sure that the |commandKey| isn't ambiguous with a previously defined sub-command
+        // as this would make it hard for players to reason about what should be executed, when.
+        for (const otherCommandKey of this.#subs_.keys()) {
+            if (otherCommandKey.type === CommandBuilder.kTypePlayer)
+                throw new Error(`"${commandKey.name}" cannot be preceeded by a player sub-command`);
+
+            if (otherCommandKey.type === CommandBuilder.kTypeText && !otherCommandKey.value)
+                throw new Error(`"${commandKey.name}" cannot be preceeded by a text sub-command`);
+        }
+
+        // (3) Create and return a new CommandBuilder instance for the sub-command. The listener
         // will register the sub-command with our own state.
         return new CommandBuilder({
             listener: description => {

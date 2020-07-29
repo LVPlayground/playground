@@ -24,6 +24,7 @@ describe('CommandBuilder', (it, beforeEach) => {
     function emptyListener() {}
 
     it('should be able to build description objects for commands', assert => {
+        // (1) Build a simple command.
         buildCommand('test')
             .description('This is a test command')
             .build(emptyListener);
@@ -39,6 +40,7 @@ describe('CommandBuilder', (it, beforeEach) => {
 
         description = null;  // reset
 
+        // (2) Build a more complex command with sub-commands.
         buildCommand('test')
             .description('This is a test command')
             .sub('banana')
@@ -62,5 +64,22 @@ describe('CommandBuilder', (it, beforeEach) => {
             assert.equal(command.parameters.length, 0);
             assert.equal([ ...command.subs ].length, 0);
         }
+
+        description = null;  // reset
+
+        // (3) Make sure that commands are not allowed to be ambiguous.
+        assert.throws(() => {
+            buildCommand('test')
+                .description('This is a test command')
+                .sub(CommandBuilder.kTypeText, 'fruit')
+                    .description('This is a text command for fruits')
+                    .build(emptyListener)
+                .sub('banana')
+                    .description('This is a test command for a banana')
+                    .build(emptyListener)
+                .build(emptyListener);
+        });
+
+        assert.isNull(description);
     });
 });

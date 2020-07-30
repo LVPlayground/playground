@@ -10,11 +10,6 @@ export class NuwaniContextDelegate extends CommandContextDelegate {
     // we derive this information based on the status that they have in the echo channel.
     getLevel(context) { return context.level; }
 
-    // Respond to the |context| informing them that they don't have access to run the command.
-    respondWithAccessError(context) {
-        context.respond(`4Error: Sorry, this command is not available to you.`);
-    }
-
     // Respond to the |context| with usage information on the given |command|.
     respondWithUsage(context, command) {
         context.respond(`10Usage: ${command}`);

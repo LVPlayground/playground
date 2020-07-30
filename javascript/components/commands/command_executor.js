@@ -28,6 +28,8 @@ export class CommandExecutor {
     // *some* form of communication back to the |context|.
     async executeCommand(context, command, commandText) {
         const candidates = this.matchPossibleCommands(context, command, commandText);
+        if (!candidates)
+            return false;  // an access error will already have been shared
 
         // TODO: It's possible that a candidate doesn't match, in which case we might want to move
         // on to the next candidate. I suspect that this will be important for commands like `/v`.
@@ -41,9 +43,6 @@ export class CommandExecutor {
 
             return description.listener(context, ...parameters, ...params);
         }
-
-        this.#contextDelegate_.respondWithAccessError(context);
-        return false;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ export class CommandExecutor {
         while (stack.length) {
             const [ command, commandText, parameters ] = stack.pop();
 
-            if (!this.canExecuteCommand(context, command))
+            if (!this.canExecuteCommand(context, command, !commands.length))
                 continue;  // the |context| does not have access to this |description|
 
             // Store the |command| as this has just become a candidate for execution.
@@ -247,8 +246,10 @@ export class CommandExecutor {
     // ---------------------------------------------------------------------------------------------
 
     // Returns whether the |context| is allowed to execute the given |command|. This operation is
-    // synchronous and provided delegates are expected to be fast.
-    canExecuteCommand(context, command) {
-        return this.#permissionDelegate_.canExecuteCommand(context, this.#contextDelegate_, command)
+    // synchronous and provided delegates are expected to be fast. The |verbose| argument indicates
+    // whether any access errors should be shared with the |context| directly.
+    canExecuteCommand(context, command, verbose) {
+        return this.#permissionDelegate_.canExecuteCommand(
+            context, this.#contextDelegate_, command, verbose)
     }
 }

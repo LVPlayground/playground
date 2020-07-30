@@ -9,10 +9,25 @@ import { CommandPermissionDelegate } from 'components/commands/command_permissio
 export class NuwaniPermissionDelegate extends CommandPermissionDelegate {
     // Returns whether the |context| has permission to execute the given |command|, which is an
     // instance of CommandDescription. We execute the access level check in here.
-    canExecuteCommand(context, contextDelegate, command) {
+    canExecuteCommand(context, contextDelegate, command, verbose) {
         if (!command.restrictLevel)
             return true;
 
-        return command.restrictLevel <= contextDelegate.getLevel(context);
+        let access = null;
+
+        if (typeof command.restrictLevel === 'function')
+            access = command.restrictLevel(context);
+        else
+            access = command.restrictLevel <= contextDelegate.getLevel(context);
+
+        if (!access && verbose) {
+            const requiredLevel = this.textualRepresentationForLevel(command.restrictLevel);
+
+            // Inform the |context| of the fact that they're not allowed to execute this command.
+            context.respond(
+                `4Error: Sorry, this command is only available to ${requiredLevel}.`);
+        }
+
+        return access;
     }
 }

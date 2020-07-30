@@ -218,7 +218,7 @@ describe('NuwaniCommands', (it, beforeEach, afterEach) => {
         assert.equal(noAccessResult.length, 1);
         assert.equal(
             noAccessResult[0],
-            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to specific people.');
+            'PRIVMSG #LVP.DevJS :Error: Sorry, this command is only available to VIPs.');
 
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'v');
 

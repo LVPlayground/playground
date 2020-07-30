@@ -101,7 +101,6 @@ export class NuwaniCommands {
         // !vip [message]
         this.commandManager_.buildCommand('vip')
             .description(`Send a message to all in-game VIPs.`)
-            .restrict(context => context.isVip())
             .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onVipMessageCommand.bind(this));
     }
@@ -395,6 +394,11 @@ export class NuwaniCommands {
     onVipMessageCommand(context, message) {
         if (!context.inEchoChannel())
             return;  // only available in the echo channel
+
+        if (!context.isVip()) {
+            context.respond(`4Error: Sorry, this command is only available to VIPs.`);
+            return;
+        }
 
         const processedMessage = this.processForDistribution(context, message);
         if (!processedMessage)

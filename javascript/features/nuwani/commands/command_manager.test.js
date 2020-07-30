@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
 import { Message } from 'features/nuwani/runtime/message.js';
@@ -27,7 +27,7 @@ describe('CommandManager', it => {
 
             const manager = new CommandManager(/* runtime= */ null, new Configuration());
 
-            manager.buildCommand('test').build(() => called = true);
+            manager.buildCommand('test').description('Test command').build(() => called = true);
             manager.onBotMessage(new TestBot(), new Message(':Joe@host PRIVMSG #echo :!test'));
 
             assert.isTrue(called);
@@ -42,7 +42,7 @@ describe('CommandManager', it => {
 
             const manager = new CommandManager(/* runtime= */ null, configuration);
 
-            manager.buildCommand('test').build(() => called = true);
+            manager.buildCommand('test').description('Test command').build(() => called = true);
             manager.onBotMessage(new TestBot(), new Message(':Joe@host PRIVMSG #echo :%%test'));
 
             assert.isTrue(called);
@@ -56,7 +56,8 @@ describe('CommandManager', it => {
         let calledWith = null;
 
         manager.buildCommand('test')
-            .parameters([{ name: 'value', type: CommandBuilder.NUMBER_PARAMETER } ])
+            .description('A command to run tests with.')
+            .parameters([{ name: 'value', type: CommandBuilder.kTypeNumber } ])
             .build((context, value) => calledWith = value);
         
         manager.onBotMessage(bot, new Message(':Joe@host PRIVMSG #echo :!test'));
@@ -84,6 +85,7 @@ describe('CommandManager', it => {
         let called = false;
 
         manager.buildCommand('test')
+            .description('A command to run tests with.')
             .restrict(Player.LEVEL_MANAGEMENT)
             .build((context) => called = true);
 
@@ -110,7 +112,8 @@ describe('CommandManager', it => {
         let calledForPlayerName = null;
 
         manager.buildCommand('test')
-            .parameters([{ name: 'target', type: CommandBuilder.PLAYER_PARAMETER }])
+            .description('A command to run tests with.')
+            .parameters([{ name: 'target', type: CommandBuilder.kTypePlayer }])
             .build((context, target) => calledForPlayerName = target.name);
         
         manager.onBotMessage(bot, new Message(':Joe@host PRIVMSG #echo :!test Craig'));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 import { kMessagePrefixes } from 'base/message.js';
@@ -35,14 +35,14 @@ export class NuwaniCommands {
         this.commandManager_.buildCommand('admin')
             .description(`Send a message to the in-game administrator chat.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onAdminCommand.bind(this));
 
         // !announce [message]
         this.commandManager_.buildCommand('announce')
             .description(`Send an announcement to in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onAnnounceCommand.bind(this));
 
         // !discord
@@ -58,7 +58,7 @@ export class NuwaniCommands {
         // !msg [message]
         this.commandManager_.buildCommand('msg')
             .description(`Send a message to in-game players.`)
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onMessageCommand.bind(this));
 
         // !muted
@@ -72,37 +72,37 @@ export class NuwaniCommands {
             .description(`Mute one of the currently in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 2 } ])
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'duration', type: CommandBuilder.kTypeNumber, defaultValue: 2 } ])
             .build(NuwaniCommands.prototype.onMuteCommand.bind(this));
 
         // !pm [player] [message]
         this.commandManager_.buildCommand('pm')
             .description(`Send a private message to an in-game player.`)
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(NuwaniCommands.prototype.onPrivageMessageCommand.bind(this));
 
         // !say [message]
         this.commandManager_.buildCommand('say')
             .description(`Send an informal announcement to in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onSayCommand.bind(this));
 
         // !unmute [player]
         this.commandManager_.buildCommand('unmute')
             .description(`Revoke a mute on one of the in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(NuwaniCommands.prototype.onUnmuteCommand.bind(this));
 
         // !vip [message]
         this.commandManager_.buildCommand('vip')
             .description(`Send a message to all in-game VIPs.`)
             .restrict(context => context.isVip())
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(NuwaniCommands.prototype.onVipMessageCommand.bind(this));
     }
 

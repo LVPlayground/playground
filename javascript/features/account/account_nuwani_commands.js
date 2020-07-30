@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 import { format } from 'base/format.js';
 import { fromNow } from 'base/time.js';
@@ -28,15 +28,15 @@ export class AccountNuwaniCommands {
             .description(`Creates a new alias for a particular account.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
+                { name: 'nickname', type: CommandBuilder.kTypeText },
+                { name: 'alias', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onAddAliasCommand.bind(this));
 
         // !aliases [nickname]
         this.commandManager_.buildCommand('aliases')
             .description(`Displays the aliases that exist for a particular account.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([{ name: 'nickname', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onAliasesCommand.bind(this));
         
         // !removealias [nickname] [alias]
@@ -44,15 +44,15 @@ export class AccountNuwaniCommands {
             .description(`Removes an alias from a particular account.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'alias', type: CommandBuilder.WORD_PARAMETER }])
+                { name: 'nickname', type: CommandBuilder.kTypeText },
+                { name: 'alias', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onRemoveAliasCommand.bind(this));
 
         // !players
         // !players [nickname]
         this.commandManager_.buildCommand('players')
             .description(`Displays a list of the currently in-game players.`)
-            .sub(CommandBuilder.WORD_PARAMETER)
+            .sub(CommandBuilder.kTypeText, 'nickname')
                 .description(`Displays information about a registered player.`)
                 .build(AccountNuwaniCommands.prototype.onPlayerInfoCommand.bind(this))
             .build(AccountNuwaniCommands.prototype.onPlayerOnlineListCommand.bind(this));
@@ -67,7 +67,7 @@ export class AccountNuwaniCommands {
         this.commandManager_.buildCommand('history')
             .description(`Displays information about a player's nickname history.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([{ name: 'nickname', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onHistoryCommand.bind(this));
 
         // !changenick
@@ -81,15 +81,15 @@ export class AccountNuwaniCommands {
             .description(`Changes the primary nickname associated with an account.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'newNickname', type: CommandBuilder.WORD_PARAMETER }])
+                { name: 'nickname', type: CommandBuilder.kTypeText },
+                { name: 'newNickname', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onChangeNameCommand.bind(this));
 
         // !changepass [nickname]
         this.commandManager_.buildCommand('changepass')
             .description(`Changes the password associated with an account.`)
             .restrict(Player.LEVEL_MANAGEMENT)
-            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
+            .parameters([{ name: 'nickname', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onChangePasswordCommand.bind(this));
 
         // !supported
@@ -103,8 +103,8 @@ export class AccountNuwaniCommands {
             .description(`Reads the value of a particular account field.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'field', type: CommandBuilder.WORD_PARAMETER }])
+                { name: 'nickname', type: CommandBuilder.kTypeText },
+                { name: 'field', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onGetValueCommand.bind(this));
 
         // !setvalue [field] [value]
@@ -112,24 +112,24 @@ export class AccountNuwaniCommands {
             .description(`Changes the value of a particular account field.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'field', type: CommandBuilder.WORD_PARAMETER },
-                { name: 'value', type: CommandBuilder.SENTENCE_PARAMETER }])
+                { name: 'nickname', type: CommandBuilder.kTypeText },
+                { name: 'field', type: CommandBuilder.kTypeText },
+                { name: 'value', type: CommandBuilder.kTypeText }])
             .build(AccountNuwaniCommands.prototype.onSetValueCommand.bind(this));
 
         // !whois [[player] | [ip]]
         this.commandManager_.buildCommand('whereis')
             .description(`Displays information on someone's whereabouts.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([ { name: 'ip', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
+            .parameters([ { name: 'ip', type: CommandBuilder.kTypeText, optional: true } ])
             .build(AccountNuwaniCommands.prototype.onWhereIsCommand.bind(this));
 
         // !whois [[player] | [ip] [serial]]
         this.commandManager_.buildCommand('whois')
             .description(`Displays information on someone's identity.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([ { name: 'ip', type: CommandBuilder.WORD_PARAMETER, optional: true },
-                          { name: 'serial', type: CommandBuilder.WORD_PARAMETER, optional: true } ])
+            .parameters([ { name: 'ip', type: CommandBuilder.kTypeText, optional: true },
+                          { name: 'serial', type: CommandBuilder.kTypeText, optional: true } ])
             .build(AccountNuwaniCommands.prototype.onWhoisCommand.bind(this));
     }
 

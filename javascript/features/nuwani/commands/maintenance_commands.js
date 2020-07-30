@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Provides a series of commands to Nuwani meant for administrative maintenance purposes, for
 // example to inspect the bot and the server's current status, evaluate code, and so on.
@@ -19,13 +19,13 @@ export class MaintenanceCommands {
         this.commandManager_.buildCommand('eval')
             .description(`Evaluate arbitrary JavaScript code.`)
             .restrict(context => context.isOwner())
-            .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'code', type: CommandBuilder.kTypeText }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
         // !level [nickname?]
         this.commandManager_.buildCommand('level')
             .description(`Display the level of a particular person.`)
-            .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+            .parameters([{ name: 'nickname', type: CommandBuilder.kTypeText, optional: true }])
             .build(MaintenanceCommands.prototype.onLevelCommand.bind(this));
         
         // !nuwani [request-decrease|request-increase]

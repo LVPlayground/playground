@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Implements commands specific to Las Venturas Playground which are made accessible through Nuwani,
 // particularly commands related to lower-level server maintenance.
@@ -21,11 +21,14 @@ export class PlaygroundNuwaniCommands {
         // !lvp reload messages
         // !lvp reload [feature]
         commandManager.buildCommand('lvp')
+            .description(`Provides low-level interaction with server internals.`)
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('reload')
+                .description(`Enables reloading of JavaScript modules.`)
                 .sub('messages')
+                    .description(`Enables reloading of player messages.`)
                     .build(PlaygroundNuwaniCommands.prototype.onLvpReloadMessagesCommand.bind(this))
-                .parameters([{ name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
+                .parameters([{ name: 'feature', type: CommandBuilder.kTypeText } ])
                 .build(PlaygroundNuwaniCommands.prototype.onLvpReloadFeatureCommand.bind(this))
             .build(PlaygroundNuwaniCommands.prototype.onLvpCommand.bind(this));
     }

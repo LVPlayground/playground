@@ -204,6 +204,8 @@ describe('CommandExecutor', (it, beforeEach) => {
         assert.deepEqual(executor.readText('banana'), { match: 'banana', value: 'banana' });
         assert.deepEqual(executor.readText('banana phone'), { match: 'banana ', value: 'banana' });
 
+        assert.deepEqual(executor.readText('127.0 phone'), { match: '127.0 ', value: '127.0' });
+
         // Section: reading players
         assert.deepEqual(executor.readPlayer('0'), { match: '0', value: gunther });
         assert.deepEqual(executor.readPlayer('0 '), { match: '0 ', value: gunther });

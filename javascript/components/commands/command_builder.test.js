@@ -49,11 +49,15 @@ describe('CommandBuilder', (it, beforeEach) => {
             .sub('banana')
                 .description('This is a test command for a banana')
                 .restrict(Player.LEVEL_MANAGEMENT)
+                .parameters([
+                    { name: 'number', type: CommandBuilder.kTypeNumber, defaultValue: 1 },
+                ])
                 .build(emptyListener)
             .build(emptyListener);
 
         assert.isNotNull(description);
         assert.instanceOf(description, CommandDescription);
+        assert.equal(description.parameters.length, 0);
         assert.equal(description.restrictLevel, Player.LEVEL_ADMINISTRATOR);
         assert.isTrue(description.restrictTemporary);
         assert.equal([ ...description.subs ].length, 1);
@@ -67,7 +71,7 @@ describe('CommandBuilder', (it, beforeEach) => {
             assert.equal(command.commandName, 'banana');
             assert.equal(command.description, 'This is a test command for a banana');
             assert.typeOf(command.listener, 'function');
-            assert.equal(command.parameters.length, 0);
+            assert.equal(command.parameters.length, 1);
             assert.equal(command.restrictLevel, Player.LEVEL_MANAGEMENT);
             assert.isFalse(command.restrictTemporary);
             assert.equal([ ...command.subs ].length, 0);

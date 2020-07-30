@@ -14,7 +14,10 @@ import { CommandParameter } from 'components/commands/command_parameter.js';
 //     .description('Indicate that you want some fruit')
 //     .sub('banana')
 //         .description('The fruit you want is a banana')
-//         .build(player => player.sendMessage('You wanted a banana!'))
+//         .parameters([
+//             { name: 'number', type: CommandBuilder.kTypeNumber, defaultValue: 1 },
+//         ])
+//         .build((player, number) => player.sendMessage(`You wanted ${number} banana(s)!`))
 //     .sub(CommandBuilder.kTypeText, 'fruit')
 //         .description('The fruit you want is something else')
 //         .build((player, fruit) => player.sendMessage('You wanted a ' + fruit))
@@ -31,6 +34,7 @@ export class CommandBuilder {
     #description_ = null;
     #listener_ = null;
     #name_ = null;
+    #parameters_ = null;
     #parent_ = null;
     #prefix_ = null;
     #restrictLevel_ = null;
@@ -40,6 +44,7 @@ export class CommandBuilder {
     constructor({ listener, name, parent = null, prefix = null }) {
         this.#listener_ = listener;
         this.#name_ = name;
+        this.#parameters_ = [];
         this.#parent_ = parent;
         this.#prefix_ = prefix;
         this.#subs_ = new Map();
@@ -49,6 +54,39 @@ export class CommandBuilder {
     // commands as it can be used to explain to the player what it does. Returns |this| instance.
     description(description) {
         this.#description_ = description;
+        return this;
+    }
+
+    // Sets the parameters for the command to the given |parameters|, which must be an array of
+    // objects that follow the following structure: { name, type, optional, defaultValue }. They
+    // will each be converted to CommandParameter instances.
+    parameters(parameters) {
+        if (!Array.isArray(parameters))
+            throw new Error(`${this}: parameters must be specified as an array.`);
+
+        this.#parameters_ = [];
+
+        for (const parameter of parameters) {
+            if (typeof parameter !== 'object')
+                throw new Error(`${this}: each parameter must be defined as an object.`);
+
+            if (!parameter.hasOwnProperty('name') || typeof parameter.name !== 'string')
+                throw new Error(`${this}: each parameter must indicate its name as a string.`);
+
+            if (!parameter.hasOwnProperty('type') || typeof parameter.type !== 'number')
+                throw new Error(`${this}: each parameter must indicate its type as a number.`);
+
+            // TODO: Make sure that parameter names are not ambiguous.
+            // TODO: Make sure that only optional parameters may follow an optional one.
+
+            this.#parameters_.push(new CommandParameter({
+                name: parameter.name,
+                type: parameter.type,
+                optional: parameter.optional || parameter.defaultValue,
+                defaultValue: parameter.defaultValue,
+            }));
+        }
+
         return this;
     }
 
@@ -63,6 +101,9 @@ export class CommandBuilder {
     // Creates a sub-command for this one. The |command| can either be one of the kType* constants
     // defined above, or a string when an exact word match is expected.
     sub(command, name = null, optional = false) {
+        if (this.#parameters_.length)
+            throw new Error(`${this}: sub-commands must be created before parameter definitions.`);
+
         let commandKey = null;
 
         // (1) Create the CommandKey instance that matches the requirements for this sub-command,
@@ -129,7 +170,7 @@ export class CommandBuilder {
             commandName: this.#name_,
             description: this.#description_,
             listener: listener,
-            parameters: [],
+            parameters: this.#parameters_,
             restrictLevel: this.#restrictLevel_,
             restrictTemporary: this.#restrictTemporary_,
             subs: this.#subs_,

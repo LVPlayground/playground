@@ -93,5 +93,18 @@ describe('CommandBuilder', (it, beforeEach) => {
         });
 
         assert.isNull(description);
+
+        // (4) Make sure that only optional parameters may follow optional ones.
+        assert.throws(() => {
+            buildCommand('test')
+                .description('This is a test command')
+                .parameters([
+                    { name: 'foo', type: CommandBuilder.kTypeNumber, optional: true },
+                    { name: 'bar', type: CommandBuilder.kTypeNumber },
+                ])
+                .build(emptyListener);
+        });
+
+        assert.isNull(description);
     });
 });

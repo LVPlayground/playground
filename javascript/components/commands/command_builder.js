@@ -66,6 +66,8 @@ export class CommandBuilder {
 
         this.#parameters_ = [];
 
+        let hasOptionalParameter = false;
+
         for (const parameter of parameters) {
             if (typeof parameter !== 'object')
                 throw new Error(`${this}: each parameter must be defined as an object.`);
@@ -73,11 +75,21 @@ export class CommandBuilder {
             if (!parameter.hasOwnProperty('name') || typeof parameter.name !== 'string')
                 throw new Error(`${this}: each parameter must indicate its name as a string.`);
 
-            if (!parameter.hasOwnProperty('type') || typeof parameter.type !== 'number')
-                throw new Error(`${this}: each parameter must indicate its type as a number.`);
+            switch (parameter.type) {
+                case CommandBuilder.kTypeNumber:
+                case CommandBuilder.kTypePlayer:
+                case CommandBuilder.kTypeText:
+                    break;
 
-            // TODO: Make sure that parameter names are not ambiguous.
-            // TODO: Make sure that only optional parameters may follow an optional one.
+                default:
+                    throw new Error(`${this}: each parameter must indicate a valid type.`);
+            }
+
+            const optional = parameter.optional || parameter.defaultValue;
+            if (optional)
+                hasOptionalParameter = true;
+            else if (hasOptionalParameter)
+                throw new Error(`${this}: only optional parameters may follow an optional one.`);
 
             this.#parameters_.push(new CommandParameter({
                 name: parameter.name,

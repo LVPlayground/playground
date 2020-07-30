@@ -22,9 +22,6 @@ export default class Account extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
-        // Depends on the Playground feature to be able to change command access.
-        this.playground_ = this.defineDependency('playground');
-
         // Depends on the Settings feature for configurability of individual features.
         const settings = this.defineDependency('settings');
 
@@ -34,8 +31,7 @@ export default class Account extends Feature {
                                          : new AccountDatabase();
 
         // The in-game commands will be made available using this object.
-        this.commands_ =
-            new AccountCommands(this.announce_, this.playground_, settings, this.database_);
+        this.commands_ = new AccountCommands(this.announce_, settings, this.database_);
 
         this.initializeNuwaniCommands();
     }

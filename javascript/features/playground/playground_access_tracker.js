@@ -32,9 +32,9 @@ class PlaygroundAccessTracker {
 
     // Returns whether the |player| is allowed to access the |command|.
     canAccessCommand(command, player) {
-        const commandLevel = this.commandLevels_.get(command);
+        let commandLevel = this.commandLevels_.get(command);
         if (commandLevel === undefined)
-            throw new Error('Invalid command given: ' + command);
+            commandLevel = Player.LEVEL_ADMINISTRATOR;  // xxx
 
         if (player.level >= commandLevel)
             return true;
@@ -91,9 +91,6 @@ class PlaygroundAccessTracker {
     // Adds an exception that allows |player| to use the |command|. |player| must be registered. If
     // |sourcePlayer| is set, an announcement will be send to the |player|.
     addException(command, player, sourcePlayer = null) {
-        if (!this.commandLevels_.has(command))
-            throw new Error('Invalid command given: ' + command);
-
         if (!player.account.isRegistered())
             throw new Error('Player ' + player.name + ' (Id:' + player.id + ') is not registered.');
 
@@ -122,9 +119,6 @@ class PlaygroundAccessTracker {
     // Returns the players for whom an exception has been granted for |command|.  This method has a
     // theoretical worst-case of O(n) on the number of connected players.
     getExceptions(command) {
-        if (!this.commandLevels_.has(command))
-            throw new Error('Invalid command given: ' + command);
-
         let players = [];
         this.exceptions_.forEach((exceptions, player) => {
             if (exceptions.has(command))
@@ -136,9 +130,6 @@ class PlaygroundAccessTracker {
 
     // Returns whether |player| has an exception allowing them to use |command|.
     hasException(command, player) {
-        if (!this.commandLevels_.has(command))
-            throw new Error('Invalid command given: ' + command);
-
         if (!player.account.isRegistered())
             return false;  // unregistered players cannot have exceptions.
 
@@ -152,9 +143,6 @@ class PlaygroundAccessTracker {
     // Removes the exception that allows |player| to use |command|. If |sourcePlayer| is set, an
     // announcement will be send to the |player|.
     removeException(command, player, sourcePlayer = null) {
-        if (!this.commandLevels_.has(command))
-            throw new Error('Invalid command given: ' + command);
-
         if (!player.account.isRegistered())
             throw new Error('Player ' + player.name + ' (Id:' + player.id + ') is not registered.');
 

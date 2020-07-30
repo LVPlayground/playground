@@ -74,29 +74,6 @@ describe('PlaygroundAccessTracker', (it, beforeEach, afterEach) => {
         assert.isFalse(tracker.canAccessCommand('foo', gunther));
     });
 
-    it('should only allow exceptions for existing commands', async (assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify();
-
-        assert.isTrue(gunther.account.isRegistered());
-
-        assert.throws(() => tracker.canAccessCommand('foo', gunther));
-        assert.throws(() => tracker.addException('foo', gunther));
-        assert.throws(() => tracker.hasException('foo', gunther));
-        assert.throws(() => tracker.removeException('foo', gunther));
-
-        tracker.registerCommand('foo', Player.LEVEL_MANAGEMENT);
-
-        assert.doesNotThrow(() => tracker.addException('foo', gunther));
-
-        assert.isTrue(tracker.canAccessCommand('foo', gunther));
-        assert.isTrue(tracker.hasException('foo', gunther));
-
-        assert.doesNotThrow(() => tracker.removeException('foo', gunther));
-
-        assert.isFalse(tracker.canAccessCommand('foo', gunther));
-    });
-
     it('should remove exceptions on disconnect, and restore on reconnect', async(assert) => {
         const gunther1 = server.playerManager.getById(0 /* Gunther */);
         const gunther2 = server.playerManager.getById(1 /* Russell, will identify as Gunther */);

@@ -9,7 +9,6 @@ describe('VehicleCommands', (it, beforeEach) => {
     let abuse = null;
     let commands = null;
     let gunther = null;
-    let playground = null;
     let manager = null;
     let streamer = null;
 
@@ -19,14 +18,13 @@ describe('VehicleCommands', (it, beforeEach) => {
         abuse = server.featureManager.loadFeature('abuse');
         commands = feature.commands_;
         gunther = server.playerManager.getById(0 /* Gunther */);
-        playground = server.featureManager.loadFeature('playground');
         manager = feature.manager_;
         streamer = server.featureManager.loadFeature('streamer');
 
         // Identify |gunther| to their account, and allow them to use the `/v` command.
         await gunther.identify({ userId: 42 });
         
-        playground.access.addException('v', gunther);
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         // Wait until the Manager has loaded all vehicles from the database.
         await manager.loadVehicles();
@@ -47,9 +45,9 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         const toggleCommand = enabled => {
             if (enabled)
-                playground.access.addException('v', gunther);
+                gunther.level = Player.LEVEL_ADMINISTRATOR;
             else
-                playground.access.removeException('v', gunther);
+                gunther.level = Player.LEVEL_PLAYER;
         };
 
         const toggleSprayTags = enabled =>
@@ -92,8 +90,12 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.leaveVehicle();
         }
 
-        // (3) Players are only allowed to spawn such vehicles once per three minutes.
+        // (3) Rate limits are applied - only allow spawning such vehicles once per minute.
         {
+            const settings = server.featureManager.loadFeature('settings');
+
+            settings.setValue('limits/throttle_spawn_vehicle_admin_sec', 60);
+
             assert.isTrue(await gunther.issueCommand('/nrg'));
             assert.equal(gunther.messages.length, 1);
             assert.equal(
@@ -171,6 +173,11 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should enable players to use the quick vehicle commands', async(assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        // Limit the maximum number of live vehicles to a single one, for administrators.
+        settings.setValue('vehicles/vehicle_limit_administrator', 1);
+
         const commands = ['pre', 'sul', 'ele', 'tur', 'inf', 'nrg'];
         let previousVehicle = null;
 
@@ -468,10 +475,9 @@ describe('VehicleCommands', (it, beforeEach) => {
         gunther.level = Player.LEVEL_PLAYER;
         {
             assert.isTrue(await gunther.issueCommand('/v help'));
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.equal(gunther.messages.length, 1);
             assert.equal(
-                gunther.messages[1], Message.format(Message.VEHICLE_HELP_GLOBAL, 'delete/save'));
+                gunther.messages[0], Message.format(Message.VEHICLE_HELP_GLOBAL, 'delete/save'));
 
             gunther.clearMessages();
         }

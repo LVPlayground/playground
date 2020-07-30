@@ -26,11 +26,8 @@ export class NuwaniCommands extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeIrcCommands());
 
-        // The Playground feature provides access control to the in-game command.
-        const playground = this.defineDependency('playground');
-
         // Provides the in-game `/nuwani` command.
-        this.nuwaniCommand_ = new NuwaniCommand(this.announce_, this.nuwani_, playground);
+        this.nuwaniCommand_ = new NuwaniCommand(this.announce_, this.nuwani_);
 
         this.initializeIrcCommands();
     }

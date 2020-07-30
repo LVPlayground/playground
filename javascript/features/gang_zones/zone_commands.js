@@ -20,34 +20,22 @@ export class ZoneCommands {
     announce_ = null;
     gangs_ = null;
     manager_ = null;
-    playground_ = null;
 
     entities_ = null;
 
-    constructor(manager, announce, gangs, playground) {
+    constructor(manager, announce, gangs) {
         this.announce_ = announce;
         this.gangs_ = gangs;
         this.manager_ = manager;
 
         this.entities_ = new ScopedEntities();
 
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(this, () => this.registerTrackedCommands());
-
-        this.registerTrackedCommands();
-
         // /zone
         server.commandManager.buildCommand('zone')
-            .restrict(player => this.playground_().canAccessCommand(player, 'zone'))
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(ZoneCommands.prototype.onZoneReloadCommand.bind(this))
             .build(ZoneCommands.prototype.onZoneCommand.bind(this));
-    }
-
-    // Registers the tracked commands with the Playground feature, so that
-    registerTrackedCommands() {
-        this.playground_().registerCommand('zone', Player.LEVEL_ADMINISTRATOR);
     }
 
     // Gets the ZoneDecorations instance canonically owned by the manager.
@@ -318,8 +306,5 @@ export class ZoneCommands {
         this.entities_ = null;
 
         server.commandManager.removeCommand('zone');
-
-        this.playground_().unregisterCommand('zone');
-        this.playground_.removeReloadObserver(this);
     }
 }

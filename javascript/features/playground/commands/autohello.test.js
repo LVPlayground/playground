@@ -13,10 +13,9 @@ describe('AutoHello', (it, beforeEach, afterEach) => {
         await commands.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify();
+        gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // Enable |gunther| to use the command by adding an exception.
-        commands.access.addException('autohello', gunther);
+        await gunther.identify();
     });
 
     afterEach(() => commands.dispose());

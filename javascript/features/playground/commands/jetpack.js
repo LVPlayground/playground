@@ -26,7 +26,7 @@ class JetpackCommand extends Command {
         const subject = targetPlayer || player;
 
         // Do not allow jetpacks to be spawned in virtual worlds.
-        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isAdministrator()) {
+        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isManagement()) {
             player.sendMessage(Message.LVP_JETPACK_NOT_AVAILABLE_VW);
             return;
         }

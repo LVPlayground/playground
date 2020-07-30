@@ -21,7 +21,6 @@ export class DirectCommunicationCommands {
     callbacks_ = null;
     communication_ = null;
     nuwani_ = null;
-    playground_ = null;
 
     // WeakMap from |player| to a struct of {type, id, name} of last received message.
     previousMessage_ = new WeakMap();
@@ -32,19 +31,13 @@ export class DirectCommunicationCommands {
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
 
-    constructor(communication, nuwani, playground) {
+    constructor(communication, nuwani) {
         this.communication_ = communication;
         this.nuwani_ = nuwani;
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'ircmessage', DirectCommunicationCommands.prototype.onIrcMessageReceived.bind(this));
-
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, DirectCommunicationCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands();
         
         // /ircpm [username] [message]
         server.commandManager.buildCommand('ircpm')
@@ -65,15 +58,10 @@ export class DirectCommunicationCommands {
 
         // /spm [player] [message]
         server.commandManager.buildCommand('spm')
-            .restrict(player => this.playground_().canAccessCommand(player, 'spm'))
+            .restrict(Player.LEVEL_MANAGEMENT)
             .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
             .build(DirectCommunicationCommands.prototype.onSecretPrivateMessageCommand.bind(this));
-    }
-
-    // Registers the commands with configurable access with the Playground feature.
-    registerTrackedCommands() {
-        this.playground_().registerCommand('spm', Player.LEVEL_MANAGEMENT);
     }
 
     // /ircpm [username] [message]
@@ -278,8 +266,5 @@ export class DirectCommunicationCommands {
 
         this.callbacks_.dispose();
         this.callbacks_ = null;
-
-        this.playground_().unregisterCommand('spm');
-        this.playground_.removeReloadObserver(this);
     }
 }

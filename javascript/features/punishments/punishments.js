@@ -28,9 +28,6 @@ export default class Punishments extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
-        // Used to control access to certain commands that haven't fully launched yet.
-        const playground = this.defineDependency('playground');
-
         // Depends on SAMPCAC to be able to run memory scans against a particular player.
         const sampcac = this.defineDependency('sampcac');
 
@@ -43,8 +40,7 @@ export default class Punishments extends Feature {
                                          : new BanDatabase();
 
         // Provides the in-game commands related to punishing players.
-        this.commands_ = new PunishmentCommands(
-            this.database_, this.announce_, playground, sampcac, settings);
+        this.commands_ = new PunishmentCommands(this.database_, this.announce_, sampcac, settings);
 
         this.initializeNuwaniCommands();
     }

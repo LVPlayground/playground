@@ -18,20 +18,14 @@ import { formatDate } from 'base/time.js';
 export class PunishmentCommands {
     announce_ = null;
     database_ = null;
-    playground_ = null;
     sampcac_ = null;
     settings_ = null;
 
-    constructor(database, announce, playground, sampcac, settings) {
+    constructor(database, announce, sampcac, settings) {
         this.database_ = database;
         this.announce_ = announce;
         this.sampcac_ = sampcac;
         this.settings_ = settings;
-
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(this, () => this.registerTrackedCommands());
-
-        this.registerTrackedCommands();
 
         // /lastbans [limit=10]
         server.commandManager.buildCommand('lastbans')
@@ -41,17 +35,12 @@ export class PunishmentCommands {
 
         // /scan [player]
         server.commandManager.buildCommand('scan')
-            .restrict(player => this.playground_().canAccessCommand(player, 'scan'))
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(PunishmentCommands.prototype.onScanReloadCommand.bind(this))
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(PunishmentCommands.prototype.onScanCommand.bind(this));
-    }
-
-    // Registers the commands that have to be known by the Playground feature for access tracking.
-    registerTrackedCommands() {
-        this.playground_().registerCommand('scan', Player.LEVEL_MANAGEMENT);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -247,10 +236,5 @@ export class PunishmentCommands {
     dispose() {
         server.commandManager.removeCommand('lastbans');
         server.commandManager.removeCommand('scan');
-
-        this.playground_().unregisterCommand('scan');
-
-        this.playground_.removeReloadObserver(this);
-        this.playground_ = null;
     }
 }

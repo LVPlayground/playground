@@ -17,6 +17,8 @@ describe('Isolate', (it, beforeEach, afterEach) => {
 
         russell = server.playerManager.getById(1 /* Russell */);
         russell.level = Player.LEVEL_MANAGEMENT;
+
+        await russell.identify();
     });
 
     afterEach(() => commands.dispose());

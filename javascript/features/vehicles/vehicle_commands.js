@@ -46,10 +46,6 @@ class VehicleCommands {
         this.streamer_ = streamer;
 
         this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, VehicleCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands(playground());
 
         // Command: /seize
         server.commandManager.buildCommand('seize')
@@ -90,7 +86,7 @@ class VehicleCommands {
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
                 .build(/* deliberate fall-through */)
             .sub(CommandBuilder.WORD_PARAMETER)
-                .restrict(player => this.playground_().canAccessCommand(player, 'v'))
+                .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
             .build(VehicleCommands.prototype.onVehicleCommand.bind(this));
     }
@@ -528,26 +524,11 @@ class VehicleCommands {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Registers the privileged commands with the `/lvp access` feature.
-    registerTrackedCommands(playground) {
-        playground.registerCommand('v', Player.LEVEL_ADMINISTRATOR);
-    }
-
-    // Drops registrations for the privileged commands.
-    unregisterTrackedCommands(playground) {
-        playground.unregisterCommand('v');
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     dispose() {
-        this.unregisterTrackedCommands(this.playground_());
-
         for (const command of Object.keys(kQuickVehicleCommands))
             server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');
-
         server.commandManager.removeCommand('seize');
     }
 }

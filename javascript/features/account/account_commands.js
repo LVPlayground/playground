@@ -16,11 +16,9 @@ import { random } from 'base/random.js';
 // File in which the registration message has been stored.
 const kRegistrationFile = 'data/commands/register.json';
 
-// Provides access to in-game commands related to account management. Access to the individual
-// abilities is gated through the Playground feature, which manages command access.
+// Provides access to in-game commands related to account management.
 export class AccountCommands {
     announce_ = null;
-    playground_ = null;
     settings_ = null;
 
     // Cache for the contents of the registration dialog, which are stored in //data.
@@ -29,21 +27,14 @@ export class AccountCommands {
     // The AccountDatabase instance which will execute operations.
     database_ = null;
 
-    constructor(announce, playground, settings, database) {
+    constructor(announce, settings, database) {
         this.announce_ = announce;
         this.database_ = database;
         this.settings_ = settings;
 
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, AccountCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands();
-
         // /account
         // /account [player]
         server.commandManager.buildCommand('account')
-            .restrict(player => this.playground_().canAccessCommand(player, 'account'))
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
@@ -55,22 +46,15 @@ export class AccountCommands {
 
         // /whereis [player]
         server.commandManager.buildCommand('whereis')
-            .restrict(player => this.playground_().canAccessCommand(player, 'whereis'))
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
             .build(AccountCommands.prototype.onWhereisCommand.bind(this));
 
         // /whois [player]
         server.commandManager.buildCommand('whois')
-            .restrict(player => this.playground_().canAccessCommand(player, 'whois'))
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
             .build(AccountCommands.prototype.onWhoisCommand.bind(this));
-    }
-
-    // Registers the commands with configurable access with the Playground feature.
-    registerTrackedCommands() {
-        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
-        this.playground_().registerCommand('whereis', Player.LEVEL_ADMINISTRATOR);
-        this.playground_().registerCommand('whois', Player.LEVEL_ADMINISTRATOR);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -916,13 +900,8 @@ export class AccountCommands {
     }
 
     dispose() {
-        this.playground_().unregisterCommand('whois');
-        this.playground_().unregisterCommand('whereis');
-        this.playground_().unregisterCommand('account');
-
         this.announce_ = null;
         this.database_ = null;
-        this.playground_ = null;
         this.playerIdentifier_ = null;
 
         server.commandManager.removeCommand('whois');

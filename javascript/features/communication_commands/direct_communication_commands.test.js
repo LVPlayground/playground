@@ -159,8 +159,6 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
     });
 
     it('cannot send to muted targets unless sender is an admin', async (assert) => {
-        const playground = server.featureManager.loadFeature('playground');
-
         // Set up by Russell muting themselves
         assert.isTrue(await russell.issueCommand('/mute Russell 5'));
 
@@ -174,10 +172,9 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
     });
 
     it('should be able to send secret private messages', async (assert) => {
-        const playground = server.featureManager.loadFeature('playground');
+        gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // Grant everyone access to the /spm command to enable this test.
-        playground.access.setCommandLevel('spm', Player.LEVEL_PLAYER);
+        await gunther.identify();
 
         // (1) It's not possible to send a secret PM to oneself.
         assert.isTrue(await gunther.issueCommand('/spm Gunther Hey man!'));

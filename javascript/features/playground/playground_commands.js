@@ -92,14 +92,9 @@ class PlaygroundCommands {
 
             const command = new CommandImplementation(this.announce_, this.nuwani_);
 
-            // Register the command with the access manager, and then pass on the server-global
-            // command manager to its build() method so that it can be properly exposed.
-            this.access_.registerCommand(command.name, command.defaultPlayerLevel);
-
             command.build(
                 server.commandManager.buildCommand(command.name)
-                    .restrict(PlaygroundAccessTracker.prototype.canAccessCommand.bind(this.access_,
-                                                                                      command.name)));
+                    .restrict(command.defaultPlayerLevel));
 
             // Store the |command| in the |commands_| dictionary.
             this.commands_.set(command.name, command);

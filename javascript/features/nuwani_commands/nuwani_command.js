@@ -12,18 +12,14 @@ import { confirm } from 'components/dialogs/confirm.js';
 export class NuwaniCommand {
     announce_ = null;
     nuwani_ = null;
-    playground_ = null;
 
-    constructor(announce, nuwani, playground) {
+    constructor(announce, nuwani) {
         this.announce_ = announce;
         this.nuwani_ = nuwani;
-        this.playground_ = playground;
-
-        this.playground_().registerCommand('nuwani', Player.LEVEL_MANAGEMENT);
 
         // Defines the `/nuwani` command. Access is controlled by the Playground module.
         server.commandManager.buildCommand('nuwani')
-            .restrict(player => this.playground_().canAccessCommand(player, 'nuwani'))
+            .restrict(Player.LEVEL_MANAGEMENT)
             .build(NuwaniCommand.prototype.onNuwaniCommand.bind(this));
     }
 
@@ -167,9 +163,6 @@ export class NuwaniCommand {
     }
 
     dispose() {
-        this.playground_().unregisterCommand('nuwani');
-
-        this.playground_ = null;
         this.nuwani_ = null;
         this.announce_ = null;
 

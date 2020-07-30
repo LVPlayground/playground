@@ -30,9 +30,6 @@ export default class GangZones extends Feature {
         // The GangZones feature depends on houses, as they influence the zone dominance algorithm.
         const houses = this.defineDependency('houses');
 
-        // The Playground feature is able to restrict access to the "/zone" command.
-        const playground = this.defineDependency('playground');
-
         // Various behaviour related to gang zones is configurable through settings.
         const settings = this.defineDependency('settings');
 
@@ -53,7 +50,7 @@ export default class GangZones extends Feature {
         this.dataAggregator_ = new ZoneDataAggregator(database, gangs, houses, this.calculator_);
 
         // Implements the commands that are exposed to players in order to manage gang zones.
-        this.commands_ = new ZoneCommands(this.manager_, announce, gangs, playground);
+        this.commands_ = new ZoneCommands(this.manager_, announce, gangs);
 
         // Begin initializing the data aggregator, which will build our initial state.
         this.dataAggregator_.initialize();

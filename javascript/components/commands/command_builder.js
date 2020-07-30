@@ -10,7 +10,7 @@ import { CommandParameter } from 'components/commands/command_parameter.js';
 // building a command, the command's prefix has to be known ahead of time. The command builder is
 // critical to most things players can interact with on Las Venturas Playground. Sample usage:
 //
-// server.commandManager.buildCommand('fruit')
+// server.deprecatedCommandManager.buildCommand('fruit')
 //     .description('Indicate that you want some fruit')
 //     .sub('banana')
 //         .description('The fruit you want is a banana')

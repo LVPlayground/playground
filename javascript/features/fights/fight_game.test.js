@@ -51,7 +51,7 @@ describe('FightGame', (it, beforeEach) => {
     const kTeamsIndex = 11;
 
     it('should be able to pick random spawn positions in individual games', async (assert) => {
-        assert.isTrue(server.commandManager.hasCommand('match'));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand('match'));
 
         gunther.respondToDialog({ listitem: 0 /* Start the game! */ });
 
@@ -62,7 +62,7 @@ describe('FightGame', (it, beforeEach) => {
         await runGameLoop();
 
         assert.doesNotThrow(() => getGameInstance());
-        
+
         // Gunther and Russell should have been assigned different spawn positions.
         assert.notDeepEqual(gunther.position, russell.position);
 
@@ -76,7 +76,7 @@ describe('FightGame', (it, beforeEach) => {
     });
 
     it('should be able to pick random spawn positions in team-based games', async (assert) => {
-        assert.isTrue(server.commandManager.hasCommand('match'));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand('match'));
 
         // Have Gunther set up a custom sniper game in which teams will be used.
         gunther.respondToDialog({ listitem: kTeamsIndex }).then(

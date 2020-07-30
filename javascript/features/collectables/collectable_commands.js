@@ -41,24 +41,24 @@ export class CollectableCommands {
         this.hintPriceBezier_ = new CubicBezier(.57, .05, .56, .95);
 
         // /achievements [player]?
-        server.commandManager.buildCommand('achievements')
+        server.deprecatedCommandManager.buildCommand('achievements')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
             .build(CollectableCommands.prototype.onAchievementsCommand.bind(this));
 
         // /barrels
-        server.commandManager.buildCommand('barrels')
+        server.deprecatedCommandManager.buildCommand('barrels')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'barrels'));
 
         // /collectables
-        server.commandManager.buildCommand('collectables')
+        server.deprecatedCommandManager.buildCommand('collectables')
             .build(CollectableCommands.prototype.onCollectablesCommand.bind(this));
-        
+
         // /tags
-        server.commandManager.buildCommand('tags')
+        server.deprecatedCommandManager.buildCommand('tags')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'tags'));
-        
+
         // /treasures
-        server.commandManager.buildCommand('treasures')
+        server.deprecatedCommandManager.buildCommand('treasures')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'treasures'));
     }
 
@@ -226,7 +226,7 @@ export class CollectableCommands {
         const dialog = new Menu(delegate.name);
 
         // Whether the |player| has finished collecting everything for the series.
-        const ratio = 
+        const ratio =
             delegate.countCollectablesForPlayer(player).round / delegate.getCollectableCount();
 
         // Whether completion of a collectable is required before they can be reset.
@@ -248,7 +248,7 @@ export class CollectableCommands {
 
             const formattedPrice = format('%$', price);
             const colour = this.finance_().getPlayerCash(player) < price ? '{F4511E}' : '{43A047}';
-            
+
             // The menu item includes the price of the hint, coloured based on whether the |player|
             // is currently carrying enough money to pay for it or not.
             dialog.addItem(`Purchase a hint (${colour}${formattedPrice}{FFFFFF})...`, async () => {
@@ -268,18 +268,18 @@ export class CollectableCommands {
                 const distance =
                     Math.max(1, Math.round(playerPosition.distanceTo(collectablePosition) / 50))
                         * 50;
-                
+
                 const areaName = getAreaNameForPosition(collectablePosition);
                 const message = `There is a ${delegate.singularName} about ${distance} meters to` +
                                 `\nthe ${direction} in ${areaName}... Happy hunting!`;
-                
+
                 // Display the |message| to the player as an alert, and then send it to them again
                 // in the chat box so that they have the opportunity to read it again.
                 await alert(player, {
                     title: delegate.name,
                     message
                 });
-                
+
                 player.sendMessage(
                     Message.COLLECTABLE_HINT, delegate.singularName, distance, direction, areaName);
             });
@@ -297,14 +297,14 @@ export class CollectableCommands {
 
                 if (!confirmation)
                     return;  // the |player| changed their mind
-                
+
                 // Start the new round for the |player|...
                 delegate.startCollectableRoundForPlayer(player);
 
                 // Announce it to administrators, since this is significant.
                 this.announce_().announceToAdministrators(
                     Message.COLLECTABLE_RESET_ADMIN, player.name, player.id, delegate.name);
-                
+
                 // Announce it to the |player|, so that they know this has happened as well.
                 await alert(player, {
                     title: delegate.name,
@@ -322,7 +322,7 @@ export class CollectableCommands {
             const hints = delegate.getUnsolvedHintsForPlayer(player);
             if (hints.length > 0) {
                 dialog.addItem('-----');
-                
+
                 // Add the |hints|. Double clicking a particular hint will display it in the chat
                 // as well, because dialogs are rather ephemeral when figuring something out.
                 for (const hint of hints) {
@@ -392,7 +392,7 @@ export class CollectableCommands {
             const distance = playerDistance.squaredDistanceTo(position);
             if (distance >= closestDistance)
                 continue;
-            
+
             closestCollectable = position;
             closestDistance = distance;
         }
@@ -403,11 +403,11 @@ export class CollectableCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('treasures');
-        server.commandManager.removeCommand('tags');
-        server.commandManager.removeCommand('barrels');
+        server.deprecatedCommandManager.removeCommand('treasures');
+        server.deprecatedCommandManager.removeCommand('tags');
+        server.deprecatedCommandManager.removeCommand('barrels');
 
-        server.commandManager.removeCommand('collectables');
-        server.commandManager.removeCommand('achievements');
+        server.deprecatedCommandManager.removeCommand('collectables');
+        server.deprecatedCommandManager.removeCommand('achievements');
     }
 }

@@ -33,7 +33,7 @@ export class PlaygroundCommands {
 
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
-        server.commandManager.buildCommand('lvp')
+        server.deprecatedCommandManager.buildCommand('lvp')
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .sub('messages')
@@ -75,7 +75,7 @@ export class PlaygroundCommands {
             const command = new CommandImplementation(this.announce_, this.nuwani_);
 
             command.build(
-                server.commandManager.buildCommand(command.name)
+                server.deprecatedCommandManager.buildCommand(command.name)
                     .restrict(command.defaultPlayerLevel));
 
             // Store the |command| in the |commands_| dictionary.
@@ -151,7 +151,7 @@ export class PlaygroundCommands {
             for (const setting of this.settings_().getSettings()) {
                 if (!settingCategories.has(setting.category))
                     settingCategories.set(setting.category, new Set());
-    
+
                 settingCategories.get(setting.category).add(setting);
             }
 
@@ -161,7 +161,7 @@ export class PlaygroundCommands {
                 const settings = `${categorySettings.size} settings`;
                 const listener =
                     PlaygroundCommands.prototype.handleSettingCategory.bind(this, player, category);
-                
+
                 categories.set(label, { settings, listener });
             }
         }
@@ -197,14 +197,14 @@ export class PlaygroundCommands {
 
             if (!wordToBlock)
                 return;  // the |player| abandoned the flow
-            
+
             const lowerCaseWordToBlock = wordToBlock.trim().toLowerCase();
 
             // Verify that the |lowerCaseWordToBlock| has not already been blocked on the server.
             for (const existingWord of words) {
                 if (existingWord.word !== lowerCaseWordToBlock)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Blocked words',
                     message: `The word "${lowerCaseWordToBlock}" has already been blocked.`
@@ -215,7 +215,7 @@ export class PlaygroundCommands {
             for (const existingSubstitution of substitutions) {
                 if (existingSubstitution.before !== lowerCaseWordToBlock)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Blocked words',
                     message: `The word "${lowerCaseWordToBlock}" already exists as a substitution.`
@@ -228,7 +228,7 @@ export class PlaygroundCommands {
             // Inform administrators of the newly blocked word.
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_WORD_BLOCKED, player.name, player.id, lowerCaseWordToBlock);
-            
+
             // Confirm the action to the |player|.
             return alert(player, {
                 title: 'Blocked words',
@@ -255,7 +255,7 @@ export class PlaygroundCommands {
                 // Inform administrators of the re-allowed word.
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_WORD_UNBLOCKED, player.name, player.id, word);
-                
+
                 // Confirm the action to the |player|.
                 return alert(player, {
                     title: 'Blocked words',
@@ -301,7 +301,7 @@ export class PlaygroundCommands {
 
         for (const recipient of server.playerManager)
             recipient.sendMessage(announcement);
-        
+
         // (3 Let the |player| know what they've just done.
         return alert(player, {
             title: 'Communication',
@@ -342,7 +342,7 @@ export class PlaygroundCommands {
 
             if (!after)
                 return;  // the |player| abandoned the flow
-                
+
             const lowerCaseBefore = before.trim().toLowerCase();
             const lowerCaseAfter = after.trim().toLowerCase();
 
@@ -350,7 +350,7 @@ export class PlaygroundCommands {
             for (const existingSubstitution of substitutions) {
                 if (existingSubstitution.before !== lowerCaseBefore)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Substitutions',
                     message: `The word "${lowerCaseBefore}" is already being substituted.`
@@ -361,7 +361,7 @@ export class PlaygroundCommands {
             for (const existingWord of words) {
                 if (existingWord.word !== lowerCaseBefore)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Substitutions',
                     message: `The word "${lowerCaseBefore}" already exists as a blocked word.`
@@ -375,7 +375,7 @@ export class PlaygroundCommands {
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_SUBSTITUTION_ADDED, player.name, player.id, lowerCaseBefore,
                 lowerCaseAfter);
-            
+
             // Confirm the action to the |player|.
             return alert(player, {
                 title: 'Substitutions',
@@ -624,10 +624,10 @@ export class PlaygroundCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('lvp');
+        server.deprecatedCommandManager.removeCommand('lvp');
 
         this.commands_.forEach((command, name) => {
-            server.commandManager.removeCommand(name);
+            server.deprecatedCommandManager.removeCommand(name);
             command.dispose();
         });
 

@@ -34,24 +34,24 @@ export class AccountCommands {
 
         // /account
         // /account [player]
-        server.commandManager.buildCommand('account')
+        server.deprecatedCommandManager.buildCommand('account')
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
 
         // /register
-        server.commandManager.buildCommand('register')
+        server.deprecatedCommandManager.buildCommand('register')
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
 
         // /whereis [player]
-        server.commandManager.buildCommand('whereis')
+        server.deprecatedCommandManager.buildCommand('whereis')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
             .build(AccountCommands.prototype.onWhereisCommand.bind(this));
 
         // /whois [player]
-        server.commandManager.buildCommand('whois')
+        server.deprecatedCommandManager.buildCommand('whois')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
             .build(AccountCommands.prototype.onWhoisCommand.bind(this));
@@ -166,7 +166,7 @@ export class AccountCommands {
                 const days = Math.floor(Math.abs(Date.now() - item.date.getTime()) / (86400 * 1000));
                 if (days >= minimumDays)
                     break;
-                
+
                 return alert(player, {
                     title: 'Account management',
                     message: `You may change your nickname once per ${minimumDays} days. It's ` +
@@ -228,7 +228,7 @@ export class AccountCommands {
     async isValidAvailableNickname(nickname) {
         if (!/^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i.test(nickname))
             return false;  // invalid nickname
-        
+
         // Verify that there are no other players in-game with this nickname.
         for (const player of server.playerManager) {
             if (player.name.toLowerCase() === nickname.toLowerCase())
@@ -337,7 +337,7 @@ export class AccountCommands {
     async manageAliases(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
         const aliases = await this.database_.getAliases(player.name);
-        
+
         const dialog = new Menu('Alias management', ['Alias', 'Last active']);
         if (player === currentPlayer) {
             dialog.addItem(
@@ -349,7 +349,7 @@ export class AccountCommands {
 
         if (!aliases || !aliases.aliases.length)
             return dialog.displayForPlayer(currentPlayer);
-        
+
         dialog.addItem('-----', '-----');
 
         for (const alias of aliases.aliases) {
@@ -393,7 +393,7 @@ export class AccountCommands {
             for (const alias of aliases.aliases) {
                 if (!alias.created)
                     continue;
-                
+
                 if (mostRecentCreation > alias.created.getTime())
                     continue;
 
@@ -451,7 +451,7 @@ export class AccountCommands {
         // which means that aliases need a certain age before they can be deleted.
         const aliasAgeDays =
             Math.round(Math.abs(Date.now() - alias.created.getTime()) / (86400 * 1000));
-        
+
         if (aliasAgeDays < aliasFrequencyDays && !player.isAdministrator()) {
             return alert(player, {
                 title: 'Alias management',
@@ -477,7 +477,7 @@ export class AccountCommands {
 
         if (!confirmation)
             return;  // they changed their mind
-        
+
         // Actually delete the |alias|, and inform administrators of this change.
         await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
 
@@ -639,10 +639,10 @@ export class AccountCommands {
 
             for (const level of ['Player', 'Administrator', 'Management'])
                 options.addItem(level, updateLevel.bind(null, level))
-            
+
             await options.displayForPlayer(currentPlayer);
         });
-    
+
         // Enables the |player| to give themselves VIP rights, or take them away. They will be
         // force disconnected after making changes, to make sure it propagates appropriately.
         display.addItem('VIP', summary.is_vip ? 'Yes' : 'No', async () => {
@@ -671,7 +671,7 @@ export class AccountCommands {
 
             options.addItem('Regular player', updateVip.bind(null, false));
             options.addItem('VIP player', updateVip.bind(null, true));
-            
+
             await options.displayForPlayer(currentPlayer);
         });
 
@@ -778,7 +778,7 @@ export class AccountCommands {
             'Value',
         ]);
 
-        // (1) When proxy information is known, 
+        // (1) When proxy information is known,
         if (results.proxy) {
             dialog.addItem('{FFEB3B}Proxy information', '{9E9E9E}-');
             dialog.addItem('Proxy location', `${results.proxy.country} (${results.proxy.city})`);
@@ -787,7 +787,7 @@ export class AccountCommands {
             dialog.addItem('Intended usage', results.proxy.usage.join(', '));
         }
 
-        // (2) When location information is known, 
+        // (2) When location information is known,
         if (results.location) {
             if (results.proxy)
                 dialog.addItem('----------', '----------');
@@ -834,13 +834,13 @@ export class AccountCommands {
 
             if (result.hits > 1)
                 nickname += ` {90A4AE}(${format('%d', result.hits)}x)`;
-            
+
             let ip = '';
             if (result.ipDistance < 3)
                 ip += `{FFEE58}`;
             else if (result.ipDistance === 4)
                 ip += `{BEC7CC}`;
-            
+
             ip += result.ipMatch;
 
             let serial = '';
@@ -848,10 +848,10 @@ export class AccountCommands {
                 serial += `{FFEE58}match`;
             else
                 serial += `{BEC7CC}no match`;
-            
+
             if (result.serialCommon)
                 serial += ` {FF7043}(common)`;
-            
+
             const lastSeen = fromNow({ date: result.lastSeen });
 
             dialog.addItem(nickname, ip, serial, lastSeen);
@@ -904,9 +904,9 @@ export class AccountCommands {
         this.database_ = null;
         this.playerIdentifier_ = null;
 
-        server.commandManager.removeCommand('whois');
-        server.commandManager.removeCommand('whereis');
-        server.commandManager.removeCommand('register');
-        server.commandManager.removeCommand('account');
+        server.deprecatedCommandManager.removeCommand('whois');
+        server.deprecatedCommandManager.removeCommand('whereis');
+        server.deprecatedCommandManager.removeCommand('register');
+        server.deprecatedCommandManager.removeCommand('account');
     }
 }

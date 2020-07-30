@@ -35,11 +35,11 @@ export default class Animations extends Feature {
         this.animations_ = new Map();
 
         // /animations
-        server.commandManager.buildCommand('animations')
+        server.deprecatedCommandManager.buildCommand('animations')
             .build(Animations.prototype.onAnimationsCommand.bind(this));
 
         // /dance [1-4] [player]?
-        server.commandManager.buildCommand('dance')
+        server.deprecatedCommandManager.buildCommand('dance')
             .parameters([
                 { name: 'style', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true } ])
@@ -60,7 +60,7 @@ export default class Animations extends Feature {
             this.animations_.set(animation.command, animation);
 
             // (2) Create a command for the given animation.
-            server.commandManager.buildCommand(animation.command)
+            server.deprecatedCommandManager.buildCommand(animation.command)
                 .sub(CommandBuilder.PLAYER_PARAMETER)
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(Animations.prototype.executeAnimation.bind(this, animation))
@@ -99,18 +99,18 @@ export default class Animations extends Feature {
         // (3) Unless |currentPlayer| and the |targetPlayer| are the same, be transparent.
         if (!targetPlayer || currentPlayer === targetPlayer)
             return;
-        
+
         currentPlayer.sendMessage(
             Message.ANIMATIONS_EXECUTED, animation.command, targetPlayer.name, targetPlayer.id);
 
         targetPlayer.sendMessage(
             Message.ANIMATIONS_EXECUTE_BY_ADMIN, currentPlayer.name, currentPlayer.id,
             animation.command);
-        
+
         // (4) When required, announce that an animation was forced on a player.
         if (!this.settings_().getValue('abuse/announce_admin_animation'))
             return;
-        
+
         this.announce_().announceToAdministrators(
             Message.ANIMATIONS_ADMIN_NOTICE, currentPlayer.name, currentPlayer.id,
             animation.command, targetPlayer.name, targetPlayer.id);
@@ -143,13 +143,13 @@ export default class Animations extends Feature {
                 Animations.prototype.executeAnimation.bind(this, animation, player)
             ]);
         }
-    
+
         // Sort the |commands| alphabetically. Someone will mess up our JSON file.
         commands.sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
 
         for (const [ command, description, listener ] of commands)
             dialog.addItem('/' + command, description, listener);
-        
+
         await dialog.displayForPlayer(player);
     }
 
@@ -183,12 +183,12 @@ export default class Animations extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('dance');
-        server.commandManager.removeCommand('animations');
+        server.deprecatedCommandManager.removeCommand('dance');
+        server.deprecatedCommandManager.removeCommand('animations');
 
         for (const command of this.animations_.keys())
-            server.commandManager.removeCommand(command);
-        
+            server.deprecatedCommandManager.removeCommand(command);
+
         this.animations_.clear();
         this.animations_ = null;
 

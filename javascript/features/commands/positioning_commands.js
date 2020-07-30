@@ -8,7 +8,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 // direction looking in. Some small positioning-related commands are for that defined in here.
 class PositioningCommands {
     constructor() {
-        server.commandManager.buildCommand('pos')
+        server.deprecatedCommandManager.buildCommand('pos')
             .sub(CommandBuilder.NUMBER_PARAMETER) // x
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([{ name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
@@ -16,12 +16,12 @@ class PositioningCommands {
                 .build(PositioningCommands.prototype.onSetPosCommand.bind(this))
             .build(PositioningCommands.prototype.onPosCommand.bind(this));
 
-        server.commandManager.buildCommand('up')
+        server.deprecatedCommandManager.buildCommand('up')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
             .build(PositioningCommands.prototype.onUpCommand.bind(this));
 
-        server.commandManager.buildCommand('forward')
+        server.deprecatedCommandManager.buildCommand('forward')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
             .build(PositioningCommands.prototype.onForwardCommand.bind(this));
@@ -109,9 +109,9 @@ class PositioningCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('pos');
-        server.commandManager.removeCommand('up');
-        server.commandManager.removeCommand('forward');
+        server.deprecatedCommandManager.removeCommand('pos');
+        server.deprecatedCommandManager.removeCommand('up');
+        server.deprecatedCommandManager.removeCommand('forward');
     }
 }
 

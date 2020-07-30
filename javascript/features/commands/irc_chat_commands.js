@@ -10,12 +10,12 @@ class IrcChatCommands {
     constructor(nuwani) {
         this.nuwani_ = nuwani;
 
-        server.commandManager.buildCommand('crew')
+        server.deprecatedCommandManager.buildCommand('crew')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(IrcChatCommands.prototype.onCrewCommand.bind(this));
 
-        server.commandManager.buildCommand('man')
+        server.deprecatedCommandManager.buildCommand('man')
             .restrict(player => player.isManagement())
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(IrcChatCommands.prototype.onManCommand.bind(this));
@@ -37,8 +37,8 @@ class IrcChatCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('crew');
-        server.commandManager.removeCommand('man');
+        server.deprecatedCommandManager.removeCommand('crew');
+        server.deprecatedCommandManager.removeCommand('man');
     }
 }
 

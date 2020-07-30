@@ -7,39 +7,39 @@ import { DeathMatchLocation } from 'features/death_match/death_match_location.js
 import { Menu } from 'components/menu/menu.js';
 
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
-export class DeathMatchCommands {    
+export class DeathMatchCommands {
 
     constructor(limits, manager) {
-        server.commandManager.buildCommand('deathmatch')
+        server.deprecatedCommandManager.buildCommand('deathmatch')
             .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
             .sub('leave')
                 .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))
             .sub('stats')
                 .build(DeathMatchCommands.prototype.onStatsCommand.bind(this))
-    
+
         .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
         this.limits_ = limits;
-        this.manager_ = manager;        
+        this.manager_ = manager;
     }
 
     // The death match command is being used.
     async onDmCommand(player, zone) {
-        if(DeathMatchLocation.hasLocation(zone)) 
+        if(DeathMatchLocation.hasLocation(zone))
             return this.enterDeathMatchZone(zone, player);
 
         const dialog = new Menu('Choose a death match zone.', ['Zone', 'Name', 'Teams / Lag shot', 'Players']);
         for(const zoneId of this.manager_.validDmZones()) {
-            const location = DeathMatchLocation.getById(zoneId);  
-            dialog.addItem( 
-                location.id, 
-                location.name, 
+            const location = DeathMatchLocation.getById(zoneId);
+            dialog.addItem(
+                location.id,
+                location.name,
                 (location.hasTeams ? "Yes / " : "No / ") + (location.lagShot ? "Yes": "No"),
                 this.manager_.getPlayersInZone(zoneId),
                 DeathMatchCommands.prototype.enterDeathMatchZone.bind(this, zoneId)
             );
         }
-        
+
         await dialog.displayForPlayer(player);
     }
 
@@ -65,12 +65,12 @@ export class DeathMatchCommands {
         this.manager_.leave(player);
     }
 
-    onStatsCommand(player) { 
+    onStatsCommand(player) {
         this.manager_.showStats(player);
     }
 
     // Cleans up the state created by this class, i.e. removes the command.
     dispose() {
-        server.commandManager.removeCommand('deathmatch');
+        server.deprecatedCommandManager.removeCommand('deathmatch');
     }
 }

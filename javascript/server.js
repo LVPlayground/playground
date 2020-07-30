@@ -29,7 +29,7 @@ export class Server {
         this.database_ = new Database();
         this.clock_ = new Clock();
 
-        this.commandManager_ = new CommandManager();
+        this.deprecatecCommandManager_ = new CommandManager();
         this.deferredEventManager_ = new DeferredEventManager();
         this.deferredEventManager_.deferredEventDispatcher();
 
@@ -66,7 +66,7 @@ export class Server {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the global command manager that owns all commands available to players.
-    get commandManager() { return this.commandManager_; }
+    get deprecatedCommandManager() { return this.deprecatecCommandManager_; }
 
     // Gets the deferred event manager, which dispatches deferred events.
     get deferredEventManager() { return this.deferredEventManager_; }
@@ -131,7 +131,7 @@ export class Server {
     async dispose() {
         this.featureManager_.dispose();
         this.deferredEventManager_.dispose();
-        this.commandManager_.dispose();
+        this.deprecatecCommandManager_.dispose();
 
         this.checkpointManager_.dispose();
         this.dialogManager_.dispose();

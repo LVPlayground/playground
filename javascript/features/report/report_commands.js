@@ -13,7 +13,7 @@ class ReportCommands {
 
         this.reportedPlayersWeakMap_ = new WeakMap();
 
-        server.commandManager.buildCommand('report')
+        server.deprecatedCommandManager.buildCommand('report')
             .parameters([{ name: 'name/id', type: CommandBuilder.PLAYER_PARAMETER },
                          { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(ReportCommands.prototype.onReportPlayerCommand.bind(this));
@@ -37,7 +37,7 @@ class ReportCommands {
         this.announce_().announceReportToAdministrators(player, reportedPlayer, reason);
         this.nuwani_().echo(
             'report', player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
-        
+
         // Admins already get the notice themselves due to above announce and thus know it already
         if (player.isAdministrator())
             return;
@@ -47,7 +47,7 @@ class ReportCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('report');
+        server.deprecatedCommandManager.removeCommand('report');
     }
 }
 

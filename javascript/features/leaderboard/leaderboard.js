@@ -31,7 +31,7 @@ export default class Leaderboard extends Feature {
                                          : new LeaderboardDatabase();
 
         // The `/top` command, which shows the server's current leaderboard.
-        server.commandManager.buildCommand('top')
+        server.deprecatedCommandManager.buildCommand('top')
             .parameters([{ name: 'view', type: CommandBuilder.WORD_PARAMETER, optional: true }])
             .build(Leaderboard.prototype.onLeaderboardCommand.bind(this));
     }
@@ -79,7 +79,7 @@ export default class Leaderboard extends Feature {
 
         for (const entry of data.leaderboard)
             dialog.addItem(...entry);
-        
+
         await dialog.displayForPlayer(player);
     }
 
@@ -236,7 +236,7 @@ export default class Leaderboard extends Feature {
             }),
         };
     }
-    
+
     // ---------------------------------------------------------------------------------------------
 
     // Displays the leaderboard dialog, which shows an overview of all the available lists, together
@@ -269,7 +269,7 @@ export default class Leaderboard extends Feature {
             const label = 'Accuracy{9E9E9E} (/top accuracy)';
             const listener =
                 Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'accuracy');
-            
+
             let leader = '-';
             if (results[0].length) {
                 const topResult = results[0][0];
@@ -278,7 +278,7 @@ export default class Leaderboard extends Feature {
                     leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
                 else
                     leader = topResult.nickname;
-                
+
                 leader += format('{9E9E9E} (%.2f%%)', topResult.accuracy * 100);
             }
 
@@ -290,7 +290,7 @@ export default class Leaderboard extends Feature {
             const label = 'Damage{9E9E9E} (/top damage)';
             const listener =
                 Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'damage');
-            
+
             let leader = '-';
             if (results[1].length) {
                 const topResult = results[1][0];
@@ -299,7 +299,7 @@ export default class Leaderboard extends Feature {
                     leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
                 else
                     leader = topResult.nickname;
-                
+
                 leader += format('{9E9E9E} (%s damage)',
                     this.toFormattedQuantityUnit(topResult.damageGiven));
             }
@@ -311,7 +311,7 @@ export default class Leaderboard extends Feature {
         {
             const label = 'Gangs{9E9E9E} (/top gangs)';
             const listener = Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'gangs');
-            
+
             let leader = '-';
             if (results[2].length) {
                 const topResult = results[2][0];
@@ -320,7 +320,7 @@ export default class Leaderboard extends Feature {
                     leader = `{${topResult.color.toHexRGB()}}${topResult.name}`;
                 else
                     leader = topResult.name;
-                
+
                 leader += format('{9E9E9E} (%d kills)', topResult.killCount);
             }
 
@@ -331,7 +331,7 @@ export default class Leaderboard extends Feature {
         {
             const label = 'Kills{9E9E9E} (/top kills)';
             const listener = Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'kills');
-            
+
             let leader = '-';
             if (results[3].length) {
                 const topResult = results[3][0];
@@ -340,7 +340,7 @@ export default class Leaderboard extends Feature {
                     leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
                 else
                     leader = topResult.nickname;
-                
+
                 leader += format('{9E9E9E} (%d kills)', topResult.killCount);
             }
 
@@ -366,7 +366,7 @@ export default class Leaderboard extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('top');
+        server.deprecatedCommandManager.removeCommand('top');
 
         this.settings_ = null;
         this.database_ = null;

@@ -16,7 +16,7 @@ class RaceCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.commandManager.buildCommand('race')
+        server.deprecatedCommandManager.buildCommand('race')
             .sub(CommandBuilder.NUMBER_PARAMETER)
                 .build(RaceCommands.prototype.raceStart.bind(this))
             .build(RaceCommands.prototype.raceOverview.bind(this));
@@ -88,7 +88,7 @@ class RaceCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('race');
+        server.deprecatedCommandManager.removeCommand('race');
     }
 }
 

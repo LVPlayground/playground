@@ -56,7 +56,7 @@ describe('GamesDeathmatch', (it, beforeEach) => {
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         class BubbleGame extends DeathmatchGame {}
 
-        assert.isFalse(server.commandManager.hasCommand('bubble'));
+        assert.isFalse(server.deprecatedCommandManager.hasCommand('bubble'));
 
         feature.registerGame(BubbleGame, {
             name: 'Bubble Fighting Game',
@@ -64,11 +64,11 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             command: 'bubble',
         });
 
-        assert.isTrue(server.commandManager.hasCommand('bubble'));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand('bubble'));
 
         await server.featureManager.liveReload('games');
 
-        assert.isTrue(server.commandManager.hasCommand('bubble'));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand('bubble'));
     });
 
     it('should be able to change lag compensation mode for a game', async (assert) => {
@@ -378,10 +378,10 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             assert.isNotNull(stats);
             assert.equal(stats.shotsMissed, 0);
         }
-        
+
         for (let shot = 0; shot < 10; ++shot)
             gunther.shoot();
-        
+
         {
             const stats = game.getStatisticsForPlayer(gunther);
 

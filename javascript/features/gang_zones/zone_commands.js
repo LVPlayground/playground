@@ -31,7 +31,7 @@ export class ZoneCommands {
         this.entities_ = new ScopedEntities();
 
         // /zone
-        server.commandManager.buildCommand('zone')
+        server.deprecatedCommandManager.buildCommand('zone')
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(ZoneCommands.prototype.onZoneReloadCommand.bind(this))
@@ -155,7 +155,7 @@ export class ZoneCommands {
             entities: this.entities_,
             object, zone,
         });
-        
+
         object.dispose();
 
         if (!result)
@@ -209,7 +209,7 @@ export class ZoneCommands {
         // selection timed out. This is a rather buggy feature in SA-MP.
         if (!selectionResult)
             return;
-        
+
         const { decorationId, object } = selectionResult;
 
         const originalPosition = object.position;
@@ -262,7 +262,7 @@ export class ZoneCommands {
         // selection timed out. This is a rather buggy feature in SA-MP.
         if (!result)
             return;
-        
+
         const { decorationId, object } = result;
 
         // Get the name of the |object|, to share more sensible messages throughout the server.
@@ -276,7 +276,7 @@ export class ZoneCommands {
 
         if (!confirmation)
             return;  // the |player| changed their mind
-        
+
         await this.decorations.removeObject(zone, decorationId);
 
         // Announce the purchase to other people within the gang.
@@ -305,6 +305,6 @@ export class ZoneCommands {
         this.entities_.dispose();
         this.entities_ = null;
 
-        server.commandManager.removeCommand('zone');
+        server.deprecatedCommandManager.removeCommand('zone');
     }
 }

@@ -52,16 +52,16 @@ describe('GameCommands', (it, beforeEach) => {
             command: 'mygame',
         });
 
-        assert.isFalse(server.commandManager.hasCommand('mygame'));
+        assert.isFalse(server.deprecatedCommandManager.hasCommand('mygame'));
 
         commands.createCommandForGame(description);
-        assert.isTrue(server.commandManager.hasCommand('mygame'));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand('mygame'));
 
         // An exception is thrown when trying to register a command multiple times.
         assert.throws(() => commands.createCommandForGame(description));
 
         commands.removeCommandForGame(description);
-        assert.isFalse(server.commandManager.hasCommand('mygame'));
+        assert.isFalse(server.deprecatedCommandManager.hasCommand('mygame'));
 
         // An exception is thrown when trying to remove an unregistered command.
         assert.throws(() => commands.removeCommandForGame(description));
@@ -120,13 +120,13 @@ describe('GameCommands', (it, beforeEach) => {
             Message.format(Message.GAME_REGISTRATION_NOT_ENOUGH_MONEY, 5000, 'Bubble'));
 
         finance.givePlayerCash(russell, 12500);
-            
+
         // (5) Russell should be able to join the created game.
         assert.isTrue(await russell.issueCommand('/bubblegame'));
         assert.equal(russell.messages.length, 3);
         assert.equal(
             russell.messages[2], Message.format(Message.GAME_REGISTRATION_JOINED, 'Bubble'));
-        
+
         assert.isNotNull(manager.getPlayerActivity(russell));
         assert.equal(manager.getPlayerActivity(russell).getActivityName(), 'Bubble');
 
@@ -158,7 +158,7 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(
             gunther.messages[0],
             Message.format(Message.GAME_REGISTRATION_NOT_ENOUGH_PLAYERS, 'Bubble', 5, 3));
-        
+
         assert.isNull(manager.getPlayerActivity(gunther));
     });
 
@@ -266,7 +266,7 @@ describe('GameCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
             () => gunther.respondToDialog({ inputtext: '1234' })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-    
+
         settings = await commands.determineSettings(description, gunther, params);
         assert.strictEqual(settings.get('bubble/number'), 1234);
 
@@ -282,7 +282,7 @@ describe('GameCommands', (it, beforeEach) => {
         gunther.respondToDialog({ listitem: kTextualIndex }).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* string */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-    
+
         settings = await commands.determineSettings(description, gunther, params);
         assert.strictEqual(settings.get('bubble/string'), 'banana');
 
@@ -296,7 +296,7 @@ describe('GameCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ listitem: kTextualIndex })).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* string */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-        
+
         settings = await commands.determineSettings(description, gunther, params);
         assert.strictEqual(settings.get('bubble/enum'), 'hard');
         assert.strictEqual(settings.get('bubble/number'), 1234);
@@ -338,7 +338,7 @@ describe('GameCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
             () => gunther.respondToDialog({ inputtext: '50' })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-    
+
         settings = await commands.determineSettings(description, gunther, params);
         assert.strictEqual(settings.get('bubble/number'), 50);
 
@@ -348,7 +348,7 @@ describe('GameCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 1 /* Acknowledge */ })).then(
             () => gunther.respondToDialog({ inputtext: 'apple' })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-    
+
         settings = await commands.determineSettings(description, gunther, params);
         assert.strictEqual(settings.get('bubble/string'), 'apple');
     });
@@ -386,7 +386,7 @@ describe('GameCommands', (it, beforeEach) => {
 
         // (1) Have Gunther start a normal game.
         assert.isTrue(await gunther.issueCommand('/bubblegame'));
-        
+
         const guntherActivity = manager.getPlayerActivity(gunther);
 
         assert.isNotNull(guntherActivity);
@@ -470,7 +470,7 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(
             gunther.messages[2],
             Message.format(Message.GAME_REGISTRATION_NOT_ENOUGH_REGISTRATIONS, 'Bubble'));
-        
+
         assert.isNull(manager.getPlayerActivity(gunther));
 
         // Have Gunther and Russell both sign up for the Bubble game, which means that it will

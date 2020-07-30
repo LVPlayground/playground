@@ -77,7 +77,7 @@ class MockServer {
         this.clock_ = new MockClock();
         this.pawnInvoke_ = new MockPawnInvoke();
 
-        this.commandManager_ = new CommandManager();
+        this.deprecatecCommandManager_ = new CommandManager();
         this.deferredEventManager_ = new MockDeferredEventManager();
         this.featureManager_ = new FeatureManager();
 
@@ -165,7 +165,7 @@ class MockServer {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the command manager. This is a real instance.
-    get commandManager() { return this.commandManager_; }
+    get deprecatedCommandManager() { return this.deprecatecCommandManager_; }
 
     // Gets the deferred event manager, which dispatches deferred events.
     get deferredEventManager() { return this.deferredEventManager_; }
@@ -231,7 +231,7 @@ class MockServer {
     async dispose() {
         this.featureManager_.dispose();
         this.deferredEventManager_.dispose();
-        this.commandManager_.dispose();
+        this.deprecatecCommandManager_.dispose();
 
         this.checkpointManager_.dispose();
         this.dialogManager_.dispose();

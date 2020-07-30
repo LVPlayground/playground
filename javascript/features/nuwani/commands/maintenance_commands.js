@@ -21,13 +21,13 @@ export class MaintenanceCommands {
             .restrict(context => context.isOwner())
             .parameters([{ name: 'code', type: CommandBuilder.kTypeText }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
-        
+
         // !level [nickname?]
         this.commandManager_.buildCommand('level')
             .description(`Display the level of a particular person.`)
             .parameters([{ name: 'nickname', type: CommandBuilder.kTypeText, optional: true }])
             .build(MaintenanceCommands.prototype.onLevelCommand.bind(this));
-        
+
         // !nuwani [request-decrease|request-increase]
         this.commandManager_.buildCommand('nuwani')
             .description(`Manage the Nuwani IRC Bot system.`)
@@ -49,7 +49,7 @@ export class MaintenanceCommands {
     // Evaluates the given JavaScript code on the server. This has full access to the server context
     // and should therefore be limited to bot owners.
     onEvalCommand(context, code) {
-        const cm = server.commandManager;
+        const cm = server.deprecatedCommandManager;
         const fm = server.featureManager;
         const p = playerId => server.playerManager.getById(playerId);
         const vid = playerId => pawnInvoke('GetPlayerVehicleID', 'i', playerId);
@@ -70,7 +70,7 @@ export class MaintenanceCommands {
             context.respond(`4Error: ${actualNickname} does not seem to be in the echo channel.`);
             return;
         }
-        
+
         let level = Player.LEVEL_PLAYER;
         for (const mapping of this.configuration_.levels) {
             if (channelModes.includes(mapping.mode)) {
@@ -129,7 +129,7 @@ export class MaintenanceCommands {
         for (const activeBot of this.nuwani_.runtime.activeBots) {
             if (activeBot.config.master || !activeBot.config.optional)
                 continue;
-            
+
             hasActiveOptionalBots = true;
             break;
         }

@@ -124,7 +124,7 @@ class PlayerFavours extends Feature {
             position: new Vector(1696.9012, 1453.5201, 10.7615),
             rotation: 270
         });
-        
+
         // -----------------------------------------------------------------------------------------
         // TheMightyQ (https://forum.sa-mp.nl/user-16597.html)
 
@@ -141,10 +141,10 @@ class PlayerFavours extends Feature {
         this.xanlandObject_ = this.xanlandObjectEntities_.createObject(this.xanlandObjectDetails_);
         this.showXanlandObject_();
 
-        server.commandManager.buildCommand('eaglecash')
+        server.deprecatedCommandManager.buildCommand('eaglecash')
             .build(PlayerFavours.prototype.onEagleCashCommand.bind(this));
 
-        server.commandManager.buildCommand('xanlandobject')
+        server.deprecatedCommandManager.buildCommand('xanlandobject')
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
         // -----------------------------------------------------------------------------------------
@@ -222,8 +222,8 @@ class PlayerFavours extends Feature {
         this.xanlandObjectEntities_.dispose();
         this.xanlandObjectEntities_ = null;
 
-        server.commandManager.removeCommand('xanlandobject');
-        server.commandManager.removeCommand('eaglecash');
+        server.deprecatedCommandManager.removeCommand('xanlandobject');
+        server.deprecatedCommandManager.removeCommand('eaglecash');
     }
 }
 

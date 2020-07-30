@@ -21,20 +21,20 @@ export class CallCommands {
         this.communication_ = communication;
 
         // /answer
-        server.commandManager.buildCommand('answer')
+        server.deprecatedCommandManager.buildCommand('answer')
             .build(CallCommands.prototype.onAnswerCommand.bind(this));
-        
+
         // /call [player]
-        server.commandManager.buildCommand('call')
+        server.deprecatedCommandManager.buildCommand('call')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(CallCommands.prototype.onCallCommand.bind(this));
 
         // /hangup
-        server.commandManager.buildCommand('hangup')
+        server.deprecatedCommandManager.buildCommand('hangup')
             .build(CallCommands.prototype.onHangupCommand.bind(this));
-        
+
         // /reject
-        server.commandManager.buildCommand('reject')
+        server.deprecatedCommandManager.buildCommand('reject')
             .build(CallCommands.prototype.onRejectCommand.bind(this));
     }
 
@@ -63,7 +63,7 @@ export class CallCommands {
     onCallCommand(player, targetPlayer) {
         const currentRecipient =
             this.callChannel.getConversationPartner(player) || this.dialing_.get(player);
-    
+
         // Bail out if the |player| is trying to call themselves.
         if (player === targetPlayer) {
             player.sendMessage(Message.COMMUNICATION_DIAL_SELF);
@@ -75,7 +75,7 @@ export class CallCommands {
             player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);
             return;
         }
-        
+
         // Bail out if the |targetPlayer| is already on the phone.
         if (!!this.callChannel.getConversationPartner(targetPlayer) ||
                 this.dialing_.has(targetPlayer)) {
@@ -98,7 +98,7 @@ export class CallCommands {
         wait(kCallExpirationTimeSec * 1000).then(() => {
             if (this.dialToken_.get(player) !== dialToken)
                 return;  // the call didn't expire
-            
+
             this.dialToken_.delete(player);
             this.dialing_.delete(player);
 
@@ -106,7 +106,7 @@ export class CallCommands {
 
             if (!player.isConnected() || !targetPlayer.isConnected())
                 return;  // either of the recipients has disconnected from the server
-            
+
             player.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED, targetPlayer.name);
             targetPlayer.sendMessage(Message.COMMUNICATION_DIAL_EXPIRED_RECIPIENT, player.name);
         });
@@ -145,9 +145,9 @@ export class CallCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('reject');
-        server.commandManager.removeCommand('hangup');
-        server.commandManager.removeCommand('call');
-        server.commandManager.removeCommand('answer');
+        server.deprecatedCommandManager.removeCommand('reject');
+        server.deprecatedCommandManager.removeCommand('hangup');
+        server.deprecatedCommandManager.removeCommand('call');
+        server.deprecatedCommandManager.removeCommand('answer');
     }
 }

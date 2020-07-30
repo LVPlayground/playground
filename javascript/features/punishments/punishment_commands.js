@@ -28,13 +28,13 @@ export class PunishmentCommands {
         this.settings_ = settings;
 
         // /lastbans [limit=10]
-        server.commandManager.buildCommand('lastbans')
+        server.deprecatedCommandManager.buildCommand('lastbans')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'limit', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 10 }])
             .build(PunishmentCommands.prototype.onLastBansCommand.bind(this));
 
         // /scan [player]
-        server.commandManager.buildCommand('scan')
+        server.deprecatedCommandManager.buildCommand('scan')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
@@ -65,7 +65,7 @@ export class PunishmentCommands {
             'Reason',
 
         ], { pageSize: this.settings_().getValue('account/record_page_count') });
-        
+
         for (const entry of lastBans) {
             const date = formatDate(entry.date, /* includeTime= */ true);
 
@@ -88,7 +88,7 @@ export class PunishmentCommands {
 
         if (!confirmIntention)
             return;  // they must have misclicked on an entry
-        
+
         // Minimum length the unban reason has to be, in characters.
         const kMinimumReasonLength = 5;
 
@@ -217,7 +217,7 @@ export class PunishmentCommands {
     formatUptime(uptime) {
         if (!uptime)
             return '{9E9E9E}none';
-        
+
         const days = Math.floor(uptime / 86400);
         const hours = Math.floor(uptime / 3600) % 24;
         const minutes = Math.floor(uptime / 60) % 60;
@@ -234,7 +234,7 @@ export class PunishmentCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('lastbans');
-        server.commandManager.removeCommand('scan');
+        server.deprecatedCommandManager.removeCommand('lastbans');
+        server.deprecatedCommandManager.removeCommand('scan');
     }
 }

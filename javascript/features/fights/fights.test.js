@@ -11,18 +11,18 @@ describe('Fights', it => {
 
         await settings.ready;
 
-        assert.isTrue(server.commandManager.hasCommand(kCommand));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('fights'));
-        assert.isTrue(server.commandManager.hasCommand(kCommand));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('games'));
-        assert.isTrue(server.commandManager.hasCommand(kCommand));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('games_deathmatch'));
-        assert.isTrue(server.commandManager.hasCommand(kCommand));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand(kCommand));
 
         assert.isTrue(await server.featureManager.liveReload('fights'));
-        assert.isTrue(server.commandManager.hasCommand(kCommand));
+        assert.isTrue(server.deprecatedCommandManager.hasCommand(kCommand));
     });
 });

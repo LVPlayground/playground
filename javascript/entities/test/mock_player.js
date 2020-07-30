@@ -100,7 +100,7 @@ export class MockPlayer extends Player {
     get ip() { return this.#ipAddress_; }
 
     get gpci() { return this.#gpci_; }
-  
+
     get serial() { return this.#serial_; }
 
     get version() { return this.#version_; }
@@ -320,7 +320,7 @@ export class MockPlayer extends Player {
     getLastDialogAsTable(hasColumns = true) {
         if (!this.#lastDialogMessage_)
             throw new Error('No last message is available to output as a table.');
-        
+
         const lines = this.#lastDialogMessage_.split('\n');
         if (!hasColumns)
             return lines;
@@ -480,7 +480,7 @@ export class MockPlayer extends Player {
     async issueCommand(commandText) {
         let defaultPrevented = false;
 
-        await server.commandManager.onPlayerCommandText({
+        await server.deprecatedCommandManager.onPlayerCommandText({
             preventDefault: () => defaultPrevented = true,
 
             playerid: this.id,

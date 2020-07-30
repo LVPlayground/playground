@@ -27,7 +27,7 @@ export class MuteCommands {
         this.nuwani_ = nuwani;
 
         // /mute [player] [duration=3]
-        server.commandManager.buildCommand('mute')
+        server.deprecatedCommandManager.buildCommand('mute')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
@@ -35,28 +35,28 @@ export class MuteCommands {
             .build(MuteCommands.prototype.onMuteCommand.bind(this));
 
         // /muteirc [on|off]?
-        server.commandManager.buildCommand('muteirc')
+        server.deprecatedCommandManager.buildCommand('muteirc')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'on/off', type: CommandBuilder.WORD_PARAMETER, optional: true }])
             .build(MuteCommands.prototype.onMuteIrcCommand.bind(this));
 
         // /muted
-        server.commandManager.buildCommand('muted')
+        server.deprecatedCommandManager.buildCommand('muted')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(MuteCommands.prototype.onMutedCommand.bind(this));
-        
+
         // /showreport
-        server.commandManager.buildCommand('showreport')
+        server.deprecatedCommandManager.buildCommand('showreport')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(MuteCommands.prototype.onShowReportCommand.bind(this));
 
         // /unmute [player]
-        server.commandManager.buildCommand('unmute')
+        server.deprecatedCommandManager.buildCommand('unmute')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(MuteCommands.prototype.onUnmuteCommand.bind(this));
-        
+
         // Start the mute monitor, to inform players and admins about expiring mutes.
         if (!server.isTest())
             this.muteMonitor();
@@ -147,7 +147,7 @@ export class MuteCommands {
 
                 player.sendMessage(Message.COMMUNICATION_MUTE_IRC_ENABLED);
                 break;
-            
+
             case 'off':
                 this.nuwani_().echo('unmute-echo');
                 this.announce_().announceToAdministrators(
@@ -251,10 +251,10 @@ export class MuteCommands {
         this.muted_.clear();
         this.muted_ = null;
 
-        server.commandManager.removeCommand('unmute');
-        server.commandManager.removeCommand('showreport');
-        server.commandManager.removeCommand('muted');
-        server.commandManager.removeCommand('muteirc');
-        server.commandManager.removeCommand('mute');
+        server.deprecatedCommandManager.removeCommand('unmute');
+        server.deprecatedCommandManager.removeCommand('showreport');
+        server.deprecatedCommandManager.removeCommand('muted');
+        server.deprecatedCommandManager.removeCommand('muteirc');
+        server.deprecatedCommandManager.removeCommand('mute');
     }
 }

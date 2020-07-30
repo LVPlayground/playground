@@ -15,19 +15,19 @@ export class IgnoreCommands {
         this.communication_ = communication;
 
         // /ignore [player]
-        server.commandManager.buildCommand('ignore')
+        server.deprecatedCommandManager.buildCommand('ignore')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(IgnoreCommands.prototype.onIgnoreCommand.bind(this));
 
         // /ignored [player]?
-        server.commandManager.buildCommand('ignored')
+        server.deprecatedCommandManager.buildCommand('ignored')
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this))
             .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this));
-        
+
         // /unignore [player]
-        server.commandManager.buildCommand('unignore')
+        server.deprecatedCommandManager.buildCommand('unignore')
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(IgnoreCommands.prototype.onUnignoreCommand.bind(this));
     }
@@ -67,7 +67,7 @@ export class IgnoreCommands {
                 this.visibilityManager.removePlayerFromIgnoreList(player, ignoredPlayer);
                 continue;
             }
-            
+
             ignoredPlayers.push(`${ignoredPlayer.name} (Id:${ignoredPlayer.id})`);
         }
 
@@ -101,8 +101,8 @@ export class IgnoreCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('unignore');
-        server.commandManager.removeCommand('ignored');
-        server.commandManager.removeCommand('ignore');
+        server.deprecatedCommandManager.removeCommand('unignore');
+        server.deprecatedCommandManager.removeCommand('ignored');
+        server.deprecatedCommandManager.removeCommand('ignore');
     }
 }

@@ -18,7 +18,7 @@ export class NuwaniCommand {
         this.nuwani_ = nuwani;
 
         // Defines the `/nuwani` command. Access is controlled by the Playground module.
-        server.commandManager.buildCommand('nuwani')
+        server.deprecatedCommandManager.buildCommand('nuwani')
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(NuwaniCommand.prototype.onNuwaniCommand.bind(this));
     }
@@ -27,7 +27,7 @@ export class NuwaniCommand {
     // are available the the |player| for controlling the bot.
     async onNuwaniCommand(player) {
         const menu = new Menu('Nuwani IRC Bot');
-        
+
         menu.addItem('Inspect bot status', NuwaniCommand.prototype.displayStatus.bind(this));
         menu.addItem('Reload the message format', NuwaniCommand.prototype.reloadFormat.bind(this));
         menu.addItem(
@@ -78,7 +78,7 @@ export class NuwaniCommand {
 
             this.announce_().announceToAdministrators(
                 Message.NUWANI_ADMIN_MESSAGE_FORMAT, player.name, player.id);
-            
+
             await alert(player, {
                 title: 'Nuwani Configuration',
                 message: 'The message format has been successfully reloaded.',
@@ -102,7 +102,7 @@ export class NuwaniCommand {
                 message: 'There are no available bots that could be connected.'
             });
         }
-        
+
         const result = await confirm(player, {
             title: 'Nuwani Configuration',
             message: 'Are you sure that you want to connect an extra bot?',
@@ -110,7 +110,7 @@ export class NuwaniCommand {
 
         if (!result)
             return;
-        
+
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_INCREASE_BOT, player.name, player.id);
 
@@ -131,7 +131,7 @@ export class NuwaniCommand {
         for (const activeBot of nuwani.runtime.activeBots) {
             if (activeBot.config.master || !activeBot.config.optional)
                 continue;
-            
+
             hasActiveOptionalBots = true;
             break;
         }
@@ -150,7 +150,7 @@ export class NuwaniCommand {
 
         if (!result)
             return;
-        
+
         this.announce_().announceToAdministrators(
             Message.NUWANI_ADMIN_DECREASE_BOT, player.name, player.id);
 
@@ -166,6 +166,6 @@ export class NuwaniCommand {
         this.nuwani_ = null;
         this.announce_ = null;
 
-        server.commandManager.removeCommand('nuwani');
+        server.deprecatedCommandManager.removeCommand('nuwani');
     }
 }

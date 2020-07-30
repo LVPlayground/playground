@@ -48,19 +48,19 @@ class VehicleCommands {
         this.playground_ = playground;
 
         // Command: /seize
-        server.commandManager.buildCommand('seize')
+        server.deprecatedCommandManager.buildCommand('seize')
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
 
         // Quick vehicle commands.
         for (const command of Object.keys(kQuickVehicleCommands)) {
-            server.commandManager.buildCommand(command)
+            server.deprecatedCommandManager.buildCommand(command)
                 .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 
         // Command: /v [vehicle]?
         //          /v [enter/help/reset/save]
         //          /v [player]? [delete/health/respawn]
-        server.commandManager.buildCommand('v')
+        server.deprecatedCommandManager.buildCommand('v')
             .sub('enter')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
@@ -124,7 +124,7 @@ class VehicleCommands {
             const otherVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', otherPlayer.id);
             if (otherVehicleId !== vehicleId)
                 continue;
-            
+
             const otherSeatId = pawnInvoke('GetPlayerVehicleSeat', 'i', otherPlayer.id);
             if (otherSeatId === 0) {
                 player.sendMessage(Message.VEHICLE_SEIZE_DRIVER, otherPlayer.name);
@@ -261,7 +261,7 @@ class VehicleCommands {
                 player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
             else
                 player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
-            
+
             return;
         }
 
@@ -325,13 +325,13 @@ class VehicleCommands {
             const distance = vehicle.position.distanceTo(position);
             if (distance > kMaximumVehicleDistance)
                 continue;  // the |vehicle| is too far away
-            
+
             if (closestVehicleDistance < distance)
                 continue;  // a closer vehicle has already been found
-            
+
             if (vehicle.interiorId != interiorId || vehicle.virtualWorld != virtualWorld)
                 continue;  // the |vehicle| is not in the same world as the |player|
-            
+
             closestVehicleDistance = distance;
             closestVehicle = vehicle;
         }
@@ -449,7 +449,7 @@ class VehicleCommands {
                 player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
             else
                 player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
-            
+
             return;
         }
 
@@ -526,10 +526,10 @@ class VehicleCommands {
 
     dispose() {
         for (const command of Object.keys(kQuickVehicleCommands))
-            server.commandManager.removeCommand(command);
+            server.deprecatedCommandManager.removeCommand(command);
 
-        server.commandManager.removeCommand('v');
-        server.commandManager.removeCommand('seize');
+        server.deprecatedCommandManager.removeCommand('v');
+        server.deprecatedCommandManager.removeCommand('seize');
     }
 }
 

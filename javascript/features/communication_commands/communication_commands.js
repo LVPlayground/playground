@@ -12,7 +12,7 @@ import { NuwaniCommands } from 'features/communication_commands/nuwani_commands.
 
 // Set of `/show` messages that Gunther will issue at a particular interval.
 const kGuntherMessages = [
-    'beg', 'derby', 'discord', 'dm', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report', 
+    'beg', 'derby', 'discord', 'dm', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report',
     'rules', 'stunt', 'top', 'weapons'
 ];
 
@@ -69,23 +69,23 @@ export default class CommunicationCommands extends Feature {
         this.initializeIrcCommands();
 
         // /announce [message]
-        server.commandManager.buildCommand('announce')
+        server.deprecatedCommandManager.buildCommand('announce')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
-        
+
         // /clear
-        server.commandManager.buildCommand('clear')
+        server.deprecatedCommandManager.buildCommand('clear')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(CommunicationCommands.prototype.onClearCommand.bind(this));
 
         // /me [message]
-        server.commandManager.buildCommand('me')
+        server.deprecatedCommandManager.buildCommand('me')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
         // /psay [player] [message]
-        server.commandManager.buildCommand('psay')
+        server.deprecatedCommandManager.buildCommand('psay')
             .restrict(Player.LEVEL_MANAGEMENT)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
@@ -93,7 +93,7 @@ export default class CommunicationCommands extends Feature {
             .build(CommunicationCommands.prototype.onPSayCommand.bind(this));
 
         // /show [message] [player]?
-        server.commandManager.buildCommand('show')
+        server.deprecatedCommandManager.buildCommand('show')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'message', type: CommandBuilder.WORD_PARAMETER, optional: true },
@@ -125,7 +125,7 @@ export default class CommunicationCommands extends Feature {
             for (const player of server.playerManager) {
                 if (player.isNonPlayerCharacter())
                     continue;
-                
+
                 hasOnlinePlayers = true;
                 break;
             }
@@ -146,7 +146,7 @@ export default class CommunicationCommands extends Feature {
         const message = this.communication_().processForDistribution(player, unprocessedMessage);
         if (!message)
             return;  // the message was blocked
-        
+
         for (const player of server.playerManager) {
             player.sendMessage(Message.ANNOUNCE_HEADER);
             player.sendMessage(Message.ANNOUNCE_MESSAGE, message);
@@ -155,7 +155,7 @@ export default class CommunicationCommands extends Feature {
 
         this.announce_().announceToAdministrators(
             Message.format(Message.ANNOUNCE_ADMIN_NOTICE, player.name, player.id, message));
-        
+
         this.nuwani_().echo('notice-announce', message);
     }
 
@@ -169,7 +169,7 @@ export default class CommunicationCommands extends Feature {
         // Use SendClientMessageToAll() to reduce the number of individual Pawn calls.
         for (let message = 0; message < kEmptyMessages; ++message)
             pawnInvoke('SendClientMessageToAll', 'is', 0, ' ');
-        
+
         this.announce_().announceToAdministrators(
             Message.COMMUNICATION_CLEAR_ADMIN, player.name, player.id);
     }
@@ -231,7 +231,7 @@ export default class CommunicationCommands extends Feature {
                 player.sendMessage(
                     Message.ANNOUNCE_SHOW_UNKNOWN, allMessages.splice(0, 10).join('/'));
             }
-            
+
             return;
         }
 
@@ -284,11 +284,11 @@ export default class CommunicationCommands extends Feature {
         for (const commands of this.commands_)
             commands.dispose();
 
-        server.commandManager.removeCommand('show');
-        server.commandManager.removeCommand('psay');
-        server.commandManager.removeCommand('me');
-        server.commandManager.removeCommand('clear');
-        server.commandManager.removeCommand('announce');
+        server.deprecatedCommandManager.removeCommand('show');
+        server.deprecatedCommandManager.removeCommand('psay');
+        server.deprecatedCommandManager.removeCommand('me');
+        server.deprecatedCommandManager.removeCommand('clear');
+        server.deprecatedCommandManager.removeCommand('announce');
 
         this.nuwaniCommands_.dispose();
         this.nuwaniCommands_ = null;

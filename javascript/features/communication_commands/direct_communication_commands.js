@@ -38,26 +38,26 @@ export class DirectCommunicationCommands {
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'ircmessage', DirectCommunicationCommands.prototype.onIrcMessageReceived.bind(this));
-        
+
         // /ircpm [username] [message]
-        server.commandManager.buildCommand('ircpm')
+        server.deprecatedCommandManager.buildCommand('ircpm')
             .parameters([ { name: 'username',  type: CommandBuilder.WORD_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
             .build(DirectCommunicationCommands.prototype.onIrcPrivateMessageCommand.bind(this));
 
         // /pm [player] [message]
-        server.commandManager.buildCommand('pm')
+        server.deprecatedCommandManager.buildCommand('pm')
             .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
             .build(DirectCommunicationCommands.prototype.onPrivateMessageCommand.bind(this));
 
         // /r [message]
-        server.commandManager.buildCommand('r')
+        server.deprecatedCommandManager.buildCommand('r')
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(DirectCommunicationCommands.prototype.onReplyCommand.bind(this));
 
         // /spm [player] [message]
-        server.commandManager.buildCommand('spm')
+        server.deprecatedCommandManager.buildCommand('spm')
             .restrict(Player.LEVEL_MANAGEMENT)
             .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
                           { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
@@ -88,7 +88,7 @@ export class DirectCommunicationCommands {
         for (const otherPlayer of server.playerManager) {
             if (!otherPlayer.isAdministrator() || otherPlayer === player)
                 continue;
-            
+
             otherPlayer.sendMessage(adminMessage);
         }
 
@@ -131,7 +131,7 @@ export class DirectCommunicationCommands {
         const message = this.communication_().processForDistribution(player, unprocessedMessage);
         if (!message)
             return;  // the message was blocked
-        
+
         // Check if the recieving |target| is muted and not allowed to recieved PMs.
         // And that the sending |player| is NOT an administrator.
         const muteTime = this.muteManager.getPlayerRemainingMuteTime(target);
@@ -146,7 +146,7 @@ export class DirectCommunicationCommands {
 
             return;
         }
-        
+
         player.sendMessage(Message.COMMUNICATION_PM_SENDER, target.name, target.id, message);
 
         if (!this.visibilityManager.isPlayerOnIgnoreList(target, player)) {
@@ -156,7 +156,7 @@ export class DirectCommunicationCommands {
 
         this.nuwani_().echo(
             'chat-private', player.name, player.id, target.name, target.id, message);
-        
+
         const adminMessage =
             Message.format(Message.COMMUNICATION_PM_ADMIN, player.name, player.id, target.name,
                            target.id, message);
@@ -199,7 +199,7 @@ export class DirectCommunicationCommands {
                 for (const otherPlayer of server.playerManager) {
                     if (otherPlayer.account.userId !== previousMessage.userId)
                         continue;
-                    
+
                     previousMessage.id = otherPlayer.id;
                     previousMessage.name = otherPlayer.name;
                     target = otherPlayer;
@@ -247,7 +247,7 @@ export class DirectCommunicationCommands {
         target.playSound(kMessageReceivedSoundId);
 
         player.sendMessage(Message.COMMUNICATION_SPM_SENDER, target.name, target.id, message);
-        
+
         // Store the interaction to enable |target| to use the `/r` command. This could enable the
         // |target| to use `/spm` without an exception, but hey, that's probably ok.
         this.previousMessage_.set(target, {
@@ -259,10 +259,10 @@ export class DirectCommunicationCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('ircpm');
-        server.commandManager.removeCommand('pm');
-        server.commandManager.removeCommand('spm');
-        server.commandManager.removeCommand('r');
+        server.deprecatedCommandManager.removeCommand('ircpm');
+        server.deprecatedCommandManager.removeCommand('pm');
+        server.deprecatedCommandManager.removeCommand('spm');
+        server.deprecatedCommandManager.removeCommand('r');
 
         this.callbacks_.dispose();
         this.callbacks_ = null;

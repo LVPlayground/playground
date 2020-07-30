@@ -10,7 +10,7 @@ class KilltimeCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.commandManager.buildCommand('killtime')
+        server.deprecatedCommandManager.buildCommand('killtime')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('start')
                 .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
@@ -50,7 +50,7 @@ class KilltimeCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('killtime');
+        server.deprecatedCommandManager.removeCommand('killtime');
     }
 }
 

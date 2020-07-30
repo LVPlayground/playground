@@ -14,7 +14,7 @@ class RadioCommands {
 
         // The `/radio` command gives players the ability to quickly (and temporarily) stop the
         // radio, as well as the option to change their channel selection.
-        server.commandManager.buildCommand('radio')
+        server.deprecatedCommandManager.buildCommand('radio')
             .sub('settings')
                 .build(RadioCommands.prototype.onRadioSettingsCommand.bind(this))
             .build(RadioCommands.prototype.onRadioCommand.bind(this));
@@ -110,7 +110,7 @@ class RadioCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('radio');
+        server.deprecatedCommandManager.removeCommand('radio');
     }
 }
 

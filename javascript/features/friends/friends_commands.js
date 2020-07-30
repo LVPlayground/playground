@@ -10,7 +10,7 @@ export class FriendsCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.commandManager.buildCommand('friends')
+        server.deprecatedCommandManager.buildCommand('friends')
             .sub('add')
                 .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
                 .build(FriendsCommands.prototype.onFriendsAddCommand.bind(this))
@@ -119,6 +119,6 @@ export class FriendsCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('friends');
+        server.deprecatedCommandManager.removeCommand('friends');
     }
 }

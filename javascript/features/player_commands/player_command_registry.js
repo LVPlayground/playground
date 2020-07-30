@@ -40,10 +40,10 @@ export class PlayerCommandRegistry {
         }
 
         // (2) Initialize the builders through which the individual commands will be registered.
-        const myBuilder = server.commandManager.buildCommand('my');
-        const playerBuilder = server.commandManager.buildCommand('p')
+        const myBuilder = server.deprecatedCommandManager.buildCommand('my');
+        const playerBuilder = server.deprecatedCommandManager.buildCommand('p')
             .sub(CommandBuilder.PLAYER_PARAMETER);
-        
+
         // (3) Iterate over all the commands, and add them to both "/my" and "/p".
         for (const command of this.#commands_) {
             myBuilder.sub(command.name)
@@ -127,10 +127,10 @@ export class PlayerCommandRegistry {
 
         this.#params_ = null;
 
-        if (!server.commandManager.hasCommand('my'))
+        if (!server.deprecatedCommandManager.hasCommand('my'))
             return;  // the commands never were registered
 
-        server.commandManager.removeCommand('my');
-        server.commandManager.removeCommand('p');
+        server.deprecatedCommandManager.removeCommand('my');
+        server.deprecatedCommandManager.removeCommand('p');
     }
 }

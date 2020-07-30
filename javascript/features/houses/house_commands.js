@@ -36,7 +36,7 @@ class HouseCommands {
         this.parkingLotRemover_ = new ParkingLotRemover();
 
         // Command: /house [buy/cancel/create/enter/goto/interior/modify/remove/save/settings]
-        server.commandManager.buildCommand('house')
+        server.deprecatedCommandManager.buildCommand('house')
             .sub('buy')
                 .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
             .sub('cancel')
@@ -129,8 +129,8 @@ class HouseCommands {
         await this.manager_.createHouse(player, location, interior.id);
 
         this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_PURCHASED, 
-            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_BUY, 
+            Message.HOUSE_ANNOUNCE_PURCHASED,
+            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_BUY,
             player.name, player.id, interior.price, location.id);
 
         // Display a confirmation dialog to the player to inform them of their action.
@@ -199,7 +199,7 @@ class HouseCommands {
 
         // Announce creation of the location to other administrators.
         this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_CREATED, 
+            Message.HOUSE_ANNOUNCE_CREATED,
             PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_CREATED,
             player.name, player.id);
 
@@ -349,8 +349,8 @@ class HouseCommands {
 
                 // Announce creation of the location to other administrators.
                 this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_TELEPORTED, 
-                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED, 
+                    Message.HOUSE_ANNOUNCE_TELEPORTED,
+                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED,
                     player.name, player.id, location.settings.name, location.settings.ownerName);
             });
         }
@@ -475,7 +475,7 @@ class HouseCommands {
 
                 // Announce eviction of the previous owner to other administrators.
                 this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_EVICTED, 
+                    Message.HOUSE_ANNOUNCE_EVICTED,
                     PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_EVICTED,
                     player.name, player.id, ownerName, closestLocation.id);
 
@@ -500,8 +500,8 @@ class HouseCommands {
 
             // Announce creation of the location to other administrators.
             this.announce_().announceToAdministratorsWithFilter(
-                Message.HOUSE_ANNOUNCE_DELETED, 
-                PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_DELETED, 
+                Message.HOUSE_ANNOUNCE_DELETED,
+                PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_DELETED,
                 player.name, player.id, closestLocation.id);
 
             // Display a confirmation dialog to the player to inform them of their action.
@@ -677,7 +677,7 @@ class HouseCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.commandManager.removeCommand('house');
+        server.deprecatedCommandManager.removeCommand('house');
 
         this.parkingLotCreator_.dispose();
         this.parkingLotCreator_ = null;

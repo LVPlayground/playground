@@ -14,10 +14,10 @@ class Commands extends Feature {
     constructor() {
         super();
 
-        const commandManager = server.commandManager;
+        const commandManager = server.deprecatedCommandManager;
 
         // Informational commands whose data will be loaded from a JSON file.
-        
+
         commandManager.registerCommand('credits', InfoDialogCommand.create('data/commands/credits.json'));
         commandManager.registerCommand('guide', InfoDialogCommand.create('data/commands/guide.json'));
         commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
@@ -39,12 +39,12 @@ class Commands extends Feature {
         this.positioningCommands_.dispose();
         this.ircChatCommands_.dispose();
 
-        server.commandManager.removeCommand('credits');
-        server.commandManager.removeCommand('guide');
-        server.commandManager.removeCommand('help');
-        server.commandManager.removeCommand('irc');
-        server.commandManager.removeCommand('rules');
-        server.commandManager.removeCommand('vip');
+        server.deprecatedCommandManager.removeCommand('credits');
+        server.deprecatedCommandManager.removeCommand('guide');
+        server.deprecatedCommandManager.removeCommand('help');
+        server.deprecatedCommandManager.removeCommand('irc');
+        server.deprecatedCommandManager.removeCommand('rules');
+        server.deprecatedCommandManager.removeCommand('vip');
     }
 };
 

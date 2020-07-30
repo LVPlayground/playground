@@ -78,7 +78,7 @@ export class FightRegistry {
     // immediately start the sign-up flow of the configured game. This mimics the command syntax
     // that the games features exposes by default.
     registerCommand(command, settings) {
-        server.commandManager.buildCommand(command)
+        server.deprecatedCommandManager.buildCommand(command)
             .sub('custom')
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, 'customise'))
             .sub('watch')
@@ -86,7 +86,7 @@ export class FightRegistry {
             .sub(CommandBuilder.NUMBER_PARAMETER)
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null))
             .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null));
-        
+
         this.#commands_.add(command);
     }
 
@@ -115,7 +115,7 @@ export class FightRegistry {
 
     dispose() {
         for (const command of this.#commands_)
-            server.commandManager.removeCommand(command);
+            server.deprecatedCommandManager.removeCommand(command);
 
         this.#commands_ = null;
     }

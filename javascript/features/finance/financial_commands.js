@@ -12,18 +12,18 @@ export class FinancialCommands {
         this.regulator_ = regulator;
 
         // /balance
-        server.commandManager.buildCommand('balance')
+        server.deprecatedCommandManager.buildCommand('balance')
             .build(FinancialCommands.prototype.onBalanceCommand.bind(this));
 
         // /bank [[amount] | all]
-        server.commandManager.buildCommand('bank')
+        server.deprecatedCommandManager.buildCommand('bank')
             .sub('all')
                 .build(FinancialCommands.prototype.onBankCommand.bind(this))
             .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
             .build(FinancialCommands.prototype.onBankCommand.bind(this));
 
         // /withdraw [[amount] | all]
-        server.commandManager.buildCommand('withdraw')
+        server.deprecatedCommandManager.buildCommand('withdraw')
             .sub('all')
                 .build(FinancialCommands.prototype.onWithdrawCommand.bind(this))
             .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
@@ -36,7 +36,7 @@ export class FinancialCommands {
     async onBalanceCommand(player) {
         if (!this.requireRegisteredPlayer(player))
             return;
-        
+
         const balance = await this.regulator_.getAccountBalance(player);
         player.sendMessage(Message.BANK_BALANCE, balance, FinancialRegulator.kMaximumBankAmount);
     }
@@ -48,7 +48,7 @@ export class FinancialCommands {
     async onBankCommand(player, amount) {
         if (!this.requireRegisteredPlayer(player))
             return;
-        
+
         const cash = this.regulator_.getPlayerCashAmount(player);
         if (!amount)
             amount = cash;
@@ -81,7 +81,7 @@ export class FinancialCommands {
     async onWithdrawCommand(player, amount) {
         if (!this.requireRegisteredPlayer(player))
             return;
-        
+
         const balance = await this.regulator_.getAccountBalance(player);
         if (!amount)
             amount = balance;
@@ -118,8 +118,8 @@ export class FinancialCommands {
     }
 
     dispose() {
-        server.commandManager.removeCommand('withdraw');
-        server.commandManager.removeCommand('bank');
-        server.commandManager.removeCommand('balance');
+        server.deprecatedCommandManager.removeCommand('withdraw');
+        server.deprecatedCommandManager.removeCommand('bank');
+        server.deprecatedCommandManager.removeCommand('balance');
     }
 }

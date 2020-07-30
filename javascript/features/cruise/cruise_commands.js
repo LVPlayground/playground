@@ -7,7 +7,7 @@ export class CruiseCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.commandManager.buildCommand('cruise')
+        server.deprecatedCommandManager.buildCommand('cruise')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('start')
                 .build(CruiseCommands.prototype.onCruiseStartCommand.bind(this))
@@ -30,6 +30,6 @@ export class CruiseCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('cruise');
+        server.deprecatedCommandManager.removeCommand('cruise');
     }
 }

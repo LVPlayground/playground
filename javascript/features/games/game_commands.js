@@ -51,7 +51,7 @@ export class GameCommands {
         this.commands_ = new Set();
 
         // /leave
-        server.commandManager.buildCommand('leave')
+        server.deprecatedCommandManager.buildCommand('leave')
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(GameCommands.prototype.onLeaveCommand.bind(this))
@@ -66,9 +66,9 @@ export class GameCommands {
 
         if (this.commands_.has(commandName))
             throw new Error(`A game with the /${commandName} command has already been registered.`);
-        
+
         // Registers the |commandName| with the server, so that everyone can use it.
-        server.commandManager.buildCommand(commandName)
+        server.deprecatedCommandManager.buildCommand(commandName)
             .sub('custom')
                 .build(GameCommands.prototype.onCommand.bind(this, description, 'customise'))
             .sub('watch')
@@ -76,7 +76,7 @@ export class GameCommands {
             .sub(CommandBuilder.NUMBER_PARAMETER)
                 .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null))
             .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null));
-        
+
         this.commands_.add(commandName);
     }
 
@@ -86,9 +86,9 @@ export class GameCommands {
 
         if (!this.commands_.has(commandName))
             throw new Error(`No game with the /${commandName} command has been registered yet.`);
-        
+
         // Removes the |commandName| from the server, so that people can't use it anymore.
-        server.commandManager.removeCommand(commandName);
+        server.deprecatedCommandManager.removeCommand(commandName);
 
         this.commands_.delete(commandName);
     }
@@ -181,7 +181,7 @@ export class GameCommands {
         for (const pendingRegistration of pendingRegistrations) {
             if (pendingRegistration.type !== GameRegistration.kTypePublic)
                 continue;  // this is not a game to which everyone can sign up
-            
+
             pendingPublicRegistrations++;
 
             // If the |settings| aren't equal to the pending registration, we allow the sign up if
@@ -194,7 +194,7 @@ export class GameCommands {
                 if (params.registrationId && pendingRegistration.id !== params.registrationId)
                     continue;  // a registration Id has been given
             }
-            
+
             // Take the registration fee from the |player|.
             if (!description.isFree())
                 this.finance_().takePlayerCash(player, description.price);
@@ -217,7 +217,7 @@ export class GameCommands {
         for (const activeRuntime of activeRuntimes) {
             if (activeRuntime.state != GameRuntime.kStateRunning)
                 continue;
-            
+
             // TODO: We might want to support settings and custom options for continuous games, in
             // which case joining the first one is not the right thing to do. This requires a
             // `mapEquals` and private/public check like the block above.
@@ -228,10 +228,10 @@ export class GameCommands {
 
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, activeRuntime.getActivityName());
-            
+
             this.nuwani_().echo(
                 'notice-minigame', player.name, player.id, activeRuntime.getActivityName());
-            
+
             // Actually have the |player| join the |activeRuntime|, and we're done here.
             await activeRuntime.addPlayer(player, description.price);
             return;
@@ -300,7 +300,7 @@ export class GameCommands {
 
         if (pendingPublicRegistrations > 0)
             command += ` ${registration.id}`;
-        
+
         // Send a message to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
         const formattedAnnouncement =
@@ -310,10 +310,10 @@ export class GameCommands {
         for (const recipient of server.playerManager) {
             if (recipient === player || recipient.isNonPlayerCharacter())
                 continue;  // no need to send to either the |player| or to bots
-            
+
             if (this.manager_.getPlayerActivity(recipient))
                 continue;  // the |recipient| is already involved in another game
-            
+
             recipient.sendMessage(formattedAnnouncement);
         }
     }
@@ -335,7 +335,7 @@ export class GameCommands {
                 settings.set(identifier, params.settings.get(identifier));
             else
                 settings.set(identifier, clone(setting.defaultValue));
-            
+
             if (!identifier.startsWith(kInternalPrefix) && !description.isSettingFrozen(identifier))
                 hasCustomisableSettings = true;
         }
@@ -363,7 +363,7 @@ export class GameCommands {
 
             if (!startDefault)
                 return null;
-            
+
             return settings;
         }
 
@@ -414,22 +414,22 @@ export class GameCommands {
                             updatedValue = updatedValue !== 'Disabled';
 
                         break;
-                    
+
                     case Setting.TYPE_CUSTOM:
                         updatedValue = await setting.handler.handleCustomization(
                                            player, settings, currentValue);
                         break;
-                    
+
                     case Setting.TYPE_ENUM:
                         updatedValue = await this.displayListSettingDialog(
                                            player, label, setting.options, currentValue);
                         break;
-                    
+
                     case Setting.TYPE_NUMBER:
                         updatedValue = await this.displayInputSettingDialog(
                                            player, description, setting, currentValue);
                         break;
-                    
+
                     case Setting.TYPE_STRING:
                         updatedValue = await this.displayInputSettingDialog(
                                            player, description, setting, currentValue);
@@ -473,7 +473,7 @@ export class GameCommands {
 
         if (!await dialog.displayForPlayer(player))
             return null;
-        
+
         return value;
     }
 
@@ -502,7 +502,7 @@ export class GameCommands {
                 try {
                     if (description.settingsValidator(setting.identifier, typedInput))
                         return true;
-                    
+
                     explanation = 'The given value has not been accepted by the game.';
                 } catch (exception) {
                     explanation = exception.message;
@@ -528,13 +528,13 @@ export class GameCommands {
 
         if (!answer)
             return null;
-        
+
         if (setting.type === Setting.TYPE_NUMBER)
             return parseFloat(answer);
 
         return answer;
     }
-    
+
     // ---------------------------------------------------------------------------------------------
     // Game watching flow
     // ---------------------------------------------------------------------------------------------
@@ -553,7 +553,7 @@ export class GameCommands {
     onCommandRegistrationExpired(registration) {
         if (registration.hasFinished() || this.disposed_)
             return;  // the |registration| has already finished
-        
+
         // If enough players have registered for the game, then we will be able to start it.
         if (registration.players.size >= registration.description.minimumPlayers) {
             registration.start();
@@ -583,10 +583,10 @@ export class GameCommands {
         this.registry_.setCommandDelegate(null);
         this.registry_ = null;
 
-        server.commandManager.removeCommand('leave');
+        server.deprecatedCommandManager.removeCommand('leave');
 
         for (const commandName of this.commands_)
-            server.commandManager.removeCommand(commandName);
+            server.deprecatedCommandManager.removeCommand(commandName);
 
         this.commands_ = null;
     }

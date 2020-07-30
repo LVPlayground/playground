@@ -83,7 +83,7 @@ class GangCommands {
         this.invitations_ = new WeakMap();
 
         // Command: /gang
-        server.commandManager.buildCommand('gang')
+        server.deprecatedCommandManager.buildCommand('gang')
             .sub('create')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
             .sub('invite')
@@ -105,24 +105,24 @@ class GangCommands {
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // Command: /gangs
-        server.commandManager.buildCommand('gangs')
+        server.deprecatedCommandManager.buildCommand('gangs')
             .sub(CommandBuilder.PLAYER_PARAMETER)
                 .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
-        
+
         // /gbalance
-        server.commandManager.buildCommand('gbalance')
+        server.deprecatedCommandManager.buildCommand('gbalance')
             .build(GangCommands.prototype.onGangBalanceCommand.bind(this));
-        
+
         // /gbank [[amount] | all]
-        server.commandManager.buildCommand('gbank')
+        server.deprecatedCommandManager.buildCommand('gbank')
             .sub('all')
                 .build(GangCommands.prototype.onGangBankCommand.bind(this))
             .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
             .build(GangCommands.prototype.onGangBankCommand.bind(this));
 
         // /gwithdraw [[amount] | all]
-        server.commandManager.buildCommand('gwithdraw')
+        server.deprecatedCommandManager.buildCommand('gwithdraw')
             .sub('all')
                 .build(GangCommands.prototype.onGangWithdrawCommand.bind(this))
             .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
@@ -405,7 +405,7 @@ class GangCommands {
 
         // Retrieve the full memberlist of this gang, not those who are currently in-game.
         const members = await this.manager_.getFullMemberList(gang, false /* groupByRole */);
-        
+
         // Compile a set of online users, to reflect their last activity time more accurately than
         // relying on the database, which may not have updated yet.
         const ingame = new Set();
@@ -512,9 +512,9 @@ class GangCommands {
                 // TODO: We'll probably want to move this to a class selection class in the future.
                 const availableSkins = JSON.parse(readFile('data/player_classes.json'));
 
-                let question = SKIN_QUESTION;                
+                let question = SKIN_QUESTION;
                 question.constraints.validation = new RegExp(`^(${availableSkins.join('|')})$`);
-                
+
                 const answer = await Question.ask(player, question);
                 if (!answer)
                     return;  // the leader decided to not update the gang's skin
@@ -527,8 +527,8 @@ class GangCommands {
                     skinId);
 
                 this.announce_().announceToAdministratorsWithFilter(
-                    Message.GANG_ANNOUNCE_NEW_SKIN, 
-                    PlayerSetting.ANNOUNCEMENT.GANGS, 
+                    Message.GANG_ANNOUNCE_NEW_SKIN,
+                    PlayerSetting.ANNOUNCEMENT.GANGS,
                     PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN,
                     player.name, player.id, gang.name,
                     skinId);
@@ -730,7 +730,7 @@ class GangCommands {
         const usesGangSkin = gang.usesGangSkin(player);
         const gangSkinPreferenceUsage = usesGangSkin ? 'Gang skin'
                                                      : 'Personal skin';
-        
+
         // All members have the ability to change their skin preference. This enables gangs,
         // for example BA, to use the clown skin.
         menu.addItem('My skin', gangSkinPreferenceUsage, async() => {
@@ -887,7 +887,7 @@ class GangCommands {
             const amount = transaction.amount > 0
                 ? format('{43A047}%$', transaction.amount)
                 : format('{F4511E}-%$', Math.abs(transaction.amount));
-            
+
             dialog.addItem(date, username, amount, transaction.reason);
         }
 
@@ -1009,7 +1009,7 @@ class GangCommands {
 
         // Take the |amount| of money away from the player personally.
         this.finance_().takePlayerCash(player, amount);
-        
+
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
             gang, player, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id, amount);
@@ -1068,7 +1068,7 @@ class GangCommands {
         // be attributed and shown in the account's financial records.
         await this.manager_.finance.withdrawFromAccount(
             gang.id, player.account.userId, amount, 'Personal withdrawal');
-        
+
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
             gang, player, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, amount);
@@ -1078,11 +1078,11 @@ class GangCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.commandManager.removeCommand('gwithdraw');
-        server.commandManager.removeCommand('gbank');
-        server.commandManager.removeCommand('gbalance');
-        server.commandManager.removeCommand('gang');
-        server.commandManager.removeCommand('gangs');
+        server.deprecatedCommandManager.removeCommand('gwithdraw');
+        server.deprecatedCommandManager.removeCommand('gbank');
+        server.deprecatedCommandManager.removeCommand('gbalance');
+        server.deprecatedCommandManager.removeCommand('gang');
+        server.deprecatedCommandManager.removeCommand('gangs');
     }
 }
 

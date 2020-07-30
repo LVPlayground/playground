@@ -19,46 +19,46 @@ class Debug extends Feature {
     super();
 
     // /serverfps
-    server.commandManager.buildCommand('serverfps')
+    server.deprecatedCommandManager.buildCommand('serverfps')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.serverFrameCounter.bind(this));
 
     // /trace [seconds]
-    server.commandManager.buildCommand('trace')
+    server.deprecatedCommandManager.buildCommand('trace')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'seconds', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.captureTrace.bind(this));
 
     // /sound [id]
-    server.commandManager.buildCommand('sound')
+    server.deprecatedCommandManager.buildCommand('sound')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([{ name: 'sound', type: CommandBuilder.NUMBER_PARAMETER }])
         .build(this.__proto__.playSound.bind(this));
 
     // /int [id]
-    server.commandManager.buildCommand('int')
+    server.deprecatedCommandManager.buildCommand('int')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .parameters([ { name: 'id', type: CommandBuilder.NUMBER_PARAMETER } ])
         .build(this.__proto__.int.bind(this));
 
     // /cam
-    server.commandManager.buildCommand('cam')
+    server.deprecatedCommandManager.buildCommand('cam')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.cam.bind(this));
 
     // /eval
-    server.commandManager.buildCommand('eval')
+    server.deprecatedCommandManager.buildCommand('eval')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'command', type: CommandBuilder.SENTENCE_PARAMETER } ])
         .build(this.__proto__.eval.bind(this));
 
     // /idlers
-    server.commandManager.buildCommand('idlers')
+    server.deprecatedCommandManager.buildCommand('idlers')
         .restrict(Player.LEVEL_ADMINISTRATOR)
         .build(this.__proto__.idlers.bind(this));
 
     // /pattach
-    server.commandManager.buildCommand('pattach')
+    server.deprecatedCommandManager.buildCommand('pattach')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                       { name: 'model', type: CommandBuilder.NUMBER_PARAMETER },
@@ -68,7 +68,7 @@ class Debug extends Feature {
         .build(this.__proto__.attach.bind(this));
 
     // /pdetach
-    server.commandManager.buildCommand('pdetach')
+    server.deprecatedCommandManager.buildCommand('pdetach')
         .restrict(Player.LEVEL_MANAGEMENT)
         .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
         .build(this.__proto__.detach.bind(this));
@@ -150,7 +150,7 @@ class Debug extends Feature {
     console.log('[JavaScript] Evaluating: ' + command);
 
     // Utility functions that are often used with the `/eval` command.
-    const cm = server.commandManager;
+    const cm = server.deprecatedCommandManager;
     const fm = server.featureManager;
     const p = playerId => server.playerManager.getById(playerId);
     const vid = playerId => pawnInvoke('GetPlayerVehicleID', 'i', playerId);
@@ -228,15 +228,15 @@ class Debug extends Feature {
     this.attachedObjects_.clear();
     this.attachedObjects_ = null;
 
-    server.commandManager.removeCommand('serverfps')
-    server.commandManager.removeCommand('trace')
-    server.commandManager.removeCommand('sound')
-    server.commandManager.removeCommand('int')
-    server.commandManager.removeCommand('cam')
-    server.commandManager.removeCommand('eval')
-    server.commandManager.removeCommand('idlers')
-    server.commandManager.removeCommand('pattach')
-    server.commandManager.removeCommand('pdetach')
+    server.deprecatedCommandManager.removeCommand('serverfps')
+    server.deprecatedCommandManager.removeCommand('trace')
+    server.deprecatedCommandManager.removeCommand('sound')
+    server.deprecatedCommandManager.removeCommand('int')
+    server.deprecatedCommandManager.removeCommand('cam')
+    server.deprecatedCommandManager.removeCommand('eval')
+    server.deprecatedCommandManager.removeCommand('idlers')
+    server.deprecatedCommandManager.removeCommand('pattach')
+    server.deprecatedCommandManager.removeCommand('pdetach')
   }
 }
 

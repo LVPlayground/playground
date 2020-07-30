@@ -89,11 +89,11 @@ describe('Report', (it, beforeEach) => {
     });
 
     it('should support live reloading, and properly clean up after itself', async assert => {
-        const commandCount = server.commandManager.size;
+        const commandCount = server.deprecatedCommandManager.size;
 
         assert.isTrue(server.featureManager.isEligibleForLiveReload('report'));
         assert.isTrue(await server.featureManager.liveReload('report'));
 
-        assert.equal(server.commandManager.size, commandCount);
+        assert.equal(server.deprecatedCommandManager.size, commandCount);
     });
 });

@@ -443,12 +443,12 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should clean up the commands when being disposed of', async(assert) => {
-        const originalCommandCount = server.commandManager.size;
+        const originalCommandCount = server.deprecatedCommandManager.size;
 
         commands.dispose();
         commands.dispose = () => true;
 
-        assert.equal(server.commandManager.size, originalCommandCount - 8);
+        assert.equal(server.deprecatedCommandManager.size, originalCommandCount - 8);
     });
 
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {

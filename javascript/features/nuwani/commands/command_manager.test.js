@@ -15,7 +15,7 @@ describe('CommandManager', it => {
         assert.throws(() => manager.removeCommand('hello'));
         assert.doesNotThrow(() => manager.registerCommand('hello', function() {}));
         assert.throws(() => manager.registerCommand('hello', function() {}));
-        assert.throws(() => manager.buildCommand('hello'));
+        assert.throws(() => manager.buildCommand('hello').build(() => 1));
         assert.doesNotThrow(() => manager.removeCommand('hello'));
         assert.doesNotThrow(() => manager.registerCommand('hello', function() {}));
     });

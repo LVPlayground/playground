@@ -11,6 +11,13 @@ import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
 export default class Playground extends Feature {
+    access_ = null;
+    announce_ = null;
+    commands_ = null;
+    manager_ = null;
+    nuwani_ = null;
+    nuwaniCommands_ = null;
+
     constructor() {
         super();
 
@@ -20,11 +27,13 @@ export default class Playground extends Feature {
         // Used for controlling the message filter, as well as server-wide communication.
         const communication = this.defineDependency('communication');
 
-        // Used for distributing messages to Nuwani, where applicable.
+        // Used for distributing messages to Nuwani, where applicable, as well as providing the
+        // !lvp command to people on IRC and Discord.
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
-        // The Playground feature provides an interface in the mutable settings.
+        // The Playground feature provides an interface that allows Managers to amend the server's
+        // statistics. We closely integrate with that feature.
         const settings = this.defineDependency('settings');
 
         this.access_ = new PlaygroundAccessTracker();
@@ -33,10 +42,12 @@ export default class Playground extends Feature {
             new PlaygroundCommands(this.access_, this.announce_, communication, this.nuwani_,
                                    settings);
 
-        this.commands_.loadCommands();
+        if (!server.isTest())
+            this.commands_.loadCommands();
 
         // Activate the features that should be activated by default.
         this.manager_.initialize();
+
         this.initializeNuwaniCommands();
     }
 
@@ -49,31 +60,39 @@ export default class Playground extends Feature {
 
     // ---------------------------------------------------------------------------------------------
     // Public API of the Playground feature.
+    // ---------------------------------------------------------------------------------------------
 
-    // Registers the |command| as one access for which can be controlled with `/lvp access`.
-    registerCommand(command, defaultLevel) {
-        this.access_.registerCommand(command, defaultLevel);
-    }
-
-    // Returns whether the |player| is able to use |command|. The |command| must have been
-    // registered with the Playground feature in the past.
+    // Returns whether the |player| is able to use |command|. This considers the command's default
+    // level, as well as any overrides that might have been created.
     canAccessCommand(player, command) {
         return this.access_.canAccessCommand(command, player);
     }
 
-    // Unregisters the |command| from the access tracker.
-    unregisterCommand(command) {
-        this.access_.unregisterCommand(command);
-    }
+    // ---------------------------------------------------------------------------------------------
+    // Public Testing API of the Playground feature.
+    // ---------------------------------------------------------------------------------------------
+
+    // Gets access to the PlaygroundAccessTracker instance. Only meant for testing purposes.
+    get accessForTesting() { return this.access_; }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.nuwaniCommands_.dispose();
+        this.nuwaniCommands_ = null;
 
         this.commands_.dispose();
+        this.commands_ = null;
+
         this.manager_.dispose();
+        this.manager_ = null;
 
         this.access_.dispose();
+        this.access_ = null;
+
+        this.announce_ = null;
+
+        this.nuwani_.removeReloadObserver(this);
+        this.nuwani_ = null;
     }
 }

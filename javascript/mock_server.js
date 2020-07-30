@@ -52,12 +52,12 @@ import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
-import MockPlayground from 'features/playground/test/mock_playground.js';
 import PlayerColors from 'features/player_colors/player_colors.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerDecorations from 'features/player_decorations/player_decorations.js';
 import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerStats from 'features/player_stats/player_stats.js';
+import Playground from 'features/playground/playground.js';
 import Punishments from 'features/punishments/punishments.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
@@ -126,7 +126,7 @@ class MockServer {
             player_decorations: PlayerDecorations,
             player_settings: PlayerSettings,
             player_stats: PlayerStats,
-            playground: MockPlayground,
+            playground: Playground,
             punishments: Punishments,
             radio: Radio,
             reaction_tests: ReactionTests,

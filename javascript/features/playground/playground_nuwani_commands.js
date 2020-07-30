@@ -14,13 +14,10 @@ export class PlaygroundNuwaniCommands {
         this.announce_ = announce;
         this.nuwani_ = nuwani;
 
-        // Nuwani commands don't use the regular, server-side command manager.
-        const commandManager = this.nuwani_().commandManager;
-
         // !lvp
         // !lvp reload messages
         // !lvp reload [feature]
-        commandManager.buildCommand('lvp')
+        nuwani().commandManager.buildCommand('lvp')
             .description(`Provides low-level interaction with server internals.`)
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('reload')
@@ -83,5 +80,10 @@ export class PlaygroundNuwaniCommands {
             Message.NUWANI_ADMIN_FEATURE_RELOADED, context.nickname, feature);
     }
 
-    dispose() {}
+    dispose() {
+        this.announce_ = null;
+
+        this.nuwani_().commandManager.removeCommand('lvp');
+        this.nuwani_ = null;
+    }
 }

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 // The Command class forms the base class of all the fun commands that are provided through the
-// commands/ directory in this feature.
+// //features/playground/commands/ directory that's part of this feature.
 export class Command {
     constructor(announce, nuwani) {
         this.announce_ = announce;
@@ -11,9 +11,7 @@ export class Command {
     }
 
     // Gets the name of the current command. Must be implemented by the command.
-    get name() {
-        throw new Error('Command::name getter must be implemented by the command.');
-    }
+    get name() { throw new Error('Command::name getter must be implemented by the command.'); }
 
     // Gets the default player level required to execute the command. Must be implemented by the
     // command. Can be overridden using the `/lvp access` command.

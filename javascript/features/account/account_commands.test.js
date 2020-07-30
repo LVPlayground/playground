@@ -7,7 +7,6 @@ describe('AccountCommands', (it, beforeEach) => {
     let database = null;
 
     let gunther = null;
-    let playground = null;
     let russell = null;
     let settings = null;
 
@@ -18,7 +17,6 @@ describe('AccountCommands', (it, beforeEach) => {
         database.setPasswordSalt('s4lt$');
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        playground = server.featureManager.loadFeature('playground');
         russell = server.playerManager.getById(1 /* Russell */);
         settings = server.featureManager.loadFeature('settings');
 
@@ -668,8 +666,6 @@ describe('AccountCommands', (it, beforeEach) => {
     it('should be able to find player identifies when they are undercover', async (assert) => {
         await russell.identify();
 
-        playground.access.addException('whois', russell);
-
         gunther.setIpForTesting('37.48.87.211');
         gunther.setSerialForTesting(1337);  // no results
 
@@ -713,7 +709,6 @@ describe('AccountCommands', (it, beforeEach) => {
     it('should be able to find out where a particular player is', async (assert) => {
         await russell.identify();
 
-        playground.access.addException('whereis', russell);
         gunther.setIpForTesting('37.48.87.211');
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });

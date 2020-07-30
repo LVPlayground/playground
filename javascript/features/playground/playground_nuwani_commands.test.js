@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
 import { TestBot } from 'features/nuwani/test/test_bot.js';
 
 import { issueCommand } from 'features/nuwani/commands/command_helpers.js';
@@ -15,25 +14,21 @@ const kCommandSource = 'Xanland!xander@lvp.administrator';
 describe('PlaygroundNuwaniCommands', (it, beforeEach, afterEach) => {
     let bot = null;
     let commandManager = null;
-    let commands = null;
     let gunther = null;
 
     beforeEach(() => {
-        const announce = server.featureManager.loadFeature('announce');
+        server.featureManager.loadFeature('playground');
+
         const nuwani = server.featureManager.loadFeature('nuwani');
 
         bot = new TestBot();
         commandManager = nuwani.commandManager;
-        commands = new PlaygroundNuwaniCommands(() => announce, () => nuwani);
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
         gunther.level = Player.LEVEL_ADMINISTRATOR;
     });
 
-    afterEach(() => {
-        commands.dispose();
-        bot.dispose();
-    });
+    afterEach(() => bot.dispose());
 
     it('should be able to respond with usage by default', async (assert) => {
         bot.setUserModesInEchoChannelForTesting(kCommandSourceUsername, 'a');

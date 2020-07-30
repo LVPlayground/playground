@@ -11,6 +11,6 @@ export class DefaultPermissionDelegate extends CommandPermissionDelegate {
     // instance of CommandDescription. When |verbose| is set, the implementation is expected to
     // share the details of any access error with the given |context|.
     canExecuteCommand(context, contextDelegate, command, verbose) {
-        return false;
+        return true;
     }
 }

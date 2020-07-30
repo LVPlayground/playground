@@ -65,10 +65,25 @@ export class CommandManager {
         if (!player)
             return;  // the |event| was issued for an invalid player, ignore it
 
-        // TODO: Implement our own command handling.
+        // (1) Split the command text in the command & the commandText, i.e. the remaining arguments
+        // and lower case the command as we support them without caring about casing.
+        const [ commandName, commandText ] = event.cmdtext.substring(1).split(' ', 2);
+        const normalizedCommandName = commandName.toLowerCase();
 
-        return server.deprecatedCommandManager.onPlayerCommandText(event);
+        // (2) Get the CommandDescription instance for the |normalizedCommandName|. If it has not
+        // been registered yet, then the command does not exist in JavaScript code.
+        const description = this.#commands_.get(normalizedCommandName);
+        if (!description)
+            return server.deprecatedCommandManager.onPlayerCommandText(event);
+
+        // (3) Mark the |event| as having been handled; no need to call through to Pawn.
+        event.preventDefault();
+
+        // (4) Execute the actual command |description| for the invoking |player|.
+        return this.#executor_.executeCommand(player, description, (commandText || '').trim());
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.#callbacks_.dispose();

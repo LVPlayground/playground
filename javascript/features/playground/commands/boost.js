@@ -6,7 +6,7 @@ import { Command } from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Command: /boost [player] [factor]
-class BoostCommand extends Command {
+export default class BoostCommand extends Command {
     get name() { return 'boost'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
@@ -33,5 +33,3 @@ class BoostCommand extends Command {
         player.sendMessage(Message.COMMAND_SUCCESS, target.name + ' has been boosted.');
     }
 }
-
-export default BoostCommand;

@@ -7,7 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Command: /fancy [player] [none/parrot]
-class FancyCommand extends Command {
+export default class FancyCommand extends Command {
     constructor() {
         super();
 
@@ -95,5 +95,3 @@ class FancyCommand extends Command {
         this.callbacks_ = null;
     }
 }
-
-export default FancyCommand;

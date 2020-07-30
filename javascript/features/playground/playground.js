@@ -42,11 +42,12 @@ export default class Playground extends Feature {
             new PlaygroundCommands(this.access_, this.announce_, communication, this.nuwani_,
                                    settings);
 
-        if (!server.isTest())
+        // Both the PlaygroundManager and PlaygroundCommands require additional initialization that
+        // will be done lazily by the tests that need it, in order to avoid slowing down all tests.
+        if (!server.isTest()) {
+            this.manager_.initialize();
             this.commands_.loadCommands();
-
-        // Activate the features that should be activated by default.
-        this.manager_.initialize();
+        }
 
         this.initializeNuwaniCommands();
     }
@@ -67,13 +68,6 @@ export default class Playground extends Feature {
     canAccessCommand(player, command) {
         return this.access_.canAccessCommand(command, player);
     }
-
-    // ---------------------------------------------------------------------------------------------
-    // Public Testing API of the Playground feature.
-    // ---------------------------------------------------------------------------------------------
-
-    // Gets access to the PlaygroundAccessTracker instance. Only meant for testing purposes.
-    get accessForTesting() { return this.access_; }
 
     // ---------------------------------------------------------------------------------------------
 

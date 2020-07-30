@@ -6,7 +6,7 @@ import { Command } from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Command: /kickflip [player]
-class KickFlipCommand extends Command {
+export default class KickFlipCommand extends Command {
     get name() { return 'kickflip'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
 
@@ -30,5 +30,3 @@ class KickFlipCommand extends Command {
         player.sendMessage(Message.COMMAND_SUCCESS, target.name + ' has been kickflip\'d.');
     }
 }
-
-export default KickFlipCommand;

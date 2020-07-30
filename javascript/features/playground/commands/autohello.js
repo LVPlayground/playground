@@ -47,7 +47,7 @@ const Greetings = [
 ];
 
 // Command: /autohello [player?]
-class AutoHelloMessageCommand extends Command {
+export default class AutoHelloMessageCommand extends Command {
     constructor(...args) {
         super(...args);
 
@@ -167,5 +167,3 @@ class AutoHelloMessageCommand extends Command {
         this.greeters_ = null;
     }
 }
-
-export default AutoHelloMessageCommand;

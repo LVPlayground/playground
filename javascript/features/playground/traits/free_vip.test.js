@@ -2,22 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlaygroundManager } from 'features/playground/playground_manager.js';
-
-describe('FreeVip', (it, beforeEach, afterEach) => {
+describe('FreeVip', (it, beforeEach) => {
     let gunther = null;
-    let manager = null;
     let settings = null;
 
     beforeEach(() => {
-        settings = server.featureManager.loadFeature('settings');
-        manager = new PlaygroundManager(() => settings);
-        manager.initialize();
+        const feature = server.featureManager.loadFeature('playground');
+
+        // Initialize the Manager, which, in turn, will power the Free VIP feature.
+        feature.manager_.initialize();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
+        settings = server.featureManager.loadFeature('settings');
     });
-
-    afterEach(() => manager.dispose());
 
     it('should grant VIP to registered players without VIP', async assert => {
         settings.setValue('decorations/holidays_free_vip', true);

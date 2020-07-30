@@ -2,20 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlaygroundManager } from 'features/playground/playground_manager.js';
-
 describe('PlaygroundManager', (it, beforeEach, afterEach) => {
     let manager = null;
     let settings = null;
 
     beforeEach(() => {
-        settings = server.featureManager.loadFeature('settings');
-        manager = new PlaygroundManager(() => settings);
-    });
+        const feature = server.featureManager.loadFeature('playground');
 
-    afterEach(() => {
-        if (manager)
-            manager.dispose();
+        manager = feature.manager_;
+        settings = server.featureManager.loadFeature('settings');
     });
 
     it('should automatically initialize default-enabled settings', assert => {

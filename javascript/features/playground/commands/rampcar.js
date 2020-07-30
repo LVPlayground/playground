@@ -7,7 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Command: /rampcar [player]?
-class RampCarCommand extends Command {
+export default class RampCarCommand extends Command {
     constructor() {
         super();
 
@@ -79,5 +79,3 @@ class RampCarCommand extends Command {
         server.vehicleManager.removeObserver(this);
     }
 }
-
-export default RampCarCommand;

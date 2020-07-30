@@ -99,5 +99,4 @@ export default class PlayerSettingsCommands extends Command {
 
         await menu.displayForPlayer(player);
     }
-
 }

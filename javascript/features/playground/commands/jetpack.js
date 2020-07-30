@@ -7,7 +7,7 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Command: /jetpack [player] ["remove"]
-class JetpackCommand extends Command {
+export default class JetpackCommand extends Command {
     get name() { return 'jetpack'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
@@ -64,5 +64,3 @@ class JetpackCommand extends Command {
         player.sendMessage(Message.LVP_JETPACK_GRANTED_SELF);
     }
 }
-
-export default JetpackCommand;

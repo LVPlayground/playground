@@ -6,7 +6,7 @@ import { Command } from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Command: /skipdamage [player]
-class SkipDamageCommand extends Command {
+export default class SkipDamageCommand extends Command {
     get name() { return 'skipdamage'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
 
@@ -26,5 +26,3 @@ class SkipDamageCommand extends Command {
         }
     }
 }
-
-export default SkipDamageCommand;

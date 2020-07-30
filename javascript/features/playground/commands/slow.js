@@ -6,7 +6,7 @@ import { Command } from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 
 // Command: /slow [player]? [factor]
-class SlowCommand extends Command {
+export default class SlowCommand extends Command {
     constructor(...args) {
         super(...args);
 
@@ -68,5 +68,3 @@ class SlowCommand extends Command {
         this.slowing_.delete(subject);
     }
 }
-
-export default SlowCommand;

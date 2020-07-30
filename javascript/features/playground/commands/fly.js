@@ -7,13 +7,10 @@ import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // How many frames per second should be checked for directionality updates?
-const FramesPerSecond = 20;
-
-// Animation index of the PARACHUTE/FALL_SkyDive_Accel animation.
-const MovingAnimationIndex = 959;
+const kFramesPerSecond = 20;
 
 // Command: /fly [player]?
-class FlyCommand extends Command {
+export default class FlyCommand extends Command {
     constructor(...args) {
         super(...args);
 
@@ -138,7 +135,7 @@ class FlyCommand extends Command {
             // Update the animation with whatever is most recent for the player.
             this.applyFlightAnimation(subject, moving);
 
-            await wait(1000 / FramesPerSecond);
+            await wait(1000 / kFramesPerSecond);
         }
 
         this.flying_.delete(subject);
@@ -206,5 +203,3 @@ class FlyCommand extends Command {
         this.callbacks_ = null;
     }
 }
-
-export default FlyCommand;

@@ -2,43 +2,19 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlaygroundAccessTracker } from 'features/playground/playground_access_tracker.js';
-import { PlaygroundCommands } from 'features/playground/playground_commands.js';
 import { Setting } from 'entities/setting.js';
 
-describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
-    let access = null;
-    let commands = null;
+describe('PlaygroundCommands', (it, beforeEach) => {
     let communication = null;
     let gunther = null;
 
     beforeEach(async() => {
-        const announce = server.featureManager.loadFeature('announce');
-        const nuwani = server.featureManager.loadFeature('nuwani');
-        const settings = server.featureManager.loadFeature('settings');
+        server.featureManager.loadFeature('playground');
 
         communication = server.featureManager.loadFeature('communication');
-
-        access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(
-            access, () => announce, () => communication, () => nuwani, () => settings);
-
         gunther = server.playerManager.getById(0 /* Gunther */);
+
         await gunther.identify();
-    });
-
-    afterEach(() => {
-        if (commands)
-            commands.dispose();
-    });
-
-    it('should not leave any stray commands on the server', assert => {
-        assert.isAbove(server.commandManager.size, 0);
-
-        commands.dispose();
-        commands = null;
-
-        assert.equal(server.commandManager.size, 0);
     });
 
     it('should send a different usage message to administrators and management', async(assert) => {
@@ -53,55 +29,6 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 4);
 
         assert.notEqual(gunther.messages[1], gunther.messages[3]);
-    });
-
-    it('should be able to deal with remote commands', async(assert) => {
-        const COMMAND_NAME = 'aaaaaaa';
-
-        const russell = server.playerManager.getById(1 /* Russell */);
-        await russell.identify();
-
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        // We're going to assume that this command comes first in the list.
-        access.registerCommand(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
-
-        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-
-        // Lower the level requirement of the |COMMAND_NAME| to all Players.
-        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Change required level */ })).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Player.LEVEL_PLAYER */ })).then(
-            () => gunther.respondToDialog({ response: 0 /* Yeah I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/lvp access'));
-
-        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.isFalse(access.hasException(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_PLAYER);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-
-        // Revoke the access level of the |COMMAND_NAME| back to administrators.
-        access.setCommandLevel(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
-
-        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-
-        // Now grant an exception for Russell allowing him to use the command.
-        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
-            () => gunther.respondToDialog({ listitem: 1 /* Grant exception */ })).then(
-            () => gunther.respondToDialog({ response: 1, inputtext: russell.name })).then(
-            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/lvp access'));
-
-        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.isTrue(access.hasException(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
     });
 
     it('should be able to change boolean settings', async(assert) => {

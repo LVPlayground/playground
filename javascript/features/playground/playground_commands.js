@@ -13,20 +13,20 @@ import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
 
-// Utility function to capitalize the first letter of a |string|.
-function capitalizeFirstLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
-
 // A series of general commands that don't fit in any particular
 export class PlaygroundCommands {
-    constructor(access, announce, communication, nuwani, settings) {
+    announce_ = null;
+    commands_ = null;
+    communication_ = null;
+    nuwani_ = null;
+    settings_ = null;
+
+    constructor(announce, communication, nuwani, settings) {
         this.announce_ = announce;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
 
-        this.access_ = access;
         this.commands_ = new Map();
 
         // -----------------------------------------------------------------------------------------
@@ -34,9 +34,6 @@ export class PlaygroundCommands {
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
-            .sub('access')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
-                .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .sub('messages')
@@ -84,203 +81,6 @@ export class PlaygroundCommands {
             // Store the |command| in the |commands_| dictionary.
             this.commands_.set(command.name, command);
         }
-    }
-
-    // Gets the access tracker for the commands managed by this class.
-    get access() { return this.access_; }
-
-    // Enables administrators and management to change access requirements to the commands that are
-    // part of this module with a dialog-based interface.
-    async onPlaygroundAccessCommand(player) {
-        let commands = [];
-
-        for (const [command, commandLevel] of this.access_.commands) {
-            if (player.level < commandLevel)
-                continue;
-
-            commands.push(command);
-        }
-
-        // Sort the |commands| in alphabetical order, since there is no guarantee that the Access
-        // Tracker maintains the commands in such order.
-        commands.sort();
-
-        const menu = new Menu('Command access settings', [
-            'Command',
-            'Level',
-            'Exceptions'
-        ]);
-
-        commands.forEach(commandName => {
-            const commandLevel = this.access_.getCommandLevel(commandName);
-            const commandExceptions = this.access_.getExceptionCount(commandName);
-            const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
-
-            const levelPrefix = commandLevel !== defaultLevel ? '{FFFF00}' : '';
-            const level = playerLevelToString(commandLevel, true /* plural */);
-
-            const exceptions = commandExceptions != 0
-                ? '{FFFF00}' + commandExceptions + ' exception' + (commandExceptions == 1 ? '': 's')
-                : '-';
-
-            menu.addItem('/' + commandName, levelPrefix + capitalizeFirstLetter(level), exceptions,
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
-        });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Displays a command menu for |commandName| to the |player|. It contains options to change the
-    // required level, as well as options to grant and revoke exceptions for the command.
-    async displayCommandMenu(commandName, player) {
-        const menu = new Menu('/' + commandName + ' access settings');
-
-        const exceptions = this.access_.getExceptions(commandName);
-        exceptions.sort((lhs, rhs) =>
-            lhs.name.localeCompare(rhs.name));
-
-        menu.addItem('Change required level',
-                     PlaygroundCommands.prototype.displayCommandLevelMenu.bind(this, commandName));
-
-        menu.addItem('Grant exception',
-                     PlaygroundCommands.prototype.grantCommandException.bind(this, commandName));
-
-        if (exceptions.length) {
-            menu.addItem('------------------------',
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
-
-            exceptions.forEach(subject => {
-                menu.addItem(
-                    'Revoke for ' + subject.name + ' (Id: ' + subject.id + ')',
-                    PlaygroundCommands.prototype.revokeCommandException.bind(this, commandName,
-                                                                             subject));
-            });
-        }
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Displays a menu that allows |player| to change the required level of |commandName| to any
-    // level that's equal or below their own level, to avoid "losing" a command.
-    async displayCommandLevelMenu(commandName, player) {
-        const currentLevel = this.access_.getCommandLevel(commandName);
-        const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
-
-        const menu = new Menu('/' + commandName + ' required level');
-
-        [
-            Player.LEVEL_PLAYER,
-            Player.LEVEL_ADMINISTRATOR,
-            Player.LEVEL_MANAGEMENT
-        ].forEach(level => {
-            if (level > player.level)
-                return;
-
-            const levelPrefix = currentLevel === level ? '{ADFF2F}' : '';
-            const levelSuffix = defaultLevel === level ? ' (default)' : '';
-
-            const levelName = playerLevelToString(level, true /* plural */);
-
-            menu.addItem(levelPrefix + capitalizeFirstLetter(levelName) + levelSuffix, async() => {
-                if (currentLevel === level) {
-                    return await MessageBox.display(player, {
-                        title: 'No need to update the level',
-                        message: 'This command is already available to ' + levelName + '.'
-                    });
-                }
-
-                this.access_.setCommandLevel(commandName, level);
-                this.announce_().announceToAdministrators(
-                    Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, commandName, levelName)
-
-                // Make an announcement to players if the command was either granted to them, or
-                // taken away from them. We like to cause anarchy by upset mobs.
-                if (level == Player.LEVEL_PLAYER) {
-                    this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, commandName);
-                } else if (currentLevel == Player.LEVEL_PLAYER) {
-                    this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, commandName);
-                }
-
-                return await MessageBox.display(player, {
-                    title: 'The level has been updated!',
-                    message: '/' + commandName + ' is now available to ' + levelName + '.'
-                });
-            });
-        });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Grants an exception for a not yet determined player to use the |commandName|.
-    async grantCommandException(commandName, player) {
-        const answer = await Question.ask(player, {
-            question: 'Select a player',
-            message: 'Which player should be allowed to use /' + commandName + '?',
-            leftButton: 'Grant'
-        });
-
-        if (!answer)
-            return;  // the |player| cancelled the dialog.
-
-        const subject = server.playerManager.find({ nameOrId: answer, returnPlayer: true });
-        if (!subject) {
-            const retry = await MessageBox.display(player, {
-                title: 'Unable to identify the target player',
-                message: 'Either no or too many players were found for "' + answer + '".',
-                leftButton: 'Cancel',
-                rightButton: 'Retry'
-            });
-
-            if (!retry)
-                return;
-
-            return await grantCommandException(commandName, player);
-        }
-
-        if (!subject.account.isRegistered()) {
-            return await MessageBox.display(player, {
-                title: 'Unable to grant an exception',
-                message: 'Exceptions can only be granted to registered players. Consider asking ' +
-                         subject.name + ' to register?'
-            });
-        }
-
-        if (subject === player) {
-            return await MessageBox.display(player, {
-                title: 'Unable to grant an exception',
-                message: 'There is no point in granting exceptions to yourself, sorry.'
-            });
-        }
-
-        this.access_.addException(commandName, subject, player /* sourcePlayer */);
-        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name,
-                commandName);
-        }
-
-        return await MessageBox.display(player, {
-            title: 'The exception has been granted!',
-            message: '/' + commandName + ' is now available to ' + subject.name + '.'
-        });
-    }
-
-    // Revokes the exception for |subject| to use the |commandName|.
-    async revokeCommandException(commandName, subject, player) {
-        this.access_.removeException(commandName, subject, player /* sourcePlayer */);
-
-        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
-                commandName);
-        }
-
-        return await MessageBox.display(player, {
-            title: 'The exception has been revoked!',
-            message: '/' + commandName + ' is no longer available to ' + subject.name + '.'
-        });
     }
 
     // Facilitates reloading the server's message format file, which allows changing text and output
@@ -832,5 +632,10 @@ export class PlaygroundCommands {
         });
 
         this.commands_.clear();
+
+        this.announce_ = null;
+        this.communication_ = null;
+        this.nuwani_ = null;
+        this.settings_ = null;
     }
 }

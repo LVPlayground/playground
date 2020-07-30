@@ -6,7 +6,6 @@ import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info
 import { VehicleModel } from 'entities/vehicle_model.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
-    let abuse = null;
     let commands = null;
     let gunther = null;
     let manager = null;
@@ -15,7 +14,6 @@ describe('VehicleCommands', (it, beforeEach) => {
     beforeEach(async(assert) => {
         const feature = server.featureManager.loadFeature('vehicles');
 
-        abuse = server.featureManager.loadFeature('abuse');
         commands = feature.commands_;
         gunther = server.playerManager.getById(0 /* Gunther */);
         manager = feature.manager_;
@@ -23,7 +21,7 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         // Identify |gunther| to their account, and allow them to use the `/v` command.
         await gunther.identify({ userId: 42 });
-        
+
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         // Wait until the Manager has loaded all vehicles from the database.

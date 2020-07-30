@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import { PlaygroundAccessTracker } from 'features/playground/playground_access_tracker.js';
 import { PlaygroundCommands } from 'features/playground/playground_commands.js';
 import { PlaygroundManager } from 'features/playground/playground_manager.js';
 import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
@@ -11,7 +10,6 @@ import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
 export default class Playground extends Feature {
-    access_ = null;
     announce_ = null;
     commands_ = null;
     manager_ = null;
@@ -36,11 +34,9 @@ export default class Playground extends Feature {
         // statistics. We closely integrate with that feature.
         const settings = this.defineDependency('settings');
 
-        this.access_ = new PlaygroundAccessTracker();
         this.manager_ = new PlaygroundManager(settings);
         this.commands_ =
-            new PlaygroundCommands(this.access_, this.announce_, communication, this.nuwani_,
-                                   settings);
+            new PlaygroundCommands(this.announce_, communication, this.nuwani_, settings);
 
         // Both the PlaygroundManager and PlaygroundCommands require additional initialization that
         // will be done lazily by the tests that need it, in order to avoid slowing down all tests.
@@ -66,7 +62,7 @@ export default class Playground extends Feature {
     // Returns whether the |player| is able to use |command|. This considers the command's default
     // level, as well as any overrides that might have been created.
     canAccessCommand(player, command) {
-        return this.access_.canAccessCommand(command, player);
+        return player.level >= Player.LEVEL_ADMINISTRATOR;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -80,9 +76,6 @@ export default class Playground extends Feature {
 
         this.manager_.dispose();
         this.manager_ = null;
-
-        this.access_.dispose();
-        this.access_ = null;
 
         this.announce_ = null;
 

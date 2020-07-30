@@ -4,7 +4,7 @@
 
 // Trait that, when enabled, hands out VIP to players who haven't donated already. A simple message
 // will be shown telling them that it'll go away in January.
-class FreeVip {
+export class FreeVip {
     constructor() {
         server.playerManager.addObserver(this, false /* replayHistory */);
     }
@@ -33,5 +33,3 @@ class FreeVip {
         server.playerManager.removeObserver(this);
     }
 };
-
-export default FreeVip;

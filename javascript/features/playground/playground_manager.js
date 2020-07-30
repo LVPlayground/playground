@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import FreeVip from 'features/playground/traits/free_vip.js';
-import PirateShipParty from 'features/playground/traits/pirate_ship_party.js';
+import { FreeVip } from 'features/playground/traits/free_vip.js';
+import { PirateShipParty } from 'features/playground/traits/pirate_ship_party.js';
 
 // The playground manager provides back-end logic for the features provided as part of this module.
 // It controls all settings, as well as the default values for the settings.
-class PlaygroundManager {
+export class PlaygroundManager {
     constructor(settings) {
         this.settings_ = settings;
 
@@ -72,5 +72,3 @@ class PlaygroundManager {
         }
     }
 }
-
-export default PlaygroundManager;

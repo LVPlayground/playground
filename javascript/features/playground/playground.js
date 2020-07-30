@@ -3,14 +3,14 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
-import PlaygroundCommands from 'features/playground/playground_commands.js';
-import PlaygroundManager from 'features/playground/playground_manager.js';
+import { PlaygroundAccessTracker } from 'features/playground/playground_access_tracker.js';
+import { PlaygroundCommands } from 'features/playground/playground_commands.js';
+import { PlaygroundManager } from 'features/playground/playground_manager.js';
 import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
 
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
-class Playground extends Feature {
+export default class Playground extends Feature {
     constructor() {
         super();
 
@@ -77,5 +77,3 @@ class Playground extends Feature {
         this.access_.dispose();
     }
 }
-
-export default Playground;

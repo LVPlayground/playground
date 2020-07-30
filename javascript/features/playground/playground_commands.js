@@ -1,12 +1,11 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
+import { Command } from 'features/playground/command.js';
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { MessageBox } from 'components/dialogs/message_box.js';
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
 
@@ -23,7 +22,7 @@ function capitalizeFirstLetter(string) {
 }
 
 // A series of general commands that don't fit in any particular
-class PlaygroundCommands {
+export class PlaygroundCommands {
     constructor(access, announce, communication, nuwani, settings) {
         this.announce_ = announce;
         this.communication_ = communication;
@@ -901,5 +900,3 @@ class PlaygroundCommands {
         this.commands_.clear();
     }
 }
-
-export default PlaygroundCommands;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
-import PlaygroundCommands from 'features/playground/playground_commands.js';
+import { PlaygroundAccessTracker } from 'features/playground/playground_access_tracker.js';
+import { PlaygroundCommands } from 'features/playground/playground_commands.js';
 import { Setting } from 'entities/setting.js';
 
 describe('PlaygroundCommands', (it, beforeEach, afterEach) => {

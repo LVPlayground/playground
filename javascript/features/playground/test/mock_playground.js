@@ -3,10 +3,10 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
+import { PlaygroundAccessTracker } from 'features/playground/playground_access_tracker.js';
 
 // Mocked implementation of the Playground feature's API.
-class MockPlayground extends Feature {
+export default class MockPlayground extends Feature {
     constructor() {
         super();
 
@@ -43,5 +43,3 @@ class MockPlayground extends Feature {
         this.access_.dispose();
     }
 }
-
-export default MockPlayground;

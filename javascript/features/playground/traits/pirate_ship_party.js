@@ -12,7 +12,7 @@ const DjAnimation = { library: 'LOWRIDER', name: 'RAP_B_Loop', loop: true };
 //
 // A number of these decorations have been contributed by Jay (https://sa-mp.nl/players/19/jay.html)
 // and a number of them have been contributed by Russell.
-class PirateShipParty {
+export class PirateShipParty {
     constructor() {
         this.bartender_ =
             server.actorManager.createActor({ modelId: 171 /* Hotel Services */,
@@ -46,5 +46,3 @@ class PirateShipParty {
         this.bartender_.dispose();
     }
 }
-
-export default PirateShipParty;

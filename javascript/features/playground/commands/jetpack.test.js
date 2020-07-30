@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
+import { MockPlaygroundCommands } from 'features/playground/test/mock_playground_commands.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 describe('JetpackCommand', (it, beforeEach, afterEach) => {

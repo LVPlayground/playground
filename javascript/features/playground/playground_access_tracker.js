@@ -12,7 +12,7 @@ const ExceptionReconnectTimeoutMs = 5 /* minutes */ * 60 * 1000;
 //
 // Basic protection has been built in for people timing out and having to reconnect: their access
 // exceptions will be remembered for up to a few minutes.
-class PlaygroundAccessTracker {
+export class PlaygroundAccessTracker {
     constructor() {
         this.commandLevelDefaults_ = new Map();
         this.commandLevels_ = new Map();
@@ -217,5 +217,3 @@ class PlaygroundAccessTracker {
         this.exceptions_.clear();
     }
 }
-
-export default PlaygroundAccessTracker;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlaygroundManager from 'features/playground/playground_manager.js';
+import { PlaygroundManager } from 'features/playground/playground_manager.js';
 
 describe('FreeVip', (it, beforeEach, afterEach) => {
     let gunther = null;

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { PlayerSetting } from 'entities/player_setting.js';
-import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
+import { MockPlaygroundCommands } from 'features/playground/test/mock_playground_commands.js';
 
 describe('PlayerSettingsCommands', (it, beforeEach, afterEach) => {
     let commands = null;

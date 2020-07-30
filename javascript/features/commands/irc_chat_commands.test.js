@@ -36,7 +36,7 @@ describe('IrcChatCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0],
                      Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS,
-                                    'specific people'));
+                                    'Management members'));
     });
 
     it('/crew should send a message for administrators to .crew', async (assert) => {

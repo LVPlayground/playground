@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { CubicBezier } from 'base/cubic_bezier.js';
 import { Menu } from 'components/menu/menu.js';
 import { Treasures } from 'features/collectables/treasures.js';
@@ -41,24 +41,29 @@ export class CollectableCommands {
         this.hintPriceBezier_ = new CubicBezier(.57, .05, .56, .95);
 
         // /achievements [player]?
-        server.deprecatedCommandManager.buildCommand('achievements')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
+        server.commandManager.buildCommand('achievements')
+            .description('Displays your achievements on the server.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer, optional: true }])
             .build(CollectableCommands.prototype.onAchievementsCommand.bind(this));
 
         // /barrels
-        server.deprecatedCommandManager.buildCommand('barrels')
+        server.commandManager.buildCommand('barrels')
+            .description('Status and hints for collecting Red Barrels.')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'barrels'));
 
         // /collectables
-        server.deprecatedCommandManager.buildCommand('collectables')
+        server.commandManager.buildCommand('collectables')
+            .description('Status and hints for all available collectables.')
             .build(CollectableCommands.prototype.onCollectablesCommand.bind(this));
 
         // /tags
-        server.deprecatedCommandManager.buildCommand('tags')
+        server.commandManager.buildCommand('tags')
+            .description('Status and hints for collecting Spray Tags.')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'tags'));
 
         // /treasures
-        server.deprecatedCommandManager.buildCommand('treasures')
+        server.commandManager.buildCommand('treasures')
+            .description('Status and hints for collecting Treasures.')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'treasures'));
     }
 
@@ -403,11 +408,11 @@ export class CollectableCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('treasures');
-        server.deprecatedCommandManager.removeCommand('tags');
-        server.deprecatedCommandManager.removeCommand('barrels');
+        server.commandManager.removeCommand('treasures');
+        server.commandManager.removeCommand('tags');
+        server.commandManager.removeCommand('barrels');
 
-        server.deprecatedCommandManager.removeCommand('collectables');
-        server.deprecatedCommandManager.removeCommand('achievements');
+        server.commandManager.removeCommand('collectables');
+        server.commandManager.removeCommand('achievements');
     }
 }

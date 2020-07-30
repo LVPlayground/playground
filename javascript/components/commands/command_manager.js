@@ -67,12 +67,16 @@ export class CommandManager {
 
         // (1) Split the command text in the command & the commandText, i.e. the remaining arguments
         // and lower case the command as we support them without caring about casing.
-        const [ commandName, commandText ] = event.cmdtext.substring(1).split(' ', 2);
-        const normalizedCommandName = commandName.toLowerCase();
+        let separator = event.cmdtext.indexOf(' ');
+        if (separator === -1)
+            separator = event.cmdtext.length;
 
-        // (2) Get the CommandDescription instance for the |normalizedCommandName|. If it has not
-        // been registered yet, then the command does not exist in JavaScript code.
-        const description = this.#commands_.get(normalizedCommandName);
+        const commandName = event.cmdtext.substr(1, separator - 1).toLowerCase();
+        const commandText = event.cmdtext.substr(separator + 1).trim();
+
+        // (2) Get the CommandDescription instance for the |commandName|. If it has not been
+        // registered yet, then the command does not exist in JavaScript code.
+        const description = this.#commands_.get(commandName);
         if (!description)
             return server.deprecatedCommandManager.onPlayerCommandText(event);
 

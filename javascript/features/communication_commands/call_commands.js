@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // After how many seconds does a `/call` expire, because they didn't pick up?
 export const kCallExpirationTimeSec = 15;
@@ -21,20 +21,24 @@ export class CallCommands {
         this.communication_ = communication;
 
         // /answer
-        server.deprecatedCommandManager.buildCommand('answer')
+        server.commandManager.buildCommand('answer')
+            .description('Answers any incoming phone calls.')
             .build(CallCommands.prototype.onAnswerCommand.bind(this));
 
         // /call [player]
-        server.deprecatedCommandManager.buildCommand('call')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+        server.commandManager.buildCommand('call')
+            .description('Enables you to call another player.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(CallCommands.prototype.onCallCommand.bind(this));
 
         // /hangup
-        server.deprecatedCommandManager.buildCommand('hangup')
+        server.commandManager.buildCommand('hangup')
+            .description(`Ends the phone conversation you're involved in.`)
             .build(CallCommands.prototype.onHangupCommand.bind(this));
 
         // /reject
-        server.deprecatedCommandManager.buildCommand('reject')
+        server.commandManager.buildCommand('reject')
+            .description('Rejects any incoming phone calls.')
             .build(CallCommands.prototype.onRejectCommand.bind(this));
     }
 
@@ -145,9 +149,9 @@ export class CallCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('reject');
-        server.deprecatedCommandManager.removeCommand('hangup');
-        server.deprecatedCommandManager.removeCommand('call');
-        server.deprecatedCommandManager.removeCommand('answer');
+        server.commandManager.removeCommand('reject');
+        server.commandManager.removeCommand('hangup');
+        server.commandManager.removeCommand('call');
+        server.commandManager.removeCommand('answer');
     }
 }

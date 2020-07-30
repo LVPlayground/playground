@@ -14,16 +14,29 @@ class Commands extends Feature {
     constructor() {
         super();
 
-        const commandManager = server.deprecatedCommandManager;
+        server.commandManager.buildCommand('credits')
+            .description('Tells you which amazing folks made LVP happen.')
+            .build(InfoDialogCommand.create('data/commands/credits.json'));
 
-        // Informational commands whose data will be loaded from a JSON file.
+        server.commandManager.buildCommand('guide')
+            .description('Displays a useful guide for temporary administrators.')
+            .build(InfoDialogCommand.create('data/commands/guide.json'));
 
-        commandManager.registerCommand('credits', InfoDialogCommand.create('data/commands/credits.json'));
-        commandManager.registerCommand('guide', InfoDialogCommand.create('data/commands/guide.json'));
-        commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
-        commandManager.registerCommand('irc', InfoDialogCommand.create('data/commands/irc.json'));
-        commandManager.registerCommand('rules', InfoDialogCommand.create('data/commands/rules.json'));
-        commandManager.registerCommand('vip', InfoDialogCommand.create('data/commands/vip.json'));
+        server.commandManager.buildCommand('help')
+            .description('Displays information on how to get started on LVP.')
+            .build(InfoDialogCommand.create('data/commands/help.json'));
+
+        server.commandManager.buildCommand('irc')
+            .description('Displays information on how to join our IRC channels.')
+            .build(InfoDialogCommand.create('data/commands/irc.json'));
+
+        server.commandManager.buildCommand('rules')
+            .description('Displays Las Venturas Playground\'s rules.')
+            .build(InfoDialogCommand.create('data/commands/rules.json'));
+
+        server.commandManager.buildCommand('vip')
+            .description('Displays benefits available to VIP players.')
+            .build(InfoDialogCommand.create('data/commands/vip.json'));
 
         // Load the seperated positioning-related commands
         this.positioningCommands_ = new PositioningCommands();

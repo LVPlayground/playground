@@ -2,28 +2,32 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // For some purposes it could come in handy to know something about your own position and the
 // direction looking in. Some small positioning-related commands are for that defined in here.
 class PositioningCommands {
     constructor() {
-        server.deprecatedCommandManager.buildCommand('pos')
-            .sub(CommandBuilder.NUMBER_PARAMETER) // x
+        server.commandManager.buildCommand('pos')
+            .description('Displays your current position in the world.')
+            .sub(CommandBuilder.kTypeNumber, 'x') // x
+                .description('Teleports you to any position in the world.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
-                .parameters([{ name: 'y', type: CommandBuilder.NUMBER_PARAMETER },
-                             { name: 'z', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'y', type: CommandBuilder.kTypeNumber },
+                             { name: 'z', type: CommandBuilder.kTypeNumber }])
                 .build(PositioningCommands.prototype.onSetPosCommand.bind(this))
             .build(PositioningCommands.prototype.onPosCommand.bind(this));
 
-        server.deprecatedCommandManager.buildCommand('up')
+        server.commandManager.buildCommand('up')
+            .description('Moves you up or down by a given number of units.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'distance', type: CommandBuilder.kTypeNumber }])
             .build(PositioningCommands.prototype.onUpCommand.bind(this));
 
-        server.deprecatedCommandManager.buildCommand('forward')
+        server.commandManager.buildCommand('forward')
+            .description('Moves you forward of backward by a given number of units.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'distance', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'distance', type: CommandBuilder.kTypeNumber }])
             .build(PositioningCommands.prototype.onForwardCommand.bind(this));
     }
 
@@ -109,9 +113,9 @@ class PositioningCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.deprecatedCommandManager.removeCommand('pos');
-        server.deprecatedCommandManager.removeCommand('up');
-        server.deprecatedCommandManager.removeCommand('forward');
+        server.commandManager.removeCommand('pos');
+        server.commandManager.removeCommand('up');
+        server.commandManager.removeCommand('forward');
     }
 }
 

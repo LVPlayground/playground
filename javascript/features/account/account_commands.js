@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { AccountDatabase } from 'features/account/account_database.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 
@@ -34,26 +34,31 @@ export class AccountCommands {
 
         // /account
         // /account [player]
-        server.deprecatedCommandManager.buildCommand('account')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+        server.commandManager.buildCommand('account')
+            .description(`Enables you to manage your LVP account.`)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description(`Enables administrators to manage anyone's account.`)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
 
         // /register
-        server.deprecatedCommandManager.buildCommand('register')
+        server.commandManager.buildCommand('register')
+            .description(`Displays information on how to register on LVP.`)
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
 
         // /whereis [player]
-        server.deprecatedCommandManager.buildCommand('whereis')
+        server.commandManager.buildCommand('whereis')
+            .description(`Displays information about a player's whereabouts.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(AccountCommands.prototype.onWhereisCommand.bind(this));
 
         // /whois [player]
-        server.deprecatedCommandManager.buildCommand('whois')
+        server.commandManager.buildCommand('whois')
+            .description(`Displays information about a player's identity.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(AccountCommands.prototype.onWhoisCommand.bind(this));
     }
 
@@ -904,9 +909,9 @@ export class AccountCommands {
         this.database_ = null;
         this.playerIdentifier_ = null;
 
-        server.deprecatedCommandManager.removeCommand('whois');
-        server.deprecatedCommandManager.removeCommand('whereis');
-        server.deprecatedCommandManager.removeCommand('register');
-        server.deprecatedCommandManager.removeCommand('account');
+        server.commandManager.removeCommand('whois');
+        server.commandManager.removeCommand('whereis');
+        server.commandManager.removeCommand('register');
+        server.commandManager.removeCommand('account');
     }
 }

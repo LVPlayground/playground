@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { DanceAnimation } from 'features/animations/dance_animation.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { Menu } from 'components/menu/menu.js';
@@ -35,14 +35,16 @@ export default class Animations extends Feature {
         this.animations_ = new Map();
 
         // /animations
-        server.deprecatedCommandManager.buildCommand('animations')
+        server.commandManager.buildCommand('animations')
+            .description('Displays an overview of the available animations.')
             .build(Animations.prototype.onAnimationsCommand.bind(this));
 
         // /dance [1-4] [player]?
-        server.deprecatedCommandManager.buildCommand('dance')
+        server.commandManager.buildCommand('dance')
+            .description('Enables you to join the party and dance!')
             .parameters([
-                { name: 'style', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true } ])
+                { name: 'style', type: CommandBuilder.kTypeNumber, optional: true },
+                { name: 'player', type: CommandBuilder.kTypePlayer, optional: true } ])
             .build(Animations.prototype.onDanceCommand.bind(this));
 
         if (!server.isTest())
@@ -60,8 +62,10 @@ export default class Animations extends Feature {
             this.animations_.set(animation.command, animation);
 
             // (2) Create a command for the given animation.
-            server.deprecatedCommandManager.buildCommand(animation.command)
-                .sub(CommandBuilder.PLAYER_PARAMETER)
+            server.commandManager.buildCommand(animation.command)
+                .description(animation.description)
+                .sub(CommandBuilder.kTypePlayer, 'target')
+                    .description('Executes this animation for another player.')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(Animations.prototype.executeAnimation.bind(this, animation))
                 .build(Animations.prototype.executeAnimation.bind(this, animation));
@@ -183,11 +187,11 @@ export default class Animations extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('dance');
-        server.deprecatedCommandManager.removeCommand('animations');
+        server.commandManager.removeCommand('dance');
+        server.commandManager.removeCommand('animations');
 
         for (const command of this.animations_.keys())
-            server.deprecatedCommandManager.removeCommand(command);
+            server.commandManager.removeCommand(command);
 
         this.animations_.clear();
         this.animations_ = null;

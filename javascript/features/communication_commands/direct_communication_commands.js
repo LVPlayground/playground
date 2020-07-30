@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 import { relativeTime } from 'base/time.js';
@@ -40,27 +40,31 @@ export class DirectCommunicationCommands {
             'ircmessage', DirectCommunicationCommands.prototype.onIrcMessageReceived.bind(this));
 
         // /ircpm [username] [message]
-        server.deprecatedCommandManager.buildCommand('ircpm')
-            .parameters([ { name: 'username',  type: CommandBuilder.WORD_PARAMETER },
-                          { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+        server.commandManager.buildCommand('ircpm')
+            .description('Send a message to someone on IRC.')
+            .parameters([ { name: 'username',  type: CommandBuilder.kTypeText },
+                          { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(DirectCommunicationCommands.prototype.onIrcPrivateMessageCommand.bind(this));
 
         // /pm [player] [message]
-        server.deprecatedCommandManager.buildCommand('pm')
-            .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
-                          { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+        server.commandManager.buildCommand('pm')
+            .description('Send a private message to someone on the server.')
+            .parameters([ { name: 'player',  type: CommandBuilder.kTypePlayer },
+                          { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(DirectCommunicationCommands.prototype.onPrivateMessageCommand.bind(this));
 
         // /r [message]
-        server.deprecatedCommandManager.buildCommand('r')
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+        server.commandManager.buildCommand('r')
+            .description('Respond to the most recent message you received.')
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(DirectCommunicationCommands.prototype.onReplyCommand.bind(this));
 
         // /spm [player] [message]
-        server.deprecatedCommandManager.buildCommand('spm')
+        server.commandManager.buildCommand('spm')
+            .description('Send a secret private message to someone on the server.')
             .restrict(Player.LEVEL_MANAGEMENT)
-            .parameters([ { name: 'player',  type: CommandBuilder.PLAYER_PARAMETER },
-                          { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
+            .parameters([ { name: 'player',  type: CommandBuilder.kTypePlayer },
+                          { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(DirectCommunicationCommands.prototype.onSecretPrivateMessageCommand.bind(this));
     }
 
@@ -259,10 +263,10 @@ export class DirectCommunicationCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('ircpm');
-        server.deprecatedCommandManager.removeCommand('pm');
-        server.deprecatedCommandManager.removeCommand('spm');
-        server.deprecatedCommandManager.removeCommand('r');
+        server.commandManager.removeCommand('ircpm');
+        server.commandManager.removeCommand('pm');
+        server.commandManager.removeCommand('spm');
+        server.commandManager.removeCommand('r');
 
         this.callbacks_.dispose();
         this.callbacks_ = null;

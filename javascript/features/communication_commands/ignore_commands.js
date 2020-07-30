@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Encapsulates a series of commands to do with the ability to ignore other players.
 export class IgnoreCommands {
@@ -15,20 +15,24 @@ export class IgnoreCommands {
         this.communication_ = communication;
 
         // /ignore [player]
-        server.deprecatedCommandManager.buildCommand('ignore')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+        server.commandManager.buildCommand('ignore')
+            .description('Ignore another player in all in-game communication.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(IgnoreCommands.prototype.onIgnoreCommand.bind(this));
 
         // /ignored [player]?
-        server.deprecatedCommandManager.buildCommand('ignored')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+        server.commandManager.buildCommand('ignored')
+            .description('Display which players you have ignored.')
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Display which players they have ignored.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this))
             .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this));
 
         // /unignore [player]
-        server.deprecatedCommandManager.buildCommand('unignore')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+        server.commandManager.buildCommand('unignore')
+            .description('See all messages sent by another player again.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(IgnoreCommands.prototype.onUnignoreCommand.bind(this));
     }
 
@@ -101,8 +105,8 @@ export class IgnoreCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('unignore');
-        server.deprecatedCommandManager.removeCommand('ignored');
-        server.deprecatedCommandManager.removeCommand('ignore');
+        server.commandManager.removeCommand('unignore');
+        server.commandManager.removeCommand('ignored');
+        server.commandManager.removeCommand('ignore');
     }
 }

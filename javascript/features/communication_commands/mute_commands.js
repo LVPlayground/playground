@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 import { relativeTime } from 'base/time.js';
 
@@ -27,34 +27,39 @@ export class MuteCommands {
         this.nuwani_ = nuwani;
 
         // /mute [player] [duration=3]
-        server.deprecatedCommandManager.buildCommand('mute')
+        server.commandManager.buildCommand('mute')
+            .description('Mute a certain player for a number of minutes.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'duration', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 3 }])
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'duration', type: CommandBuilder.kTypeNumber, defaultValue: 3 }])
             .build(MuteCommands.prototype.onMuteCommand.bind(this));
 
         // /muteirc [on|off]?
-        server.deprecatedCommandManager.buildCommand('muteirc')
+        server.commandManager.buildCommand('muteirc')
+            .description('Mute (or unmute) communication coming from IRC.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'on/off', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+            .parameters([{ name: 'on/off', type: CommandBuilder.kTypeText, optional: true }])
             .build(MuteCommands.prototype.onMuteIrcCommand.bind(this));
 
         // /muted
-        server.deprecatedCommandManager.buildCommand('muted')
+        server.commandManager.buildCommand('muted')
+            .description('Display a list of people who currently are muted.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(MuteCommands.prototype.onMutedCommand.bind(this));
 
-        // /showreport
-        server.deprecatedCommandManager.buildCommand('showreport')
+        // /showreport [player]
+        server.commandManager.buildCommand('showreport')
+            .description('Forcefully tell another player how they should report incidents.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(MuteCommands.prototype.onShowReportCommand.bind(this));
 
         // /unmute [player]
-        server.deprecatedCommandManager.buildCommand('unmute')
+        server.commandManager.buildCommand('unmute')
+            .description('Remove the mute placed on a player.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(MuteCommands.prototype.onUnmuteCommand.bind(this));
 
         // Start the mute monitor, to inform players and admins about expiring mutes.
@@ -251,10 +256,10 @@ export class MuteCommands {
         this.muted_.clear();
         this.muted_ = null;
 
-        server.deprecatedCommandManager.removeCommand('unmute');
-        server.deprecatedCommandManager.removeCommand('showreport');
-        server.deprecatedCommandManager.removeCommand('muted');
-        server.deprecatedCommandManager.removeCommand('muteirc');
-        server.deprecatedCommandManager.removeCommand('mute');
+        server.commandManager.removeCommand('unmute');
+        server.commandManager.removeCommand('showreport');
+        server.commandManager.removeCommand('muted');
+        server.commandManager.removeCommand('muteirc');
+        server.commandManager.removeCommand('mute');
     }
 }

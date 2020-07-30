@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { CallCommands } from 'features/communication_commands/call_commands.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { DirectCommunicationCommands } from 'features/communication_commands/direct_communication_commands.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { IgnoreCommands } from 'features/communication_commands/ignore_commands.js';
@@ -69,35 +69,40 @@ export default class CommunicationCommands extends Feature {
         this.initializeIrcCommands();
 
         // /announce [message]
-        server.deprecatedCommandManager.buildCommand('announce')
+        server.commandManager.buildCommand('announce')
+            .description('Used for making an announcement on the server.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(CommunicationCommands.prototype.onAnnounceCommand.bind(this));
 
         // /clear
-        server.deprecatedCommandManager.buildCommand('clear')
+        server.commandManager.buildCommand('clear')
+            .description(`Clear all contents from everyone's chat box.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(CommunicationCommands.prototype.onClearCommand.bind(this));
 
         // /me [message]
-        server.deprecatedCommandManager.buildCommand('me')
-            .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+        server.commandManager.buildCommand('me')
+            .description('Sends a message styled after an IRC action.')
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
             .build(CommunicationCommands.prototype.onMeCommand.bind(this));
 
         // /psay [player] [message]
-        server.deprecatedCommandManager.buildCommand('psay')
+        server.commandManager.buildCommand('psay')
+            .description('Impersonate another player in sending a message.')
             .restrict(Player.LEVEL_MANAGEMENT)
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'message', type: CommandBuilder.kTypeText }])
             .build(CommunicationCommands.prototype.onPSayCommand.bind(this));
 
         // /show [message] [player]?
-        server.deprecatedCommandManager.buildCommand('show')
+        server.commandManager.buildCommand('show')
+            .description('Used for informing everyone about a particular subject.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
-                { name: 'message', type: CommandBuilder.WORD_PARAMETER, optional: true },
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
+                { name: 'message', type: CommandBuilder.kTypeText, optional: true },
+                { name: 'player', type: CommandBuilder.kTypePlayer, optional: true }])
             .build(CommunicationCommands.prototype.onShowCommand.bind(this));
 
         // Unless we're in a test, start the GuntherCycle which will automatically use the /show
@@ -284,11 +289,11 @@ export default class CommunicationCommands extends Feature {
         for (const commands of this.commands_)
             commands.dispose();
 
-        server.deprecatedCommandManager.removeCommand('show');
-        server.deprecatedCommandManager.removeCommand('psay');
-        server.deprecatedCommandManager.removeCommand('me');
-        server.deprecatedCommandManager.removeCommand('clear');
-        server.deprecatedCommandManager.removeCommand('announce');
+        server.commandManager.removeCommand('show');
+        server.commandManager.removeCommand('psay');
+        server.commandManager.removeCommand('me');
+        server.commandManager.removeCommand('clear');
+        server.commandManager.removeCommand('announce');
 
         this.nuwaniCommands_.dispose();
         this.nuwaniCommands_ = null;

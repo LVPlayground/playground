@@ -61,6 +61,9 @@ export class CommandBuilder {
     return this.parent_.name + ' ' + name;
   }
 
+  // To make conversion to the new command system easier.
+  description() { return this; }
+
   // Restricts usage of the command to the given player level. Optionally, when |restrictTemporary|
   // has been set, it further excludes people who aren't permanently at that level.
   restrict(level, restrictTemporary = false) {

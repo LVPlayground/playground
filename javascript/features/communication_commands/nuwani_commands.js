@@ -33,36 +33,43 @@ export class NuwaniCommands {
 
         // !admin [message]
         this.commandManager_.buildCommand('admin')
+            .description(`Send a message to the in-game administrator chat.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onAdminCommand.bind(this));
 
         // !announce [message]
         this.commandManager_.buildCommand('announce')
+            .description(`Send an announcement to in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onAnnounceCommand.bind(this));
 
         // !discord
         this.commandManager_.buildCommand('discord')
+            .description(`Display information about our Discord server.`)
             .build(NuwaniCommands.prototype.onDiscordCommand.bind(this));
         
         // !help
         this.commandManager_.buildCommand('help')
+            .description(`Display information about how to use Nuwani.`)
             .build(NuwaniCommands.prototype.onHelpCommand.bind(this));
 
         // !msg [message]
         this.commandManager_.buildCommand('msg')
+            .description(`Send a message to in-game players.`)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onMessageCommand.bind(this));
 
         // !muted
         this.commandManager_.buildCommand('muted')
+            .description(`Display a list of currently muted players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(NuwaniCommands.prototype.onMutedCommand.bind(this));
 
         // !mute [player] [duration=2]
         this.commandManager_.buildCommand('mute')
+            .description(`Mute one of the currently in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
@@ -71,6 +78,7 @@ export class NuwaniCommands {
 
         // !pm [player] [message]
         this.commandManager_.buildCommand('pm')
+            .description(`Send a private message to an in-game player.`)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
                 { name: 'message', type: CommandBuilder.SENTENCE_PARAMETER } ])
@@ -78,18 +86,21 @@ export class NuwaniCommands {
 
         // !say [message]
         this.commandManager_.buildCommand('say')
+            .description(`Send an informal announcement to in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onSayCommand.bind(this));
 
         // !unmute [player]
         this.commandManager_.buildCommand('unmute')
+            .description(`Revoke a mute on one of the in-game players.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(NuwaniCommands.prototype.onUnmuteCommand.bind(this));
 
         // !vip [message]
         this.commandManager_.buildCommand('vip')
+            .description(`Send a message to all in-game VIPs.`)
             .restrict(context => context.isVip())
             .parameters([{ name: 'message', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(NuwaniCommands.prototype.onVipMessageCommand.bind(this));

@@ -14,11 +14,13 @@ export class PlayerCommands {
 
         // !getid [nickname]
         this.commandManager_.buildCommand('getid')
+            .description(`Display the player Id for a given nickname.`)
             .parameters([{ name: 'nickname', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(PlayerCommands.prototype.onGetPlayerCommand.bind(this));
 
         // !getname [id]
         this.commandManager_.buildCommand('getname')
+            .description(`Display the nickname for a given player Id.`)
             .parameters([{ name: 'id', type: CommandBuilder.PLAYER_PARAMETER }])
             .build(PlayerCommands.prototype.onGetPlayerCommand.bind(this));
     }

@@ -28,6 +28,7 @@ export class NuwaniCommands {
 
         // !addnote [nickname] [note]
         this.commandManager_.buildCommand('addnote')
+            .description(`Adds a note to a player's permanent record.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
@@ -39,8 +40,10 @@ export class NuwaniCommands {
         // !ban serial [serial] [nickname] [days] [reason]
         // !ban [player] [days] [reason]
         this.commandManager_.buildCommand('ban')
+            .description(`Revokes someone's ability to access the server.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('ip')
+                .description(`Issue an IP-based ban.`)
                 .parameters([
                     { name: 'ip', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
@@ -48,6 +51,7 @@ export class NuwaniCommands {
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
                 .build(NuwaniCommands.prototype.onBanIpCommand.bind(this))
             .sub('range')
+                .description(`Issue an IP-based range ban.`)
                 .parameters([
                     { name: 'ip range', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
@@ -55,6 +59,7 @@ export class NuwaniCommands {
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
                 .build(NuwaniCommands.prototype.onBanRangeCommand.bind(this))
             .sub('serial')
+                .description(`Issue a serial-based ban.`)
                 .parameters([
                     { name: 'serial', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
@@ -62,6 +67,7 @@ export class NuwaniCommands {
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
                 .build(NuwaniCommands.prototype.onBanSerialCommand.bind(this))
             .sub(CommandBuilder.PLAYER_PARAMETER)
+                .description(`Issue a ban on an in-game player.`)
                 .parameters([
                     { name: 'days', type: CommandBuilder.NUMBER_PARAMETER },
                     { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
@@ -70,11 +76,13 @@ export class NuwaniCommands {
 
         // !banip
         this.commandManager_.buildCommand('banip')
+            .description(`Deprecated command, use !ban ip instead.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(NuwaniCommands.prototype.onDeprecatedBanIpCommand.bind(this));
 
         // !isbanned [nickname | ip | ip range | serial]
         this.commandManager_.buildCommand('isbanned')
+            .description(`Check whether someone is banned from the server.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([{
                 name: 'nickname | ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER }])
@@ -82,6 +90,7 @@ export class NuwaniCommands {
 
         // !kick [player] [reason]
         this.commandManager_.buildCommand('kick')
+            .description(`Forcefully disconnect a player from the server.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
@@ -90,11 +99,13 @@ export class NuwaniCommands {
 
         // !lastbans
         this.commandManager_.buildCommand('lastbans')
+            .description(`Display the most recent bans issued on the server.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .build(NuwaniCommands.prototype.onLastBansCommand.bind(this));
 
         // !ipinfo [nickname | ip | ip range] [maxAge = 1095]
         this.commandManager_.buildCommand('ipinfo')
+            .description(`Display information about a particular person.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname | ip | ip range', type: CommandBuilder.WORD_PARAMETER },
@@ -106,16 +117,20 @@ export class NuwaniCommands {
         // !rexception add [range] [nickname]
         // !rexception remove [range] [nickname]
         this.commandManager_.buildCommand('rexception')
+            .description(`Manage exceptions to IP-based range bans.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('list')
+                .description(`Display exceptions for a given IP range.`)
                 .parameters([{ name: 'range', type: CommandBuilder.WORD_PARAMETER, optional: true }])
                 .build(NuwaniCommands.prototype.onRangeExceptionListCommand.bind(this))
             .sub('add')
+                .description(`Add an exception for a given IP range.`)
                 .parameters([
                     { name: 'range', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
                 .build(NuwaniCommands.prototype.onRangeExceptionAddCommand.bind(this))
             .sub('remove')
+                .description(`Remove an exception for a given IP range.`)
                 .parameters([
                     { name: 'range', type: CommandBuilder.WORD_PARAMETER },
                     { name: 'nickname', type: CommandBuilder.WORD_PARAMETER }])
@@ -124,6 +139,7 @@ export class NuwaniCommands {
 
         // !serialinfo [nickname | serial] [maxAge = 1095]
         this.commandManager_.buildCommand('serialinfo')
+            .description(`Display information about a particular serial.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname | serial', type: CommandBuilder.WORD_PARAMETER },
@@ -132,6 +148,7 @@ export class NuwaniCommands {
 
         // !why [nickname]
         this.commandManager_.buildCommand('why')
+            .description(`Display a player's persistent record.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname', type: CommandBuilder.WORD_PARAMETER },
@@ -140,6 +157,7 @@ export class NuwaniCommands {
 
         // !unban [nickname | ip | ip range | serial] [reason]
         this.commandManager_.buildCommand('unban')
+            .description(`Remove a ban for a specific person.`)
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .parameters([
                 { name: 'nickname | ip | ip range | serial', type: CommandBuilder.WORD_PARAMETER },

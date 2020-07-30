@@ -17,23 +17,29 @@ export class MaintenanceCommands {
 
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
+            .description(`Evaluate arbitrary JavaScript code.`)
             .restrict(context => context.isOwner())
             .parameters([{ name: 'code', type: CommandBuilder.SENTENCE_PARAMETER }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
         
         // !level [nickname?]
         this.commandManager_.buildCommand('level')
+            .description(`Display the level of a particular person.`)
             .parameters([{ name: 'nickname', type: CommandBuilder.WORD_PARAMETER, optional: true }])
             .build(MaintenanceCommands.prototype.onLevelCommand.bind(this));
         
         // !nuwani [request-decrease|request-increase]
         this.commandManager_.buildCommand('nuwani')
+            .description(`Manage the Nuwani IRC Bot system.`)
             .restrict(Player.LEVEL_MANAGEMENT)
             .sub('reload-format')
+                .description(`Reload the IRC message formatting rules.`)
                 .build(MaintenanceCommands.prototype.onNuwaniReloadFormatCommand.bind(this))
             .sub('request-decrease')
+                .description(`Request a decrease in the number of bots.`)
                 .build(MaintenanceCommands.prototype.onNuwaniRequestDecreaseCommand.bind(this))
             .sub('request-increase')
+                .description(`Request an increase in the number of bots.`)
                 .build(MaintenanceCommands.prototype.onNuwaniRequestIncreaseCommand.bind(this))
             .build(MaintenanceCommands.prototype.onNuwaniCommand.bind(this));
     }

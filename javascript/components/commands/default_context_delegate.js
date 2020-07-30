@@ -12,11 +12,11 @@ export class DefaultContextDelegate extends CommandContextDelegate {
 
     // Respond to the |context| with an error that no players were found for the given |query|.
     respondWithUnknownPlayer(context, query) {
-
+        context.sendMessage(Message.COMMAND_ERROR_UNKNOWN_PLAYER, query);
     }
 
     // Respond to the |context| with usage information on the given |command|.
     respondWithUsage(context, command) {
-
+        context.sendMessage(Message.COMMAND_USAGE, command.toString());
     }
 }

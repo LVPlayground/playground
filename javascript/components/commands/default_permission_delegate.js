@@ -11,6 +11,23 @@ export class DefaultPermissionDelegate extends CommandPermissionDelegate {
     // instance of CommandDescription. When |verbose| is set, the implementation is expected to
     // share the details of any access error with the given |context|.
     canExecuteCommand(context, contextDelegate, command, verbose) {
-        return true;
+        if (!command.restrictLevel)
+            return true;
+
+        let access = null;
+
+        if (typeof command.restrictLevel === 'function')
+            access = command.restrictLevel(context);
+        else
+            access = command.restrictLevel <= contextDelegate.getLevel(context);
+
+        if (!access && verbose) {
+            const requiredLevel = this.textualRepresentationForLevel(command.restrictLevel);
+
+            // Inform the |context| of the fact that they're not allowed to execute this command.
+            context.sendMessage(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, requiredLevel);
+        }
+
+        return access;
     }
 }

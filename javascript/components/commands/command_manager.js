@@ -46,7 +46,7 @@ export class CommandManager {
             },
 
             name: name,
-            prefix: '!',
+            prefix: '/',
         });
     }
 

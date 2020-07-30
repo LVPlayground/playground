@@ -13,9 +13,6 @@ import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
 
-// Directory in which the CPU profiles will be stored.
-const ProfileDirectory = 'profiles';
-
 // Utility function to capitalize the first letter of a |string|.
 function capitalizeFirstLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
@@ -32,13 +29,6 @@ export class PlaygroundCommands {
         this.access_ = access;
         this.commands_ = new Map();
 
-        this.profiling_ = false;
-
-        // Functor that will actually activate a CPU profile. Has to be overridden by tests in order
-        // to avoid starting a CPU profile by accident.
-        this.captureProfileFn_ = (milliseconds, filename) =>
-            captureProfile(milliseconds, filename);
-
         // -----------------------------------------------------------------------------------------
 
         // The `/lvp` command offers administrators and higher a number of functions to manage the
@@ -47,10 +37,6 @@ export class PlaygroundCommands {
             .sub('access')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
-            .sub('profile')
-                .restrict(Player.LEVEL_MANAGEMENT)
-                .parameters([ { name: 'milliseconds', type: CommandBuilder.NUMBER_PARAMETER } ])
-                .build(PlaygroundCommands.prototype.onPlaygroundProfileCommand.bind(this))
             .sub('reload')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .sub('messages')
@@ -295,58 +281,6 @@ export class PlaygroundCommands {
             title: 'The exception has been revoked!',
             message: '/' + commandName + ' is no longer available to ' + subject.name + '.'
         });
-    }
-
-    // Enables Management members to capture a CPU profile of the gamemode for a given number of
-    // |profileDurationMs|. The filename of the profile will be automatically decided.
-    onPlaygroundProfileCommand(player, profileDurationMs) {
-        const MinimumDurationMs = 100;
-        const MaximumDurationMs = 180000;
-
-        if (profileDurationMs < MinimumDurationMs || profileDurationMs > MaximumDurationMs) {
-            player.sendMessage(
-                Message.LVP_PROFILE_INVALID_RANGE, MinimumDurationMs, MaximumDurationMs);
-            return;
-        }
-
-        if (this.profiling_) {
-            player.sendMessage(Message.LVP_PROFILE_ONGOING);
-            return;
-        }
-
-        function zeroPad(value) {
-            return ('0' + value).substr(-2);
-        }
-
-        const date = new Date();
-
-        // Compile the filename for the trace based on the current time on the server.
-        const filename =
-            'profile_' + date.getFullYear() + '-' + zeroPad(date.getMonth() + 1) + '-' +
-            zeroPad(date.getDate()) + '_' + zeroPad(date.getHours()) + '-' +
-            zeroPad(date.getMinutes()) + '-' + zeroPad(date.getSeconds()) + '.log';
-
-        // Start an asynchronous function that will report the profile as having finished.
-        (async() => {
-            await wait(profileDurationMs);
-
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_PROFILE_FINISHED, player.name, filename);
-
-            if (player.isConnected())
-                player.sendMessage(Message.LVP_PROFILE_FINISHED, filename);
-
-            this.profiling_ = false;
-        })();
-
-        // Capture the profile through a functor that can be overridden for testing purposes.
-        this.captureProfileFn_(profileDurationMs, ProfileDirectory + '/' + filename);
-        this.profiling_ = true;
-
-        this.announce_().announceToAdministrators(
-            Message.LVP_ANNOUNCE_PROFILE_START, player.name, player.id, profileDurationMs);
-
-        player.sendMessage(Message.LVP_PROFILE_STARTED, profileDurationMs);
     }
 
     // Facilitates reloading the server's message format file, which allows changing text and output

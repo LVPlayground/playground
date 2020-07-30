@@ -6,7 +6,8 @@ import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import { Clock } from 'base/clock.js';
-import { CommandManager } from 'components/command_manager/command_manager.js';
+import { CommandManager as DeprecatedCommandManager } from 'components/command_manager/command_manager.js';
+import { CommandManager } from 'components/commands/command_manager.js';
 import { Database } from 'components/database/database.js';
 import { DeferredEventManager } from 'components/events/deferred_event_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
@@ -29,7 +30,8 @@ export class Server {
         this.database_ = new Database();
         this.clock_ = new Clock();
 
-        this.deprecatecCommandManager_ = new CommandManager();
+        this.commandManager_ = new CommandManager();
+        this.deprecatecCommandManager_ = new DeprecatedCommandManager();
         this.deferredEventManager_ = new DeferredEventManager();
         this.deferredEventManager_.deferredEventDispatcher();
 
@@ -64,6 +66,9 @@ export class Server {
     get clock() { return this.clock_; }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Gets the command manager which is responsible for routing player-issued commands.
+    get commandManager() { return this.commandManager_; }
 
     // Gets the global command manager that owns all commands available to players.
     get deprecatedCommandManager() { return this.deprecatecCommandManager_; }
@@ -132,6 +137,7 @@ export class Server {
         this.featureManager_.dispose();
         this.deferredEventManager_.dispose();
         this.deprecatecCommandManager_.dispose();
+        this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();
         this.dialogManager_.dispose();

@@ -480,7 +480,7 @@ export class MockPlayer extends Player {
     async issueCommand(commandText) {
         let defaultPrevented = false;
 
-        await server.deprecatedCommandManager.onPlayerCommandText({
+        await server.commandManager.onPlayerCommandText({
             preventDefault: () => defaultPrevented = true,
 
             playerid: this.id,

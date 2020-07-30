@@ -4,7 +4,6 @@
 
 import { CommandBuilder } from 'components/command_manager/command_builder.js';
 import { CommandGameDelegate } from 'components/command_manager/command_game_delegate.js';
-import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // The command manager maintains a registry of available in-game commands and provides the ability
 // to parse and dispatch commands to their associated handlers.
@@ -12,11 +11,6 @@ export class CommandManager {
   constructor() {
     this.commands_ = {};
     this.delegate_ = new CommandGameDelegate();
-
-    // Attach the global event listeners which we need to reliably handle commands.
-    this.callbacks_ = new ScopedCallbacks();
-    this.callbacks_.addEventListener(
-        'playercommandtext', CommandManager.prototype.onPlayerCommandText.bind(this));
   }
 
   // Gets the number of commands that have been registered on the server.
@@ -86,7 +80,5 @@ export class CommandManager {
   }
 
   // Disposes of the callbacks created as part of this class.
-  dispose() {
-    this.callbacks_.dispose();
-  }
+  dispose() {}
 };

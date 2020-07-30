@@ -58,7 +58,7 @@ export class CommandExecutor {
         // Use a for loop as we have to recognise the final parameter to distinguish how text should
         // be handled. "Text" will consume one word, except when it's the last parameter.
         for (let index = 0; index < command.parameters.length; ++index) {
-            const last = index === command.parameters.length;
+            const last = index === command.parameters.length - 1;
             const parameter = command.parameters[index];
 
             let result = null;

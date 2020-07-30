@@ -8,7 +8,7 @@ import { CommandParameter } from 'components/commands/command_parameter.js';
 const kNumberExpression = /^([-+]?\d+(\.\d+)?|0x[0-9a-f]+)\b\s*/i;
 
 // Regular expression used to match text in a command text string.
-const kTextExpression = /^(.+?)\b\s*/;
+const kTextExpression = /^([^\s]+)\s*/;
 
 // Provides the ability to execute a command given a player, a command and a command text. Parses
 // the command textas necessary to figure out what exactly the player wants to do.

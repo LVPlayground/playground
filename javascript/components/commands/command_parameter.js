@@ -34,9 +34,9 @@ export class CommandParameter {
     }
 
     toString() {
-        if (this.defaultValue !== null)
+        if (this.#defaultValue_ !== null && this.#defaultValue_ !== undefined)
             return `[${this.#name_}=${this.#defaultValue_}]`;
-        else if (this.optional)
+        else if (this.#optional_)
             return `[${this.#name_}]?`;
         else
             return `[${this.#name_}]`;

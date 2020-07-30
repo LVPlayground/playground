@@ -3,6 +3,15 @@ Las Venturas Playground has hundreds of commands, each of which have their own s
 permissions and requirements. This component generalizes the act of doing that, both for in-game
 commands and for commands offered through Nuwani.
 
+## Algorithm for command resolution
+When a player executes a command, say `/v`, the following steps are taken to figure out what exactly
+has to execute, and with which parameters.
+
+  1. All sub-commands are considered and matched, in declaration order, and added to a command
+     _candidate list_.
+  1. Each of the commands in the _candidate list_ are checked on whether they support the necessary
+     parameters. If they don't, a usage message is sent.
+
 ## The Command Builder
 Rather than repeating the same code for every command, our implementation is designed following the
 [builder pattern](https://en.wikipedia.org/wiki/Builder_pattern) and enables you to declaratively

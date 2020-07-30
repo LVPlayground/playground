@@ -74,7 +74,7 @@ export class CommandDescription {
             const parameters = [];
 
             for (const commandParameter of this.#parameters_)
-                parameters.push(String(parameter));
+                parameters.push(String(commandParameter));
 
             // [foo] [bar=4] [baz]?
             representation += ` ${parameters.join(' ')}`;

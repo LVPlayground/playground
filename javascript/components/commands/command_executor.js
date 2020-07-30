@@ -29,13 +29,78 @@ export class CommandExecutor {
     async executeCommand(context, command, commandText) {
         const candidates = this.matchPossibleCommands(context, command, commandText);
 
-        for (const [ description, commandText, parameters ] of candidates) {
-            // TODO: Match the |command|'s parameters against |commandText|.
+        // TODO: It's possible that a candidate doesn't match, in which case we might want to move
+        // on to the next candidate. I suspect that this will be important for commands like `/v`.
 
-            return description.listener(context, ...parameters);
+        for (const [ description, commandText, parameters ] of candidates) {
+            const params = this.matchParameters(description, commandText);
+            if (params === null) {
+                this.#contextDelegate_.respondWithUsage(context, description);
+                return false;
+            }
+
+            return description.listener(context, ...parameters, ...params);
         }
 
-        // TODO: Send an error message when no |candidates| were found.
+        this.#contextDelegate_.respondWithAccessError(context);
+        return false;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: handling of parameters
+    // ---------------------------------------------------------------------------------------------
+
+    // Matches the parameters expected by the |command| against the |commandText|. When they can be
+    // sufficiently matched an array will be returned, otherwise NULL will be returned.
+    matchParameters(command, commandText) {
+        const parameters = [];
+
+        // Use a for loop as we have to recognise the final parameter to distinguish how text should
+        // be handled. "Text" will consume one word, except when it's the last parameter.
+        for (let index = 0; index < command.parameters.length; ++index) {
+            const last = index === command.parameters.length;
+            const parameter = command.parameters[index];
+
+            let result = null;
+            switch (parameter.type) {
+                case CommandParameter.kTypeNumber:
+                    result = this.readNumber(commandText);
+                    break;
+
+                case CommandParameter.kTypePlayer:
+                    result = this.readPlayer(commandText);
+                    break;
+
+                case CommandParameter.kTypeText:
+                    if (last && commandText.length)
+                        result = { match: commandText, value: commandText };
+                    else
+                        result = this.readText(commandText);
+
+                    break;
+            }
+
+            // If a |result| was matched, add it to the |parameters| array, forward |commandText|
+            // and proceed with the next parameter. This should be the common case.
+            if (result) {
+                commandText = commandText.substring(result.match.length);
+
+                parameters.push(result.value);
+                continue;
+            }
+
+            // Otherwise the parameter might be optional. We'd like to push the default value, which
+            // might be "undefined", to the |parameters| array.
+            if (!commandText.length && parameter.optional) {
+                parameters.push(parameter.defaultValue);
+                continue;
+            }
+
+            // Finally, there's text left or a parameter has not been given. Usage should be shown.
+            return null;
+        }
+
+        return parameters;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -110,7 +175,7 @@ export class CommandExecutor {
         // Alternatively, determine if the |commandKey| has a fixed value, in which case the match
         // should not be added to the parameters. It will be implied when routing the command.
         if (commandKey.value) {
-            if (result.match === commandKey.value)
+            if (result.value === commandKey.value)
                 return { match: true, commandText: commandText.substring(result.match.length) };
 
             return { match: false, commandText };

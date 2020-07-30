@@ -23,7 +23,11 @@ describe('CommandExecutor', (it, beforeEach) => {
         allowed = true;
 
         // Implementation of the context delegate specifically written for this test.
-        contextDelegate = new class extends CommandContextDelegate {};
+        contextDelegate = new class extends CommandContextDelegate {
+            respondWithUsage(context, command) {
+                context.sendMessage(command.toString());
+            }
+        };
 
         // Implementation of the permission delegate specifically written for this test.
         permissionDelegate = new class extends CommandPermissionDelegate {
@@ -92,6 +96,75 @@ describe('CommandExecutor', (it, beforeEach) => {
 
         assert.isDefined(await executor.executeCommand(gunther, command, 'kiwi'));
         assert.equal(value, 3);
+    });
+
+    it('should be able to execute complex commands with parameters', async (assert) => {
+        let fruit = null;
+        let brand = null;
+        let number = null;
+
+        buildCommand('test')
+            .description('This is a test command')
+            .sub('banana')
+                .description('This one has a banana')
+                .parameters([
+                    { name: 'brand', type: CommandBuilder.kTypeText },
+                    { name: 'number', type: CommandBuilder.kTypeNumber, defaultValue: 1 },
+                ])
+                .build((player, inBrand, inNumber) => {
+                    brand = inBrand;
+                    number = inNumber;
+                    return true;
+                })
+            .sub(CommandBuilder.kTypeText, 'fruit')
+                .description('This one is for all fruits')
+                .parameters([
+                    { name: 'brand', type: CommandBuilder.kTypeText },
+                    { name: 'number', type: CommandBuilder.kTypeNumber, defaultValue: 1 },
+                ])
+                .build((player, inFruit, inBrand, inNumber) => {
+                    fruit = inFruit;
+                    brand = inBrand;
+                    number = inNumber;
+                    return true;
+                })
+            .build(() => true);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, ''));
+        assert.isNull(fruit);
+        assert.isNull(brand);
+        assert.isNull(number);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'banana'));
+        assert.isNull(fruit);
+        assert.isNull(brand);
+        assert.isNull(number);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], '/test banana [brand] [number=1]');
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'kiwi'));
+        assert.isNull(fruit);
+        assert.isNull(brand);
+        assert.isNull(number);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], '/test [fruit] [brand] [number=1]');
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'banana chiquita'));
+        assert.isNull(fruit);
+        assert.equal(brand, 'chiquita');
+        assert.equal(number, 1);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'banana befrank 2'));
+        assert.isNull(fruit);
+        assert.equal(brand, 'befrank');
+        assert.equal(number, 2);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'kiwi zespri'));
+        assert.equal(fruit, 'kiwi');
+        assert.equal(brand, 'zespri');
+        assert.equal(number, 1);
     });
 
     it('is able to read data in various formats from the command text', assert => {

@@ -13,6 +13,10 @@ const kTextExpression = /^([^\s]+)\s*/;
 // Provides the ability to execute a command given a player, a command and a command text. Parses
 // the command textas necessary to figure out what exactly the player wants to do.
 export class CommandExecutor {
+    static kMatchParameterResultSuccess = 0;
+    static kMatchParameterResultUnknownPlayer = 1;
+    static kMatchParameterResultUnparseable = 2;
+
     #contextDelegate_ = null;
     #permissionDelegate_ = null;
 
@@ -35,13 +39,19 @@ export class CommandExecutor {
         // on to the next candidate. I suspect that this will be important for commands like `/v`.
 
         for (const [ description, commandText, parameters ] of candidates) {
-            const params = this.matchParameters(description, commandText);
-            if (params === null) {
-                this.#contextDelegate_.respondWithUsage(context, description);
-                return false;
-            }
+            const [ result, params ] = this.matchParameters(context, description, commandText);
+            switch (result) {
+                case CommandExecutor.kMatchParameterResultSuccess:
+                    await description.listener(context, ...parameters, ...params);
+                    return true;
 
-            return description.listener(context, ...parameters, ...params);
+                case CommandExecutor.kMatchParameterResultUnknownPlayer:
+                    return false;  // an error message has already been issued
+
+                case CommandExecutor.kMatchParameterResultUnparseable:
+                    this.#contextDelegate_.respondWithUsage(context, description);
+                    return false;
+            }
         }
     }
 
@@ -51,7 +61,7 @@ export class CommandExecutor {
 
     // Matches the parameters expected by the |command| against the |commandText|. When they can be
     // sufficiently matched an array will be returned, otherwise NULL will be returned.
-    matchParameters(command, commandText) {
+    matchParameters(context, command, commandText) {
         const parameters = [];
 
         // Use a for loop as we have to recognise the final parameter to distinguish how text should
@@ -90,16 +100,26 @@ export class CommandExecutor {
 
             // Otherwise the parameter might be optional. We'd like to push the default value, which
             // might be "undefined", to the |parameters| array.
-            if (!commandText.length && parameter.optional) {
+            if (parameter.optional && !commandText.length) {
                 parameters.push(parameter.defaultValue);
                 continue;
             }
 
+            // If this is a player parameter, and no matches were found, that should be handled
+            // differently too, as the error then is that not enough information was given.
+            if (parameter.type === CommandParameter.kTypePlayer) {
+                const queryResult = this.readText(commandText);
+                if (queryResult) {
+                    this.#contextDelegate_.respondWithUnknownPlayer(context, queryResult.value);
+                    return [ CommandExecutor.kMatchParameterResultUnknownPlayer ];
+                }
+            }
+
             // Finally, there's text left or a parameter has not been given. Usage should be shown.
-            return null;
+            return [ CommandExecutor.kMatchParameterResultUnparseable ];
         }
 
-        return parameters;
+        return [ CommandExecutor.kMatchParameterResultSuccess, parameters ];
     }
 
     // ---------------------------------------------------------------------------------------------

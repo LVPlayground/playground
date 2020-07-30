@@ -24,6 +24,9 @@ describe('CommandExecutor', (it, beforeEach) => {
 
         // Implementation of the context delegate specifically written for this test.
         contextDelegate = new class extends CommandContextDelegate {
+            respondWithUnknownPlayer(context, query) {
+                context.sendMessage(query);
+            }
             respondWithUsage(context, command) {
                 context.sendMessage(command.toString());
             }
@@ -38,7 +41,7 @@ describe('CommandExecutor', (it, beforeEach) => {
 
         command = null;
         executor = new CommandExecutor(contextDelegate, permissionDelegate);
-        gunther = server.playerManager.getById(/* Gunther= */ 1);
+        gunther = server.playerManager.getById(/* Gunther= */ 0);
     });
 
     // Helper function to start creating a command builder that will write the resulting description
@@ -165,6 +168,56 @@ describe('CommandExecutor', (it, beforeEach) => {
         assert.equal(fruit, 'kiwi');
         assert.equal(brand, 'zespri');
         assert.equal(number, 1);
+    });
+
+    it('is able to respond with an error message when a player cannot be found', async (assert) => {
+        let target = null;
+
+        buildCommand('test')
+            .description('This is a test command')
+            .sub('optional')
+                .description('Here the player is optional')
+                .parameters([ { name: 'target', type: CommandBuilder.kTypePlayer, optional: true }])
+                .build((player, inTarget) => target = inTarget)
+            .parameters([ { name: 'target', type: CommandBuilder.kTypePlayer }])
+            .build((player, inTarget) => target = inTarget);
+
+        // (1) Error messages will be shown when the parameter is required.
+        assert.isDefined(await executor.executeCommand(gunther, command, ''));
+        assert.isNull(target);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], '/test [optional] | [target]');
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'banan'));
+        assert.isNull(target);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(gunther.messages[1], 'banan');
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'gunth'));
+        assert.strictEqual(target, gunther);
+
+        assert.equal(gunther.messages.length, 2);
+
+        target = null;  // reset
+
+        // (2) Error messages will not be shown when the parameter is optional.
+        assert.isDefined(await executor.executeCommand(gunther, command, 'optional'));
+        assert.isUndefined(target);
+
+        assert.equal(gunther.messages.length, 2);
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'optional banan'));
+        assert.isUndefined(target);
+
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages[2], 'banan');
+
+        assert.isDefined(await executor.executeCommand(gunther, command, 'optional gunth'));
+        assert.strictEqual(target, gunther);
+
+        assert.equal(gunther.messages.length, 3);
     });
 
     it('is able to read data in various formats from the command text', assert => {

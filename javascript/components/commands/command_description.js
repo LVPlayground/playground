@@ -70,7 +70,12 @@ export class CommandDescription {
             // [bar/baz/foo/[target]]
             representation += ` [${[ ...staticSubs.sort(), ...dynamicSubs.sort() ].join('/')}]`;
 
-        } else if (this.#parameters_.length) {
+        }
+
+        if (this.#parameters_.length) {
+            if (this.#subs_.size)
+                representation += ' |';
+
             const parameters = [];
 
             for (const commandParameter of this.#parameters_)

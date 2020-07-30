@@ -10,6 +10,11 @@ export class NuwaniContextDelegate extends CommandContextDelegate {
     // we derive this information based on the status that they have in the echo channel.
     getLevel(context) { return context.level; }
 
+    // Respond to the |context| with an error that no players were found for the given |query|.
+    respondWithUnknownPlayer(context, query) {
+        context.respond(`4Error: Sorry, no player could be found for "${query}".`);
+    }
+
     // Respond to the |context| with usage information on the given |command|.
     respondWithUsage(context, command) {
         context.respond(`10Usage: ${command}`);

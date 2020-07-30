@@ -2,22 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { MockPlaygroundCommands } from 'features/playground/test/mock_playground_commands.js';
-
-describe('FancyCommand', (it, beforeEach, afterEach) => {
-    let commands = null;
+describe('FancyCommand', (it, beforeEach) => {
     let gunther = null;
 
     beforeEach(async() => {
-        commands = new MockPlaygroundCommands();
-        await commands.loadCommands();
+        const feature = server.featureManager.loadFeature('playground');
+        await feature.commands_.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
 
         await gunther.identify();
     });
-
-    afterEach(() => commands.dispose());
 
     it('should not allow players to fancy others', async(assert) => {
         return;  // disabled

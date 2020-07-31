@@ -36,7 +36,7 @@ describe('CommandBuilder', (it, beforeEach) => {
         assert.equal(description.description, 'This is a test command');
         assert.typeOf(description.listener, 'function');
         assert.equal(description.parameters.length, 0);
-        assert.isNull(description.restrictLevel);
+        assert.equal(description.restrictLevel, Player.LEVEL_PLAYER);
         assert.isNull(description.restrictTemporary);
         assert.equal([ ...description.subs ].length, 0);
 

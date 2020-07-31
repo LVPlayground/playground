@@ -18,7 +18,6 @@ export class MaintenanceCommands {
         // !eval [JavaScript code]
         this.commandManager_.buildCommand('eval')
             .description(`Evaluate arbitrary JavaScript code.`)
-            .restrict(context => context.isOwner())
             .parameters([{ name: 'code', type: CommandBuilder.kTypeText }])
             .build(MaintenanceCommands.prototype.onEvalCommand.bind(this));
 
@@ -49,6 +48,11 @@ export class MaintenanceCommands {
     // Evaluates the given JavaScript code on the server. This has full access to the server context
     // and should therefore be limited to bot owners.
     onEvalCommand(context, code) {
+        if (!context.isOwner()) {
+            context.respond(`4Error: Sorry, this command is only available to specific people.`);
+            return;
+        }
+
         const cm = server.commandManager;
         const fm = server.featureManager;
         const p = playerId => server.playerManager.getById(playerId);

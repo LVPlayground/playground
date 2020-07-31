@@ -37,7 +37,7 @@ export class CommandBuilder {
     #parameters_ = null;
     #parent_ = null;
     #prefix_ = null;
-    #restrictLevel_ = null;
+    #restrictLevel_ = Player.LEVEL_PLAYER;
     #restrictTemporary_ = null;
     #subs_ = null;
 
@@ -105,6 +105,11 @@ export class CommandBuilder {
     // Sets the default level restriction on this command to |level|. The |restrictTemporary| flag
     // may optionally be given as well, which restricts it for temporary administrators.
     restrict(level, restrictTemporary = false) {
+        if (![ Player.LEVEL_PLAYER, Player.LEVEL_ADMINISTRATOR,
+                   Player.LEVEL_MANAGEMENT ].includes(level)) {
+            throw new Error(`${this}: command levels must be one of the Player level constants.`);
+        }
+
         this.#restrictLevel_ = level;
         this.#restrictTemporary_ = !!restrictTemporary;
         return this;

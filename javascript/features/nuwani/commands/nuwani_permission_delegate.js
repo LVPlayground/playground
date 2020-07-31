@@ -13,13 +13,7 @@ export class NuwaniPermissionDelegate extends CommandPermissionDelegate {
         if (!command.restrictLevel)
             return true;
 
-        let access = null;
-
-        if (typeof command.restrictLevel === 'function')
-            access = command.restrictLevel(context);
-        else
-            access = command.restrictLevel <= contextDelegate.getLevel(context);
-
+        const access = command.restrictLevel <= contextDelegate.getLevel(context);
         if (!access && verbose) {
             const requiredLevel = this.textualRepresentationForLevel(command.restrictLevel);
 

@@ -23,7 +23,5 @@ export class CommandPermissionDelegate {
             case Player.LEVEL_MANAGEMENT:
                 return 'Management members';
         }
-
-        return 'specific people';
     }
 }

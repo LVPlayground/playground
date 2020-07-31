@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Dialog } from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
@@ -83,49 +83,65 @@ class GangCommands {
         this.invitations_ = new WeakMap();
 
         // Command: /gang
-        server.deprecatedCommandManager.buildCommand('gang')
+        server.commandManager.buildCommand('gang')
+            .description(`Manages the gang you're part of.`)
             .sub('create')
+                .description('Create a new gang on the server.')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
             .sub('invite')
-                .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                .description('Invite a player to your gang.')
+                .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
                 .build(GangCommands.prototype.onGangInviteCommand.bind(this))
             .sub('join')
+                .description('Accept an invitation to a gang.')
                 .build(GangCommands.prototype.onGangJoinCommand.bind(this))
             .sub('kick')
-                .parameters([{ name: 'member', type: CommandBuilder.WORD_PARAMETER }])
+                .description('Forcefully remove a player from your gang.')
+                .parameters([{ name: 'member', type: CommandBuilder.kTypeText }])
                 .build(GangCommands.prototype.onGangKickCommand.bind(this))
             .sub('leave')
+                .description(`Leave the gang that you're part of.`)
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
             .sub('members')
+                .description('Display the members who are part of your gang.')
                 .build(GangCommands.prototype.onGangMembersCommand.bind(this))
             .sub('settings')
+                .description(`Manage your gang's settings.`)
                 .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
             .sub('transactions')
+                .description(`See your gang's financial transactions.`)
                 .build(GangCommands.prototype.onGangTransactionsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // Command: /gangs
-        server.deprecatedCommandManager.buildCommand('gangs')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+        server.commandManager.buildCommand('gangs')
+            .description('Display the list of gangs on the server.')
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description(`See information about a particular player's gang.`)
                 .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
 
         // /gbalance
-        server.deprecatedCommandManager.buildCommand('gbalance')
+        server.commandManager.buildCommand('gbalance')
+            .description(`Display the balance of your gang's bank account.`)
             .build(GangCommands.prototype.onGangBalanceCommand.bind(this));
 
         // /gbank [[amount] | all]
-        server.deprecatedCommandManager.buildCommand('gbank')
+        server.commandManager.buildCommand('gbank')
+            .description(`Deposits money into your gang's bank account.`)
             .sub('all')
+                .description(`Deposits all money into your gang's bank account.`)
                 .build(GangCommands.prototype.onGangBankCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(GangCommands.prototype.onGangBankCommand.bind(this));
 
         // /gwithdraw [[amount] | all]
-        server.deprecatedCommandManager.buildCommand('gwithdraw')
+        server.commandManager.buildCommand('gwithdraw')
+            .description(`Withdraws money from your gang's bank account.`)
             .sub('all')
+                .description(`Withdraws all money from your gang's bank account.`)
                 .build(GangCommands.prototype.onGangWithdrawCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(GangCommands.prototype.onGangWithdrawCommand.bind(this));
     }
 
@@ -1078,11 +1094,11 @@ class GangCommands {
 
     // Cleans up the state created by this class, i.e. unregisters the commands.
     dispose() {
-        server.deprecatedCommandManager.removeCommand('gwithdraw');
-        server.deprecatedCommandManager.removeCommand('gbank');
-        server.deprecatedCommandManager.removeCommand('gbalance');
-        server.deprecatedCommandManager.removeCommand('gang');
-        server.deprecatedCommandManager.removeCommand('gangs');
+        server.commandManager.removeCommand('gwithdraw');
+        server.commandManager.removeCommand('gbank');
+        server.commandManager.removeCommand('gbalance');
+        server.commandManager.removeCommand('gang');
+        server.commandManager.removeCommand('gangs');
     }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Dialog } from 'components/dialogs/dialog.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import IdentityBeam from 'features/houses/utils/identity_beam.js';
@@ -36,35 +36,46 @@ class HouseCommands {
         this.parkingLotRemover_ = new ParkingLotRemover();
 
         // Command: /house [buy/cancel/create/enter/goto/interior/modify/remove/save/settings]
-        server.deprecatedCommandManager.buildCommand('house')
+        server.commandManager.buildCommand('house')
+            .description('Manage your house(s) on the server.')
             .sub('buy')
+                .description('Purchase a new house.')
                 .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
             .sub('cancel')
+                .description('Cancel purchase of a house.')
                 .build(HouseCommands.prototype.onHouseCancelCommand.bind(this))
             .sub('create')
+                .description('Create a new house location.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
             .sub('enter')
+                .description('Forcefully enter a house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseEnterCommand.bind(this))
             .sub('goto')
-                .parameters([{ name: 'filter', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+                .description('Teleport to one of your houses.')
+                .parameters([{ name: 'filter', type: CommandBuilder.kTypeText, optional: true }])
                 .build(HouseCommands.prototype.onHouseGotoCommand.bind(this))
             .sub('interior')
+                .description('Teleport to a particular house interior.')
                 .restrict(Player.LEVEL_MANAGEMENT)
-                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'id', type: CommandBuilder.kTypeNumber }])
                 .build(HouseCommands.prototype.onHouseInteriorCommand.bind(this))
             .sub('modify')
+                .description('Modify settings for the house location.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
             .sub('remove')
+                .description('Remove the house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
-                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'id', type: CommandBuilder.kTypeNumber }])
                 .build(HouseCommands.prototype.onHouseRemoveCommand.bind(this))
             .sub('save')
+                .description('Save a parking lot for the current house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
             .sub('settings')
+                .description('Change the settings for this house.')
                 .build(HouseCommands.prototype.onHouseSettingsCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
     }
@@ -677,7 +688,7 @@ class HouseCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('house');
+        server.commandManager.removeCommand('house');
 
         this.parkingLotCreator_.dispose();
         this.parkingLotCreator_ = null;

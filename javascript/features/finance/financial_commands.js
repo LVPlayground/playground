@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
 // Responsible for providing players with the ability to interact with the financial regulator and
@@ -12,21 +12,26 @@ export class FinancialCommands {
         this.regulator_ = regulator;
 
         // /balance
-        server.deprecatedCommandManager.buildCommand('balance')
+        server.commandManager.buildCommand('balance')
+            .description('Displays the balance on your account.')
             .build(FinancialCommands.prototype.onBalanceCommand.bind(this));
 
         // /bank [[amount] | all]
-        server.deprecatedCommandManager.buildCommand('bank')
+        server.commandManager.buildCommand('bank')
+            .description('Deposits money into your account.')
             .sub('all')
+                .description('Deposits all your money into your account.')
                 .build(FinancialCommands.prototype.onBankCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(FinancialCommands.prototype.onBankCommand.bind(this));
 
         // /withdraw [[amount] | all]
-        server.deprecatedCommandManager.buildCommand('withdraw')
+        server.commandManager.buildCommand('withdraw')
+            .description('Withdraws money from your account.')
             .sub('all')
+                .description('Withdraws all your money from your account.')
                 .build(FinancialCommands.prototype.onWithdrawCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(FinancialCommands.prototype.onWithdrawCommand.bind(this));
     }
 
@@ -118,8 +123,8 @@ export class FinancialCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('withdraw');
-        server.deprecatedCommandManager.removeCommand('bank');
-        server.deprecatedCommandManager.removeCommand('balance');
+        server.commandManager.removeCommand('withdraw');
+        server.commandManager.removeCommand('bank');
+        server.commandManager.removeCommand('balance');
     }
 }

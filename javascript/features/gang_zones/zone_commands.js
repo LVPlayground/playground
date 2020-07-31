@@ -31,8 +31,10 @@ export class ZoneCommands {
         this.entities_ = new ScopedEntities();
 
         // /zone
-        server.deprecatedCommandManager.buildCommand('zone')
+        server.commandManager.buildCommand('zone')
+            .description('Manage the details of your gang zone.')
             .sub('reload')
+                .description('Reload the gang object definition files.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(ZoneCommands.prototype.onZoneReloadCommand.bind(this))
             .build(ZoneCommands.prototype.onZoneCommand.bind(this));
@@ -305,6 +307,6 @@ export class ZoneCommands {
         this.entities_.dispose();
         this.entities_ = null;
 
-        server.deprecatedCommandManager.removeCommand('zone');
+        server.commandManager.removeCommand('zone');
     }
 }

@@ -52,16 +52,16 @@ describe('GameCommands', (it, beforeEach) => {
             command: 'mygame',
         });
 
-        assert.isFalse(server.deprecatedCommandManager.hasCommand('mygame'));
+        assert.isFalse(server.commandManager.hasCommand('mygame'));
 
         commands.createCommandForGame(description);
-        assert.isTrue(server.deprecatedCommandManager.hasCommand('mygame'));
+        assert.isTrue(server.commandManager.hasCommand('mygame'));
 
         // An exception is thrown when trying to register a command multiple times.
         assert.throws(() => commands.createCommandForGame(description));
 
         commands.removeCommandForGame(description);
-        assert.isFalse(server.deprecatedCommandManager.hasCommand('mygame'));
+        assert.isFalse(server.commandManager.hasCommand('mygame'));
 
         // An exception is thrown when trying to remove an unregistered command.
         assert.throws(() => commands.removeCommandForGame(description));

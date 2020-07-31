@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Implementation of the commands available as part of the friends feature, all under the entry
 // point of /friends. See the README.md file for better documentation on the usage.
@@ -10,14 +10,18 @@ export class FriendsCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.deprecatedCommandManager.buildCommand('friends')
+        server.commandManager.buildCommand('friends')
+            .description('Manage the friends you have on the server.')
             .sub('add')
-                .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                .description('Add a new friend to your friend list.')
+                .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
                 .build(FriendsCommands.prototype.onFriendsAddCommand.bind(this))
             .sub('remove')
-                .parameters([{ name: 'name', type: CommandBuilder.WORD_PARAMETER }])
+                .description('Remove someone from your friend list.')
+                .parameters([{ name: 'name', type: CommandBuilder.kTypeText }])
                 .build(FriendsCommands.prototype.onFriendsRemoveCommand.bind(this))
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('See the frist linst of another player.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(FriendsCommands.prototype.onListFriendsCommand.bind(this))
             .build(FriendsCommands.prototype.onListFriendsCommand.bind(this));
@@ -119,6 +123,6 @@ export class FriendsCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('friends');
+        server.commandManager.removeCommand('friends');
     }
 }

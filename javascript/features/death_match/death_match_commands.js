@@ -2,22 +2,23 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { DeathMatchLocation } from 'features/death_match/death_match_location.js';
 import { Menu } from 'components/menu/menu.js';
 
 // Contains the /dm command for players to allow to teleport to a DM zone with specific weapons.
 export class DeathMatchCommands {
-
     constructor(limits, manager) {
-        server.deprecatedCommandManager.buildCommand('deathmatch')
-            .parameters([{ name: 'zone', type: CommandBuilder.NUMBER_PARAMETER, optional: true }])
+        server.commandManager.buildCommand('deathmatch')
+            .description('Enter one of the deathmatch zones.')
             .sub('leave')
+                .description(`Leave the deathmatch zone you're in.`)
                 .build(DeathMatchCommands.prototype.onLeaveCommand.bind(this))
             .sub('stats')
+                .description('See fighting statistics of your time in the zone.')
                 .build(DeathMatchCommands.prototype.onStatsCommand.bind(this))
-
-        .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
+            .parameters([{ name: 'zone', type: CommandBuilder.kTypeNumber, optional: true }])
+            .build(DeathMatchCommands.prototype.onDmCommand.bind(this));
 
         this.limits_ = limits;
         this.manager_ = manager;
@@ -71,6 +72,6 @@ export class DeathMatchCommands {
 
     // Cleans up the state created by this class, i.e. removes the command.
     dispose() {
-        server.deprecatedCommandManager.removeCommand('deathmatch');
+        server.commandManager.removeCommand('deathmatch');
     }
 }

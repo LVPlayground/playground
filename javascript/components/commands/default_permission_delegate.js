@@ -16,10 +16,13 @@ export class DefaultPermissionDelegate extends CommandPermissionDelegate {
 
         let access = null;
 
-        if (typeof command.restrictLevel === 'function')
+        if (typeof command.restrictLevel === 'function') {
             access = command.restrictLevel(context);
-        else
+        } else {
             access = command.restrictLevel <= contextDelegate.getLevel(context);
+            if (access && command.restrictTemporary && context.levelIsTemporary)
+                access = false;
+        }
 
         if (!access && verbose) {
             const requiredLevel = this.textualRepresentationForLevel(command.restrictLevel);

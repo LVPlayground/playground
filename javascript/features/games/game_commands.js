@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameCommandParams } from 'features/games/game_command_params.js';
 import { GameRegistration } from 'features/games/game_registration.js';
@@ -51,8 +51,10 @@ export class GameCommands {
         this.commands_ = new Set();
 
         // /leave
-        server.deprecatedCommandManager.buildCommand('leave')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+        server.commandManager.buildCommand('leave')
+            .description('Leave the game that you are participating in.')
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Make another player leave the game they are playing.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(GameCommands.prototype.onLeaveCommand.bind(this))
             .build(GameCommands.prototype.onLeaveCommand.bind(this));
@@ -68,12 +70,16 @@ export class GameCommands {
             throw new Error(`A game with the /${commandName} command has already been registered.`);
 
         // Registers the |commandName| with the server, so that everyone can use it.
-        server.deprecatedCommandManager.buildCommand(commandName)
+        server.commandManager.buildCommand(commandName)
+            .description('Sign up for the ' + description.name)
             .sub('custom')
+                .description('Customise the game to your liking.')
                 .build(GameCommands.prototype.onCommand.bind(this, description, 'customise'))
             .sub('watch')
+                .description('Watch people currently playing this game.')
                 .build(GameCommands.prototype.onCommand.bind(this, description, 'watch'))
-            .sub(CommandBuilder.NUMBER_PARAMETER)
+            .sub(CommandBuilder.kTypeNumber, 'registration')
+                .description('Sign up for the ' + description.name)
                 .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null))
             .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null));
 
@@ -88,7 +94,7 @@ export class GameCommands {
             throw new Error(`No game with the /${commandName} command has been registered yet.`);
 
         // Removes the |commandName| from the server, so that people can't use it anymore.
-        server.deprecatedCommandManager.removeCommand(commandName);
+        server.commandManager.removeCommand(commandName);
 
         this.commands_.delete(commandName);
     }
@@ -583,10 +589,10 @@ export class GameCommands {
         this.registry_.setCommandDelegate(null);
         this.registry_ = null;
 
-        server.deprecatedCommandManager.removeCommand('leave');
+        server.commandManager.removeCommand('leave');
 
         for (const commandName of this.commands_)
-            server.deprecatedCommandManager.removeCommand(commandName);
+            server.commandManager.removeCommand(commandName);
 
         this.commands_ = null;
     }

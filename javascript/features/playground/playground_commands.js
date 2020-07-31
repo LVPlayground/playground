@@ -98,6 +98,15 @@ export class PlaygroundCommands {
     // Provides administrators with thorough access controls for all of Las Venturas Playground's
     // commands. The |player| will be able and control commands accessible to them.
     async onPlaygroundAccessCommand(player) {
+        return this.displayCommandDialog(
+            player, /* baseCommand= */ null, [ ...server.commandManager.commands ]);
+    }
+
+    // Displays an access control dialog to the |player| for the |commands| which describes the list
+    // of commands to display in this mode. May recursively call itself for complex commands.
+    async displayCommandDialog(player, baseCommand, commands) {
+        // (1) Create the dialog that's to be shown. This dialog will only be used for the command
+        // listing when there's at least a single sub-command to show.
         const dialog = new Menu('Access management', [
             'Command',
             'Level',
@@ -106,21 +115,26 @@ export class PlaygroundCommands {
 
         ], { pageSize: 25 });
 
-        // (1) Get all the available commands, and sort them in order of access (highest level
-        // first), then by their name as a secondary ordering.
-        const commands = [ ...server.commandManager.commands ].sort((lhs, rhs) => {
+        // (2) Sort the |commands| in alphabetical order, in-place, based on what's been given.
+        commands.sort((lhs, rhs) => {
             if (lhs.restrictLevel !== rhs.restrictLevel)
                 return lhs.restrictLevel > rhs.restrictLevel ? -1 : 1;
 
             return lhs.command.localeCompare(rhs.command);
         });
 
-        // (2) Add each of the |commands| to the |dialog|, together with information on the level
+        // (3) Add each of the |commands| to the |dialog|, together with information on the level
         // it's been tied to, and whether there are exceptions for this command.
         for (const command of commands) {
             let level = null;
-            let exceptions = '';
+            let exceptions = '{9E9E9E}-';
+            let suffix = '';
 
+            // (a) Display a helpful suffix to tell folks which menu will be shown after selection.
+            if (command !== baseCommand && command.hasSubCommands())
+                suffix = '{9E9E9E}...';
+
+            // (b) Figure out the label to use for the command's level restriction.
             switch (command.restrictLevel) {
                 case Player.LEVEL_PLAYER:
                     level = 'Players';
@@ -135,7 +149,18 @@ export class PlaygroundCommands {
                     break;
             }
 
-            dialog.addItem(command.command, level, command.description, '-');
+            // (c) Create a listener function which activates when this command has been selected by
+            // the player. Either call this function again, or move on to command configuration.
+            const listener = () => {
+                if (command !== baseCommand && command.hasSubCommands())
+                    return this.displayCommandDialog(player, command, [ ...command.subs.values() ]);
+                else
+                    ;  // TODO: Display a command configuration dialog
+            };
+
+            // (d) Add the |command| and all formatted information to the |dialog|.
+            dialog.addItem(
+                command.command + suffix, level, command.description, exceptions, listener);
         }
 
         // (3) Present the dialog to the |player|.

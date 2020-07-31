@@ -35,10 +35,11 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Note that only commands from the "Playground" feature will be listed here.
-        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
-        assert.equal(gunther.getLastDialogAsTable().rows.length, 1);
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
     });
 
     it('should be able to change boolean settings', async (assert) => {

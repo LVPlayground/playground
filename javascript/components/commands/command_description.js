@@ -35,9 +35,12 @@ export class CommandDescription {
     // Gets whether this command should be restricted to people who are temporarily at that level.
     get restrictTemporary() { return this.#restrictTemporary_; }
 
+    // Returns whether this command has at least a single sub-command.
+    hasSubCommands() { return this.#subs_.size > 0; }
+
     // Gets the sub-commands that are part of this command description, as a map in which each key
     // is a CommandKey instance, and each value is a CommandDescription instance.
-    get subs() { return this.#subs_.entries(); }
+    get subs() { return this.#subs_; }
 
     constructor({ command, commandName, description, listener, parameters, restrictLevel,
                   restrictTemporary, subs }) {

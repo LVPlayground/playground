@@ -40,7 +40,7 @@ export class PlaygroundCommands {
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('access')
                 .description('Access controls for all our JavaScript commands.')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
             .sub('reload')
                 .description('Live reload one of the JavaScript features.')
@@ -52,7 +52,7 @@ export class PlaygroundCommands {
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .sub('settings')
                 .description(`Amend some of the server's settings.`)
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
@@ -132,6 +132,9 @@ export class PlaygroundCommands {
         // (3) Add each of the |commands| to the |dialog|, together with information on the level
         // it's been tied to, and whether there are exceptions for this command.
         for (const command of commands) {
+            if (!this.permissionDelegate_.canExecuteCommand(player, null, command, false))
+                continue;  // the |player| does not have access to this command
+
             let color = '';
             let level = null;
             let exceptions = '{9E9E9E}-';
@@ -195,7 +198,15 @@ export class PlaygroundCommands {
     // Displays a dialog with the settings available for the |player| specific to the given
     // |command|, for instance to add and remove exceptions, and change the default level.
     async displayCommandDialog(player, command) {
-        // TODO: Require the |command| to be accessible by the |player| in a normal situation.
+        const { restrictLevel, originalLevel } = this.permissionDelegate_.getCommandLevel(command);
+        if (originalLevel > player.level) {
+            return await alert(player, {
+                title: 'Access management',
+                message: `Sorry, this command is normally restricted to a level above yours,\n` +
+                         `so you're not able to amend its access rights.`
+            });
+        }
+
         // TODO: Implement this functionality.
     }
 

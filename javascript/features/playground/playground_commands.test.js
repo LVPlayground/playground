@@ -32,6 +32,13 @@ describe('PlaygroundCommands', (it, beforeEach) => {
     });
 
     it('should be able to create a list of all commands for access controls', async (assert) => {
+        const feature = server.featureManager.loadFeature('playground');
+
+        const delegate = feature.permissionDelegate_;
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
+        await russell.identify();
+
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         // Note that only commands from the "Playground" feature will be listed here.
@@ -40,6 +47,33 @@ describe('PlaygroundCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
         assert.equal(gunther.getLastDialogAsTable().rows.length, 4);
+
+        // (1) Players with an exception cannot modify commands above their pay grade.
+        const command = server.commandManager.resolveCommand('/lvp access');
+
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+
+        delegate.addException(russell, server.commandManager.resolveCommand('/lvp'));
+        delegate.addException(russell, command);
+
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+
+        russell.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => russell.respondToDialog({ listitem: 0 /* /lvp access */ })).then(
+            () => russell.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await russell.issueCommand('/lvp access'));
+        assert.includes(russell.lastDialog, `is normally restricted to a level above yours`);
+
+        delegate.removeException(russell, server.commandManager.resolveCommand('/lvp'));
+        delegate.removeException(russell, command);
+
+        // (2) Gunther should be able to amend the access level of the "/lvp" command.
+
+        // (3) Gunther should be able to add an exception to the "/lvp" command.
+
+        // (4) Gunther should be able to remove an exception from the "/lvp" command.
+
     });
 
     it('should be able to change boolean settings', async (assert) => {

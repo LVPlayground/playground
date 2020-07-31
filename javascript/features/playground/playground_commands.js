@@ -384,7 +384,34 @@ export class PlaygroundCommands {
     // Handles the flow where the |player| wants to remove an exception issued for |exceptedPlayer|
     // to use the given |command|. This will have to be confirmed by the |player|.
     async removeCommandException(player, command, exceptedPlayer) {
+        const confirmation = await confirm(player, {
+            title: command.command,
+            message: `Are you sure that you want to remove the exception granted\n` +
+                     `to ${exceptedPlayer.name}? They will be informed about this.`
+        });
 
+        if (!confirmation)
+            return;  // the |player| changed their mind
+
+        // (1) Revoke the permission for the |exceptedPlayer|.
+        this.permissionDelegate_.removeException(exceptedPlayer, command);
+
+        // (2) Let the |exceptedPlayer| know about having lost the exception.
+        exceptedPlayer.sendMessage(
+            Message.LVP_ACCESS_EXCEPTION_REMOVED_FYI, player.name, player.id, command.command);
+
+        // (3) Let administrators know about the |exceptedPlayer| having lost the exception.
+        if (command.restrictLevel !== Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_EXCEPTION_REMOVED_ADMIN, player.name, player.id, command.command,
+                exceptedPlayer.name, exceptedPlayer.id);
+        }
+
+        // (4) Let |player| know that the exception has been removed.
+        return await alert(player, {
+            title: command.command,
+            message: `An exception has been removed for ${exceptedPlayer.name}`
+        });
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -404,6 +404,8 @@
   "LVP_ACCESS_EXCEPTION_ADDED_FYI": "{80CBC4}*** %s (Id:%d) has allowed you to use the \"%s\" command.",
   "LVP_ACCESS_PLAYERS_GRANTED": "%s has made the command \"%s\" available to all players.",
   "LVP_ACCESS_PLAYERS_REVOKED": "%s has revoked the \"%s\" command from players.",
+  "LVP_ACCESS_EXCEPTION_REMOVED_ADMIN": "%s (Id:%d) has removed the \"%s\" command from %s (Id:%d)",
+  "LVP_ACCESS_EXCEPTION_REMOVED_FYI": "{80CBC4}*** %s (Id:%d) has revoked your ability to use the \"%s\" command.",
 
   "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has %s the %s option.",
   "LVP_ANNOUNCE_CMD_AVAILABLE": "%s has made the /%s command available to players.",

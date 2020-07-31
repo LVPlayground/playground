@@ -107,7 +107,17 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isTrue(delegate.hasException(russell, command));
 
         // (4) Gunther should be able to remove an exception from the "/lvp" command.
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Russell's exception */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
 
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `has been removed for Russell`);
+
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
     });
 
     it('should be able to change boolean settings', async (assert) => {

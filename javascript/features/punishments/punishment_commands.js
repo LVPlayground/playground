@@ -37,7 +37,7 @@ export class PunishmentCommands {
         // /scan [player]
         server.commandManager.buildCommand('scan')
             .description('Scan a particular player for possible cheating.')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
             .sub('reload')
                 .description('Reload the scan detection configuration.')
                 .restrict(Player.LEVEL_MANAGEMENT)

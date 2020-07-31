@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { CommandParameter } from 'components/commands/command_parameter.js';
+import { CommandPermissionDelegate } from 'components/commands/command_permission_delegate.js';
 
 // Regular expression used to match numbers in a command text string.
 const kNumberExpression = /^([-+]?\d+(\.\d+)?|0x[0-9a-f]+)\b\s*/i;
@@ -22,6 +23,14 @@ export class CommandExecutor {
 
     constructor(contextDelegate, permissionDelegate) {
         this.#contextDelegate_ = contextDelegate;
+        this.#permissionDelegate_ = permissionDelegate;
+    }
+
+    // Allows overriding the permission delegate after this class has been instantiated.
+    setPermissionDelegate(permissionDelegate) {
+        if (!(permissionDelegate instanceof CommandPermissionDelegate))
+            throw new Error(`The given delegate (${permissionDelegate}) must be a real delegate.`);
+
         this.#permissionDelegate_ = permissionDelegate;
     }
 
@@ -136,7 +145,7 @@ export class CommandExecutor {
         while (stack.length) {
             const [ command, commandText, parameters ] = stack.pop();
 
-            if (!this.canExecuteCommand(context, command, !commands.length))
+            if (context && !this.canExecuteCommand(context, command, !commands.length))
                 continue;  // the |context| does not have access to this |description|
 
             // Store the |command| as this has just become a candidate for execution.

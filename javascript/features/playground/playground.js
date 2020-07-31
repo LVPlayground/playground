@@ -6,6 +6,7 @@ import { Feature } from 'components/feature_manager/feature.js';
 import { PlaygroundCommands } from 'features/playground/playground_commands.js';
 import { PlaygroundManager } from 'features/playground/playground_manager.js';
 import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
+import { PlaygroundPermissionDelegate } from 'features/playground/playground_permission_delegate.js';
 
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
@@ -15,6 +16,7 @@ export default class Playground extends Feature {
     manager_ = null;
     nuwani_ = null;
     nuwaniCommands_ = null;
+    permissionDelegate_ = null;
 
     constructor() {
         super();
@@ -36,6 +38,10 @@ export default class Playground extends Feature {
 
         // Responsible for driving persistent effects, such as the Free VIP feature.
         this.manager_ = new PlaygroundManager(settings);
+
+        // The Permission Delegate provides specialized behaviour for the command system's access
+        // system, which allows this feature to create overrides and exceptions.
+        this.permissionDelegate_ = new PlaygroundPermissionDelegate();
 
         // Provides the "/lvp" command to Management members for managing the server.
         this.commands_ =
@@ -60,10 +66,15 @@ export default class Playground extends Feature {
     // Public API of the Playground feature.
     // ---------------------------------------------------------------------------------------------
 
-    // Returns whether the |player| is able to use |command|. This considers the command's default
-    // level, as well as any overrides that might have been created.
-    canAccessCommand(player, command) {
-        return player.level >= Player.LEVEL_ADMINISTRATOR;
+    // Returns whether the |player| is able to use |commandName|. This considers the command's
+    // default level, as well as any overrides that might have been created.
+    canAccessCommand(player, commandName) {
+        const command = server.commandManager.resolveCommand(commandName);
+        if (!command)
+            return false;  // the |command| is not known to the server
+
+        return this.permissionDelegate_.canExecuteCommand(
+            player, /* contextDelegate= */ null, command, /* verbose= */ false);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -79,6 +90,9 @@ export default class Playground extends Feature {
         this.manager_ = null;
 
         this.announce_ = null;
+
+        this.permissionDelegate_.dispose();
+        this.permissionDelegate_ = null;
 
         this.nuwani_.removeReloadObserver(this);
         this.nuwani_ = null;

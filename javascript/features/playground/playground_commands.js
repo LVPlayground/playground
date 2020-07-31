@@ -117,10 +117,21 @@ export class PlaygroundCommands {
 
         ], { pageSize: 25 });
 
+        // (1) Create a mapping with all the current levels for the commands in |commands|
+        const commandRestriction = new Map();
+
+        for (const command of commands) {
+            commandRestriction.set(
+                command, this.permissionDelegate_.getCommandLevel(command).restrictLevel);
+        }
+
         // (2) Sort the |commands| in alphabetical order, in-place, based on what's been given.
         commands.sort((lhs, rhs) => {
-            if (lhs.restrictLevel !== rhs.restrictLevel)
-                return lhs.restrictLevel > rhs.restrictLevel ? -1 : 1;
+            const lhsLevel = commandRestriction.get(lhs);
+            const rhsLevel = commandRestriction.get(rhs);
+
+            if (lhsLevel !== rhsLevel)
+                return lhsLevel > rhsLevel ? -1 : 1;
 
             return lhs.command.localeCompare(rhs.command);
         });

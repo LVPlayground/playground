@@ -34,6 +34,15 @@ export class CommandManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Allows overriding the permission delegate with the given |delegate|. When the |delegate| is
+    // NULL, the default delegate will be reinstated instead.
+    setPermissionDelegate(delegate) {
+        this.#executor_.setPermissionDelegate(delegate ? delegate
+                                                       : this.#defaultPermissionDelegate_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Gets an iterator that provides access to all registered CommandDescription objects.
     get commands() { return this.#commands_.values(); }
 
@@ -59,6 +68,24 @@ export class CommandManager {
     // Removes the command with the given |name| from the server.
     removeCommand(name) { this.#commands_.delete(name); }
 
+    // Returns the CommandDescription instance for the given |command|, which may be one of the
+    // sub-commands of a top-level command. Returns NULL when the |command| cannot be found.
+    resolveCommand(command) {
+        const result = this.findCommandDescription(command);
+        if (!result)
+            return null;
+
+        // Resolve the sub-commands for the |result| in case the |command| includes those. Will
+        // automatically fall back to the top-level command in case it doesn't.
+        const commandList = this.#executor_.matchPossibleCommands(
+            /* context= */ null, result.description, result.commandText);
+
+        if (!commandList.length)
+            throw new Error(`At least one command was expected in the returned command list.`);
+
+        return commandList[0][0];
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Called when a player has issued a command. The |event| will be verified for its integrity and
@@ -68,26 +95,35 @@ export class CommandManager {
         if (!player)
             return;  // the |event| was issued for an invalid player, ignore it
 
-        // (1) Split the command text in the command & the commandText, i.e. the remaining arguments
-        // and lower case the command as we support them without caring about casing.
-        let separator = event.cmdtext.indexOf(' ');
-        if (separator === -1)
-            separator = event.cmdtext.length;
+        // (1) Find the CommandDescription instance for the given |event|. When it can't be found,
+        // immediately bail out as the command won't be serviceable by JavaScript.
+        const result = this.findCommandDescription(event.cmdtext);
+        if (!result)
+            return null;
 
-        const commandName = event.cmdtext.substr(1, separator - 1).toLowerCase();
-        const commandText = event.cmdtext.substr(separator + 1).trim();
-
-        // (2) Get the CommandDescription instance for the |commandName|. If it has not been
-        // registered yet, then the command does not exist in JavaScript code.
-        const description = this.#commands_.get(commandName);
-        if (!description)
-            return;
-
-        // (3) Mark the |event| as having been handled; no need to call through to Pawn.
+        // (2) Mark the |event| as having been handled; no need to call through to Pawn.
         event.preventDefault();
 
-        // (4) Execute the actual command |description| for the invoking |player|.
-        return this.#executor_.executeCommand(player, description, (commandText || '').trim());
+        // (3) Execute the actual command |description| for the invoking |player|.
+        return this.#executor_.executeCommand(player, result.description, result.commandText);
+    }
+
+    // Returns the { description, commandText } of the given |command|, as it's about to be executed
+    // on the server. Will return NULL when the |command| cannot be found.
+    findCommandDescription(command) {
+        let separator = command.indexOf(' ');
+        if (separator === -1)
+            separator = command.length;
+
+        const commandName = command.substr(1, separator - 1).toLowerCase();
+        const commandText = command.substr(separator + 1).trim();
+
+        // Find the top-level CommandDescription that's associated with the given |command|.
+        const description = this.#commands_.get(commandName);
+        if (!description)
+            return null;  // the |commandName| does not exist
+
+        return { description, commandText: (commandText || '').trim() };
     }
 
     // ---------------------------------------------------------------------------------------------

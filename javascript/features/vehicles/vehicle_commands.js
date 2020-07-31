@@ -76,6 +76,10 @@ class VehicleCommands {
                 .description('Hard resets the entire vehicle layout.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
+            .sub('spawn')
+                .description('Command that enables you to spawn arbitrary vehicles.')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
             .sub(CommandBuilder.kTypePlayer, 'target', /* optional= */ true)
                 .description('Interact with a particular vehicle on the server.')
                 .sub('delete')
@@ -103,6 +107,11 @@ class VehicleCommands {
     // Either adds or removes the given |delegate| from the set of vehicle command delegates.
     addCommandDelegate(delegate) { this.delegates_.add(delegate); }
     removeCommandDelegate(delegate) { this.delegates_.delete(delegate); }
+
+    // Returns whether the given |player| is allowed to spawn arbitrary vehicles.
+    canSpawnArbitraryVehicles(player) {
+        return this.playground_().canAccessCommand(player, '/v spawn');
+    }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -164,8 +173,8 @@ class VehicleCommands {
         const { modelId, benefit } = kQuickVehicleCommands[command];
 
         const allowed =
-            this.playground_().canAccessCommand(player, 'v') ||
-            this.collectables_().isPlayerEligibleForBenefit(player, benefit);
+            this.collectables_().isPlayerEligibleForBenefit(player, benefit) ||
+            this.canSpawnArbitraryVehicles(player);
 
         if (!allowed) {
             player.sendMessage(Message.VEHICLE_QUICK_COLLECTABLES);
@@ -415,7 +424,7 @@ class VehicleCommands {
             globalOptions.push('delete', 'save');
         }
 
-        if (this.playground_().canAccessCommand(player, 'v'))
+        if (this.canSpawnArbitraryVehicles(player))
             player.sendMessage(Message.VEHICLE_HELP_SPAWN);
 
         if (globalOptions.length)

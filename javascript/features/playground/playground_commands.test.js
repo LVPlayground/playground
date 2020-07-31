@@ -39,7 +39,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
-        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 4);
     });
 
     it('should be able to change boolean settings', async (assert) => {

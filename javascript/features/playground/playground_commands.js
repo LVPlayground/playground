@@ -123,6 +123,10 @@ export class PlaygroundCommands {
             return lhs.command.localeCompare(rhs.command);
         });
 
+        // (a) If |baseCommand| is given, include it in the |commands| as the first entry.
+        if (baseCommand)
+            commands.unshift(baseCommand);
+
         // (3) Add each of the |commands| to the |dialog|, together with information on the level
         // it's been tied to, and whether there are exceptions for this command.
         for (const command of commands) {

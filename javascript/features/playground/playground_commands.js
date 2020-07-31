@@ -207,7 +207,66 @@ export class PlaygroundCommands {
             });
         }
 
-        // TODO: Implement this functionality.
+        let levelPrefix = originalLevel === restrictLevel ? '{F44336}' : '';
+        let level = 'Player';
+
+        switch (restrictLevel) {
+            case Player.LEVEL_ADMINISTRATOR:
+                level = 'Administrators';
+                break;
+            case Player.LEVEL_MANAGEMENT:
+                level = 'Management';
+                break;
+        }
+
+        const dialog = new Menu(command.name);
+
+        // (1) Add a dialog that allows the |player| to change the level it's available to.
+        dialog.addItem(`Change required level (${levelPrefix}${level})`, async () => {
+            return await this.displayCommandLevelDialog(player, level);
+        });
+
+        // (2) Add a dialog that allows the |player| to issue a new exception.
+        dialog.addItem('Add a usage exception', async () => {
+            return await this.displayCommandExceptionDialog(player, level);
+        });
+
+        // (3) If any exceptions have been granted, list those here for modification as well.
+        const exceptions = this.permissionDelegate_.getExceptions(command);
+        if (exceptions.length > 0) {
+            dialog.addItem('----------');
+
+            // (a) Sort the |exceptions| by player name, in ascending order.
+            exceptions.sort((lhr, rhs) => lhs.name.localeCompare(rhs.name));
+
+            // (b) Add each of the |exceptions to the created |dialog|.
+            for (const exceptedPlayer of exceptions) {
+                dialog.addItem(`Remove exception for ${exceptedPlayer.name}`, async () => {
+                    return await this.removeCommandException(player, command, exceptedPlayer);
+                });
+            }
+        }
+
+        // (4) Display the created |dialog| to the |player|.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog to the |player| that allows them to change the required player level for
+    // folks to be able to access the given |command|.
+    async displayCommandLevelDialog(player, command) {
+
+    }
+
+    // Displays a dialog to the |player| which allows them to add a new exception to the given
+    // |command|. Exceptions can only be issued to registered players.
+    async displayCommandExceptionDialog(player, command) {
+
+    }
+
+    // Handles the flow where the |player| wants to remove an exception issued for |exceptedPlayer|
+    // to use the given |command|. This will have to be confirmed by the |player|.
+    async removeCommandException(player, command, exceptedPlayer) {
+
     }
 
     // ---------------------------------------------------------------------------------------------

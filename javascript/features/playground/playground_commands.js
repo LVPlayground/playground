@@ -195,6 +195,7 @@ export class PlaygroundCommands {
     // Displays a dialog with the settings available for the |player| specific to the given
     // |command|, for instance to add and remove exceptions, and change the default level.
     async displayCommandDialog(player, command) {
+        // TODO: Require the |command| to be accessible by the |player| in a normal situation.
         // TODO: Implement this functionality.
     }
 

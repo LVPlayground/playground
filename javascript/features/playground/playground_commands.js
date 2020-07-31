@@ -19,12 +19,14 @@ export class PlaygroundCommands {
     commands_ = null;
     communication_ = null;
     nuwani_ = null;
+    permissionDelegate_ = null;
     settings_ = null;
 
-    constructor(announce, communication, nuwani, settings) {
+    constructor(announce, communication, nuwani, permissionDelegate, settings) {
         this.announce_ = announce;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
+        this.permissionDelegate_ = permissionDelegate;
         this.settings_ = settings;
 
         this.commands_ = new Map();
@@ -98,13 +100,13 @@ export class PlaygroundCommands {
     // Provides administrators with thorough access controls for all of Las Venturas Playground's
     // commands. The |player| will be able and control commands accessible to them.
     async onPlaygroundAccessCommand(player) {
-        return this.displayCommandDialog(
+        return this.displayCommandListDialog(
             player, /* baseCommand= */ null, [ ...server.commandManager.commands ]);
     }
 
     // Displays an access control dialog to the |player| for the |commands| which describes the list
     // of commands to display in this mode. May recursively call itself for complex commands.
-    async displayCommandDialog(player, baseCommand, commands) {
+    async displayCommandListDialog(player, baseCommand, commands) {
         // (1) Create the dialog that's to be shown. This dialog will only be used for the command
         // listing when there's at least a single sub-command to show.
         const dialog = new Menu('Access management', [
@@ -130,6 +132,7 @@ export class PlaygroundCommands {
         // (3) Add each of the |commands| to the |dialog|, together with information on the level
         // it's been tied to, and whether there are exceptions for this command.
         for (const command of commands) {
+            let color = '';
             let level = null;
             let exceptions = '{9E9E9E}-';
             let suffix = '';
@@ -139,7 +142,13 @@ export class PlaygroundCommands {
                 suffix = '{9E9E9E}...';
 
             // (b) Figure out the label to use for the command's level restriction.
-            switch (command.restrictLevel) {
+            const { restrictLevel, originalLevel } =
+                this.permissionDelegate_.getCommandLevel(command);
+
+            if (restrictLevel !== originalLevel)
+                color = '{F44336}';
+
+            switch (restrictLevel) {
                 case Player.LEVEL_PLAYER:
                     level = 'Players';
                     break;
@@ -156,22 +165,37 @@ export class PlaygroundCommands {
                     break;
             }
 
-            // (c) Create a listener function which activates when this command has been selected by
+            // (c) Create a label for the number of exceptions that exist for this command.
+            const exceptionCount = this.permissionDelegate_.getExceptions(command).length;
+            if (exceptionCount === 1)
+                exceptions = '{F44336}1 exception';
+            else if (exceptionCount >= 2)
+                exceptions = `{F44336}${exceptionCount} exceptions`;
+
+            // (d) Create a listener function which activates when this command has been selected by
             // the player. Either call this function again, or move on to command configuration.
             const listener = () => {
-                if (command !== baseCommand && command.hasSubCommands())
-                    return this.displayCommandDialog(player, command, [ ...command.subs.values() ]);
-                else
-                    ;  // TODO: Display a command configuration dialog
+                if (command !== baseCommand && command.hasSubCommands()) {
+                    return this.displayCommandListDialog(
+                        player, command, [ ...command.subs.values() ]);
+                } else {
+                    return this.displayCommandDialog(player, command);
+                }
             };
 
             // (d) Add the |command| and all formatted information to the |dialog|.
             dialog.addItem(
-                command.command + suffix, level, command.description, exceptions, listener);
+                color + command.command + suffix, level, command.description, exceptions, listener);
         }
 
         // (3) Present the dialog to the |player|.
         return await dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog with the settings available for the |player| specific to the given
+    // |command|, for instance to add and remove exceptions, and change the default level.
+    async displayCommandDialog(player, command) {
+        // TODO: Implement this functionality.
     }
 
     // ---------------------------------------------------------------------------------------------

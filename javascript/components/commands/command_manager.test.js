@@ -15,6 +15,7 @@ describe('CommandManager', it => {
             .build(() => executed = true);
 
         assert.isTrue(server.commandManager.hasCommand('test'));
+        assert.equal([ ...server.commandManager.commands ].length, 1);
 
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
@@ -25,6 +26,7 @@ describe('CommandManager', it => {
         server.commandManager.removeCommand('test');
 
         assert.isFalse(server.commandManager.hasCommand('test'));
+        assert.equal([ ...server.commandManager.commands ].length, 0);
     });
 
     it('should be able to display error messages issued by the executor', async (assert) => {

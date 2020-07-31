@@ -34,6 +34,9 @@ export class CommandManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Gets an iterator that provides access to all registered CommandDescription objects.
+    get commands() { return this.#commands_.values(); }
+
     // Returns a command builder for a command with the given |name|. When building has completed,
     // the command will automatically be registered with the CommandManager.
     buildCommand(name) {

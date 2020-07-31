@@ -34,16 +34,17 @@ export default class Playground extends Feature {
         // statistics. We closely integrate with that feature.
         const settings = this.defineDependency('settings');
 
+        // Responsible for driving persistent effects, such as the Free VIP feature.
         this.manager_ = new PlaygroundManager(settings);
+
+        // Provides the "/lvp" command to Management members for managing the server.
         this.commands_ =
             new PlaygroundCommands(this.announce_, communication, this.nuwani_, settings);
 
-        // Both the PlaygroundManager and PlaygroundCommands require additional initialization that
-        // will be done lazily by the tests that need it, in order to avoid slowing down all tests.
-        if (!server.isTest()) {
-            this.manager_.initialize();
+        // The PlaygroundCommands infrastructure requires additional initialization that will be
+        // done lazily by the tests that need it, in order to avoid slowing down all tests.
+        if (!server.isTest())
             this.commands_.loadCommands();
-        }
 
         this.initializeNuwaniCommands();
     }

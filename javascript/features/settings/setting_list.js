@@ -44,7 +44,6 @@ export const kSettingList = [
     new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, false, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
-    new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
     new Setting('decorations', 'pilots', Setting.TYPE_BOOLEAN, false, 'Should the pilots by flying around San Andreas?'),
     new Setting('decorations', 'pirate_ship_party', Setting.TYPE_BOOLEAN, true, 'Should there be a party on the Pirate Ship?'),
@@ -105,6 +104,7 @@ export const kSettingList = [
 
     /** Playground related settings */
     new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
+    new Setting('playground', 'enable_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('playground', 'collectable_hint_price_min', Setting.TYPE_NUMBER, 25000, 'Minimum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_hint_price_max', Setting.TYPE_NUMBER, 5000000, 'Maximum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),

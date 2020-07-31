@@ -91,6 +91,20 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.equal(delegate.getCommandLevel(command).restrictLevel, Player.LEVEL_MANAGEMENT);
 
         // (3) Gunther should be able to add an exception to the "/lvp" command.
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* add exception */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Russ' })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `has been added for Russell`);
+
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isTrue(delegate.hasException(russell, command));
 
         // (4) Gunther should be able to remove an exception from the "/lvp" command.
 

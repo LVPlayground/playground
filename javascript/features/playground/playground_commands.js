@@ -317,7 +317,68 @@ export class PlaygroundCommands {
     // Displays a dialog to the |player| which allows them to add a new exception to the given
     // |command|. Exceptions can only be issued to registered players.
     async displayCommandExceptionDialog(player, command) {
+        const target = await Question.ask(player, {
+            question: command.command,
+            message: 'Which player do you want to give access to this command?',
+            constraints: {
+                validation: input => !!server.playerManager.find({ nameOrId: input }),
+                explanation: `Sorry, I don't know which player you mean by that. Try again?`,
+                abort: `Sorry, you need to tell me which player to add the exception for.`
+            }
+        });
 
+        if (!target)
+            return;  // the |player| aborted
+
+        const targetPlayer = server.playerManager.find({ nameOrId: target });
+        if (!targetPlayer)
+            return;  // validation succeeded, but now fails.. race condition?
+
+        // (1) If the |targetPlayer| is not registered, we cannot add an exception for them.
+        if (!targetPlayer.account.isIdentified()) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, exceptions can only be added for registered players.`
+            });
+        }
+
+        // (2) If the |targetPlayer| is the current |player|, tell them to stop being silly.
+        if (targetPlayer === player) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, you're being silly so computer says no.`
+            });
+        }
+
+        // (3) If the |targetPlayer| already has access, let's not bother adding an exception.
+        if (this.permissionDelegate_.canExecuteCommand(targetPlayer, null, command, false)) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, ${targetPlayer.name} can already execute the command and thus\n` +
+                         `does not need an exception. Are you trying to be sneaky? :D`
+            });
+        }
+
+        // (3) Add the exception for the |targetPlayer| with the given |command|.
+        this.permissionDelegate_.addException(targetPlayer, command);
+
+        // (4) Tell the |targetPlayer| about the exception that has been added.
+        targetPlayer.sendMessage(
+            Message.LVP_ACCESS_EXCEPTION_ADDED_FYI, player.name, player.id, command.command);
+
+        // (5) Tell in-game administrators about the exception having been added, except when the
+        // original |command| requirement is Management-only, in which case it's silent.
+        if (command.restrictLevel !== Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_EXCEPTION_ADDED_ADMIN, player.name, player.id, targetPlayer.name,
+                targetPlayer.id, command.command);
+        }
+
+        // (6) Tell the |player| that the exception has been added.
+        return await alert(player, {
+            title: command.command,
+            message: `An exception has been added for ${targetPlayer.name}`
+        });
     }
 
     // Handles the flow where the |player| wants to remove an exception issued for |exceptedPlayer|

@@ -400,6 +400,8 @@
   "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because %s!",
 
   "LVP_ACCESS_ADMIN_NOTICE": "%s (Id:%d) has changed the \"%s\" command to %s.",
+  "LVP_ACCESS_EXCEPTION_ADDED_ADMIN": "%s (Id:%d) has allowed %s (Id:%d) to use the \"%s\" command.",
+  "LVP_ACCESS_EXCEPTION_ADDED_FYI": "{80CBC4}*** %s (Id:%d) has allowed you to use the \"%s\" command.",
   "LVP_ACCESS_PLAYERS_GRANTED": "%s has made the command \"%s\" available to all players.",
   "LVP_ACCESS_PLAYERS_REVOKED": "%s has revoked the \"%s\" command from players.",
 

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { BanDatabase } from 'features/punishments/ban_database.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { DetectorResults } from 'features/sampcac/detector_results.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
@@ -28,18 +28,21 @@ export class PunishmentCommands {
         this.settings_ = settings;
 
         // /lastbans [limit=10]
-        server.deprecatedCommandManager.buildCommand('lastbans')
+        server.commandManager.buildCommand('lastbans')
+            .description('Display the most recently issued bans on the server.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
-            .parameters([{ name: 'limit', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 10 }])
+            .parameters([{ name: 'limit', type: CommandBuilder.kTypeNumber, defaultValue: 10 }])
             .build(PunishmentCommands.prototype.onLastBansCommand.bind(this));
 
         // /scan [player]
-        server.deprecatedCommandManager.buildCommand('scan')
+        server.commandManager.buildCommand('scan')
+            .description('Scan a particular player for possible cheating.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('reload')
+                .description('Reload the scan detection configuration.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(PunishmentCommands.prototype.onScanReloadCommand.bind(this))
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(PunishmentCommands.prototype.onScanCommand.bind(this));
     }
 
@@ -234,7 +237,7 @@ export class PunishmentCommands {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('lastbans');
-        server.deprecatedCommandManager.removeCommand('scan');
+        server.commandManager.removeCommand('lastbans');
+        server.commandManager.removeCommand('scan');
     }
 }

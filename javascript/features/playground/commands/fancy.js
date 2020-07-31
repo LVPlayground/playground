@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // Command: /fancy [player] [none/parrot]
@@ -20,12 +20,13 @@ export default class FancyCommand extends Command {
 
     get name() { return 'fancy'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Give yourself a fancy appearance!`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'type', type: CommandBuilder.WORD_PARAMETER, optional: true }
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'type', type: CommandBuilder.kTypeText, optional: true }
             ])
             .build(FancyCommand.prototype.onFancyCommand.bind(this));
     }

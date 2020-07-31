@@ -18,7 +18,8 @@ export class NuwaniCommand {
         this.nuwani_ = nuwani;
 
         // Defines the `/nuwani` command. Access is controlled by the Playground module.
-        server.deprecatedCommandManager.buildCommand('nuwani')
+        server.commandManager.buildCommand('nuwani')
+            .description('Manages the Nuwani IRC Bot system.')
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(NuwaniCommand.prototype.onNuwaniCommand.bind(this));
     }
@@ -166,6 +167,6 @@ export class NuwaniCommand {
         this.nuwani_ = null;
         this.announce_ = null;
 
-        server.deprecatedCommandManager.removeCommand('nuwani');
+        server.commandManager.removeCommand('nuwani');
     }
 }

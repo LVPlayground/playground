@@ -3,16 +3,17 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /indicators [player]
 export default class IndicatorsCommand extends Command {
     get name() { return 'indicators'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Toggle controls over your vehicle's indicators.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([{ name: 'target', type: CommandBuilder.PLAYER_PARAMETER, optional: true }])
+            .parameters([{ name: 'target', type: CommandBuilder.kTypePlayer, optional: true }])
             .build(IndicatorsCommand.prototype.onIndicatorCommand.bind(this));
     }
 

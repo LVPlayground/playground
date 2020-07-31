@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 import { random } from 'base/random.js';
@@ -26,10 +26,11 @@ export default class IsolateCommand extends Command {
 
     get name() { return 'isolate'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Isolates a particular player from the game.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([ { name: 'target', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .parameters([ { name: 'target', type: CommandBuilder.kTypePlayer } ])
             .build(IsolateCommand.prototype.onIsolateCommand.bind(this));
     }
 

@@ -3,20 +3,22 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Command: /jetpack [player] ["remove"]
 export default class JetpackCommand extends Command {
     get name() { return 'jetpack'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Get a jetpack to fly around in.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Give or remove a jetpack to another player.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([
-                    { name: 'remove', type: CommandBuilder.WORD_PARAMETER, optional: true }
+                    { name: 'remove', type: CommandBuilder.kTypeText, optional: true }
                 ])
                 .build(JetpackCommand.prototype.onJetpackCommand.bind(this))
             .build(JetpackCommand.prototype.onJetpackCommand.bind(this));

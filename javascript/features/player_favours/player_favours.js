@@ -141,10 +141,12 @@ class PlayerFavours extends Feature {
         this.xanlandObject_ = this.xanlandObjectEntities_.createObject(this.xanlandObjectDetails_);
         this.showXanlandObject_();
 
-        server.deprecatedCommandManager.buildCommand('eaglecash')
+        server.commandManager.buildCommand('eaglecash')
+            .description(`Gives a small amount of money to Eagle_Force_One.`)
             .build(PlayerFavours.prototype.onEagleCashCommand.bind(this));
 
-        server.deprecatedCommandManager.buildCommand('xanlandobject')
+        server.commandManager.buildCommand('xanlandobject')
+            .description(`Toggles visibility of Xanland's objects.`)
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
         // -----------------------------------------------------------------------------------------
@@ -222,8 +224,8 @@ class PlayerFavours extends Feature {
         this.xanlandObjectEntities_.dispose();
         this.xanlandObjectEntities_ = null;
 
-        server.deprecatedCommandManager.removeCommand('xanlandobject');
-        server.deprecatedCommandManager.removeCommand('eaglecash');
+        server.commandManager.removeCommand('xanlandobject');
+        server.commandManager.removeCommand('eaglecash');
     }
 }
 

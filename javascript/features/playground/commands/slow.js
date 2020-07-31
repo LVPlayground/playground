@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /slow [player]? [factor]
 export default class SlowCommand extends Command {
@@ -17,12 +17,13 @@ export default class SlowCommand extends Command {
 
     get name() { return 'slow'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Amend a player's in-vehicle acceleration.`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'target', type: CommandBuilder.PLAYER_PARAMETER, optional: true },
-                { name: 'factor', type: CommandBuilder.NUMBER_PARAMETER, optional: true }
+                { name: 'target', type: CommandBuilder.kTypePlayer, optional: true },
+                { name: 'factor', type: CommandBuilder.kTypeNumber, optional: true }
             ])
             .build(SlowCommand.prototype.onSlowCommand.bind(this));
     }

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 import { random } from 'base/random.js';
 
@@ -13,12 +13,13 @@ export default class FlapCommand extends Command {
 
     get name() { return 'flap'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Did you know that cars can fly?`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'player', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'interval', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 1000 }])
+                { name: 'player', type: CommandBuilder.kTypePlayer },
+                { name: 'interval', type: CommandBuilder.kTypeNumber, defaultValue: 1000 }])
             .build(FlapCommand.prototype.onFlapCommand.bind(this));
     }
 

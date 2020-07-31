@@ -11,6 +11,7 @@ import { MessageBox } from 'components/dialogs/message_box.js';
 export default class PlayerSettingsCommands extends Command {
     get name() { return 'playersettings'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Amend your own player settings.`; }
 
     constructor() {
         super();

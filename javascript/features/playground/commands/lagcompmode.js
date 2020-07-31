@@ -3,18 +3,19 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /lagcompmode [player] [0-2]?
 export default class LagCompModeCommand extends Command {
     get name() { return 'lagcompmode'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Change lag compensation mode for a player.`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'target', type: CommandBuilder.PLAYER_PARAMETER },
-                { name: 'mode', type: CommandBuilder.NUMBER_PARAMETER, optional: true } ])
+                { name: 'target', type: CommandBuilder.kTypePlayer },
+                { name: 'mode', type: CommandBuilder.kTypeNumber, optional: true } ])
             .build(LagCompModeCommand.prototype.onLagCompModeCommand.bind(this));
     }
 

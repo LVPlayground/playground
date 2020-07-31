@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { MessageBox } from 'components/dialogs/message_box.js';
 import { Question } from 'components/dialogs/question.js';
@@ -33,14 +33,18 @@ export class PlaygroundCommands {
 
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
-        server.deprecatedCommandManager.buildCommand('lvp')
+        server.commandManager.buildCommand('lvp')
+            .description('Manages Las Venturas Playground.')
             .sub('reload')
+                .description('Live reload one of the JavaScript features.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .sub('messages')
+                    .description('Live reload the message formatting files.')
                     .build(PlaygroundCommands.prototype.onPlaygroundReloadMessagesCommand.bind(this))
-                .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
+                .parameters([ { name: 'feature', type: CommandBuilder.kTypeText } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .sub('settings')
+                .description(`Amend some of the server's settings.`)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
@@ -75,7 +79,8 @@ export class PlaygroundCommands {
             const command = new CommandImplementation(this.announce_, this.nuwani_);
 
             command.build(
-                server.deprecatedCommandManager.buildCommand(command.name)
+                server.commandManager.buildCommand(command.name)
+                    .description(command.description)
                     .restrict(command.defaultPlayerLevel));
 
             // Store the |command| in the |commands_| dictionary.
@@ -624,10 +629,10 @@ export class PlaygroundCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('lvp');
+        server.commandManager.removeCommand('lvp');
 
         this.commands_.forEach((command, name) => {
-            server.deprecatedCommandManager.removeCommand(name);
+            server.commandManager.removeCommand(name);
             command.dispose();
         });
 

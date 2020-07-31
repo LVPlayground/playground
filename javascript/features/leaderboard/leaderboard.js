@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { LeaderboardDatabase } from 'features/leaderboard/leaderboard_database.js';
 import { Menu } from 'components/menu/menu.js';
@@ -31,8 +31,9 @@ export default class Leaderboard extends Feature {
                                          : new LeaderboardDatabase();
 
         // The `/top` command, which shows the server's current leaderboard.
-        server.deprecatedCommandManager.buildCommand('top')
-            .parameters([{ name: 'view', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+        server.commandManager.buildCommand('top')
+            .description(`Display the server's leaderboards.`)
+            .parameters([{ name: 'view', type: CommandBuilder.kTypeText, optional: true }])
             .build(Leaderboard.prototype.onLeaderboardCommand.bind(this));
     }
 
@@ -366,7 +367,7 @@ export default class Leaderboard extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('top');
+        server.commandManager.removeCommand('top');
 
         this.settings_ = null;
         this.database_ = null;

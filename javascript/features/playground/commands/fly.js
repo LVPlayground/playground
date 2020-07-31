@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // How many frames per second should be checked for directionality updates?
@@ -28,11 +28,12 @@ export default class FlyCommand extends Command {
 
     get name() { return 'fly'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Fly around in the world of San Andreas.`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'target', type: CommandBuilder.PLAYER_PARAMETER, optional: true }
+                { name: 'target', type: CommandBuilder.kTypePlayer, optional: true }
             ])
             .build(FlyCommand.prototype.onFlyCommand.bind(this));
     }

@@ -3,16 +3,17 @@
 // be found in the LICENSE file.
 
 import { Command } from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /skipdamage [player]
 export default class SkipDamageCommand extends Command {
     get name() { return 'skipdamage'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Disables someone's ability to inflict damage.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([{ name: 'target', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'target', type: CommandBuilder.kTypePlayer }])
             .build(SkipDamageCommand.prototype.onSkipDamageCommand.bind(this));
     }
 

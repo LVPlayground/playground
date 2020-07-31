@@ -13,6 +13,11 @@ export class Command {
     // Gets the name of the current command. Must be implemented by the command.
     get name() { throw new Error('Command::name getter must be implemented by the command.'); }
 
+    // Gets a brief description of what the command is intended to do.
+    get description() {
+        throw new Error('Command::description getter must be implemented by the command.');
+    }
+
     // Gets the default player level required to execute the command. Must be implemented by the
     // command. Can be overridden using the `/lvp access` command.
     get defaultPlayerLevel() {

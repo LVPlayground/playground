@@ -5,7 +5,6 @@
 import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
-import { CommandManager as DeprecatedCommandManager } from 'components/command_manager/command_manager.js';
 import { CommandManager } from 'components/commands/command_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
 import { FeatureManager } from 'components/feature_manager/feature_manager.js';
@@ -79,7 +78,6 @@ class MockServer {
         this.pawnInvoke_ = new MockPawnInvoke();
 
         this.commandManager_ = new CommandManager();
-        this.deprecatecCommandManager_ = new DeprecatedCommandManager();
         this.deferredEventManager_ = new MockDeferredEventManager();
         this.featureManager_ = new FeatureManager();
 
@@ -169,9 +167,6 @@ class MockServer {
     // Gets the command manager which is responsible for routing player-issued commands.
     get commandManager() { return this.commandManager_; }
 
-    // Gets the command manager. This is a real instance.
-    get deprecatedCommandManager() { return this.deprecatecCommandManager_; }
-
     // Gets the deferred event manager, which dispatches deferred events.
     get deferredEventManager() { return this.deferredEventManager_; }
 
@@ -236,7 +231,6 @@ class MockServer {
     async dispose() {
         this.featureManager_.dispose();
         this.deferredEventManager_.dispose();
-        this.deprecatecCommandManager_.dispose();
         this.commandManager_.dispose();
 
         this.checkpointManager_.dispose();

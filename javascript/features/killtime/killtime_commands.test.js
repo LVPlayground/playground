@@ -166,15 +166,6 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-    it('should support live reloading, and properly clean up after itself', async assert => {
-        const commandCount = server.deprecatedCommandManager.size;
-
-        assert.isTrue(server.featureManager.isEligibleForLiveReload('killtime'));
-        assert.isTrue(await server.featureManager.liveReload('killtime'));
-
-        assert.equal(server.deprecatedCommandManager.size, commandCount);
-    });
-
     it('should give error upon using an invalid weapon', async assert => {
         assert.isTrue(gunther.issueCommand('/killtime start 2 0'));
         assert.equal(gunther.messages.length, 1);

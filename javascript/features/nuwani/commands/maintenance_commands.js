@@ -49,7 +49,7 @@ export class MaintenanceCommands {
     // Evaluates the given JavaScript code on the server. This has full access to the server context
     // and should therefore be limited to bot owners.
     onEvalCommand(context, code) {
-        const cm = server.deprecatedCommandManager;
+        const cm = server.commandManager;
         const fm = server.featureManager;
         const p = playerId => server.playerManager.getById(playerId);
         const vid = playerId => pawnInvoke('GetPlayerVehicleID', 'i', playerId);

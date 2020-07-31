@@ -10,7 +10,7 @@ import PositioningCommands from 'features/commands/positioning_commands.js';
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The Commands class provides the shared infrastructure, whereas groups of commands will be
 // implemented separately based on their own requirements.
-class Commands extends Feature {
+export default class Commands extends Feature {
     constructor() {
         super();
 
@@ -52,13 +52,11 @@ class Commands extends Feature {
         this.positioningCommands_.dispose();
         this.ircChatCommands_.dispose();
 
-        server.deprecatedCommandManager.removeCommand('credits');
-        server.deprecatedCommandManager.removeCommand('guide');
-        server.deprecatedCommandManager.removeCommand('help');
-        server.deprecatedCommandManager.removeCommand('irc');
-        server.deprecatedCommandManager.removeCommand('rules');
-        server.deprecatedCommandManager.removeCommand('vip');
+        server.commandManager.removeCommand('credits');
+        server.commandManager.removeCommand('guide');
+        server.commandManager.removeCommand('help');
+        server.commandManager.removeCommand('irc');
+        server.commandManager.removeCommand('rules');
+        server.commandManager.removeCommand('vip');
     }
 };
-
-export default Commands;

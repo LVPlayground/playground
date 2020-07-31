@@ -78,7 +78,7 @@ export class CommandManager {
         // registered yet, then the command does not exist in JavaScript code.
         const description = this.#commands_.get(commandName);
         if (!description)
-            return server.deprecatedCommandManager.onPlayerCommandText(event);
+            return;
 
         // (3) Mark the |event| as having been handled; no need to call through to Pawn.
         event.preventDefault();

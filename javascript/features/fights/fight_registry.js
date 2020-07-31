@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { FightGame } from 'features/fights/fight_game.js';
 import { FightLocationDescription } from 'features/fights/fight_location_description.js';
 import { FightLocation } from 'features/fights/fight_location.js';
@@ -68,7 +68,7 @@ export class FightRegistry {
             settings.set('internal/goal', configuration.goal);
             settings.set('internal/name', configuration.name);
 
-            this.registerCommand(configuration.command, settings);
+            this.registerCommand(configuration, settings);
         }
     }
 
@@ -77,17 +77,21 @@ export class FightRegistry {
     // Registers a command with the server, following the given configuration. Activating it will
     // immediately start the sign-up flow of the configured game. This mimics the command syntax
     // that the games features exposes by default.
-    registerCommand(command, settings) {
-        server.deprecatedCommandManager.buildCommand(command)
+    registerCommand(configuration, settings) {
+        server.commandManager.buildCommand(configuration.command)
+            .description('Sign up for the ' + configuration.name)
             .sub('custom')
+                .description('Customise the game to your liking.')
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, 'customise'))
             .sub('watch')
+                .description('Watch people currently playing this game.')
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, 'watch'))
-            .sub(CommandBuilder.NUMBER_PARAMETER)
+            .sub(CommandBuilder.kTypeNumber, 'registration')
+                .description('Sign up for the ' + configuration.name)
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null))
             .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null));
 
-        this.#commands_.add(command);
+        this.#commands_.add(configuration.command);
     }
 
     // Called when the |player| has issued a command. We'll construct the game command parameters
@@ -115,7 +119,7 @@ export class FightRegistry {
 
     dispose() {
         for (const command of this.#commands_)
-            server.deprecatedCommandManager.removeCommand(command);
+            server.commandManager.removeCommand(command);
 
         this.#commands_ = null;
     }

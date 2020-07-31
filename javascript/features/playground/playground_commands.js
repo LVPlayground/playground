@@ -142,6 +142,9 @@ export class PlaygroundCommands {
 
                 case Player.LEVEL_ADMINISTRATOR:
                     level = '{FFFF00}Administrators';
+                    if (command.restrictTemporary)
+                        level += ' {F44336}*';
+
                     break;
 
                 case Player.LEVEL_MANAGEMENT:

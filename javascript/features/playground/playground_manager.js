@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { FreeVip } from 'features/playground/traits/free_vip.js';
-import { PirateShipParty } from 'features/playground/traits/pirate_ship_party.js';
 
 // The playground manager provides back-end logic for the features provided as part of this module.
 // It controls all settings, as well as the default values for the settings.
@@ -12,13 +11,11 @@ export class PlaygroundManager {
         this.settings_ = settings;
 
         this.freeVip_ = null;
-        this.pirateParty_ = null;
 
         // Settings that should be observed for changes. This manager implements the behaviour
         // necessary for servicing them.
         this.observable_settings_ = [
             'decorations/holidays_free_vip',
-            'decorations/objects_pirate_party',
         ];
     }
 
@@ -33,15 +30,6 @@ export class PlaygroundManager {
                 } else if (disable && this.freeVip_) {
                     this.freeVip_.dispose();
                     this.freeVip_ = null;
-                }
-                break;
-
-            case 'decorations/objects_pirate_party':
-                if (enable && !this.pirateParty_) {
-                    this.pirateParty_ = new PirateShipParty();
-                } else if (disable && this.pirateParty_) {
-                    this.pirateParty_.dispose();
-                    this.pirateParty_ = null;
                 }
                 break;
 

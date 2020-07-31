@@ -68,7 +68,7 @@ Feature                                          | Code Health | Description
 [Cruise](cruise/)                                | ❓ 2020     | -
 [DeathFeed](death_feed/)                         | ❓ 2020     | -
 [DeathMatch](death_match/)                       | ❓ 2020     | -
-[Decorations](decorations/)                      | ❓ 2020     | Powers JSON-based decorations on the server.
+[Decorations](decorations/)                      | ✔ 2020     | Powers JSON-based decorations on the server.
 [Derbies](derbies/)                              | ❓ 2020     | -
 [Economy](economy/)                              | ✔ 2020     | Provides routines for calculating the prices of things on the server.
 [Fights](fights/)                                | ✔ 2020     | Provides various fighting-based games to the players.

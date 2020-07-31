@@ -37,7 +37,7 @@ describe('CommandBuilder', (it, beforeEach) => {
         assert.typeOf(description.listener, 'function');
         assert.equal(description.parameters.length, 0);
         assert.equal(description.restrictLevel, Player.LEVEL_PLAYER);
-        assert.isNull(description.restrictTemporary);
+        assert.isFalse(description.restrictTemporary);
         assert.equal([ ...description.subs ].length, 0);
 
         description = null;  // reset

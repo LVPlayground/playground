@@ -37,7 +37,7 @@ export class CommandBuilder {
     #parameters_ = null;
     #parent_ = null;
     #prefix_ = null;
-    #restrictLevel_ = Player.LEVEL_PLAYER;
+    #restrictLevel_ = null;
     #restrictTemporary_ = null;
     #subs_ = null;
 
@@ -47,8 +47,16 @@ export class CommandBuilder {
         this.#parameters_ = [];
         this.#parent_ = parent;
         this.#prefix_ = prefix;
+        this.#restrictLevel_ = parent?.restrictLevel ?? Player.LEVEL_PLAYER;
+        this.#restrictTemporary_ = parent?.restrictTemporary ?? false;
         this.#subs_ = new Map();
     }
+
+    // Gets the level restriction that's been instated for the building command.
+    get restrictLevel() { return this.#restrictLevel_; }
+
+    // Gets the temporary level restriction that's been set in this command so far.
+    get restrictTemporary() { return this.#restrictTemporary_; }
 
     // Sets the given |description| to be associated with this command, which are required for all
     // commands as it can be used to explain to the player what it does. Returns |this| instance.
@@ -109,6 +117,9 @@ export class CommandBuilder {
                    Player.LEVEL_MANAGEMENT ].includes(level)) {
             throw new Error(`${this}: command levels must be one of the Player level constants.`);
         }
+
+        if (this.#parent_ && this.#parent_.restrictLevel > level)
+            throw new Error(`${this}: it's not valid to be less restrictive than its parents.`);
 
         this.#restrictLevel_ = level;
         this.#restrictTemporary_ = !!restrictTemporary;

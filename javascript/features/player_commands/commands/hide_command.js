@@ -2,16 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { PlayerCommand } from 'features/player_commands/player_command.js';
 
 // Implements the "/my hide" command, which can be used by administrators to hide themselves on the
 // map and makes them invisible to other players nearby.
 export class HideCommand extends PlayerCommand {
     get name() { return 'hide'; }
+    get description() { return `Toggle visibility of the character.`; }
+
     get parameters() {
         return [
-            { name: 'invisible', type: CommandBuilder.WORD_PARAMETER, optional: true }
+            { name: 'invisible', type: CommandBuilder.kTypeText, optional: true }
         ];
     }
 

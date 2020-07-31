@@ -8,6 +8,7 @@ import { PlayerCommand } from 'features/player_commands/player_command.js';
 // a particular player. This action will be relayed to the player directly.
 export class FreezeCommand extends PlayerCommand {
     get name() { return 'freeze'; }
+    get description() { return `Take away their ability to control themselves.`; }
 
     // This command is not available to all players, only to administrators.
     get playerLevel() { return Player.LEVEL_ADMINISTRATOR; }
@@ -38,6 +39,7 @@ export class FreezeCommand extends PlayerCommand {
 // freeze command: it makes it possible for the player to move around again.
 export class UnfreezeCommand extends PlayerCommand {
     get name() { return 'unfreeze'; }
+    get description() { return `Give them their controls back.`; }
 
     // This command is not available to all players, only to administrators.
     get playerLevel() { return Player.LEVEL_ADMINISTRATOR; }

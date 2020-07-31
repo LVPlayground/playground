@@ -3,16 +3,18 @@
 // be found in the LICENSE file.
 
 import { Color } from 'base/color.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { PlayerCommand } from 'features/player_commands/player_command.js';
 
 // Implements the "/my color" command, which is available to VIPs who wish to change their color.
 // Administrators further have the ability to execute this command on other players.
 export class ColorCommand extends PlayerCommand {
     get name() { return 'color'; }
+    get description() { return `Control the player color.`; }
+
     get parameters() {
         return [
-            { name: 'color', type: CommandBuilder.WORD_PARAMETER, optional: true }
+            { name: 'color', type: CommandBuilder.kTypeText, optional: true }
         ];
     }
 

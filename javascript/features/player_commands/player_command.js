@@ -30,6 +30,11 @@ export class PlayerCommand {
     // Gets the name of the command ("/{name}").
     get name() { throw new Error('PlayerCommand::name is expected to be implemented.'); }
 
+    // Gets the description of the command.
+    get description() {
+        throw new Error('PlayerCommand::description is expected to be implemented.');
+    }
+
     // Executes the command, which has been invoked by the |player|, for the |target|. The |target|
     // may either be the |player| (when /my is used), or another player through administrator use.
     execute(player, target) {}

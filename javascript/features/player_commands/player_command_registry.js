@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { PlayerCommand } from 'features/player_commands/player_command.js';
 
 // The directory in which the command definitions are located, and the include path through which
@@ -40,19 +40,24 @@ export class PlayerCommandRegistry {
         }
 
         // (2) Initialize the builders through which the individual commands will be registered.
-        const myBuilder = server.deprecatedCommandManager.buildCommand('my');
-        const playerBuilder = server.deprecatedCommandManager.buildCommand('p')
-            .sub(CommandBuilder.PLAYER_PARAMETER);
+        const myBuilder = server.commandManager.buildCommand('my')
+            .description('Change your own settings on the server.')
+        const playerBuilder = server.commandManager.buildCommand('p')
+            .description(`Change someone's settings on the server.`)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description(`Change someone's settings on the server.`);
 
         // (3) Iterate over all the commands, and add them to both "/my" and "/p".
         for (const command of this.#commands_) {
             myBuilder.sub(command.name)
+                .description(command.description)
                 .restrict(command.playerLevel)
                 .parameters(command.parameters)
                 .build(PlayerCommandRegistry.prototype.onCommand.bind(
                     this, command, /* subject= */ null));
 
             playerBuilder.sub(command.name)
+                .description(command.description)
                 .restrict(command.administratorLevel)
                 .parameters(command.parameters)
                 .build(PlayerCommandRegistry.prototype.onCommand.bind(this, command));
@@ -61,7 +66,7 @@ export class PlayerCommandRegistry {
         // (4) Register the "/my" command with the server. We already closed the last sub-command.
         myBuilder
             .parameters([
-                { name: 'params', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+                { name: 'params', type: CommandBuilder.kTypeText, optional: true }
             ])
             .build(PlayerCommandRegistry.prototype.onMyCommand.bind(this));
 
@@ -69,7 +74,7 @@ export class PlayerCommandRegistry {
         // parameter is still open, so that has to be closed first.
         playerBuilder
                 .parameters([
-                     { name: 'params', type: CommandBuilder.SENTENCE_PARAMETER, optional: true }
+                     { name: 'params', type: CommandBuilder.kTypeText, optional: true }
                 ])
                 .build(PlayerCommandRegistry.prototype.onPlayerCommand.bind(this))
             .build(PlayerCommandRegistry.prototype.onPlayerCommand.bind(this));
@@ -127,10 +132,10 @@ export class PlayerCommandRegistry {
 
         this.#params_ = null;
 
-        if (!server.deprecatedCommandManager.hasCommand('my'))
+        if (!server.commandManager.hasCommand('my'))
             return;  // the commands never were registered
 
-        server.deprecatedCommandManager.removeCommand('my');
-        server.deprecatedCommandManager.removeCommand('p');
+        server.commandManager.removeCommand('my');
+        server.commandManager.removeCommand('p');
     }
 }

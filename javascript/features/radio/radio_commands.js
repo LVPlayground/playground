@@ -14,8 +14,10 @@ class RadioCommands {
 
         // The `/radio` command gives players the ability to quickly (and temporarily) stop the
         // radio, as well as the option to change their channel selection.
-        server.deprecatedCommandManager.buildCommand('radio')
+        server.commandManager.buildCommand('radio')
+            .description('Toggle your in-game radio on or off.')
             .sub('settings')
+                .description('Control your in-game radio settings.')
                 .build(RadioCommands.prototype.onRadioSettingsCommand.bind(this))
             .build(RadioCommands.prototype.onRadioCommand.bind(this));
 
@@ -110,7 +112,7 @@ class RadioCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('radio');
+        server.commandManager.removeCommand('radio');
     }
 }
 

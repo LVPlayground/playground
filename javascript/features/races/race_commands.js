@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 
 import { formatTime } from 'base/time.js';
@@ -16,8 +16,10 @@ class RaceCommands {
     constructor(manager) {
         this.manager_ = manager;
 
-        server.deprecatedCommandManager.buildCommand('race')
-            .sub(CommandBuilder.NUMBER_PARAMETER)
+        server.commandManager.buildCommand('race')
+            .description(`Compete in one of the server's races.`)
+            .sub(CommandBuilder.kTypeNumber, 'id')
+                .description(`Compete in one of the server's races.`)
                 .build(RaceCommands.prototype.raceStart.bind(this))
             .build(RaceCommands.prototype.raceOverview.bind(this));
     }
@@ -88,7 +90,7 @@ class RaceCommands {
     }
 
     dispose() {
-        server.deprecatedCommandManager.removeCommand('race');
+        server.commandManager.removeCommand('race');
     }
 }
 

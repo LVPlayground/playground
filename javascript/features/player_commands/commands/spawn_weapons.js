@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { PlayerCommand } from 'features/player_commands/player_command.js';
 import { WeaponData } from 'features/player_commands/weapon_data.js';
 
@@ -13,10 +13,12 @@ const ExtraPriceFactor = 1.5;
 // to purchase spawn weapons for the duration of their playing session.
 export class SpawnWeapons extends PlayerCommand {
     get name() { return 'spawnweapons'; }
+    get description() { return `Manage spawn weapons.`; }
+
     get parameters() {
         return [
-            { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER },
-            { name: 'multiplier', type: CommandBuilder.NUMBER_PARAMETER, defaultValue: 1 }
+            { name: 'weapon', type: CommandBuilder.kTypeNumber },
+            { name: 'multiplier', type: CommandBuilder.kTypeNumber, defaultValue: 1 }
         ];
     }
 

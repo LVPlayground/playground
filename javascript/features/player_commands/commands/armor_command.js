@@ -2,16 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { PlayerCommand } from 'features/player_commands/player_command.js';
 
 // Implements the "/my armour" and "/p [player] armor" commands, which makes it possible for admins
 // to change the amount of armour a particular player has. Gee American spelling.
 export class ArmorCommand extends PlayerCommand {
     get name() { return 'armor'; }
+    get description() { return `Control the level of armour.`; }
+
     get parameters() {
         return [
-            { name: 'amount', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
+            { name: 'amount', type: CommandBuilder.kTypeNumber, optional: true },
         ];
     }
 

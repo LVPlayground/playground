@@ -16,7 +16,7 @@ describe('PlayerCommandRegistry', (it, beforeEach) => {
     });
 
     it('should expose the /my and /p commands to the server', assert => {
-        assert.isTrue(server.deprecatedCommandManager.hasCommand('my'));
-        assert.isTrue(server.deprecatedCommandManager.hasCommand('p'));
+        assert.isTrue(server.commandManager.hasCommand('my'));
+        assert.isTrue(server.commandManager.hasCommand('p'));
     });
 });

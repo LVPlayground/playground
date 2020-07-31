@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
@@ -21,16 +21,16 @@ const MaximumVehiclesInArea = 90;
 // Mapping of vehicle commands to model Ids that should be created for quick access.
 const kQuickVehicleCommands = {
     // kBenefitBasicSprayQuickVehicleAccess, the easy tier
-    pre: { modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Premier
-    sul: { modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Sultan
+    pre: { name: 'Premier', modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },
+    sul: { name: 'Sultan', modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },
 
     // kBenefitBasicBarrelQuickVehicleAccess, the alternative easy tier
-    ele: { modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Elegy
-    tur: { modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Turismo
+    ele: { name: 'Elegy', modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },
+    tur: { name: 'Turismo', modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },
 
     // kBenefitFullQuickVehicleAccess, the higher level tier
-    inf: { modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },  // Infernus
-    nrg: { modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },  // NRG-500
+    inf: { name: 'Infernus', modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },
+    nrg: { name: 'NRG-500', modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },
 };
 
 // Responsible for providing the commands associated with vehicles. Both players and administrators
@@ -48,46 +48,55 @@ class VehicleCommands {
         this.playground_ = playground;
 
         // Command: /seize
-        server.deprecatedCommandManager.buildCommand('seize')
+        server.commandManager.buildCommand('seize')
+            .description(`Seizes control of the vehicle you're in.`)
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
 
         // Quick vehicle commands.
         for (const command of Object.keys(kQuickVehicleCommands)) {
-            server.deprecatedCommandManager.buildCommand(command)
+            server.commandManager.buildCommand(command)
+                .description('Spawn yourself a ' + command.name)
                 .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 
         // Command: /v [vehicle]?
         //          /v [enter/help/reset/save]
         //          /v [player]? [delete/health/respawn]
-        server.deprecatedCommandManager.buildCommand('v')
+        server.commandManager.buildCommand('v')
+            .description('Interact with the vehicles on the server.')
             .sub('enter')
+                .description('Forcefully enter the closest vehicle.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
-                .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
-                                optional: true } ])
+                .parameters([ { name: 'seat', type: CommandBuilder.kTypeNumber, optional: true } ])
                 .build(VehicleCommands.prototype.onVehicleEnterCommand.bind(this))
             .sub('help')
+                .description('Information on what this command allows you to do.')
                 .build(VehicleCommands.prototype.onVehicleHelpCommand.bind(this))
             .sub('reset')
+                .description('Hard resets the entire vehicle layout.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
-            .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
+            .sub(CommandBuilder.kTypePlayer, 'target', /* optional= */ true)
+                .description('Interact with a particular vehicle on the server.')
                 .sub('delete')
+                    .description('Delete a vehicle from the server.')
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
                 .sub('health')
+                    .description(`Amend a vehicle's health. (0-1000)`)
                     .restrict(Player.LEVEL_ADMINISTRATOR)
-                    .parameters([ { name: 'health', type: CommandBuilder.NUMBER_PARAMETER,
+                    .parameters([ { name: 'health', type: CommandBuilder.kTypeNumber,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleHealthCommand.bind(this))
                 .sub('respawn')
+                    .description('Respawn a vehicle.')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
+                    .description('Save a vehicle to the database.')
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
-                .build(/* deliberate fall-through */)
-            .sub(CommandBuilder.WORD_PARAMETER)
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .parameters([{ name: 'model', type: CommandBuilder.kTypeText, optional: true }])
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
+            .parameters([{ name: 'model', type: CommandBuilder.kTypeText, optional: true }])
             .build(VehicleCommands.prototype.onVehicleCommand.bind(this));
     }
 
@@ -163,21 +172,29 @@ class VehicleCommands {
             return;
         }
 
-        await this.onVehicleCommand(player, String(modelId));
+        await this.internalSpawnVehicle(player, String(modelId));
     }
 
     // ---------------------------------------------------------------------------------------------
 
     // Called when a player executes `/v` or `/v [vehicle]`, which can be either a vehicle Id or
     // part of a vehicle's name. The vehicle will be created for them.
-    async onVehicleCommand(player, modelIdentifier) {
-        if (!modelIdentifier) {
+    async onVehicleCommand(player, modelIdentifier, modelIdentifier2) {
+        modelIdentifier = modelIdentifier2 ?? modelIdentifier;
+
+        if (!player.isAdministrator() || typeof modelIdentifier !== 'string') {
             // TODO: Implement a fancy vehicle selection dialog.
             //     https://github.com/LVPlayground/playground/issues/330
             //     https://github.com/LVPlayground/playground/issues/273
             return this.onVehicleHelpCommand(player);
         }
 
+        return this.internalSpawnVehicle(player, modelIdentifier);
+    }
+
+    // Called when the |player| is able to spawn a vehicle with the given |modelIdentifier|. All
+    // the necessary checks will be done on this code path, other than permission checks.
+    async internalSpawnVehicle(player, modelIdentifier) {
         if (player.vehicle) {
             player.sendMessage(Message.VEHICLE_QUICK_ALREADY_DRIVING);
             return;
@@ -526,10 +543,10 @@ class VehicleCommands {
 
     dispose() {
         for (const command of Object.keys(kQuickVehicleCommands))
-            server.deprecatedCommandManager.removeCommand(command);
+            server.commandManager.removeCommand(command);
 
-        server.deprecatedCommandManager.removeCommand('v');
-        server.deprecatedCommandManager.removeCommand('seize');
+        server.commandManager.removeCommand('v');
+        server.commandManager.removeCommand('seize');
     }
 }
 

@@ -300,8 +300,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNull(server.playerManager.getById(123));
             assert.isTrue(await gunther.issueCommand('/v 123 delete'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0],
-                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, '123'));
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
 
             assert.isNotNull(gunther.vehicle);
             assert.isTrue(vehicle.isConnected());
@@ -314,8 +313,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNull(server.playerManager.getByName('Darkfire'));
             assert.isTrue(await gunther.issueCommand('/v Darkfire delete'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0],
-                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, 'Darkfire'));
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
 
             assert.isNotNull(gunther.vehicle);
             assert.isTrue(vehicle.isConnected());
@@ -440,15 +438,6 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.equal(gunther.vehicle.primaryColor, oldVehicle.primaryColor);
         assert.equal(gunther.vehicle.secondaryColor, oldVehicle.secondaryColor);
-    });
-
-    it('should clean up the commands when being disposed of', async(assert) => {
-        const originalCommandCount = server.deprecatedCommandManager.size;
-
-        commands.dispose();
-        commands.dispose = () => true;
-
-        assert.equal(server.deprecatedCommandManager.size, originalCommandCount - 8);
     });
 
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {

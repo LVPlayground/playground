@@ -314,11 +314,11 @@ export class PlaygroundCommands {
             let suffix = '';
 
             if (originalLevel === level)
-                suffix = '{9E9E9E}(original)';
+                suffix = ' {9E9E9E}(original)';
             else if (restrictLevel === level)
-                suffix = '{F44336}(current)';
+                suffix = ' {F44336}(current)';
 
-            dialog.addItem(levelText + level, changeCommandLevel.bind(this, level));
+            dialog.addItem(levelText + suffix, changeCommandLevel.bind(this, level));
         }
 
         // (2) Display the |dialog| to the given |player|.

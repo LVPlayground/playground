@@ -49,7 +49,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.equal(gunther.getLastDialogAsTable().rows.length, 4);
 
         // (1) Players with an exception cannot modify commands above their pay grade.
-        const command = server.commandManager.resolveCommand('/lvp access');
+        let command = server.commandManager.resolveCommand('/lvp access');
 
         assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
 
@@ -59,7 +59,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
 
         russell.respondToDialog({ listitem: 0 /* /lvp */ }).then(
-            () => russell.respondToDialog({ listitem: 0 /* /lvp access */ })).then(
+            () => russell.respondToDialog({ listitem: 1 /* /lvp access */ })).then(
             () => russell.respondToDialog({ response: 0 /* dismiss */ }));
 
         assert.isTrue(await russell.issueCommand('/lvp access'));
@@ -69,6 +69,26 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         delegate.removeException(russell, command);
 
         // (2) Gunther should be able to amend the access level of the "/lvp" command.
+        command = server.commandManager.resolveCommand('/lvp');
+
+        assert.equal(delegate.getCommandLevel(command).restrictLevel, Player.LEVEL_ADMINISTRATOR);
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* change level */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Management */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `rights have been updated`);
+
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ACCESS_ADMIN_NOTICE, gunther.name, gunther.id,
+                           command.command, 'Management'));
+
+        assert.equal(delegate.getCommandLevel(command).restrictLevel, Player.LEVEL_MANAGEMENT);
 
         // (3) Gunther should be able to add an exception to the "/lvp" command.
 

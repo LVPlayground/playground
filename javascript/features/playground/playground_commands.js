@@ -207,7 +207,8 @@ export class PlaygroundCommands {
             });
         }
 
-        let levelPrefix = originalLevel === restrictLevel ? '{F44336}' : '';
+        let levelPrefix = originalLevel !== restrictLevel ? '{F44336}' : '';
+        let levelSuffix = originalLevel !== restrictLevel ? '{FFFFFF}' : '';
         let level = 'Player';
 
         switch (restrictLevel) {
@@ -219,16 +220,16 @@ export class PlaygroundCommands {
                 break;
         }
 
-        const dialog = new Menu(command.name);
+        const dialog = new Menu(command.command);
 
         // (1) Add a dialog that allows the |player| to change the level it's available to.
-        dialog.addItem(`Change required level (${levelPrefix}${level})`, async () => {
-            return await this.displayCommandLevelDialog(player, level);
+        dialog.addItem(`Change required level (${levelPrefix}${level}${levelSuffix})`, async () => {
+            return await this.displayCommandLevelDialog(player, command);
         });
 
         // (2) Add a dialog that allows the |player| to issue a new exception.
         dialog.addItem('Add a usage exception', async () => {
-            return await this.displayCommandExceptionDialog(player, level);
+            return await this.displayCommandExceptionDialog(player, command);
         });
 
         // (3) If any exceptions have been granted, list those here for modification as well.
@@ -254,7 +255,63 @@ export class PlaygroundCommands {
     // Displays a dialog to the |player| that allows them to change the required player level for
     // folks to be able to access the given |command|.
     async displayCommandLevelDialog(player, command) {
+        const dialog = new Menu(command.command);
+        const levels = new Map([
+            [ Player.LEVEL_MANAGEMENT, 'Management' ],
+            [ Player.LEVEL_ADMINISTRATOR, 'Administrators' ],
+            [ Player.LEVEL_PLAYER, 'Players' ],
+        ]);
 
+        const { restrictLevel, originalLevel } = this.permissionDelegate_.getCommandLevel(command);
+
+        // Function to change the level of |command| to the given |level|. Will be announced to all
+        // in-game administrators as well, and to players when granting/removing their abilities.
+        const changeCommandLevel = async (level) => {
+            if (restrictLevel === level)
+                return;  // the level isn't being changed
+
+            // (1) Update the |command|'s level to the given |level| internally.
+            this.permissionDelegate_.setCommandLevel(command, level);
+
+            // (2) If the |command| was available to players, but is not anymore, tell them.
+            // Conversely, if it's now available and previously wasn't, tell them too.
+            if (restrictLevel === Player.LEVEL_PLAYER) {
+                this.announce_().announceToPlayers(
+                    Message.LVP_ACCESS_PLAYERS_REVOKED, player.name, command.command);
+            } else if (level === Player.LEVEL_PLAYER) {
+                this.announce_().announceToPlayers(
+                    Message.LVP_ACCESS_PLAYERS_GRANTED, player.name, command.command);
+            }
+
+            // (3) Tell all in-game administrators about the change in level having been made.
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_ADMIN_NOTICE, player.name, player.id, command.command,
+                levels.get(level));
+
+            // (4) Tell the |player| that their change has propagated.
+            return await alert(player, {
+                title: command.command,
+                message: `The command's access rights have been updated.`
+            });
+        };
+
+        // (1) Add all available levels to the given |dialog|.
+        for (const [ level, levelText ] of levels) {
+            if (level > player.level)
+                continue;  // the |player| cannot revoke commands from their own access
+
+            let suffix = '';
+
+            if (originalLevel === level)
+                suffix = '{9E9E9E}(original)';
+            else if (restrictLevel === level)
+                suffix = '{F44336}(current)';
+
+            dialog.addItem(levelText + level, changeCommandLevel.bind(this, level));
+        }
+
+        // (2) Display the |dialog| to the given |player|.
+        return dialog.displayForPlayer(player);
     }
 
     // Displays a dialog to the |player| which allows them to add a new exception to the given

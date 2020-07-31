@@ -35,6 +35,11 @@ export class PlaygroundCommands {
         // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
             .description('Manages Las Venturas Playground.')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .sub('access')
+                .description('Access controls for all our JavaScript commands.')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
             .sub('reload')
                 .description('Live reload one of the JavaScript features.')
                 .restrict(Player.LEVEL_MANAGEMENT)
@@ -88,6 +93,57 @@ export class PlaygroundCommands {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Provides administrators with thorough access controls for all of Las Venturas Playground's
+    // commands. The |player| will be able and control commands accessible to them.
+    async onPlaygroundAccessCommand(player) {
+        const dialog = new Menu('Access management', [
+            'Command',
+            'Level',
+            'Description',
+            'Exceptions',
+
+        ], { pageSize: 25 });
+
+        // (1) Get all the available commands, and sort them in order of access (highest level
+        // first), then by their name as a secondary ordering.
+        const commands = [ ...server.commandManager.commands ].sort((lhs, rhs) => {
+            if (lhs.restrictLevel !== rhs.restrictLevel)
+                return lhs.restrictLevel > rhs.restrictLevel ? -1 : 1;
+
+            return lhs.command.localeCompare(rhs.command);
+        });
+
+        // (2) Add each of the |commands| to the |dialog|, together with information on the level
+        // it's been tied to, and whether there are exceptions for this command.
+        for (const command of commands) {
+            let level = null;
+            let exceptions = '';
+
+            switch (command.restrictLevel) {
+                case Player.LEVEL_PLAYER:
+                    level = 'Players';
+                    break;
+
+                case Player.LEVEL_ADMINISTRATOR:
+                    level = '{FFFF00}Administrators';
+                    break;
+
+                case Player.LEVEL_MANAGEMENT:
+                    level = '{4CAF50}Management';
+                    break;
+            }
+
+            dialog.addItem(command.command, level, command.description, '-');
+        }
+
+        // (3) Present the dialog to the |player|.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Facilitates reloading the server's message format file, which allows changing text and output
     // dynamically whenever a needs arises. Might be required when live reloading features to add
     // new functionality, that requires additional strings.
@@ -114,13 +170,21 @@ export class PlaygroundCommands {
             return;
         }
 
+        // Get the instance of our Announce dependency.
+        const announce = this.announce_();
+
         await server.featureManager.liveReload(feature);
 
-        this.announce_().announceToAdministrators(
+        // WARNING: The dispose() function of this instance may now have been called, so we cannot
+        // rely on this class' state anymore. For all intents and purposes, assume it's gone.
+
+        announce.announceToAdministrators(
             Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);
 
         player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Displays a series of menus to administrators and Management members that want to inspect, or
     // make changes to, how certain features on the server work. The availability of options depends
@@ -584,6 +648,8 @@ export class PlaygroundCommands {
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Announces the updated value for the |setting|, as made by |player|, to administrators.
     announceSettingChangeToAdministrators(player, setting) {
         switch (setting.type) {
@@ -610,6 +676,8 @@ export class PlaygroundCommands {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see
     // a list of sub-commands that they're allowed to execute.
     onPlaygroundCommand(player) {
@@ -627,6 +695,8 @@ export class PlaygroundCommands {
 
         player.sendMessage(Message.COMMAND_USAGE, '/lvp [' + options.sort().join('/') + ']');
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('lvp');

@@ -17,7 +17,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         await gunther.identify();
     });
 
-    it('should send a different usage message to administrators and management', async(assert) => {
+    it('should send a different usage message to administrators and management', async (assert) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(await gunther.issueCommand('/lvp'));
@@ -31,7 +31,17 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.notEqual(gunther.messages[1], gunther.messages[3]);
     });
 
-    it('should be able to change boolean settings', async(assert) => {
+    it('should be able to create a list of all commands for access controls', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Note that only commands from the "Playground" feature will be listed here.
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 1);
+    });
+
+    it('should be able to change boolean settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -73,7 +83,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 
-    it('should be able to change numeric settings', async(assert) => {
+    it('should be able to change numeric settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -115,7 +125,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isTrue(gunther.messages[0].includes('10'));
     });
 
-    it('should be able to change textual settings', async(assert) => {
+    it('should be able to change textual settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -354,7 +364,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.isFalse(hasSubstitution('lucy'));
     });
 
-    it('should be able to live reload the message formatting file', async(assert) => {
+    it('should be able to live reload the message formatting file', async (assert) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(await gunther.issueCommand('/lvp reload messages'));

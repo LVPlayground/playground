@@ -71,7 +71,7 @@ export class GameCommands {
 
         // Registers the |commandName| with the server, so that everyone can use it.
         server.commandManager.buildCommand(commandName)
-            .description('Sign up for the ' + description.name)
+            .description(`Sign up for the ${description.name}.`)
             .sub('custom')
                 .description('Customise the game to your liking.')
                 .build(GameCommands.prototype.onCommand.bind(this, description, 'customise'))
@@ -79,7 +79,7 @@ export class GameCommands {
                 .description('Watch people currently playing this game.')
                 .build(GameCommands.prototype.onCommand.bind(this, description, 'watch'))
             .sub(CommandBuilder.kTypeNumber, 'registration')
-                .description('Sign up for the ' + description.name)
+                .description(`Sign up for the ${description.name}.`)
                 .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null))
             .build(GameCommands.prototype.onCommand.bind(this, description, /* option= */ null));
 

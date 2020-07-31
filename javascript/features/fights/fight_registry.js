@@ -79,7 +79,7 @@ export class FightRegistry {
     // that the games features exposes by default.
     registerCommand(configuration, settings) {
         server.commandManager.buildCommand(configuration.command)
-            .description('Sign up for the ' + configuration.name)
+            .description(`Sign up for the ${configuration.name}.`)
             .sub('custom')
                 .description('Customise the game to your liking.')
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, 'customise'))
@@ -87,7 +87,7 @@ export class FightRegistry {
                 .description('Watch people currently playing this game.')
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, 'watch'))
             .sub(CommandBuilder.kTypeNumber, 'registration')
-                .description('Sign up for the ' + configuration.name)
+                .description(`Sign up for the ${configuration.name}.`)
                 .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null))
             .build(FightRegistry.prototype.onCommand.bind(this, settings, /* option= */ null));
 

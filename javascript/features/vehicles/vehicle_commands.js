@@ -53,9 +53,9 @@ class VehicleCommands {
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
 
         // Quick vehicle commands.
-        for (const command of Object.keys(kQuickVehicleCommands)) {
+        for (const [ command, info ] of Object.entries(kQuickVehicleCommands)) {
             server.commandManager.buildCommand(command)
-                .description('Spawn yourself a ' + command.name)
+                .description(`Spawn yourself a ${info.name}.`)
                 .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 

@@ -50,14 +50,14 @@ export class AccountCommands {
         // /whereis [player]
         server.commandManager.buildCommand('whereis')
             .description(`Displays information about a player's whereabouts.`)
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
             .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(AccountCommands.prototype.onWhereisCommand.bind(this));
 
         // /whois [player]
         server.commandManager.buildCommand('whois')
             .description(`Displays information about a player's identity.`)
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
             .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(AccountCommands.prototype.onWhoisCommand.bind(this));
     }

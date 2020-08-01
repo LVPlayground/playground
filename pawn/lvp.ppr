@@ -109,6 +109,7 @@
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
     <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
+    <DiskObject>\Features\Account\RequireSampcacDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
@@ -315,12 +316,10 @@
     <DiskObject>\Resources\Minigames\Deathmatch\grenade.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\IslandDM.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\knockout.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\minigun.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\RandomDeathmatch.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\rocket.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\sawnoff.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\ShipTDM.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\sniper.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\walkweapon.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deliver\</DiskObject>
     <DiskObject>\Resources\Minigames\Deliver\Deliver.pwn</DiskObject>
@@ -342,7 +341,6 @@
     <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Features\Account\RequireSampcacDialog.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

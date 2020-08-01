@@ -15,8 +15,8 @@
 #define STATUS_KNOCKOUT     10
 #define STATUS_GRENADE      11
 #define STATUS_ROCKET       12
-#define STATUS_SNIPER       13
-#define STATUS_MINIGUN      14
+// #define STATUS_SNIPER       13
+// #define STATUS_MINIGUN      14
 #define STATUS_SHIPTDM      15
 #define STATUS_SAWNOFF      16
 #define STATUS_WALKWEAPON   17

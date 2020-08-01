@@ -10,6 +10,9 @@ import { Feature } from 'components/feature_manager/feature.js';
 export default class Teleportation extends Feature {
     constructor() {
         super();
+
+        // /taxi
+        // /tow
     }
 
     dispose() {

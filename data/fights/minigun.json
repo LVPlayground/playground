@@ -1,6 +1,6 @@
 {
     "name": "Minigun Madness",
-    "command": "newminigun",
+    "command": "minigun",
     "goal": "Take out your enemies with a minigun before they spot you.",
 
     "settings": {

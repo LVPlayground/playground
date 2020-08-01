@@ -8,8 +8,6 @@
 #include Resources/Minigames/Deathmatch/knockout.pwn
 #include Resources/Minigames/Deathmatch/grenade.pwn
 #include Resources/Minigames/Deathmatch/rocket.pwn
-#include Resources/Minigames/Deathmatch/sniper.pwn
-#include Resources/Minigames/Deathmatch/minigun.pwn
 #include Resources/Minigames/Deathmatch/ShipTDM.pwn
 #include Resources/Minigames/Deathmatch/sawnoff.pwn
 #include Resources/Minigames/Deathmatch/walkweapon.pwn
@@ -18,7 +16,7 @@
 
 ShowDeathmatchDialog(playerId) {
     ShowPlayerDialog(playerId, DIALOG_MINIGAME_DM, DIALOG_STYLE_LIST, "Deathmatch Minigames",
-        "Bat Fight\nHidden Massacre\nDildo Spanking\nFist Fight Knockout\nGrenade Wars\nRocket Wars\nSniper Madness\nMinigun Madness\nShip TDM\nSawnoff Fights\nWalkweapon Fights\nRandom DM\nIsland DM",
+        "Bat Fight\nHidden Massacre\nDildo Spanking\nFist Fight Knockout\nGrenade Wars\nRocket Wars\nShip TDM\nSawnoff Fights\nWalkweapon Fights\nRandom DM\nIsland DM",
         "Select", "Cancel");
 }
 
@@ -80,8 +78,6 @@ public DeathmatchStartFunc() {
                         case STATUS_KNOCKOUT:   SetPlayerUpForKnockout(contestant);
                         case STATUS_GRENADE:    SetPlayerUpForGrenadeParty(contestant);
                         case STATUS_ROCKET:     SetPlayerUpForRocket(contestant);
-                        case STATUS_SNIPER:     SetPlayerUpForSniper(contestant);
-                        case STATUS_MINIGUN:    SetPlayerUpForMinigun(contestant);
                         case STATUS_SHIPTDM:    SetupPlayerForShipTDM(contestant);
                         case STATUS_SAWNOFF:    SetPlayerUpForSawnoff(contestant);
                         case STATUS_WALKWEAPON: SetPlayerUpForWalkWeapon(contestant);

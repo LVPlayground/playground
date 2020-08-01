@@ -108,7 +108,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
             return 1;
         }
     }
-    
+
     if(GetPlayerState(playerid) == PLAYER_STATE_WASTED && Player(playerid)->isAdministrator() == false)
     {
         SendClientMessage(playerid,Color::Red,"* You cannot use commands when you are wasted!");
@@ -599,18 +599,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/sniper", true) == 0) 
-    {
-        if(GetPlayerInterior(playerid) != 0)
-        {
-            ShowBoxForPlayer(playerid, "You cannot use this command while you're in an interior!");
-            return 1;
-        }
-
-        MiniGamesSignup(playerid, STATUS_SNIPER);
-        return 1;
-    }
-
     if (strcmp(cmd, "/shiptdm", true) == 0) 
     {
         if(GetPlayerInterior(playerid) != 0)
@@ -632,18 +620,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         }
 
         MiniGamesSignup(playerid, STATUS_ISLANDDM);
-        return 1;
-    }
-
-    if(strcmp(cmd,"/minigun", true) == 0) 
-    {
-        if(GetPlayerInterior(playerid) != 0)
-        {
-            ShowBoxForPlayer(playerid, "You cannot use this command while you're in an interior!");
-            return 1;
-        }
-
-        MiniGamesSignup(playerid,STATUS_MINIGUN);
         return 1;
     }
 

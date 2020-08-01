@@ -31,6 +31,7 @@ export class GameRuntime extends GameActivity {
     playerCount_ = 0;
     winnerCount_ = 0;
 
+    leaving_ = null;
     players_ = null;
     prizeMoney_ = 0;
     scopedEntities_ = null;
@@ -60,6 +61,7 @@ export class GameRuntime extends GameActivity {
 
         this.description_ = description;
         this.finance_ = finance;
+        this.leaving_ = new Set();
         this.manager_ = manager;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
@@ -183,14 +185,25 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateRunning)
             throw new Error('Players may only be removed from the game while it is running.');
 
+        if (this.leaving_.has(player))
+            return false;  // the |player| is already in progress of leaving, which is asynchronous
+
+        this.leaving_.add(player);
+
         // First remove the |player| from the game.
-        await this.game_.onPlayerRemoved(player);
+        try {
+            await this.game_.onPlayerRemoved(player);
+        } catch (exception) {
+            console.log(exception);
+        }
 
         // Remove the |player| from the list of folks who can be watched.
         this.spectateGroup_.removePlayer(player);
 
         this.manager_.setPlayerActivity(player, null);
         this.players_.delete(player);
+
+        this.leaving_.delete(player);
 
         // Restore the |player|'s state -- back as if nothing ever happened.
         if (!disconnecting)
@@ -204,6 +217,8 @@ export class GameRuntime extends GameActivity {
             for (const target of this.players_)
                 target.sendMessage(Message.GAME_CONTINUOUS_LEFT, player.name, gameName);
         }
+
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------

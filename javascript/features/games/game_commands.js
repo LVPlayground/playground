@@ -118,10 +118,11 @@ export class GameCommands {
                     this.finance_().givePlayerCash(player, contribution);
             }
 
-            // Remove the |player| from the activity.
-            activity.removePlayer(player);
+            // Remove the |player| from the activity. This may fail if they're already in the
+            // process of leaving, in which case we silently let the game run its course.
+            if (activity.removePlayer(player) !== false)
+                player.sendMessage(Message.GAME_REGISTRATION_LEFT, activity.getActivityName());
 
-            player.sendMessage(Message.GAME_REGISTRATION_LEFT, activity.getActivityName());
             return;
         }
 

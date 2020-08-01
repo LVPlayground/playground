@@ -7,7 +7,7 @@ describe('Fights', it => {
         const feature = server.featureManager.loadFeature('fights');
         const settings = server.featureManager.loadFeature('settings');
 
-        const kCommand = 'newsniper';
+        const kCommand = 'sniper';
 
         await settings.ready;
 

@@ -71,7 +71,8 @@ export class StructuredGameDescription {
             const value = this.loadProperty(name, contents[name], property);
             
             Object.defineProperty(object, name, {
-                writable: false,
+                configurable: false,
+                writable: true,
                 value
             });
         }

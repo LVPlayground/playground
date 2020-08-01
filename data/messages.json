@@ -161,6 +161,7 @@
   "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
   "GAME_REGISTRATION_ANNOUNCEMENT": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
+  "GAME_REGISTRATION_ANNOUNCEMENT_FREE": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",
   "GAME_REGISTRATION_INVALID_ID": "@error Sorry, but the game you're trying to join isn't taking registrations anymore.",
   "GAME_REGISTRATION_JOINED": "{CCD782}You have signed up for the {838F31}%s{CCD782}! Type {838F31}/leave{CCD782} if you change your mind.",

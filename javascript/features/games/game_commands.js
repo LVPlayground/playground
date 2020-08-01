@@ -309,9 +309,12 @@ export class GameCommands {
 
         // Send a message to all other unengaged people on the server to see if the want to
         // participate in the game as well. They're welcome to sign up.
+        const formattedMessage = description.isFree() ? Message.GAME_REGISTRATION_ANNOUNCEMENT_FREE
+                                                      : Message.GAME_REGISTRATION_ANNOUNCEMENT;
+
         const formattedAnnouncement =
-            Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, registration.getActivityName(),
-                           command, description.price);
+            Message.format(formattedMessage, registration.getActivityName(), command,
+                           description.price);
 
         for (const recipient of server.playerManager) {
             if (recipient === player || recipient.isNonPlayerCharacter())

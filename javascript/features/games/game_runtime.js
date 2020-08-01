@@ -160,6 +160,21 @@ export class GameRuntime extends GameActivity {
 
         // Formally introduce the |player| to the game.
         await this.game_.onPlayerAdded(player);
+
+        // If the game had already started, we need to immediately spawn the |player| as well and
+        // tell the other players that they have joined the game.
+        if (this.state_ === GameRuntime.kStateRunning) {
+            const gameName = this.description_.nameFn(this.settings_);
+
+            for (const target of this.players_) {
+                if (target === player)
+                    continue;  // no need to inform the |player| about their participation
+
+                target.sendMessage(Message.GAME_CONTINUOUS_JOINED, player.name, gameName);
+            }
+
+            await this.onPlayerSpawn(player);
+        }
     }
 
     // Called when the |player| has to be removed from the game, either because they disconnected,
@@ -180,6 +195,15 @@ export class GameRuntime extends GameActivity {
         // Restore the |player|'s state -- back as if nothing ever happened.
         if (!disconnecting)
             player.restoreState();
+
+        // If the game is continuous, inform the remaining participants (if any) about the |player|
+        // having left. This might influence their decision to stick around.
+        if (this.description_.continuous) {
+            const gameName = this.description_.nameFn(this.settings_);
+
+            for (const target of this.players_)
+                target.sendMessage(Message.GAME_CONTINUOUS_LEFT, player.name, gameName);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

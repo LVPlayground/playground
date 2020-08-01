@@ -160,6 +160,8 @@
   "FRIENDS_REMOVED": "@success %s has been removed from your friends list.",
   "FRIENDS_USAGE": "{FFFFFF}Use '/friends add' to add a friend or '/friends remove' to remove one.",
 
+  "GAME_CONTINUOUS_JOINED": "{CCD782}* %s has joined the %s.",
+  "GAME_CONTINUOUS_LEFT": "{CCD782}* %s has left the %s.",
   "GAME_REGISTRATION_ANNOUNCEMENT": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
   "GAME_REGISTRATION_ANNOUNCEMENT_FREE": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",

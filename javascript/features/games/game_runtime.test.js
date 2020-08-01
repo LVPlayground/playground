@@ -467,6 +467,7 @@ describe('GameRuntime', (it, beforeEach) => {
         // (1) The game should start immediately for |gunther|, even though other players are
         // available. This is because it's been marked as a continuous game.
         assert.isTrue(await gunther.issueCommand('/bubblegame'));
+        assert.equal(gunther.messages.length, 1);
 
         assert.isNotNull(manager.getPlayerActivity(gunther));
         assert.equal(
@@ -477,6 +478,12 @@ describe('GameRuntime', (it, beforeEach) => {
         // (2) Have Russell join the game as well. They should be added to the active game, rather
         // than be routed through registration and in a new game instead.
         assert.isTrue(await russell.issueCommand('/bubblegame'));
+        assert.equal(russell.messages.length, 1);
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.GAME_CONTINUOUS_JOINED, russell.name, 'Bubble'));
 
         assert.isNotNull(manager.getPlayerActivity(russell));
         assert.equal(
@@ -487,6 +494,11 @@ describe('GameRuntime', (it, beforeEach) => {
 
         // (3) Have Gunther leave the game. Russell should still be playing.
         assert.isTrue(await gunther.issueCommand('/leave'));
+
+        assert.equal(russell.messages.length, 2);
+        assert.equal(
+            russell.messages[1],
+            Message.format(Message.GAME_CONTINUOUS_LEFT, gunther.name, 'Bubble'));
 
         assert.isNull(manager.getPlayerActivity(gunther));
         assert.equal(activePlayers, 1);

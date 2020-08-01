@@ -1,0 +1,56 @@
+{
+    "name": "Las Venturas Baseball",
+    "shortName": "Baseball",
+
+    "spawnPositions": {
+        "individual": [
+            { "position": [ 1306.3967, 2190.7493, 11.0234 ], "facingAngle": 220.0355 },
+            { "position": [ 1306.7937, 2108.7700, 11.0156 ], "facingAngle": 314.7192 },
+            { "position": [ 1388.9008, 2109.1624, 11.0156 ], "facingAngle": 40.9429 },
+            { "position": [ 1387.7737, 2188.8848, 11.0234 ], "facingAngle": 131.2400 },
+            { "position": [ 1371.7301, 2189.8931, 11.0234 ], "facingAngle": 181.3738 },
+            { "position": [ 1351.6489, 2190.7031, 11.0234 ], "facingAngle": 179.1804 },
+            { "position": [ 1333.5717, 2190.4817, 11.0234 ], "facingAngle": 185.4472 },
+            { "position": [ 1306.8988, 2174.0811, 11.0234 ], "facingAngle": 261.0175 },
+            { "position": [ 1306.0605, 2153.3977, 11.0234 ], "facingAngle": 267.3405 },
+            { "position": [ 1306.3469, 2137.3967, 11.0234 ], "facingAngle": 268.9634 },
+            { "position": [ 1324.7543, 2107.6001, 11.0156 ], "facingAngle": 354.8737 },
+            { "position": [ 1345.5637, 2107.8203, 11.0156 ], "facingAngle": 356.4967 },
+            { "position": [ 1364.0076, 2108.3547, 11.0156 ], "facingAngle": 357.8063 },
+            { "position": [ 1389.3375, 2124.0510, 11.0234 ], "facingAngle": 56.7698 },
+            { "position": [ 1389.2413, 2146.0474, 11.0234 ], "facingAngle": 85.6529 },
+            { "position": [ 1389.0260, 2167.3130, 11.0234 ], "facingAngle": 102.9426 }
+        ],
+        "teams": [
+            [
+                { "position": [ 1308.7448, 2105.1543, 11.0156 ], "facingAngle": 328.4490 },
+                { "position": [ 1304.3202, 2116.0625, 11.0234 ], "facingAngle": 310.5885 },
+                { "position": [ 1310.6880, 2110.6404, 11.0156 ], "facingAngle": 313.0952 },
+                { "position": [ 1315.0830, 2107.8213, 11.0156 ], "facingAngle": 313.0952 },
+                { "position": [ 1320.0988, 2106.3037, 11.0156 ], "facingAngle": 313.0952 },
+                { "position": [ 1323.4738, 2109.5583, 11.0156 ], "facingAngle": 332.5221 },
+                { "position": [ 1304.6965, 2120.4802, 11.0234 ], "facingAngle": 314.0359 },
+                { "position": [ 1307.0861, 2116.1521, 11.0234 ], "facingAngle": 314.0359 }
+            ],
+            [
+                { "position": [ 1378.3456, 2187.2456, 11.0234 ], "facingAngle": 132.6142 },
+                { "position": [ 1374.4967, 2188.8735, 11.0234 ], "facingAngle": 147.3411 },
+                { "position": [ 1379.0098, 2184.1326, 11.0234 ], "facingAngle": 147.3411 },
+                { "position": [ 1384.4526, 2183.2107, 11.0234 ], "facingAngle": 138.8810 },
+                { "position": [ 1387.7755, 2178.4912, 11.0234 ], "facingAngle": 136.3743 },
+                { "position": [ 1382.1703, 2177.9924, 11.0234 ], "facingAngle": 136.3743 },
+                { "position": [ 1372.4312, 2181.5957, 11.0234 ], "facingAngle": 141.0744 },
+                { "position": [ 1366.0356, 2186.1987, 11.0234 ], "facingAngle": 141.0744 }
+            ]
+        ]
+    },
+
+    "environment": {
+        "boundaries": {
+            "minimumX": 1297.0610,
+            "maximumX": 1397.1653,
+            "minimumY": 2098.2563,
+            "maximumY": 2198.6494
+        }
+    }
+}

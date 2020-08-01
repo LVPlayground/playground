@@ -431,7 +431,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             }
 
             switch (listitem) {
-                case 0: MiniGamesSignup(playerid, STATUS_BATFIGHT);
                 case 1: MiniGamesSignup(playerid, STATUS_CHAINSAW);
                 case 2: MiniGamesSignup(playerid, STATUS_DILDO);
                 case 3: MiniGamesSignup(playerid, STATUS_KNOCKOUT);

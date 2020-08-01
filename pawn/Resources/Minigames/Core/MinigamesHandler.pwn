@@ -417,7 +417,6 @@ ReturnMinigameName(minigame) {
     new minigameName[256];
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   minigameName = "Bat Fight";
         case STATUS_CHAINSAW:   minigameName = "Hidden Massacre";
         case STATUS_DILDO:      minigameName = "Dildo Spanking";
         case STATUS_KNOCKOUT:   minigameName = "Knockout";
@@ -437,7 +436,6 @@ ReturnMinigameCmd(minigame) {
     new command[256];
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   command = "/batfight";
         case STATUS_CHAINSAW:   command = "/massacre";
         case STATUS_DILDO:      command = "/spankme";
         case STATUS_KNOCKOUT:   command = "/knockout";
@@ -457,7 +455,6 @@ ReturnMinigameMaxPlayers(minigame) {
     new maxPlayers;
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   maxPlayers = 100;
         case STATUS_CHAINSAW:   maxPlayers = 100;
         case STATUS_DILDO:      maxPlayers = 10;
         case STATUS_KNOCKOUT:   maxPlayers = 2;

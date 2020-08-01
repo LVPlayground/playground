@@ -9,14 +9,14 @@
 #define STATUS_DERBY4       4
 #define STATUS_DERBY5       5
 #define STATUS_DERBY6       6
-#define STATUS_BATFIGHT     7
+#define STATUS_BATFIGHT     7  // Converted
 #define STATUS_CHAINSAW     8
 #define STATUS_DILDO        9
 #define STATUS_KNOCKOUT     10
 #define STATUS_GRENADE      11
 #define STATUS_ROCKET       12
-// #define STATUS_SNIPER       13
-// #define STATUS_MINIGUN      14
+#define STATUS_SNIPER       13  // Converted
+#define STATUS_MINIGUN      14  // Converted
 #define STATUS_SHIPTDM      15
 #define STATUS_SAWNOFF      16
 #define STATUS_WALKWEAPON   17

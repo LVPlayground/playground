@@ -1,0 +1,14 @@
+{
+    "name": "Batfight",
+    "command": "batfight",
+    "goal": "Beat your enemies with a bat on a baseball field.",
+
+    "settings": {
+        "deathmatch/spawn_armour": true,
+        "deathmatch/spawn_weapons": [
+            { "weapon": 5, "ammo": 1 }
+        ],
+        "fights/location": "Las Venturas Baseball",
+        "fights/pickups": false
+    }
+}

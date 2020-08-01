@@ -528,17 +528,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
 #if Feature::DisableFights == 0
 
-    if(strcmp(cmd, "/batfight", true) == 0) 
-    {
-        if(GetPlayerInterior(playerid) != 0)
-        {
-            ShowBoxForPlayer(playerid, "You cannot use this command while you're in an interior!");
-            return 1;
-        }
-        MiniGamesSignup(playerid, STATUS_BATFIGHT);
-        return 1;
-    }
-
     if(strcmp(cmd, "/massacre", true) == 0) 
     {
         if(GetPlayerInterior(playerid) != 0)

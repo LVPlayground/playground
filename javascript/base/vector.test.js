@@ -55,6 +55,25 @@ describe('Vector', it => {
         assertVectorCloseTo(assert, vector.translateTo2D(10, 360), new Vector(0, 10, 0));
     });
 
+    it('should be able to compute the angle between two vectors', assert => {
+        const base = new Vector(0, 0, 0);
+        const expectations = [
+            [ new Vector(0, 100, 0), 0 ],  // north
+            [ new Vector(100, 100, 0), 315 ],  // north-east
+            [ new Vector(100, 0, 0), 270 ],  // east
+            [ new Vector(100, -100, 0), 225 ],  // south-east
+            [ new Vector(0, -100, 0), 180 ],  // south
+            [ new Vector(-100, -100, 0), 135 ],  // south-west
+            [ new Vector(-100, 0, 0), 90 ],  // west
+            [ new Vector(-100, 100, 0), 45 ],  // north-west
+        ];
+
+        for (const [ vector, expectedAngle ] of expectations) {
+            assert.setContext('expected=' + expectedAngle);
+            assert.equal(base.angleTo(vector), expectedAngle);
+        }
+    });
+
     it('should calculate the magnitude', assert => {
         let vector = new Vector(4, 8, 12);
 

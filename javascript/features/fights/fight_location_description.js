@@ -121,7 +121,7 @@ export class FightLocationDescription extends StructuredGameDescription {
 
             return {
                 position,
-                facingAngle: 0,
+                facingAngle: position.angleTo(center),
             }
         }
 

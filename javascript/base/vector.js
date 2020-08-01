@@ -34,6 +34,13 @@ export class Vector {
         return Math.pow(diffX, 2) + Math.pow(diffY, 2);
     }
 
+    // Computes the angle from this vector to the given |vector| in a 2D space, returned in degrees
+    // relevant to the world of Grand Theft Auto: San Andreas.
+    angleTo(vector) {
+        const degrees = Math.atan2(vector.y - this.y_, vector.x - this.x_) * 180 / Math.PI;
+        return ((degrees - 90) + 360) % 360;
+    }
+
     // Computes the distance from this vector to |vector| in a 3D space.
     distanceTo(vector) {
         const diffX = Math.abs(this.x_ - vector.x);

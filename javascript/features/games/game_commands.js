@@ -349,6 +349,9 @@ export class GameCommands {
         // If the customise flag has not been set, return the |settings| immediately as we're done
         // unless the game prefers customisable versions.
         if (params.type !== GameCommandParams.kTypeCustomise) {
+            if (params.type === GameCommandParams.kTypeStart)
+                return settings;  // force-start when the params tell us to
+
             const registrations = this.manager_.getPendingGameRegistrations(description);
             const publicRegistrations = registrations.filter(registration =>
                 registration.type === GameRegistration.kTypePublic);

@@ -9,7 +9,8 @@ export class GameCommandParams {
     // Types of commands that can be encapsulated by this object.
     static kTypeDefault = 0;
     static kTypeCustomise = 1;
-    static kTypeWatch = 2;
+    static kTypeStart = 2;
+    static kTypeWatch = 3;
 
     // The type of command that is being executed. Must be one of the above constants.
     type = GameCommandParams.kTypeDefault;

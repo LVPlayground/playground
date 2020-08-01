@@ -35,6 +35,9 @@ export class FightRegistry {
     // Gets a particular location by the given |name|. Returns NULL when it's invalid.
     getLocation(name) { return this.#locations_.get(name) ?? null; }
 
+    // Gets the known locations that are defined to be visible for the "/match" command.
+    getVisibleLocations() { return this.#locations_.keys(); }
+
     // ---------------------------------------------------------------------------------------------
 
     // Initializes the full fight system from the files the data is defined in. Will be called by
@@ -106,6 +109,10 @@ export class FightRegistry {
 
             case 'watch':
                 params.type = GameCommandParams.kTypeWatch;
+                break;
+
+            default:
+                params.type = GameCommandParams.kTypeStart;
                 break;
         }
 

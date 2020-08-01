@@ -61,8 +61,8 @@ export default class Fights extends Feature {
 
                 // Option: Location (string)
                 new Setting(
-                    'fights', 'location', [ ...this.registry_.locations.keys() ], defaultLocation,
-                    'Location'),
+                    'fights', 'location', [ ...this.registry_.getVisibleLocations() ],
+                    defaultLocation, 'Location'),
 
                 // Option: Pickups (boolean)
                 new Setting('fights', 'pickups', Setting.TYPE_BOOLEAN, true, 'Pickups'),

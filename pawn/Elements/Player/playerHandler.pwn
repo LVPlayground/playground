@@ -14,7 +14,7 @@
 #define STATUS_DILDO        9
 #define STATUS_KNOCKOUT     10
 #define STATUS_GRENADE      11
-#define STATUS_ROCKET       12
+#define STATUS_ROCKET       12  // Converted
 #define STATUS_SNIPER       13  // Converted
 #define STATUS_MINIGUN      14  // Converted
 #define STATUS_SHIPTDM      15

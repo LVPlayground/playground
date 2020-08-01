@@ -421,7 +421,6 @@ ReturnMinigameName(minigame) {
         case STATUS_DILDO:      minigameName = "Dildo Spanking";
         case STATUS_KNOCKOUT:   minigameName = "Knockout";
         case STATUS_GRENADE:    minigameName = "Grenade Party";
-        case STATUS_ROCKET:     minigameName = "Rocket Party";
         case STATUS_SHIPTDM:    minigameName = "Ship Team Deathmatch";
         case STATUS_SAWNOFF:    minigameName = "Sawnoff Fights";
         case STATUS_WALKWEAPON: minigameName = "Walkweapon War";
@@ -440,7 +439,6 @@ ReturnMinigameCmd(minigame) {
         case STATUS_DILDO:      command = "/spankme";
         case STATUS_KNOCKOUT:   command = "/knockout";
         case STATUS_GRENADE:    command = "/grenade";
-        case STATUS_ROCKET:     command = "/rocket";
         case STATUS_SHIPTDM:    command = "/shiptdm";
         case STATUS_SAWNOFF:    command = "/sawnoff";
         case STATUS_WALKWEAPON: command = "/ww";
@@ -459,7 +457,6 @@ ReturnMinigameMaxPlayers(minigame) {
         case STATUS_DILDO:      maxPlayers = 10;
         case STATUS_KNOCKOUT:   maxPlayers = 2;
         case STATUS_GRENADE:    maxPlayers = 100;
-        case STATUS_ROCKET:     maxPlayers = 100;
         case STATUS_SHIPTDM:    maxPlayers = 100;
         case STATUS_SAWNOFF:    maxPlayers = 50;
         case STATUS_WALKWEAPON: maxPlayers = 100;

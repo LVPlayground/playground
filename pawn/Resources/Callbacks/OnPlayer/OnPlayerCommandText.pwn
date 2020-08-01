@@ -576,18 +576,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if(strcmp(cmd, "/rocket", true) == 0) 
-    {
-        if(GetPlayerInterior(playerid) != 0)
-        {
-            ShowBoxForPlayer(playerid, "You cannot use this command while you're in an interior!");
-            return 1;
-        }
-
-        MiniGamesSignup(playerid, STATUS_ROCKET);
-        return 1;
-    }
-
     if (strcmp(cmd, "/shiptdm", true) == 0) 
     {
         if(GetPlayerInterior(playerid) != 0)

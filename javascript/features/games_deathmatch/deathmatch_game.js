@@ -248,9 +248,8 @@ export class DeathmatchGame extends GameBase {
         // players in a loop, e.g. at the end of a team-based game, where this is undesirable.
         switch (this.#objective_.type) {
             case DeathmatchGame.kObjectiveLastManStanding:
-                const remainingParticipants = [ ...this.#state_.keys() ];
-                if (remainingParticipants.length === 1)
-                    await this.playerWon(remainingParticipants[0]);
+                if (this.#state_.size === 1)
+                    await this.playerWon([ ...this.#state_.keys() ][0]);
 
                 break;
 

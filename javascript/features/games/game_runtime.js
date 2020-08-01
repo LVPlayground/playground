@@ -104,6 +104,7 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateInitialized)
             throw new Error(`The runtime is only able to run after initialization.`);
 
+        this.playerCount_ = this.players_.size;
         this.state_ = GameRuntime.kStateRunning;
 
         const spawnPromises = [];
@@ -111,8 +112,6 @@ export class GameRuntime extends GameActivity {
             spawnPromises.push(this.onPlayerSpawn(player));
 
         await Promise.all(spawnPromises);
-
-        this.playerCount_ = this.players_.size;
 
         while (this.players_.size) {
             await this.game_.onTick();
@@ -175,12 +174,12 @@ export class GameRuntime extends GameActivity {
         // Remove the |player| from the list of folks who can be watched.
         this.spectateGroup_.removePlayer(player);
 
+        this.manager_.setPlayerActivity(player, null);
+        this.players_.delete(player);
+
         // Restore the |player|'s state -- back as if nothing ever happened.
         if (!disconnecting)
             player.restoreState();
-
-        this.manager_.setPlayerActivity(player, null);
-        this.players_.delete(player);
     }
 
     // ---------------------------------------------------------------------------------------------

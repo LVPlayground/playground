@@ -6,6 +6,7 @@ import { GameActivity } from 'features/games/game_activity.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 import { SpectateGroup } from 'features/spectate/spectate_group.js';
 
+import { difference } from 'base/set_extensions.js';
 import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate
@@ -214,7 +215,7 @@ export class GameRuntime extends GameActivity {
         if (this.description_.continuous) {
             const gameName = this.description_.nameFn(this.settings_);
 
-            for (const target of this.players_)
+            for (const target of difference(this.players_, this.leaving_))
                 target.sendMessage(Message.GAME_CONTINUOUS_LEFT, player.name, gameName);
         }
 

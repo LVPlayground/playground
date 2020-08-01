@@ -256,6 +256,9 @@ export class GameRuntime extends GameActivity {
 
     // Signals that the |player| has lost. They will be removed from the game.
     async playerLost(player, score = null) {
+        if (this.leaving_.has(player))
+            return;  // they're already in the progress of leaving
+
         const position = this.playerCount_ - this.loserCount_++;
 
         // TODO: Store the |player|'s |score|, and the fact that they lost. (w/ rank)
@@ -268,6 +271,9 @@ export class GameRuntime extends GameActivity {
 
     // Signals that the |player| has won. They will be removed from the game.
     async playerWon(player, score = null) {
+        if (this.leaving_.has(player))
+            return;  // they're already in the progress of leaving
+
         const position = ++this.winnerCount_;
 
         // TODO: Store the |player|'s |score|, and the fact that they won. (w/ rank)

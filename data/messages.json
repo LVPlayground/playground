@@ -166,6 +166,7 @@
   "GAME_REGISTRATION_ANNOUNCEMENT_FREE": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",
   "GAME_REGISTRATION_INVALID_ID": "@error Sorry, but the game you're trying to join isn't taking registrations anymore.",
+  "GAME_REGISTRATION_JOINED_CONTINUOUS": "{CCD782}You have joined the {838F31}%s{CCD782}, enjoy!",
   "GAME_REGISTRATION_JOINED": "{CCD782}You have signed up for the {838F31}%s{CCD782}! Type {838F31}/leave{CCD782} if you change your mind.",
   "GAME_REGISTRATION_LEFT": "{CCD782}You have dropped out of the {838F31}%s{CCD782} because you used the /leave command.",
   "GAME_REGISTRATION_NOT_ENOUGH_MONEY": "@error Sorry, you need %$ to join the %s.",

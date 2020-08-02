@@ -234,7 +234,7 @@ export class GameCommands {
                 this.finance_().takePlayerCash(player, description.price);
 
             player.sendMessage(
-                Message.GAME_REGISTRATION_JOINED, activeRuntime.getActivityName());
+                Message.GAME_REGISTRATION_JOINED_CONTINUOUS, activeRuntime.getActivityName());
 
             this.nuwani_().echo(
                 'notice-minigame', player.name, player.id, activeRuntime.getActivityName());

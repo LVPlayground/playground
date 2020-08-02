@@ -30,6 +30,7 @@ export class DiscordConnection {
     #connect_ = false;
     #connected_ = false;
     #connecting_ = false;
+    #delegate_ = null;
     #heartbeatAckTime_ = null;
     #heartbeatIntervalMs_ = null;
     #heartbeatMonitorToken_ = null;
@@ -38,8 +39,9 @@ export class DiscordConnection {
     #sessionSequence_ = null;
     #socket_ = null;
 
-    constructor(configuration) {
+    constructor(configuration, delegate) {
         this.#configuration_ = configuration;
+        this.#delegate_ = delegate;
         this.#socket_ = new DiscordSocket(this);
     }
 
@@ -212,7 +214,7 @@ export class DiscordConnection {
                 break;
         }
 
-        // TODO: Forward the message to our delegate.
+        this.#delegate_.onMessage(type, data);
     }
 
     // ---------------------------------------------------------------------------------------------

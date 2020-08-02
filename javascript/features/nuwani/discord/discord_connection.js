@@ -4,14 +4,25 @@
 
 import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
 
+// Minimum interval at which the heartbeat monitor is willing to run, to not spam the server.
+const kMinimumHeartbeatMonitorMs = 10 * 1000;
+
 // Implements support for the mid-level Discord connection, building directly on the WebSocket. Will
 // interpret the Gateway protocol and do what's necessary in order to keep it alive.
 //
 // https://discord.com/developers/docs/topics/gateway
 export class DiscordConnection {
+    // The opcodes that are supported by this level of the Discord connection.
+    static kOpcodeHeartbeat = 1;
+    static kOpcodeHeartbeatAck = 11;
+    static kOpcodeHello = 10;
+
     #configuration_ = null;
     #connect_ = false;
     #connected_ = false;
+    #heartbeatAckTime_ = null;
+    #heartbeatIntervalMs_ = null;
+    #heartbeatMonitorToken_ = null;
     #socket_ = null;
 
     constructor(configuration) {
@@ -19,19 +30,22 @@ export class DiscordConnection {
         this.#socket_ = new DiscordSocket(this);
     }
 
+    // Gets the most recent ack time for the heartbeat, only valid for testing purposes.
+    get hearbeatAckTimeForTesting() { return this.#heartbeatAckTime_; }
+
     // ---------------------------------------------------------------------------------------------
     // Section: Connection management
     // ---------------------------------------------------------------------------------------------
 
+    // Returns whether the connection is currently established.
+    isConnected() { return this.#connected_; }
+
     // Establishes connection with Discord. Will continue to try to keep a connection established,
-    // even when the connection with the server drops for any reason.
+    // even when the connection with the server drops for any reason. Should not be waited on.
     async connect() {
         this.#connect_ = true;
         return this.#socket_.connect(this.#configuration_.endpoint);
     }
-
-    // Returns whether the connection is currently established.
-    isConnected() { return this.#connected_; }
 
     // Disconnects the connection with Discord. Safe to call at any time, even when the connection
     // is not currently established (e.g. because of on-going network issues).
@@ -41,15 +55,41 @@ export class DiscordConnection {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Section: Messages
+    // ---------------------------------------------------------------------------------------------
+
+    // Sends an opcode message back to the Discord server. Only the |op| argument is required, the
+    // rest have sensible default values, although you usually want to use them.
+    async sendOpcodeMessage({ op, d = {}, s = null, t = null } = {}) {
+        if (!this.#connected_)
+            return false;
+
+        return await this.#socket_.write({ op, d, s, t });
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Section: Socket delegate
     // ---------------------------------------------------------------------------------------------
 
     // Called when the connection with Discord has been closed for any reason. A reconnection
-    // attempt can be started by |this| class in response, if one is still desired.
-    onConnectionClosed() { this.#connected_ = false; }
+    // attempt can be started by |this| class in response, if one is still desired. Certain parts of
+    // the state will be re-set to stop on-going behaviour in this class.
+    onConnectionClosed() {
+        this.#connected_ = false;
 
-    // Called when the connection with Discord has been established.
-    onConnectionEstablished() { this.#connected_ = true; }
+        this.#heartbeatMonitorToken_ = null;
+
+        // TODO: Consider |this.#connect_| and re-establish connection if that's the desired effect.
+    }
+
+    // Called when the connection with Discord has been established. All connection state will be
+    // reset, as the full handshake process will start over again from scratch.
+    onConnectionEstablished() {
+        this.#connected_ = true;
+
+        this.#heartbeatIntervalMs_ = null;
+        this.#heartbeatAckTime_ = null;
+    }
 
     // Called when the a connection attempt with Discord has failed. The DiscordSocket will continue
     // to try to establish a connection, following an exponential back-off.
@@ -58,12 +98,62 @@ export class DiscordConnection {
     // Called when a message has been received from Discord. This is a JavaScript object that
     // follows the Gateway Payload Structure from the Discord API.
     onMessage(message) {
-        console.log(message);
+        switch (message.op) {
+            case DiscordConnection.kOpcodeHeartbeat:
+                this.sendOpcodeMessage({ op: DiscordConnection.kOpcodeHeartbeatAck });
+                break;
+
+            case DiscordConnection.kOpcodeHeartbeatAck:
+                this.#heartbeatAckTime_ = server.clock.monotonicallyIncreasingTime();
+                break;
+
+            case DiscordConnection.kOpcodeHello:
+                if (!message.d.hasOwnProperty('heartbeat_interval'))
+                    console.log(`[Discord] Heartbeat interval missing in 10 HELLO:`, message);
+
+                this.#heartbeatIntervalMs_ = message.d.heartbeat_interval ?? 41250;
+                this.heartbeatMonitor();
+                break;
+
+            default:
+                console.log(`[Discord] Unhandled message:`, message);
+                break;
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Heartbeat monitor
+    // ---------------------------------------------------------------------------------------------
+
+    // Runs the heartbeat monitor while the connection is established. The interval is defined by
+    // the Discord server. The monitor runs until the connection has disconnected.
+    async heartbeatMonitor() {
+        const heartbeatMonitorToken = Symbol('Heartbeat monitor');
+
+        // Store the |token|, so that we always know whether we're still the active monitor.
+        this.#heartbeatMonitorToken_ = heartbeatMonitorToken;
+
+        // Sanity check: require the heartbeat to be at least ten seconds, to avoid having accidents
+        // where we needlessly spam the Discord server, and risk getting banned.
+        if (!this.#heartbeatIntervalMs_ || this.#heartbeatIntervalMs_ < kMinimumHeartbeatMonitorMs)
+            throw new Error(`Unwilling to start the Discord monitor: interval too low.`);
+
+        while (true) {
+            await wait(this.#heartbeatIntervalMs_);
+            await Promise.resolve();
+
+            if (this.#heartbeatMonitorToken_ !== heartbeatMonitorToken)
+                return;  // the heartbeat monitor was stopped
+
+            this.sendOpcodeMessage({ op: DiscordConnection.kOpcodeHeartbeat });
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.#heartbeatMonitorToken_ = null;
+
         this.#socket_.disconnect();
 
         this.#socket_.dispose();

@@ -114,7 +114,12 @@ export class DiscordSocket {
 
     // Asynchronously writes a message to the Discord socket. A promise will be returned that will
     // be resolved once the |message| has been sent to the socket successfully.
-    async write(message) {}
+    async write(message) {
+        const stringifiedMessage = JSON.stringify(message);
+        const encodedMessage = stringToUtf8Buffer(stringifiedMessage);
+
+        return this.#socket_.write(encodedMessage);
+    }
 
     // Immediately closes the connection when this was currently established, or when a connection
     // attempt is currently in progress. This is safe to be called at any time.

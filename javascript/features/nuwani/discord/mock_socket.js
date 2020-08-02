@@ -30,6 +30,7 @@ export class MockSocket {
     static kOpcodeIdentify = 2;
     static kOpcodeInvalidSession = 9;
     static kOpcodeReconnect = 7;
+    static kOpcodeResume = 6;
 
     // States that the socket can be in. Returned by the state getter.
     static kStateConnected = 'connected';
@@ -42,6 +43,7 @@ export class MockSocket {
     #connectionId_ = null;
     #listeners_ = new Map();
     #state_ = MockSocket.kStateDisconnected;
+    #wasResumption_ = false;
 
     constructor(protocol) {
         if (protocol !== 'websocket')
@@ -56,6 +58,9 @@ export class MockSocket {
 
     // Gets the connection Id from the Socket. Will be able to tell if it got reconnected.
     get connectionId() { return this.#connectionId_; }
+
+    // Gets whether the last connection was established based on a session resumption.
+    get wasResumption() { return this.#wasResumption_; }
 
     // Enables the given |behaviour| on the mocked socket. Must be one of the above constants.
     enableBehaviour(behaviour) { this.#behaviour_.add(behaviour); }
@@ -84,6 +89,7 @@ export class MockSocket {
 
         this.#connectionId_ = ++globalConnectionId;
         this.#state_ = MockSocket.kStateConnected;
+        this.#wasResumption_ = false;
 
         // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes
         // Discord sends the 10 HELLO command immediately after connecting.
@@ -108,6 +114,9 @@ export class MockSocket {
                 break;
 
             case MockSocket.kOpcodeIdentify:
+            case MockSocket.kOpcodeResume:
+                this.#wasResumption_ = message.op === MockSocket.kOpcodeResume;
+
                 this.sendDelayedOpcodeMessage(1, {
                     op: MockSocket.kOpcodeDispatch,
                     t: 'READY',

@@ -129,4 +129,35 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
 
         assert.isFalse(connection.isConnected());  // <-- disconnected
     });
+
+    it('should resume the session when connection is lost', async (assert) => {
+        assert.isFalse(connection.isConnected());
+
+        // (1) Connect to the Discord server, with immediate success.
+        await Promise.all([
+            connection.connect(),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+        ]);
+
+        assert.isFalse(socket.wasResumption);
+        assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
+
+        // (2) Disconnect the socket manually. This will be an arbitrary disconnection of which the
+        // DiscordConnection is not aware, so a reconnection should start automatically.
+        socket.close();
+
+        assert.isFalse(connection.isConnected());
+        assert.isFalse(connection.isAuthenticated());
+
+        // (3) Wait for the reconnection delay, then for the authentication to succeed. This should
+        // be session based rather than be based on a new token.
+        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await Promise.resolve();  // allow authentication to pass
+        await Promise.resolve();  // ^^^
+
+        assert.isTrue(socket.wasResumption);
+        assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
+    });
 });

@@ -35,6 +35,7 @@ export class DiscordConnection {
     #heartbeatMonitorToken_ = null;
     #invalidSessionCounter_ = 0;
     #sessionId_ = null;
+    #sessionSequence_ = null;
     #socket_ = null;
 
     constructor(configuration) {
@@ -70,6 +71,8 @@ export class DiscordConnection {
         this.#connect_ = false;
         this.#connecting_ = false;
         this.#invalidSessionCounter_ = 0;
+        this.#sessionId_ = null;
+        this.#sessionSequence_ = null;
 
         return this.#socket_.disconnect();
     }
@@ -82,7 +85,14 @@ export class DiscordConnection {
     // token configured in the bot's configuration file. If a previous connection existed and the
     // connection was lost, a 6 RESUME message will be send instead.
     identify() {
-        // TODO: Implement kOpcodeResume support.
+        if (this.#sessionId_ !== null) {
+            return this.sendOpcodeMessage({
+                op: DiscordConnection.kOpcodeResume,
+                token: this.#configuration_.token,
+                session_id: this.#sessionId_,
+                seq: this.#sessionSequence_,
+            });
+        }
 
         return this.sendOpcodeMessage({
             op: DiscordConnection.kOpcodeIdentify,
@@ -119,7 +129,6 @@ export class DiscordConnection {
 
         this.#authenticated_ = false;
         this.#heartbeatMonitorToken_ = null;
-        this.#sessionId_ = null;
 
         if (this.#invalidSessionCounter_ >= kMaximumInvalidSessions) {
             if (!server.isTest())
@@ -151,6 +160,7 @@ export class DiscordConnection {
     onMessage(message) {
         switch (message.op) {
             case DiscordConnection.kOpcodeDispatch:
+                this.#sessionSequence_ = message.s;
                 this.onDispatchMessage(message.t, message.d);
                 break;
 

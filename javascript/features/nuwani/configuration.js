@@ -12,6 +12,7 @@ export class Configuration {
     bots_ = [];
     servers_ = [];
     channels_ = [];
+    discord_ = null;
     echoChannel_ = null;
     levels_ = [];
     commandPrefix_ = null;
@@ -42,6 +43,12 @@ export class Configuration {
 
     // Gets the prefix used to identify bot commands. Can be any number of characters long.
     get commandPrefix() { return this.commandPrefix_; }
+
+    // Gets the Discord configuration, if Nuwani should be enabled to establish a connection with
+    // Discord as well as IRC. Our interaction is different, and not a fully fledged echo server,
+    // but it's a fair integration to get players excited after all. Structured as follows:
+    // { clientId, clientSecret, endpoint, token }. Will be NULL when not specified.
+    get discord() { return this.discord_; }
 
     // Gets the owners of the IRC bot. Each of those is an instance of MessageSource, where each of
     // the individual fields might be set to an asterisk to indicate "any value".
@@ -121,13 +128,38 @@ export class Configuration {
 
         this.commandPrefix_ = configuration.commandPrefix;
 
-        // (6) Load the list of owners of the bot.
+        // (6) Load Discord configuration for the bot.
+        if (configuration.hasOwnProperty('discord')) {
+            if (typeof configuration.discord !== 'object')
+                throw new Error(`Discord configuration must be given as a JSON object.`);
+
+            if (typeof configuration.discord.clientId !== 'string')
+                throw new Error(`The Discord Client ID must be given as a strong`);
+
+            if (typeof configuration.discord.clientSecret !== 'string')
+                throw new Error(`The Discord Client Secret must be given as a strong`);
+
+            if (typeof configuration.discord.endpoint !== 'string')
+                throw new Error(`The Discord endpoint must be given as a strong`);
+
+            if (typeof configuration.discord.token !== 'string')
+                throw new Error(`The Discord token must be given as a strong`);
+
+            this.discord_ = {
+                clientId: configuration.discord.clientId,
+                clientSecret: configuration.discord.clientSecret,
+                endpoint: configuration.discord.endpoint,
+                token: configuration.discord.token,
+            };
+        }
+
+        // (7) Load the list of owners of the bot.
         if (!configuration.hasOwnProperty('owners') || !Array.isArray(configuration.owners))
             throw new Error('The owners must be indicated in a JSON array.');
 
         configuration.owners.forEach(owner => this.safeAddOwner(owner));
 
-        // (7) Load the password salt, if this field exists in the configuration.
+        // (8) Load the password salt, if this field exists in the configuration.
         if (configuration.hasOwnProperty('passwordSalt') && !!configuration.passwordSalt) {
             if (typeof configuration.passwordSalt != 'string' || !configuration.passwordSalt.length)
                 throw new Error('The password salt must be a non-zero string.');
@@ -135,11 +167,11 @@ export class Configuration {
             this.passwordSalt_ = configuration.passwordSalt;
         }
 
-        // (8) Require that the master bot has been defined.
+        // (9) Require that the master bot has been defined.
         if (this.bots_.filter(bot => bot.master).length !== 1)
             throw new Error('Exactly one IRC bot must be specified as the master bot.');
 
-        // (9) Require that the echo channel has been defined.
+        // (10) Require that the echo channel has been defined.
         {
             const channels = this.channels_.filter(channel => channel.echo);
             if (channels.length !== 1)
@@ -148,7 +180,7 @@ export class Configuration {
             this.echoChannel_ = channels[0].channel;
         }  
 
-        // (10) Sort the level mapping in descending order based on the access level.
+        // (11) Sort the level mapping in descending order based on the access level.
         this.levels_.sort((lhs, rhs) => {
             if (lhs.level === rhs.level)
                 return 0;

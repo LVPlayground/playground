@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
+
 // The latest instance of the MockSocket, used by the static getter on the class.
 let latestInstance = null;
 
@@ -39,6 +41,15 @@ export class MockSocket {
     // Enables the given |behaviour| on the mocked socket. Must be one of the above constants.
     enableBehaviour(behaviour) { this.#behaviour_.add(behaviour); }
 
+    // Sends an opcode message to the socket, which are the low-level messages that Discord's API is
+    // built on. Various will be sent in order to follow the connection's lifetime.
+    sendOpcodeMessage({ op, d = {}, s = null, t = null }) {
+        const message = JSON.stringify({ op, d, s, t });
+        const encodedMessage = stringToUtf8Buffer(message);
+
+        this.dispatchEvent('message', { data: encodedMessage });
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Socket API
     // ---------------------------------------------------------------------------------------------
@@ -50,6 +61,12 @@ export class MockSocket {
             return false;
 
         this.#state_ = MockSocket.kStateConnected;
+
+        // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes
+        // Discord sends the 10 HELLO command immediately after connecting.
+        Promise.resolve().then(() =>
+            this.sendOpcodeMessage({ op: 10, d: { heartbeat_interval: 41250 } }));
+
         return true;
     }
 

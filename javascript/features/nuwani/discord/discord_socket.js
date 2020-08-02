@@ -150,6 +150,9 @@ export class DiscordSocket {
     // Called when an error has been seen from the underlying socket. The connection will be closed
     // immediately if it's currently established, as no further operation can happen anymore.
     onError(event) {
+        if (this.#disposed_)
+            return;
+
         this.log(`Error ${event.code}: ${event.message}`);
 
         if (this.socket_.state !== 'connected')
@@ -161,6 +164,9 @@ export class DiscordSocket {
     // Called when a message has been received by the socket. The message's data is given to us as
     // a UTF-8 string contained in an ArrayBuffer, which contains the JSON payload per the API.
     onMessage(event) {
+        if (this.#disposed_)
+            return;
+
         const buffer = utf8BufferToString(event.data);
 
         let message = null;

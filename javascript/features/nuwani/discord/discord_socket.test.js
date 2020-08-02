@@ -6,7 +6,7 @@ import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
 import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
 import { MockSocket } from 'features/nuwani/discord/mock_socket.js';
 
-describe('DiscordSocket', (it, beforeEach) => {
+describe('DiscordSocket', (it, beforeEach, afterEach) => {
     let connectionClosedCalls = 0;
     let connectionEstablishedCalls = 0;
     let connectionFailedCalls = 0;
@@ -28,6 +28,8 @@ describe('DiscordSocket', (it, beforeEach) => {
 
         socket = MockSocket.getMostRecentInstance();
     });
+
+    afterEach(() => discord.dispose());
 
     // Endpoint that we'll pretend to use for testing purposes.
     const kDiscordEndpoint = 'wss://gateway.discord.gg/?v=6&encoding=json';

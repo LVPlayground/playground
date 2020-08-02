@@ -3,16 +3,24 @@
 // be found in the LICENSE file.
 
 import { DiscordConnection } from 'features/nuwani_discord/discord_connection.js';
+import { Guild } from 'features/nuwani_discord/structures/guild.js';
+import { Message } from 'features/nuwani_discord/structures/message.js';
 
 // The Discord runtime of Nuwani is an implementation that has the ability to establish a connection
 // with the Discord API over WebSockets, connecting to their Gateway API.
 export class DiscordRuntime {
     #configuration_ = null;
     #connection_ = null;
+    #guilds_ = null;
+    #manager_ = null;
+    #userId_ = null;
+    #userName_ = null;
 
-    constructor(configuration) {
+    constructor(configuration, manager) {
         this.#configuration_ = configuration;
         this.#connection_ = new DiscordConnection(configuration, this);
+        this.#guilds_ = new Map();
+        this.#manager_ = manager;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -36,32 +44,87 @@ export class DiscordRuntime {
     // Called when a message of the given |intent| has been received from Discord. Not all messages
     // have to be handled. Messages will only be received when the connection is authenticated.
     onMessage(intent, data) {
-        // TODO: https://discord.com/developers/docs/topics/gateway#list-of-intents
+        let guild = null;
+        let member = null;
+        let message = null;
 
         switch (intent) {
-            case 'MESSAGE_CREATE':
-                if (!data.content.includes('Nuwani'))
-                    break;
+            case 'READY':
+                this.#userId_ = data.user.id;
+                this.#userName_ = data.user.username;
+                break;
+
+            // -------------------------------------------------------------------------------------
+            // Category: GUILD_* messages
+            // -------------------------------------------------------------------------------------
+
+            case 'GUILD_CREATE':
+                guild = new Guild(data, this.#userId_);
+
+                console.log(`${guild.name} (Id: ${guild.id}):`);
+                console.log(guild.members.size + ' members');
+                console.log(guild.roles.size + ' roles');
+                console.log(guild.channels.size + ' channels');
+                console.log(guild.bot + ' is our bot');
+
+                this.#guilds_.set(data.id, guild);
+                break;
+
+            case 'GUILD_MEMBER_UPDATE':
+                guild = this.#guilds_.get(data.guild_id);
+                member = guild.members.get(data.user.id);
+
+                if (guild && member) {
+                    member.nickname = data.nick || data.user.username;
+
+                    member.roles.clear();
+                    for (const roleId of data.roles) {
+                        const role = guild.roles.get(roleId);
+                        if (role)
+                            member.roles.add(role);
+                    }
+                }
 
                 break;
 
-                // TODO: Enable something like the following....?
-                this.#connection_.sendIntent('MESSAGE_REACTION_ADD', {
-                    user_id: '739284801001095330',
-                    message_id: data.id,
-                    emoji: {
-                        id: null,
-                        name: '🔥',
-                        animated: false,
-                    },
-                    channel_id: data.channel_id,
-                    guild_id: data.guild_id,
-                });
+            // -------------------------------------------------------------------------------------
+            // Category: MESSAGE_* messages
+            // -------------------------------------------------------------------------------------
 
+            case 'MESSAGE_CREATE':
+                guild = this.#guilds_.get(data.guild_id);
+                message = new Message(data, guild);
+
+                this.#manager_.onMessage(message);
+                break;
+
+            // -------------------------------------------------------------------------------------
+            // Category: Presence messages
+            // -------------------------------------------------------------------------------------
+
+            case 'PRESENCE_UPDATE':
+                for (const guild of this.#guilds_.values()) {
+                    const member = guild.members.get(data.user.id);
+                    if (member)
+                        member.status = data.status;
+                }
+
+                break;
+
+            // -------------------------------------------------------------------------------------
+            // Category: Ignored messages
+            // -------------------------------------------------------------------------------------
+
+            case 'MESSAGE_DELETE':
+            case 'TYPING_START':
+                break;
+
+            // -------------------------------------------------------------------------------------
+
+            default:
+                console.log('Unhandled Discord message (' + intent + '):', data);
                 break;
         }
-
-        console.log(intent, data);
     }
 
     // ---------------------------------------------------------------------------------------------

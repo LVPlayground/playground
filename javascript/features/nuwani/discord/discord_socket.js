@@ -8,6 +8,9 @@ import { URL } from 'components/networking/url.js';
 
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
+// Maximum number of messages in the buffer before we'll start to prune it.
+const kMaximumBufferSize = 32;
+
 // The socket interface that's expected to maintain the connection with Discord over WebSockets.
 // Will establish the connection as soon as feasible. Interacts with the BackoffPolicy to avoid
 // hammering the Discord servers when there is an issue on either end.
@@ -19,6 +22,7 @@ export class DiscordSocket {
     static kStateDisconnected = 'disconnected';
 
     #backoffPolicy_ = null;
+    #buffer_ = [];
     #connectionToken_ = null;
     #delegate_ = null;
     #disposed_ = false;
@@ -91,7 +95,9 @@ export class DiscordSocket {
             if (connected) {
                 this.log(`Connection to ${endpoint} succeeded.`);
 
+                this.#buffer_ = [];
                 this.#connectionToken_ = null;
+
                 this.#delegate_.onConnectionEstablished();
                 return;
             }
@@ -174,13 +180,28 @@ export class DiscordSocket {
         if (this.#disposed_)
             return;
 
-        const buffer = utf8BufferToString(event.data);
+        // It's entirely possible that the |event| data is a partial JSON object rather than a full
+        // one, when the payload is sufficiently big to be split over multiple messages. We employ
+        // the |this.#buffer_| in that case, until it can successfully decode.
+        this.#buffer_.push(utf8BufferToString(event.data));
 
+        // Attempt to decode the entire buffer. If it fails, we simply ignore the message, assuming
+        // that more data will arrive from the socket soon.
         let message = null;
+
         try {
-            message = JSON.parse(buffer);
+            message = JSON.parse(this.#buffer_.join(''));
+            this.#buffer_ = [];  // the buffer was fully consumed
+
         } catch (exception) {
-            this.log(`Received invalid message: ${buffer}`);
+            // The buffer couldn't be parsed. Wait for the next message unless the maximum number of
+            // messages in the buffer has been exceeded, in which case we clear it.
+            if (this.#buffer_.length < kMaximumBufferSize)
+                return;
+
+            this.log(`${kMaximumBufferSize} invalid messages in the buffer. Clearing it...`);
+
+            this.#buffer_ = [];
             return;
         }
 

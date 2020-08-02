@@ -6,10 +6,13 @@ import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
 import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
 import { MockSocket } from 'features/nuwani/discord/mock_socket.js';
 
+import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
+
 describe('DiscordSocket', (it, beforeEach, afterEach) => {
     let connectionClosedCalls = 0;
     let connectionEstablishedCalls = 0;
     let connectionFailedCalls = 0;
+    let messageData = null;
 
     let discord = null;
     let socket = null;
@@ -18,12 +21,13 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
         connectionClosedCalls = 0;
         connectionEstablishedCalls = 0;
         connectionFailedCalls = 0;
+        messageData = null;
 
         discord = new DiscordSocket(new class {
             onConnectionClosed() { ++connectionClosedCalls; }
             onConnectionEstablished() { ++connectionEstablishedCalls; }
             onConnectionFailed() { ++connectionFailedCalls; }
-            onMessage(message) {}
+            onMessage(message) { messageData = message; }
         });
 
         socket = MockSocket.getMostRecentInstance();
@@ -89,5 +93,29 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
 
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
         assert.equal(connectionClosedCalls, 1);
+    });
+
+    it('should be able to join together partial JSON message data', async (assert) => {
+        assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionEstablishedCalls, 0);
+        assert.equal(connectionFailedCalls, 0);
+
+        await Promise.all([
+            discord.connect(kDiscordEndpoint),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+        ]);
+
+        assert.equal(discord.state, DiscordSocket.kStateConnected);
+        assert.equal(connectionEstablishedCalls, 1);
+        assert.equal(connectionFailedCalls, 0);
+
+        messageData = null;
+
+        // Send a basic JavaScript object in two messages, each with part of the content.
+        discord.onMessage({ data: stringToUtf8Buffer('{"text":"Hello, ') });
+        assert.isNull(messageData);
+
+        discord.onMessage({ data: stringToUtf8Buffer('world!"}') });
+        assert.deepEqual(messageData, { text: 'Hello, world!' });
     });
 });

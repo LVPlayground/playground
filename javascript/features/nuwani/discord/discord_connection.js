@@ -22,6 +22,7 @@ export class DiscordConnection {
     static kOpcodeReconnect = 7;
     static kOpcodeResume = 6;
 
+    #authenticated_ = false;
     #configuration_ = null;
     #connect_ = false;
     #connected_ = false;
@@ -29,6 +30,7 @@ export class DiscordConnection {
     #heartbeatAckTime_ = null;
     #heartbeatIntervalMs_ = null;
     #heartbeatMonitorToken_ = null;
+    #sessionId_ = null;
     #socket_ = null;
 
     constructor(configuration) {
@@ -46,12 +48,15 @@ export class DiscordConnection {
     // Returns whether the connection is currently established.
     isConnected() { return this.#connected_; }
 
+    // Returns whether the connection is currently authenticated and ready for use.
+    isAuthenticated() { return this.#authenticated_; }
+
     // Establishes connection with Discord. Will continue to try to keep a connection established,
     // even when the connection with the server drops for any reason. Should not be waited on.
     async connect() {
         this.#connect_ = true;
 
-        if (!this.#connecting_)
+        if (!this.#connecting_ && !this.#connected_)
             return this.internalConnect();
     }
 
@@ -77,11 +82,23 @@ export class DiscordConnection {
     // ---------------------------------------------------------------------------------------------
 
     // Identifies with the Discord server. Will use the 2 IDENTIFY opcode by default, which uses the
-    // OAuth2 token obtained when starting the connection attempt. If a previous connection existed
-    // and connection was lost, a 6 RESUME message will be send instead.
-    async identify() {
-        // TODO: Implement kOpcodeIdentify support.
+    // token configured in the bot's configuration file. If a previous connection existed and the
+    // connection was lost, a 6 RESUME message will be send instead.
+    identify() {
         // TODO: Implement kOpcodeResume support.
+
+        return this.sendOpcodeMessage({
+            op: DiscordConnection.kOpcodeIdentify,
+            d: {
+                token: this.#configuration_.token,
+                properties: {
+                    '$os': 'linux',
+                    '$browser': 'lvpjs-nuwani',
+                    '$device': 'lvpjs-nuwani',
+                },
+                compress: false,
+            }
+        });
     }
 
     // Sends an opcode message back to the Discord server. Only the |op| argument is required, the
@@ -103,7 +120,9 @@ export class DiscordConnection {
     onConnectionClosed() {
         this.#connected_ = false;
 
+        this.#authenticated_ = false;
         this.#heartbeatMonitorToken_ = null;
+        this.#sessionId_ = null;
 
         // TODO: Consider |this.#connect_| and re-establish connection if that's the desired effect.
     }
@@ -114,6 +133,7 @@ export class DiscordConnection {
         this.#connected_ = true;
         this.#connecting_ = false;
 
+        this.#authenticated_ = false;
         this.#heartbeatIntervalMs_ = null;
         this.#heartbeatAckTime_ = null;
     }
@@ -126,6 +146,10 @@ export class DiscordConnection {
     // follows the Gateway Payload Structure from the Discord API.
     onMessage(message) {
         switch (message.op) {
+            case DiscordConnection.kOpcodeDispatch:
+                this.onDispatchMessage(message.t, message.d);
+                break;
+
             case DiscordConnection.kOpcodeHeartbeat:
                 this.sendOpcodeMessage({ op: DiscordConnection.kOpcodeHeartbeatAck });
                 break;
@@ -139,18 +163,32 @@ export class DiscordConnection {
                     console.log(`[Discord] Heartbeat interval missing in 10 HELLO:`, message);
 
                 this.#heartbeatIntervalMs_ = message.d.heartbeat_interval ?? 41250;
-
                 this.heartbeatMonitor();
+
                 this.identify();
                 break;
 
-            case DiscordConnection.kOpcodeDispatch:
             case DiscordConnection.kOpcodeReconnect:
             case DiscordConnection.kOpcodeInvalidSession:
             default:
                 console.log(`[Discord] Unhandled message:`, message);
                 break;
         }
+    }
+
+    // Called when a dispatch message of the given |type| has been received, with the given |data|.
+    // Some |type|s will be handled internally, most are forwarded to our delegate.
+    onDispatchMessage(type, data) {
+        switch (type) {
+            case 'READY':
+                if (data.hasOwnProperty('session_id'))
+                    this.#sessionId_ = data.session_id;
+
+                this.#authenticated_ = true;
+                break;
+        }
+
+        // TODO: Forward the message to our delegate.
     }
 
     // ---------------------------------------------------------------------------------------------

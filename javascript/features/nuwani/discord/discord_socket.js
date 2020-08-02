@@ -190,7 +190,8 @@ export class DiscordSocket {
     // Helper function to log progression on the connection. Will be prefixed to identify the socket
     // and will be muted entirely when running tests, to avoid spam.
     log(message, ...params) {
-        console.log(`[Discord] ` + message, ...params);
+        if (!server.isTest())
+            console.log(`[Discord] ` + message, ...params);
     }
 
     dispose() {

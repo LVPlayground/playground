@@ -26,21 +26,18 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
     it('should be able to establish and maintain a connection with Discord', async (assert) => {
         assert.isFalse(connection.isConnected());
 
-        // (1) Connect to the Discord server, with immediate success.
+        // (1) Connect to the Discord server, with immediate success. This will automatically run
+        // the authentication flow as well (2 IDENTIFY message).
         await Promise.all([
             connection.connect(),
             server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
         ]);
 
         assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
         assert.isNull(connection.hearbeatAckTimeForTesting);
 
-        // (2) An 2 IDENTIFY message will be sent automatically by the DiscordConnection class, to
-        // identify ourselves to the server and get authorization to the server(s) we need.
-
-        // ...
-
-        // (3) Make sure that the client heartbeat is sent to the Discord server at the configured
+        // (2) Make sure that the client heartbeat is sent to the Discord server at the configured
         // cadance, indicated by the server in the 10 HELLO message.
         for (let cycle = 0; cycle < 5; ++cycle) {
             await server.clock.advance(MockSocket.getHeartbeatIntervalMs());
@@ -51,11 +48,12 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
                 server.clock.monotonicallyIncreasingTime(), 5);
         }
 
-        // (4) Disconnect manually from the Discord server, and confirm that the connection state
+        // (3) Disconnect manually from the Discord server, and confirm that the connection state
         // changes. In reality this is a networking-slow asynchronous operation.
         await connection.disconnect();
 
         assert.isFalse(connection.isConnected());
+        assert.isFalse(connection.isAuthenticated());
     });
 
     it('should trigger a reconnection with the server on 7 RECONNECT messages', async (assert) => {

@@ -20,9 +20,11 @@ export class MockSocket {
     static kBehaviourFailFirstConnection = 1;
 
     // The opcodes that are supported by the mocked Discord connection.
+    static kOpcodeDispatch = 0;
     static kOpcodeHeartbeat = 1;
     static kOpcodeHeartbeatAck = 11;
     static kOpcodeHello = 10;
+    static kOpcodeIdentify = 2;
 
     // States that the socket can be in. Returned by the state getter.
     static kStateConnected = 'connected';
@@ -51,7 +53,10 @@ export class MockSocket {
 
     // Sends an opcode message to the socket, which are the low-level messages that Discord's API is
     // built on. Various will be sent in order to follow the connection's lifetime.
-    sendOpcodeMessage({ op, d = {}, s = null, t = null } = {}) {
+    async sendDelayedOpcodeMessage(microtasks, { op, d = {}, s = null, t = null } = {}) {
+        for (let microtask = 0; microtask < microtasks; ++microtask)
+            await Promise.resolve();
+
         const message = JSON.stringify({ op, d, s, t });
         const encodedMessage = stringToUtf8Buffer(message);
 
@@ -72,11 +77,9 @@ export class MockSocket {
 
         // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes
         // Discord sends the 10 HELLO command immediately after connecting.
-        Promise.resolve().then(() => {
-            this.sendOpcodeMessage({
-                op: MockSocket.kOpcodeHello,
-                d: { heartbeat_interval: MockSocket.getHeartbeatIntervalMs() }
-            });
+        this.sendDelayedOpcodeMessage(2, {
+            op: MockSocket.kOpcodeHello,
+            d: { heartbeat_interval: MockSocket.getHeartbeatIntervalMs() }
         });
 
         return true;
@@ -88,8 +91,22 @@ export class MockSocket {
 
         switch (message.op) {
             case MockSocket.kOpcodeHeartbeat:
-                this.sendOpcodeMessage({
+                this.sendDelayedOpcodeMessage(1, {
                     op: MockSocket.kOpcodeHeartbeatAck,
+                });
+
+                break;
+
+            case MockSocket.kOpcodeIdentify:
+                this.sendDelayedOpcodeMessage(1, {
+                    op: MockSocket.kOpcodeDispatch,
+                    t: 'READY',
+                    s: 1,
+                    d: {
+                        v: 6,
+                        session_id: '8e6534ca2389dd7d38a0dc85d8b44c11',
+                        // many fields omitted for brevity
+                    }
                 });
 
                 break;

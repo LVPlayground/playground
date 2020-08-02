@@ -110,7 +110,13 @@ export class DeathmatchGame extends GameBase {
                 throw new Error('Invalid value given for map markers: ' + this.#mapMarkers_);
         }
 
-        this.#objective_ = settings.get('deathmatch/objective');
+        // Force the game to be continuous if this has been configured by the game's description,
+        // ignoring the objective set in |settings| - this would lead to race conditions.
+        if (this.continuous)
+            this.#objective_ = { type: DeathmatchGame.kObjectiveContinuous };
+        else
+            this.#objective_ = settings.get('deathmatch/objective');
+
         switch (this.#objective_.type) {
             case DeathmatchGame.kObjectiveLastManStanding:
             case DeathmatchGame.kObjectiveBest:

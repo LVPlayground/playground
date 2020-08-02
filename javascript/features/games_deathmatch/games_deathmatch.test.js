@@ -369,7 +369,27 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/bubble'));
         assert.equal(gunther.syncedData.minigameName, 'Bubble Fighting Game');
 
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.GAME_REGISTRATION_STARTED, 'Bubble Fighting Game'));
+
         await runGameLoop();  // fully initialize the game
+
+        assert.isTrue(await russell.issueCommand('/bubble'));
+        assert.equal(russell.syncedData.minigameName, 'Bubble Fighting Game');
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(
+            russell.messages[0],
+            Message.format(Message.GAME_REGISTRATION_JOINED_CONTINUOUS, 'Bubble Fighting Game'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.GAME_CONTINUOUS_JOINED, russell.name, 'Bubble Fighting Game'));
+
+        await runGameLoop();  // wait until Russell has fully joined
 
         const game = getGameInstance();
         {
@@ -378,6 +398,18 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             assert.isNotNull(stats);
             assert.equal(stats.shotsMissed, 0);
         }
+
+        russell.shoot({ target: gunther });
+        gunther.die(/* killerPlayer= */ russell);
+
+        russell.shoot({ target: gunther });
+        gunther.die(/* killerPlayer= */ russell);
+
+        russell.shoot();
+        russell.shoot();
+
+        gunther.shoot({ target: russell });
+        russell.die(/* killerPlayer= */ gunther);
 
         for (let shot = 0; shot < 10; ++shot)
             gunther.shoot();
@@ -390,9 +422,20 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         }
 
         assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.isTrue(await russell.issueCommand('/leave'));
+
+        await runGameLoop();  // wait until the game has fully shut down
+
         assert.equal(gunther.syncedData.minigameName, '');
+        assert.equal(russell.syncedData.minigameName, '');
 
         assert.throws(() => game.getStatisticsForPlayer(gunther));
+
+        console.log(gunther.messages);
+        assert.equal(gunther.messages.length, 3);
+
+        console.log(russell.messages);
+        assert.equal(russell.messages.length, 3);
     });
 
     it('should enable players to customise the settings', async (assert) => {

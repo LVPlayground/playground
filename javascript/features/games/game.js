@@ -9,6 +9,9 @@ export class Game {
     // Accessors
     // ---------------------------------------------------------------------------------------------
 
+    // Gets whether the game is continuous, which may influence behaviour.
+    get continuous() { return this.#runtime_.description.continuous; }
+
     // Gets the set of Players who are currently in the game.
     get players() { return this.#runtime_.players; }
 

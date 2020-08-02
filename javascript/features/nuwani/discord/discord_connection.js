@@ -4,6 +4,9 @@
 
 import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
 
+// The maximum number of invalid sessions we'll endure before giving up.
+const kMaximumInvalidSessions = 2;
+
 // Minimum interval at which the heartbeat monitor is willing to run, to not spam the server.
 const kMinimumHeartbeatMonitorMs = 10 * 1000;
 
@@ -30,6 +33,7 @@ export class DiscordConnection {
     #heartbeatAckTime_ = null;
     #heartbeatIntervalMs_ = null;
     #heartbeatMonitorToken_ = null;
+    #invalidSessionCounter_ = 0;
     #sessionId_ = null;
     #socket_ = null;
 
@@ -65,6 +69,7 @@ export class DiscordConnection {
     async disconnect() {
         this.#connect_ = false;
         this.#connecting_ = false;
+        this.#invalidSessionCounter_ = 0;
 
         return this.#socket_.disconnect();
     }
@@ -116,8 +121,14 @@ export class DiscordConnection {
         this.#heartbeatMonitorToken_ = null;
         this.#sessionId_ = null;
 
-        if (this.#connect_)
+        if (this.#invalidSessionCounter_ >= kMaximumInvalidSessions) {
+            if (!server.isTest())
+                console.log(`[Discord] Exceeded the maximum number of invalid sessions; aborting`);
+
+            this.disconnect();
+        } else if (this.#connect_) {
             this.connect();
+        }
     }
 
     // Called when the connection with Discord has been established. All connection state will be
@@ -161,11 +172,17 @@ export class DiscordConnection {
                 this.identify();
                 break;
 
+            case DiscordConnection.kOpcodeInvalidSession:
+                this.#invalidSessionCounter_++;
+                this.#sessionId_ = false;
+
+                this.#socket_.disconnect();
+                break;
+
             case DiscordConnection.kOpcodeReconnect:
                 this.#socket_.disconnect();
                 break;
 
-            case DiscordConnection.kOpcodeInvalidSession:
             default:
                 console.log(`[Discord] Unhandled message:`, message);
                 break;
@@ -181,6 +198,7 @@ export class DiscordConnection {
                     this.#sessionId_ = data.session_id;
 
                 this.#authenticated_ = true;
+                this.#invalidSessionCounter_ = 0;
                 break;
         }
 

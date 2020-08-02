@@ -28,6 +28,7 @@ export class MockSocket {
     static kOpcodeHeartbeatAck = 11;
     static kOpcodeHello = 10;
     static kOpcodeIdentify = 2;
+    static kOpcodeInvalidSession = 9;
     static kOpcodeReconnect = 7;
 
     // States that the socket can be in. Returned by the state getter.

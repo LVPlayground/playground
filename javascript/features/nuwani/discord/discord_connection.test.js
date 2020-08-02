@@ -92,6 +92,41 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
     });
 
     it('should shut itself down after the second 9 INVALID SESSION message', async (assert) => {
+        assert.isFalse(connection.isConnected());
 
+        // (1) Connect to the Discord server, with immediate success.
+        await Promise.all([
+            connection.connect(),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+        ]);
+
+        assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
+
+        // (2) Issue a 9 INVALID SESSION message. Since this is the first one, we should simply
+        // reconnect to the Discord server and try again, it might be some random issue.
+        await socket.sendDelayedOpcodeMessage(1, {
+            op: MockSocket.kOpcodeInvalidSession,
+            d: false,
+        });
+
+        assert.isFalse(connection.isConnected());
+
+        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+
+        assert.isTrue(connection.isConnected());  // <-- reconnected
+
+        // (3) Issue a second INVALID SESSION message. This is the (current) limit, after this we
+        // disconnect from Discord until a Management member starts us up again.
+        await socket.sendDelayedOpcodeMessage(1, {
+            op: MockSocket.kOpcodeInvalidSession,
+            d: false,
+        });
+
+        assert.isFalse(connection.isConnected());
+
+        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+
+        assert.isFalse(connection.isConnected());  // <-- disconnected
     });
 });

@@ -20,11 +20,13 @@ export class DiscordSocket {
 
     #backoffPolicy_ = null;
     #connectionToken_ = null;
+    #delegate_ = null;
     #disposed_ = false;
     #socket_ = null;
 
-    constructor() {
+    constructor(delegate) {
         this.#backoffPolicy_ = new BackoffPolicy();
+        this.#delegate_ = delegate;
         this.#socket_ = server.isTest() ? new MockSocket('websocket')
                                         : new Socket('websocket');
 
@@ -90,7 +92,7 @@ export class DiscordSocket {
                 this.log(`Connection to ${endpoint} succeeded.`);
 
                 this.#connectionToken_ = null;
-                // TODO: Delegate ------------------------------------------------------------------
+                this.#delegate_.onConnectionEstablished();
                 return;
             }
 
@@ -98,7 +100,7 @@ export class DiscordSocket {
             const delaySec = Math.floor(delay / 1000);
 
             this.log(`Connection to ${endpoint} failed. Next attempt in ${delaySec} seconds.`);
-            // TODO: Delegate ----------------------------------------------------------------------
+            this.#delegate_.onConnectionFailed();
 
             await wait(delay);
 
@@ -135,18 +137,41 @@ export class DiscordSocket {
     // Section: events triggered by the Socket
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the connection has been closed, after having been established. The delegate will
+    // be told about this, and any existing connection attempt will be voided.
     onClose(event) {
-        console.log('onClose:', event);
+        if (this.#disposed_)
+            return;
+
+        this.#connectionToken_ = null;
+        this.#delegate_.onConnectionClosed();
     }
 
+    // Called when an error has been seen from the underlying socket. The connection will be closed
+    // immediately if it's currently established, as no further operation can happen anymore.
     onError(event) {
-        console.log('onError:', event);
+        this.log(`Error ${event.code}: ${event.message}`);
+
+        if (this.socket_.state !== 'connected')
+            return;
+
+        this.disconnect();
     }
 
+    // Called when a message has been received by the socket. The message's data is given to us as
+    // a UTF-8 string contained in an ArrayBuffer, which contains the JSON payload per the API.
     onMessage(event) {
         const buffer = utf8BufferToString(event.data);
 
-        console.log('onMessage:', buffer);
+        let message = null;
+        try {
+            message = JSON.parse(buffer);
+        } catch (exception) {
+            this.log(`Received invalid message: ${buffer}`);
+            return;
+        }
+
+        this.#delegate_.onMessage(message);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -158,6 +183,7 @@ export class DiscordSocket {
     }
 
     dispose() {
+        this.#connectionToken_ = null;
         this.#disposed_ = true;
     }
 }

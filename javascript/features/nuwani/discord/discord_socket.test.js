@@ -7,11 +7,25 @@ import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
 import { MockSocket } from 'features/nuwani/discord/mock_socket.js';
 
 describe('DiscordSocket', (it, beforeEach) => {
+    let connectionClosedCalls = 0;
+    let connectionEstablishedCalls = 0;
+    let connectionFailedCalls = 0;
+
     let discord = null;
     let socket = null;
 
     beforeEach(() => {
-        discord = new DiscordSocket();
+        connectionClosedCalls = 0;
+        connectionEstablishedCalls = 0;
+        connectionFailedCalls = 0;
+
+        discord = new DiscordSocket(new class {
+            onConnectionClosed() { ++connectionClosedCalls; }
+            onConnectionEstablished() { ++connectionEstablishedCalls; }
+            onConnectionFailed() { ++connectionFailedCalls; }
+            onMessage(message) {}
+        });
+
         socket = MockSocket.getMostRecentInstance();
     });
 
@@ -20,6 +34,8 @@ describe('DiscordSocket', (it, beforeEach) => {
 
     it('should be able to establish a connection to Discord', async (assert) => {
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionEstablishedCalls, 0);
+        assert.equal(connectionFailedCalls, 0);
 
         await Promise.all([
             discord.connect(kDiscordEndpoint),
@@ -27,10 +43,13 @@ describe('DiscordSocket', (it, beforeEach) => {
         ]);
 
         assert.equal(discord.state, DiscordSocket.kStateConnected);
+        assert.equal(connectionEstablishedCalls, 1);
+        assert.equal(connectionFailedCalls, 0);
 
         await discord.disconnect();
 
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionClosedCalls, 1);
     });
 
     it('should apply the backoff policy when connection issues are seen', async (assert) => {
@@ -42,18 +61,24 @@ describe('DiscordSocket', (it, beforeEach) => {
 
         // (1) The initial delay must be applied, so the state should still be disconnected.
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionEstablishedCalls, 0);
+        assert.equal(connectionFailedCalls, 0);
 
         await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
         await Promise.resolve();
 
         // (2) The first delay passed, the first attempt has passed, and failed.
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionEstablishedCalls, 0);
+        assert.equal(connectionFailedCalls, 1);
 
         await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(1));
         await Promise.resolve();
 
         // (3) The second attempt has now gone through, and succeeded.
         assert.equal(discord.state, DiscordSocket.kStateConnected);
+        assert.equal(connectionEstablishedCalls, 1);
+        assert.equal(connectionFailedCalls, 1);
 
         await connectionPromise;
 
@@ -61,5 +86,6 @@ describe('DiscordSocket', (it, beforeEach) => {
         await discord.disconnect();
 
         assert.equal(discord.state, DiscordSocket.kStateDisconnected);
+        assert.equal(connectionClosedCalls, 1);
     });
 });

@@ -56,6 +56,9 @@ export class MockSocket {
     async write(data) { return false; }
 
     async close() {
+        if (this.#state_ === MockSocket.kStateConnected)
+            this.dispatchEvent('close');
+
         this.#state_ = MockSocket.kStateDisconnected;
     }
 
@@ -70,7 +73,7 @@ export class MockSocket {
         this.#listeners_.get(event).add(listener);
     }
 
-    dispatchEvent(event, data) {
+    dispatchEvent(event, data = undefined) {
         const listeners = this.#listeners_.get(event);
         for (const listener of listeners || [])
             listener.call(null, data);

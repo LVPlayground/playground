@@ -160,7 +160,7 @@ export class MockSocket {
         this.#listeners_.get(event).add(listener);
     }
 
-    dispatchEvent(event, data = undefined) {
+    dispatchEvent(event, data = {}) {
         const listeners = this.#listeners_.get(event);
         for (const listener of listeners || [])
             listener.call(null, data);

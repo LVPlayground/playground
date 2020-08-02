@@ -21,6 +21,7 @@ export default class NuwaniDiscord extends Feature {
         // The main Discord runtime, which owns the connection and decides what has to happen based
         // on which messages are being received by the server. Responsible for keeping state.
         this.runtime_ = new DiscordRuntime(this.nuwani_().configuration.discord);
+        this.runtime_.connect();
     }
 
     dispose() {

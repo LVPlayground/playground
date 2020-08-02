@@ -46,22 +46,16 @@ export class DiscordRuntime {
                 break;
 
                 // TODO: Enable something like the following....?
-
-                this.#connection_.sendOpcodeMessage({
-                    op: DiscordConnection.kOpcodeDispatch,
-                    d: {
-                        user_id: '739284801001095330',
-                        message_id: data.id,
-                        emoji: {
-                            id: null,
-                            name: '🔥',
-                            animated: false,
-                        },
-                        channel_id: data.channel_id,
-                        guild_id: data.guild_id,
+                this.#connection_.sendIntent('MESSAGE_REACTION_ADD', {
+                    user_id: '739284801001095330',
+                    message_id: data.id,
+                    emoji: {
+                        id: null,
+                        name: '🔥',
+                        animated: false,
                     },
-                    s: null,
-                    t: 'MESSAGE_REACTION_ADD',
+                    channel_id: data.channel_id,
+                    guild_id: data.guild_id,
                 });
 
                 break;

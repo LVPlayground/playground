@@ -154,7 +154,7 @@ export class DiscordSocket {
         if (this.#disposed_)
             return;
 
-        this.log(`Connection closed.`);
+        this.log(`Connection closed (code: ${event.code}).`);
 
         this.#connectionToken_ = null;
         this.#delegate_.onConnectionClosed();

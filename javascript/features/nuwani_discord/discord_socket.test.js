@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
-import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
-import { MockSocket } from 'features/nuwani/discord/mock_socket.js';
+import { DiscordSocket } from 'features/nuwani_discord/discord_socket.js';
+import { MockSocket } from 'features/nuwani_discord/mock_socket.js';
 
 import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
 

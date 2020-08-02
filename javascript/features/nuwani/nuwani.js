@@ -6,7 +6,6 @@ import { Feature } from 'components/feature_manager/feature.js';
 
 import { CommandManager } from 'features/nuwani/commands/command_manager.js';
 import { Configuration } from 'features/nuwani/configuration.js';
-import { DiscordRuntime } from 'features/nuwani/discord/discord_runtime.js';
 import { MaintenanceCommands } from 'features/nuwani/commands/maintenance_commands.js';
 import { MessageDistributor } from 'features/nuwani/echo/message_distributor.js';
 import { MessageFormatter } from 'features/nuwani/echo/message_formatter.js';
@@ -30,9 +29,6 @@ export default class Nuwani extends Feature {
     // Gets the configuration that has set-up how the bots will behave.
     get configuration() { return this.configuration_; }
 
-    // Gets the Discord runtime, for sending select messages to Discord as well.
-    get discord() { return this.discord_; }
-
     // Gets the message distributor that's responsible for fanning out messages.
     get messageDistributor() { return this.messageDistributor_; }
 
@@ -54,11 +50,6 @@ export default class Nuwani extends Feature {
         // configuration. We immediately initiate the connection.
         this.runtime_ = new Runtime(this.configuration_);
         this.runtime_.connect();
-
-        // Nuwani has limited support for interacting with Discord as well, through the Discord
-        // WebSocket API. That's provided through this object.
-        this.discord_ = new DiscordRuntime(this.configuration_.discord);
-        this.discord_.connect();
 
         // The message distributor is responsible for the fan-out of echo messages to individual
         // bots, and to make sure that we're able to cope with the message load.
@@ -118,9 +109,6 @@ export default class Nuwani extends Feature {
 
         this.messageDistributor_.dispose();
         this.messageDistributor_ = null;
-
-        this.discord_.dispose();
-        this.discord_ = null;
 
         this.runtime_.dispose();
         this.runtime_ = null;

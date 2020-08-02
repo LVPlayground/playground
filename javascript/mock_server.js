@@ -52,6 +52,7 @@ import Haystack from 'features/haystack/haystack.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
+import NuwaniDiscord from 'features/nuwani_discord/nuwani_discord.js';
 import PlayerColors from 'features/player_colors/player_colors.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerDecorations from 'features/player_decorations/player_decorations.js';
@@ -121,6 +122,7 @@ class MockServer {
             leaderboard: Leaderboard,
             limits: Limits,
             nuwani: MockNuwani,
+            nuwani_discord: NuwaniDiscord,
             player_colors: PlayerColors,
             player_commands: PlayerCommands,
             player_decorations: PlayerDecorations,

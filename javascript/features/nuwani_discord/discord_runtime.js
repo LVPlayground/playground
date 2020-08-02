@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { DiscordConnection } from 'features/nuwani/discord/discord_connection.js';
+import { DiscordConnection } from 'features/nuwani_discord/discord_connection.js';
 
 // The Discord runtime of Nuwani is an implementation that has the ability to establish a connection
 // with the Discord API over WebSockets, connecting to their Gateway API.

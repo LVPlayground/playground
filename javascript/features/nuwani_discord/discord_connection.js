@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { DiscordSocket } from 'features/nuwani/discord/discord_socket.js';
+import { DiscordSocket } from 'features/nuwani_discord/discord_socket.js';
 
 // The maximum number of invalid sessions we'll endure before giving up.
 const kMaximumInvalidSessions = 2;

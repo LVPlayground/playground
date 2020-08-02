@@ -22,9 +22,6 @@ class TeleportationManager {
     // For every player, we save the timestamp of teleportation.
     new m_playerTeleportTime[MAX_PLAYERS];
 
-    // If a crew member wants to teleport to someone with teleportation disabled, we show a warning.
-    new m_crewTeleportWarning[MAX_PLAYERS];
-
     /**
      * If everything's set, we teleport one player to another. Non-crew members have to pay a certain
      * price, but only if they don't own a special property. Player, subject and crew are informed
@@ -257,26 +254,12 @@ class TeleportationManager {
             }
         }
 
-        // If a subject has teleportation disabled, only crew members are able to teleport. But before
-        // that happens, we show them a warning to reconsider this. They have to re-enter the command
-        // to actually teleport, to avoid cases of crew members abusing their rights.
-        if (PlayerSettings(subjectId)->isTeleportationDisabled() == true && teleportType != SecretTeleport &&
-            subjectId != CruiseController->getCruiseLeaderId()) {
-            if (Player(playerId)->isAdministrator() == false) {
-                SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
-                return false;
-            }
-
-            if (Player(playerId)->isAdministrator() == true && m_crewTeleportWarning[playerId] == 0) {
-                m_crewTeleportWarning[playerId] = 2;
-                SendClientMessage(playerId, Color::Error,
-                    "This player has disabled teleporting. Enter this command again to force teleportation.");
-                return false;
-            }
-
-            // The warning has been showed before and the command has been re-entered. Let's go!
-            if (Player(playerId)->isAdministrator() == true && m_crewTeleportWarning[playerId] != 0)
-                return true;
+        // If a subject has teleportation disabled, only crew members are able to teleport when using
+        // the /stp command rather than the regular teleportation command.
+        if (PlayerSettings(subjectId)->isTeleportationDisabled() && teleportType != SecretTeleport
+                && subjectId != CruiseController->getCruiseLeaderId()) {
+            SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
+            return false;
         }
 
         // Owners of the property with the FreeTeleportFeature are allowed to (car)teleport for free.
@@ -311,23 +294,6 @@ class TeleportationManager {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_playerTeleportTime[playerId] = 0;
-        m_crewTeleportWarning[playerId] = 0;
-
-        return 1;
-    }
-
-    /**
-     * Per minute tick we process member variables concerning crew teleport warnings.
-     */
-    @list(MinuteTimer)
-    public onMinuteTimerTick() {
-        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-            if (Player(playerId)->isConnected() == false || Player(playerId)->isAdministrator() == false)
-                continue;
-
-            if (m_crewTeleportWarning[playerId] >= 1)
-                m_crewTeleportWarning[playerId] --;
-        }
 
         return 1;
     }

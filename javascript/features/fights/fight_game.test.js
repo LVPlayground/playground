@@ -102,4 +102,28 @@ describe('FightGame', (it, beforeEach) => {
         // Verify that the Game instance has been destroyed, together with all supporting infra.
         assert.throws(() => getGameInstance());
     });
+
+    it('should be able to run a full fight based on a custom command', async (assert) => {
+        assert.isTrue(server.commandManager.hasCommand('sniper'));
+
+        assert.isTrue(await gunther.issueCommand('/sniper'));
+        assert.isTrue(await russell.issueCommand('/sniper'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        // The game instance should have been created by now.
+        const game = getGameInstance();
+
+        assert.equal(game.players.size, 2);
+        assert.isTrue(game.players.has(gunther));
+        assert.isTrue(game.players.has(russell));
+
+        // Have Gunther kill Russell. This should end the game immediately.
+        russell.die(/* killerPlayer= */ gunther, /* reason= */ 34);
+
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
+    });
 });

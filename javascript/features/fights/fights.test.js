@@ -4,7 +4,8 @@
 
 describe('Fights', it => {
     it('should register all fighting games when its dependency is reloaded', async (assert) => {
-        const feature = server.featureManager.loadFeature('fights');
+        server.featureManager.loadFeature('fights');
+
         const settings = server.featureManager.loadFeature('settings');
 
         const kCommand = 'sniper';

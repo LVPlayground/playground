@@ -35,7 +35,12 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
         assert.isTrue(connection.isConnected());
         assert.isNull(connection.hearbeatAckTimeForTesting);
 
-        // (2) Make sure that the client heartbeat is sent to the Discord server at the configured
+        // (2) An 2 IDENTIFY message will be sent automatically by the DiscordConnection class, to
+        // identify ourselves to the server and get authorization to the server(s) we need.
+
+        // ...
+
+        // (3) Make sure that the client heartbeat is sent to the Discord server at the configured
         // cadance, indicated by the server in the 10 HELLO message.
         for (let cycle = 0; cycle < 5; ++cycle) {
             await server.clock.advance(MockSocket.getHeartbeatIntervalMs());
@@ -46,10 +51,18 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
                 server.clock.monotonicallyIncreasingTime(), 5);
         }
 
-        // (3) Disconnect manually from the Discord server, and confirm that the connection state
+        // (4) Disconnect manually from the Discord server, and confirm that the connection state
         // changes. In reality this is a networking-slow asynchronous operation.
         await connection.disconnect();
 
         assert.isFalse(connection.isConnected());
+    });
+
+    it('should trigger a reconnection with the server on 7 RECONNECT messages', async (assert) => {
+
+    });
+
+    it('should shut itself down after the second 9 INVALID SESSION message', async (assert) => {
+
     });
 });

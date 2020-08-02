@@ -13,13 +13,19 @@ const kMinimumHeartbeatMonitorMs = 10 * 1000;
 // https://discord.com/developers/docs/topics/gateway
 export class DiscordConnection {
     // The opcodes that are supported by this level of the Discord connection.
+    static kOpcodeDispatch = 0;
     static kOpcodeHeartbeat = 1;
     static kOpcodeHeartbeatAck = 11;
     static kOpcodeHello = 10;
+    static kOpcodeIdentify = 2;
+    static kOpcodeInvalidSession = 9;
+    static kOpcodeReconnect = 7;
+    static kOpcodeResume = 6;
 
     #configuration_ = null;
     #connect_ = false;
     #connected_ = false;
+    #connecting_ = false;
     #heartbeatAckTime_ = null;
     #heartbeatIntervalMs_ = null;
     #heartbeatMonitorToken_ = null;
@@ -44,19 +50,39 @@ export class DiscordConnection {
     // even when the connection with the server drops for any reason. Should not be waited on.
     async connect() {
         this.#connect_ = true;
-        return this.#socket_.connect(this.#configuration_.endpoint);
+
+        if (!this.#connecting_)
+            return this.internalConnect();
+    }
+
+    // Actually establishes a connection with the Discord server. Begins by getting a valid OAuth2
+    // token based on the stored configuration, unless a resumption token is known.
+    async internalConnect() {
+        this.#connecting_ = true;
+
+        return await this.#socket_.connect(this.#configuration_.endpoint);
     }
 
     // Disconnects the connection with Discord. Safe to call at any time, even when the connection
     // is not currently established (e.g. because of on-going network issues).
     async disconnect() {
         this.#connect_ = false;
+        this.#connecting_ = false;
+
         return this.#socket_.disconnect();
     }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Messages
     // ---------------------------------------------------------------------------------------------
+
+    // Identifies with the Discord server. Will use the 2 IDENTIFY opcode by default, which uses the
+    // OAuth2 token obtained when starting the connection attempt. If a previous connection existed
+    // and connection was lost, a 6 RESUME message will be send instead.
+    async identify() {
+        // TODO: Implement kOpcodeIdentify support.
+        // TODO: Implement kOpcodeResume support.
+    }
 
     // Sends an opcode message back to the Discord server. Only the |op| argument is required, the
     // rest have sensible default values, although you usually want to use them.
@@ -86,6 +112,7 @@ export class DiscordConnection {
     // reset, as the full handshake process will start over again from scratch.
     onConnectionEstablished() {
         this.#connected_ = true;
+        this.#connecting_ = false;
 
         this.#heartbeatIntervalMs_ = null;
         this.#heartbeatAckTime_ = null;
@@ -112,9 +139,14 @@ export class DiscordConnection {
                     console.log(`[Discord] Heartbeat interval missing in 10 HELLO:`, message);
 
                 this.#heartbeatIntervalMs_ = message.d.heartbeat_interval ?? 41250;
+
                 this.heartbeatMonitor();
+                this.identify();
                 break;
 
+            case DiscordConnection.kOpcodeDispatch:
+            case DiscordConnection.kOpcodeReconnect:
+            case DiscordConnection.kOpcodeInvalidSession:
             default:
                 console.log(`[Discord] Unhandled message:`, message);
                 break;

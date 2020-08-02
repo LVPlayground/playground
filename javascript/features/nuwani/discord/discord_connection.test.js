@@ -57,7 +57,38 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
     });
 
     it('should trigger a reconnection with the server on 7 RECONNECT messages', async (assert) => {
+        assert.isFalse(connection.isConnected());
 
+        // (1) Connect to the Discord server, with immediate success.
+        await Promise.all([
+            connection.connect(),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+        ]);
+
+        assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
+
+        // (2) Send a 7 RECONNECT message over the |socket|, which should trigger the connection to
+        // issue a reconnection. Store the current socket's connection Id first.
+        const originalConnectionId = socket.connectionId;
+
+        await socket.sendDelayedOpcodeMessage(1, {
+            op: MockSocket.kOpcodeReconnect,
+        });
+
+        assert.isFalse(connection.isConnected());
+        assert.isFalse(connection.isAuthenticated());
+
+        // (3) Wait for the normal connection back-off. After that we expect to be connected again,
+        // and the entire handshake & identification path should execute again.
+        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await Promise.resolve();  // allow authentication to pass
+        await Promise.resolve();  // ^^^
+
+        assert.isTrue(connection.isConnected());
+        assert.isTrue(connection.isAuthenticated());
+
+        assert.notEqual(socket.connectionId, originalConnectionId);
     });
 
     it('should shut itself down after the second 9 INVALID SESSION message', async (assert) => {

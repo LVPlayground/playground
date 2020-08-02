@@ -127,15 +127,15 @@ export class DiscordSocket {
         if (this.#disposed_)
             return;  // the socket already has been disposed of
 
+        this.#connectionToken_ = null;
+
         switch (this.#socket_.state) {
             case DiscordSocket.kStateConnecting:
             case DiscordSocket.kStateConnected:
             case DiscordSocket.kStateDisconnecting:
-                this.#socket_.close();
+                await this.#socket_.close();
                 break;
         }
-
-        this.#connectionToken_ = null;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -147,6 +147,8 @@ export class DiscordSocket {
     onClose(event) {
         if (this.#disposed_)
             return;
+
+        this.log(`Connection closed.`);
 
         this.#connectionToken_ = null;
         this.#delegate_.onConnectionClosed();

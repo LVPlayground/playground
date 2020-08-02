@@ -57,15 +57,7 @@ export class DiscordConnection {
         this.#connect_ = true;
 
         if (!this.#connecting_ && !this.#connected_)
-            return this.internalConnect();
-    }
-
-    // Actually establishes a connection with the Discord server. Begins by getting a valid OAuth2
-    // token based on the stored configuration, unless a resumption token is known.
-    async internalConnect() {
-        this.#connecting_ = true;
-
-        return await this.#socket_.connect(this.#configuration_.endpoint);
+            return await this.#socket_.connect(this.#configuration_.endpoint);
     }
 
     // Disconnects the connection with Discord. Safe to call at any time, even when the connection
@@ -124,7 +116,8 @@ export class DiscordConnection {
         this.#heartbeatMonitorToken_ = null;
         this.#sessionId_ = null;
 
-        // TODO: Consider |this.#connect_| and re-establish connection if that's the desired effect.
+        if (this.#connect_)
+            this.connect();
     }
 
     // Called when the connection with Discord has been established. All connection state will be
@@ -169,6 +162,9 @@ export class DiscordConnection {
                 break;
 
             case DiscordConnection.kOpcodeReconnect:
+                this.#socket_.disconnect();
+                break;
+
             case DiscordConnection.kOpcodeInvalidSession:
             default:
                 console.log(`[Discord] Unhandled message:`, message);

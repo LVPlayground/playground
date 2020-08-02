@@ -4,8 +4,11 @@
 
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
+// The global connetion Id, unique for each of the socket connections.
+let globalConnectionId = 0;
+
 // The latest instance of the MockSocket, used by the static getter on the class.
-let latestInstance = null;
+let globalLatestInstance = null;
 
 // Mocked implementation of the Socket API made available by the PlaygroundJS plugin, which mimics
 // being a WebSocket server that communicates in the same way Discord would.
@@ -14,7 +17,7 @@ export class MockSocket {
     static getHeartbeatIntervalMs() { return 41250; }
 
     // Returns the most recent instance of the MockSocket that has been created.
-    static getMostRecentInstance() { return latestInstance; }
+    static getMostRecentInstance() { return globalLatestInstance; }
 
     // Behaviours that are supported by the mock socket, and can be toggled by tests.
     static kBehaviourFailFirstConnection = 1;
@@ -25,6 +28,7 @@ export class MockSocket {
     static kOpcodeHeartbeatAck = 11;
     static kOpcodeHello = 10;
     static kOpcodeIdentify = 2;
+    static kOpcodeReconnect = 7;
 
     // States that the socket can be in. Returned by the state getter.
     static kStateConnected = 'connected';
@@ -34,6 +38,7 @@ export class MockSocket {
 
     #attempts_ = 0;
     #behaviour_ = new Set();
+    #connectionId_ = null;
     #listeners_ = new Map();
     #state_ = MockSocket.kStateDisconnected;
 
@@ -41,12 +46,15 @@ export class MockSocket {
         if (protocol !== 'websocket')
             throw new Error(`The MockSocket only expects to receive WebSocket connections.`);
 
-        latestInstance = this;
+        globalLatestInstance = this;
     }
 
     // ---------------------------------------------------------------------------------------------
     // Testing API
     // ---------------------------------------------------------------------------------------------
+
+    // Gets the connection Id from the Socket. Will be able to tell if it got reconnected.
+    get connectionId() { return this.#connectionId_; }
 
     // Enables the given |behaviour| on the mocked socket. Must be one of the above constants.
     enableBehaviour(behaviour) { this.#behaviour_.add(behaviour); }
@@ -73,6 +81,7 @@ export class MockSocket {
         if (!this.#attempts_++ && this.#behaviour_.has(MockSocket.kBehaviourFailFirstConnection))
             return false;
 
+        this.#connectionId_ = ++globalConnectionId;
         this.#state_ = MockSocket.kStateConnected;
 
         // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes
@@ -120,10 +129,14 @@ export class MockSocket {
     }
 
     async close() {
-        if (this.#state_ === MockSocket.kStateConnected)
-            this.dispatchEvent('close');
+        const wasConnected = this.#state_ === MockSocket.kStateConnected;
 
+        // Clear state before sending the `close` event, to avoid reentrancy issues.
         this.#state_ = MockSocket.kStateDisconnected;
+        this.#connectionId_ = null;
+
+        if (wasConnected)
+            this.dispatchEvent('close');
     }
 
     // ---------------------------------------------------------------------------------------------

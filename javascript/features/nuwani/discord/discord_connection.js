@@ -138,7 +138,10 @@ export class DiscordConnection {
 
             this.disconnect();
         } else if (this.#connect_) {
-            this.connect();
+            if (!server.isTest())
+                wait(60000).then(() => this.connect());
+            else
+                this.connect();
         }
     }
 
@@ -201,10 +204,10 @@ export class DiscordConnection {
         }
     }
 
-    // Called when a dispatch message of the given |type| has been received, with the given |data|.
-    // Some |type|s will be handled internally, most are forwarded to our delegate.
-    onDispatchMessage(type, data) {
-        switch (type) {
+    // Called when a dispatch message of the given |intent| has been received, with the given
+    // |data|. Some |intent|s will be handled internally, most are forwarded to our delegate.
+    onDispatchMessage(intent, data) {
+        switch (intent) {
             case 'READY':
                 if (data.hasOwnProperty('session_id'))
                     this.#sessionId_ = data.session_id;
@@ -214,7 +217,7 @@ export class DiscordConnection {
                 break;
         }
 
-        this.#delegate_.onMessage(type, data);
+        this.#delegate_.onMessage(intent, data);
     }
 
     // ---------------------------------------------------------------------------------------------

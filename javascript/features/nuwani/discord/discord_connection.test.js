@@ -17,7 +17,7 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
             endpoint: 'wss://gateway.discord.gg/?v=6&encoding=json',
             token: 'my-super-secret-token',
         }, new class {
-            onMessage(type, data) {}
+            onMessage(intent, data) {}
         });
 
         socket = MockSocket.getMostRecentInstance();

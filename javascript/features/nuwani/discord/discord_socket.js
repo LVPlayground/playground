@@ -9,7 +9,7 @@ import { URL } from 'components/networking/url.js';
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
 // Maximum number of messages in the buffer before we'll start to prune it.
-const kMaximumBufferSize = 32;
+const kMaximumBufferSize = 128;
 
 // The socket interface that's expected to maintain the connection with Discord over WebSockets.
 // Will establish the connection as soon as feasible. Interacts with the BackoffPolicy to avoid
@@ -168,7 +168,7 @@ export class DiscordSocket {
 
         this.log(`Error ${event.code}: ${event.message}`);
 
-        if (this.socket_.state !== 'connected')
+        if (this.#socket_.state !== 'connected')
             return;
 
         this.disconnect();

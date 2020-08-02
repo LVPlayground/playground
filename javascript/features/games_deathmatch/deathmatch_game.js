@@ -246,6 +246,12 @@ export class DeathmatchGame extends GameBase {
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
         
+        // Share the statistics with the player when they've been fighting. We tell them three lines
+        // at most: kills/death (+ratio), shots hit/missed (+accuracy), and damage statistics.
+        const statistics = player.stats.diff(state.statistics);
+        if (statistics)
+            this.shareStatisticsWithPlayer(player, statistics);
+
         // Clear the player-specific state we had stored in this game.
         this.#state_.delete(player);
 
@@ -263,6 +269,31 @@ export class DeathmatchGame extends GameBase {
                 // Allow single-player continuous games. They're likely betting on the fact that
                 // other players will join soon, or just checking out the different areas.
                 break;
+        }
+    }
+
+    // Shares the |statistics| with the |player|, based on how they've performed this game. A few
+    // lines will be highlighted. The |statistics| is a PlayerStatsView instance.
+    shareStatisticsWithPlayer(player, statistics) {
+        if (statistics.deathCount > 0 || statistics.killCount > 0) {
+            player.sendMessage(
+                Message.GAME_STATS_KD_RATIO,
+                statistics.killCount, statistics.killCount !== 1 ? 's' : '',
+                statistics.deathCount, statistics.deathCount !== 1 ? 's' : '',
+                statistics.ratio);
+        }
+
+        if (statistics.shotsHit > 0 || statistics.shotsMissed > 0) {
+            player.sendMessage(
+                Message.GAME_STATS_ACCURACY,
+                statistics.accuracy * 100,
+                statistics.shotsHit, statistics.shotsHit !== 1 ? 's' : '',
+                statistics.shotsMissed, statistics.shotsMissed !== 1 ? 'es' : '');
+        }
+
+        if (statistics.damageGiven > 0 || statistics.damageTaken > 0) {
+            player.sendMessage(
+                Message.GAME_STATS_DAMAGE, statistics.damageGiven, statistics.damageTaken);
         }
     }
 

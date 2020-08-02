@@ -178,6 +178,9 @@
   "GAME_REGISTRATION_UNAVAILABLE": "@error Sorry, the %s is currently unavailable.",
   "GAME_RESULT_FINISHED": "{CCD782}You have finished the {838F31}%s{CCD782} in {838F31}%d%s position{CCD782}%s.",
   "GAME_RESULT_FINISHED_AWARD": "{CCD782}You've been awarded {838F31}%${CCD782}!",
+  "GAME_STATS_ACCURACY": "{D7B882}Your accuracy was at {F5EEE0}%d%%{D7B882}, with {F5EEE0}%d hit%s{D7B882} and {F5EEE0}%d miss%s{D7B882}.",
+  "GAME_STATS_DAMAGE": "{D7B882}Finally, you inflicted {F5EEE0}%.2f damage{D7B882} and took {F5EEE0}%.2f damage{D7B882} yourself.",
+  "GAME_STATS_KD_RATIO": "{D7B882}You killed {F5EEE0}%d time%s{D7B882} and died {F5EEE0}%d time%s{D7B882} yourself, giving a ratio of {F5EEE0}%.2f{D7B882}.",
 
   "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
   "GANG_ANNOUNCE_INTERNAL": "{29B6F6}*** %s",

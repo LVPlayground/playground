@@ -421,6 +421,9 @@ describe('GamesDeathmatch', (it, beforeEach) => {
             assert.equal(stats.shotsMissed, 10);
         }
 
+        const guntherStats = game.getStatisticsForPlayer(gunther);
+        const russellStats = game.getStatisticsForPlayer(russell);
+
         assert.isTrue(await gunther.issueCommand('/leave'));
         assert.isTrue(await russell.issueCommand('/leave'));
 
@@ -431,11 +434,15 @@ describe('GamesDeathmatch', (it, beforeEach) => {
 
         assert.throws(() => game.getStatisticsForPlayer(gunther));
 
-        console.log(gunther.messages);
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 6);
+        assert.includes(gunther.messages[3], 'giving a ratio of');
+        assert.includes(gunther.messages[4], guntherStats.shotsMissed + ' miss');
+        assert.includes(gunther.messages[5], guntherStats.damageTaken + ' damage');
 
-        console.log(russell.messages);
-        assert.equal(russell.messages.length, 3);
+        assert.equal(russell.messages.length, 6);
+        assert.includes(russell.messages[3], russellStats.killCount + ' time');
+        assert.includes(russell.messages[4], Math.round(russellStats.accuracy * 100) + '%');
+        assert.includes(russell.messages[5], russellStats.damageGiven + ' damage');
     });
 
     it('should enable players to customise the settings', async (assert) => {

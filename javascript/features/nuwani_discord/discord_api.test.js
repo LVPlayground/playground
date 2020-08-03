@@ -27,14 +27,14 @@ describe('DiscordAPI', it => {
         }));
 
         // (1) Make a failing URL call. This should simply return FALSE.
-        const failedResult = await api.call(errorUrl, {
+        const failedResult = await api.call('POST', errorUrl, {
             foo: 'bar',
         });
 
         assert.isFalse(failedResult);
 
         // (2) Make a successful API call. This is expected to return a JavaScript object.
-        const successfulResult = await api.call(successfulUrl, {
+        const successfulResult = await api.call('PUT', successfulUrl, {
             foo: 'bar',
         });
 

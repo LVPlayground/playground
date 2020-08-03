@@ -422,7 +422,6 @@ ReturnMinigameName(minigame) {
         case STATUS_KNOCKOUT:   minigameName = "Knockout";
         case STATUS_GRENADE:    minigameName = "Grenade Party";
         case STATUS_SHIPTDM:    minigameName = "Ship Team Deathmatch";
-        case STATUS_SAWNOFF:    minigameName = "Sawnoff Fights";
         case STATUS_WALKWEAPON: minigameName = "Walkweapon War";
         case STATUS_RANDOMDM:   minigameName = "Random Deathmatch";
         case STATUS_ISLANDDM:   minigameName = "Island Deathmatch";
@@ -440,7 +439,6 @@ ReturnMinigameCmd(minigame) {
         case STATUS_KNOCKOUT:   command = "/knockout";
         case STATUS_GRENADE:    command = "/grenade";
         case STATUS_SHIPTDM:    command = "/shiptdm";
-        case STATUS_SAWNOFF:    command = "/sawnoff";
         case STATUS_WALKWEAPON: command = "/ww";
         case STATUS_RANDOMDM:   command = "/random";
         case STATUS_ISLANDDM:   command = "/islanddm";
@@ -458,7 +456,6 @@ ReturnMinigameMaxPlayers(minigame) {
         case STATUS_KNOCKOUT:   maxPlayers = 2;
         case STATUS_GRENADE:    maxPlayers = 100;
         case STATUS_SHIPTDM:    maxPlayers = 100;
-        case STATUS_SAWNOFF:    maxPlayers = 50;
         case STATUS_WALKWEAPON: maxPlayers = 100;
         case STATUS_RANDOMDM:   maxPlayers = 20;
         case STATUS_ISLANDDM:   maxPlayers = 100;

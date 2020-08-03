@@ -279,7 +279,6 @@ ResetPlayerStats(playerId) {
     ClearPlayer(playerId);
     ResetWeaponCheatCount(playerId);
     playerArmour[playerId] = 0.0;
-    iPlayerSawnoffWeapon[playerId] = 0;
     DeliveryResetStuff(playerId);
     ResetPlayerGameStateVariables(playerId);
 

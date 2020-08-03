@@ -666,15 +666,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
 
     SetPlayerInterior(playerid, 0);
 
-    // Tec9 / Uzi support (/my minigame)
-    if(iPlayerSawnoffWeapon[playerid] == 1)
-    {
-        GiveWeapon( playerid, 32, 4000);
-    }
-    else
-    {
-        GiveWeapon(playerid, 28, 4000);
-    }
+    GiveWeapon(playerid, 28, 4000);
 
     SetPlayerHealth(playerid, 100);
     SetPlayerArmour(playerid, 0);

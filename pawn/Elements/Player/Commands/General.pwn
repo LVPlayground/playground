@@ -972,47 +972,6 @@ charHelp:
         return 1;
     }
 
-    if(!strcmp(szParameter, "minigame", true, 8))
-    {
-        param_shift(tmp);
-
-        if(!strlen(tmp)) {
-            goto MinigameHelp;
-        }
-
-        if(!strcmp(tmp, "tec9", true, 4))
-        {
-            if(iPlayerSawnoffWeapon[playerid] == 1)
-            {
-                SendClientMessage(playerid, Color::Red, "You've already chosen the Tec9!");
-                return 1;
-            }
-
-            iPlayerSawnoffWeapon [playerid] = 1;
-            SendClientMessage(playerid, Color::Green, "You have chosen the Tec9 as spawn-weapon for the FightClub and the /sawnoff minigame.");
-            return 1;
-        }
-
-        if(!strcmp(tmp, "uzi", true, 3))
-        {
-            if(iPlayerSawnoffWeapon[playerid] == 2)
-            {
-                SendClientMessage(playerid, Color::Red, "You've already chosen the Uzi!");
-                return 1;
-            }
-
-            iPlayerSawnoffWeapon[playerid] = 2;
-            SendClientMessage(playerid, Color::Green, "You have chosen the Uzi as spawn-weapon for the FightClub and the /sawnoff minigame.");
-            return 1;
-        }
-
-MinigameHelp:
-        SendClientMessage(playerid, Color::White, "Usage: /my minigame [tec9/uzi]");
-        SendClientMessage(playerid, Color::White, "This is used to set your spawnweapon in the FightClub and the /sawnoff minigame.");
-        return 1;
-
-    }
-
     if(!strcmp(szParameter, "saveloc", true, 7) && Player(playerid)->isAdministrator() == true)
     {
         GetPlayerPos( playerid, SavedPos2[ playerid ][ 0 ], SavedPos2[ playerid ][ 1 ], SavedPos2[ playerid ][ 2 ] );
@@ -1174,7 +1133,7 @@ MinigameHelp:
     }
 
 MyHelp:
-    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/minigame/playerinfo/properties/ramp/skin/spawnweapons/spawnmoney/stats]");
+    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/playerinfo/properties/ramp/skin/spawnweapons/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[allchat/armour/color/health/hide/(goto/save)loc/maptp]");

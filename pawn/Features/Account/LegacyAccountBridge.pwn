@@ -67,9 +67,6 @@ class LegacyAccountBridge {
         if (strlen(deathMessage) > 0)
             DeathMessageManager->setPlayerDeathMessageText(playerId, deathMessage);
 
-        // mutable: sawnoff_weapon
-        iPlayerSawnoffWeapon[playerId] = DatabaseResult(resultId)->readInteger("sawnoff_weapon");
-
         // mutable: save_location
         new savedLocation[128], locationIndex = 0;
         DatabaseResult(resultId)->readString("save_location", savedLocation);
@@ -107,7 +104,6 @@ class LegacyAccountBridge {
                 "skin_id = %d, " ...
 
                 "jailed = %d, " ...
-                "sawnoff_weapon = %d, " ...
                 "settings = %d, " ...
                 "death_message = \"%s\", " ...
 
@@ -140,7 +136,6 @@ class LegacyAccountBridge {
                 SpawnManager(playerId)->skinId(),
 
                 JailController->remainingJailTimeForPlayer(playerId),
-                iPlayerSawnoffWeapon[playerId],
                 PlayerSettings(playerId)->value(),
                 DeathMessageManager->getPlayerDeathMessageText(playerId),
 

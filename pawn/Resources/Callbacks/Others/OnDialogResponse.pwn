@@ -436,10 +436,9 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 case 2: MiniGamesSignup(playerid, STATUS_KNOCKOUT);
                 case 3: MiniGamesSignup(playerid, STATUS_GRENADE);
                 case 4: MiniGamesSignup(playerid, STATUS_SHIPTDM);
-                case 5: MiniGamesSignup(playerid, STATUS_SAWNOFF);
-                case 6: MiniGamesSignup(playerid, STATUS_WALKWEAPON);
-                case 7: MiniGamesSignup(playerid, STATUS_RANDOMDM);
-                case 8: MiniGamesSignup(playerid, STATUS_ISLANDDM);
+                case 5: MiniGamesSignup(playerid, STATUS_WALKWEAPON);
+                case 6: MiniGamesSignup(playerid, STATUS_RANDOMDM);
+                case 7: MiniGamesSignup(playerid, STATUS_ISLANDDM);
             }
 
             return 1;

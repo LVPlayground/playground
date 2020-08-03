@@ -18,7 +18,7 @@
 #define STATUS_SNIPER       13  // Converted
 #define STATUS_MINIGUN      14  // Converted
 #define STATUS_SHIPTDM      15
-#define STATUS_SAWNOFF      16
+#define STATUS_SAWNOFF      16  // Converted
 #define STATUS_WALKWEAPON   17
 #define STATUS_RANDOMDM     18
 #define STATUS_ISLANDDM     19

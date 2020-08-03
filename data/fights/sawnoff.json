@@ -1,0 +1,20 @@
+{
+    "name": "Sawnoff Fight",
+    "command": "sawnoff",
+    "goal": "Take out your enemies in San Fierro with the run weapons.",
+
+    "settings": {
+        "game/environment": {
+            "gravity": "Normal",
+            "time": "Afternoon",
+            "weather": "Sunny"
+        },
+        "deathmatch/spawn_armour": true,
+        "deathmatch/spawn_weapons": [
+            { "weapon": 26, "ammo": 3000 },
+            { "weapon": 28, "ammo": 4000 }
+        ],
+        "fights/location": "San Fierro Harbour",
+        "fights/pickups": false
+    }
+}

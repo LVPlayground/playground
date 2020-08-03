@@ -117,6 +117,7 @@ export class DiscordRuntime {
 
             case 'MESSAGE_DELETE':
             case 'TYPING_START':
+            case 'VOICE_STATE_UPDATE':
                 break;
 
             // -------------------------------------------------------------------------------------

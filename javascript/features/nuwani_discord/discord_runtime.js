@@ -70,6 +70,13 @@ export class DiscordRuntime {
                 this.#guilds_.set(data.id, guild);
                 break;
 
+            // TODO: GUILD_MEMBER_ADD
+            // TODO: GUILD_MEMBER_REMOVE
+            // TODO: GUILD_ROLE_CREATE
+            // TODO: GUILD_ROLE_UPDATE
+            // TODO: GUILD_ROLE_DELETE
+            // TODO: GUILD_UPDATE
+
             case 'GUILD_MEMBER_UPDATE':
                 guild = this.#guilds_.get(data.guild_id);
                 member = guild.members.get(data.user.id);
@@ -87,6 +94,24 @@ export class DiscordRuntime {
 
                 break;
 
+            case 'GUILD_BAN_ADD':
+            case 'GUILD_BAN_REMOVE':
+            case 'GUILD_DELETE':
+            case 'GUILD_EMOJIS_UPDATE':
+            case 'GUILD_INTEGRATIONS_UPDATE':
+                break;
+
+            // -------------------------------------------------------------------------------------
+            // Category: CHANNEL_* messages
+            // -------------------------------------------------------------------------------------
+
+            // TODO: CHANNEL_CREATE (also for direct messaging)
+            // TODO: CHANNEL_UPDATE
+            // TODO: CHANNEL_DELETE
+
+            case 'CHANNEL_PINS_UPDATE':
+                break;
+
             // -------------------------------------------------------------------------------------
             // Category: MESSAGE_* messages
             // -------------------------------------------------------------------------------------
@@ -96,6 +121,15 @@ export class DiscordRuntime {
                 message = new Message(data, guild);
 
                 this.#manager_.onMessage(message);
+                break;
+
+            case 'MESSAGE_UPDATE':
+            case 'MESSAGE_DELETE':
+            case 'MESSAGE_DELETE_BULK':
+            case 'MESSAGE_REACTION_ADD':
+            case 'MESSAGE_REACTION_REMOVE':
+            case 'MESSAGE_REACTION_REMOVE_ALL':
+            case 'MESSAGE_REACTION_REMOVE_EMOJI':
                 break;
 
             // -------------------------------------------------------------------------------------
@@ -115,9 +149,11 @@ export class DiscordRuntime {
             // Category: Ignored messages
             // -------------------------------------------------------------------------------------
 
-            case 'MESSAGE_DELETE':
+            case 'INVITE_CREATE':
+            case 'INVITE_DELETE':
             case 'TYPING_START':
             case 'VOICE_STATE_UPDATE':
+            case 'WEBHOOKS_UPDATE':
                 break;
 
             // -------------------------------------------------------------------------------------
@@ -127,8 +163,6 @@ export class DiscordRuntime {
                 break;
         }
     }
-
-    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.#connection_.dispose();

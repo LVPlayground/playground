@@ -156,10 +156,10 @@ export class PlaygroundCommands {
                 suffix = '{9E9E9E}...';
 
             // (b) Figure out the label to use for the command's level restriction.
-            const { restrictLevel, originalLevel } =
+            const { restrictLevel, originalLevel, restrictTemporary, originalTemporary } =
                 this.permissionDelegate_.getCommandLevel(command);
 
-            if (restrictLevel !== originalLevel)
+            if (restrictLevel !== originalLevel || restrictTemporary !== originalTemporary)
                 color = '{F44336}';
 
             switch (restrictLevel) {
@@ -209,7 +209,9 @@ export class PlaygroundCommands {
     // Displays a dialog with the settings available for the |player| specific to the given
     // |command|, for instance to add and remove exceptions, and change the default level.
     async displayCommandDialog(player, command) {
-        const { restrictLevel, originalLevel } = this.permissionDelegate_.getCommandLevel(command);
+        const { restrictLevel, originalLevel, restrictTemporary, originalTemporary } =
+            this.permissionDelegate_.getCommandLevel(command);
+
         if (originalLevel > player.level) {
             return await alert(player, {
                 title: 'Access management',
@@ -238,12 +240,24 @@ export class PlaygroundCommands {
             return await this.displayCommandLevelDialog(player, command);
         });
 
-        // (2) Add a dialog that allows the |player| to issue a new exception.
+        // (2) For command restricted to administrators, it's possible to decide whether it should
+        // be limited from temporary administrators as well. This can be overridden as appropriate.
+        if (restrictLevel === Player.LEVEL_ADMINISTRATOR && player.isManagement()) {
+            const tempPrefix = originalTemporary !== restrictTemporary ? '{F44336}' : '';
+            const tempSuffix = originalTemporary !== restrictTemporary ? '{FFFFFF}' : '';
+            const temp = restrictTemporary ? 'restricted' : 'not restricted';
+
+            dialog.addItem(
+                `Restrict from temporary administrators (${tempPrefix}${temp}${tempSuffix})`,
+                async () => await this.displayCommandTemporaryDialog(player, command));
+        }
+
+        // (3) Add a dialog that allows the |player| to issue a new exception.
         dialog.addItem('Add a usage exception', async () => {
             return await this.displayCommandExceptionDialog(player, command);
         });
 
-        // (3) If any exceptions have been granted, list those here for modification as well.
+        // (4) If any exceptions have been granted, list those here for modification as well.
         const exceptions = this.permissionDelegate_.getExceptions(command);
         if (exceptions.length > 0) {
             dialog.addItem('----------');
@@ -319,6 +333,50 @@ export class PlaygroundCommands {
                 suffix = ' {F44336}(current)';
 
             dialog.addItem(levelText + suffix, changeCommandLevel.bind(this, level));
+        }
+
+        // (2) Display the |dialog| to the given |player|.
+        return dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog to the |player| which allows them to either restrict or unrestrict it from
+    // usage by temporary administrators. This is an ability now available to Management.
+    async displayCommandTemporaryDialog(player, command) {
+        const dialog = new Menu(command.command);
+        const options = [
+            [ true,   'Restricted to permanent administrators' ],
+            [ false,  'Available to all administrators' ],
+        ];
+
+        const { restrictLevel, restrictTemporary, originalTemporary } =
+            this.permissionDelegate_.getCommandLevel(command);
+
+        // (1) Add each of the |options| to the |dialog|, and clarify the available options.
+        for (const [ value, label ] of options) {
+            let suffix = '';
+
+            if (originalTemporary === value)
+                suffix = ' {9E9E9E}(original)';
+            else if (restrictTemporary === value)
+                suffix = ' {F44336}(current)';
+
+            dialog.addItem(label + suffix, async () => {
+                // (1) Update the |command|'s level to the current level with the given temporary
+                // administrator restrictions internally.
+                this.permissionDelegate_.setCommandLevel(command, restrictLevel, value);
+
+                // (2) Tell all in-game administrators about the change in level having been made.
+                this.announce_().announceToAdministrators(
+                    value ? Message.LVP_ACCESS_ADMIN_TEMP_RESTRICTED
+                          : Message.LVP_ACCESS_ADMIN_TEMP_UNRESTRICTED,
+                    player.name, player.id, command.command);
+
+                // (3) Tell the |player| that their change has propagated.
+                return await alert(player, {
+                    title: command.command,
+                    message: `The command's restrictions have been updated.`
+                });
+            });
         }
 
         // (2) Display the |dialog| to the given |player|.

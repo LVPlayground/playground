@@ -87,7 +87,7 @@
   "COMMUNICATION_CALL_DISCONNECTED_UNLOAD": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because the feature is being reloaded.",
   "COMMUNICATION_CALL_MESSAGE": "{DC143C}[Phone]{%s} [%d] %s:{FFFFFF} %s",
   "COMMUNICATION_CLEAR_ADMIN": "%s (Id:%s) has cleared the chat.",
-  "COMMUNICATION_CREW_MESSAGE": "{33AA33}** Message sent to {FFFFFF}%s{33AA33}: {FFFFFF}%s",
+  "COMMUNICATION_CREW_MESSAGE": "{33AA33}*** Message sent to {FFFFFF}%s{33AA33}: {FFFFFF}%s",
   "COMMUNICATION_DIAL_ANSWER_UNKNOWN": "{DC143C}[Phone]{FFFFFF} * There are no calls to answer right now.",
   "COMMUNICATION_DIAL_BUSY_SELF": "{DC143C}[Phone]{FFFFFF} * Your phone is already calling %s. Use {DC143C}/hangup{FFFFFF} first.",
   "COMMUNICATION_DIAL_BUSY_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s is already using their phone, they need to hang up first.",
@@ -406,6 +406,8 @@
   "LOCATION_NO_TELEPORT": "@error Sorry, the owner has locked the door because %s!",
 
   "LVP_ACCESS_ADMIN_NOTICE": "%s (Id:%d) has changed the \"%s\" command to %s.",
+  "LVP_ACCESS_ADMIN_TEMP_RESTRICTED": "%s (Id:%d) has restricted the \"%s\" command to permanent administrators.",
+  "LVP_ACCESS_ADMIN_TEMP_UNRESTRICTED": "%s (Id:%d) has made the \"%s\" command available to all administrators.",
   "LVP_ACCESS_EXCEPTION_ADDED_ADMIN": "%s (Id:%d) has allowed %s (Id:%d) to use the \"%s\" command.",
   "LVP_ACCESS_EXCEPTION_ADDED_FYI": "{80CBC4}*** %s (Id:%d) has allowed you to use the \"%s\" command.",
   "LVP_ACCESS_PLAYERS_GRANTED": "%s has made the command \"%s\" available to all players.",

@@ -118,6 +118,35 @@ describe('PlaygroundCommands', (it, beforeEach) => {
 
         assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
         assert.isFalse(delegate.hasException(russell, command));
+
+        // (5) Gunther should be able to restrict the "/lvp" command to administrators, but only to
+        // ones who have the rights permanently.
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.levelIsTemporary = true;
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* change level */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Administrators */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `access rights have been updated`);
+
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* change temp admin restrict */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* restricted from temp admins */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `restrictions have been updated`);
+
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
     });
 
     it('should be able to change boolean settings', async (assert) => {

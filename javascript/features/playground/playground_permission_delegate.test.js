@@ -16,9 +16,12 @@ describe('PlaygroundPermissionDelegate', (it, beforeEach) => {
     it('should enable command levels to be changed at runtime', async (assert) => {
         await gunther.identify();
 
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+        gunther.levelIsTemporary = true;
+
         server.commandManager.buildCommand('test')
             .description('This is a testing command.')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .restrict(Player.LEVEL_MANAGEMENT)
             .sub('subcommand')
                 .description('Sub-command restricted to Management.')
                 .restrict(Player.LEVEL_MANAGEMENT)
@@ -33,10 +36,20 @@ describe('PlaygroundPermissionDelegate', (it, beforeEach) => {
         assert.isFalse(delegate.canExecuteCommand(gunther, null, subCommand, /* verbose= */ false));
 
         // (2) When the level of |command| has been changed to Player, it should work for him.
-        delegate.setCommandLevel(command, Player.LEVEL_PLAYER);
+        delegate.setCommandLevel(command, Player.LEVEL_ADMINISTRATOR);
 
         assert.isTrue(delegate.canExecuteCommand(gunther, null, command, /* verbose= */ false));
         assert.isFalse(delegate.canExecuteCommand(gunther, null, subCommand, /* verbose= */ false));
+
+        // (3) If the level of |command| is administrator, and restricted from players with
+        // temporary rights, the access should be removed from |gunther| again.
+        delegate.setCommandLevel(command, Player.LEVEL_ADMINISTRATOR, true);
+
+        assert.isFalse(delegate.canExecuteCommand(gunther, null, command, /* verbose= */ false));
+        assert.isFalse(delegate.canExecuteCommand(gunther, null, subCommand, /* verbose= */ false));
+
+        // --- reset it again, so that the rest of the test works as expected
+        delegate.setCommandLevel(command, Player.LEVEL_ADMINISTRATOR, false);
 
         // (3) With an exception granted for the |subCommand|, that should be available too.
         assert.isFalse(delegate.hasException(gunther, subCommand));

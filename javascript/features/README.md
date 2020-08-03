@@ -76,7 +76,7 @@ Feature                                          | Code Health | Description
 [Gangs](gangs/)                                  | ❓ 2020     | -
 [GangChat](gang_chat/)                           | ✔ 2020     | Extends [Gangs](gangs/) with a private communication channel.
 [GangZones](gang_zones/)                         | ❓ 2020     | Extends [Gangs](gangs/) with visual and interactive gang zones.
-[Haystack](haystack/)                            | ❓ 2020     | The Haystack minigame, where players climb to the top of a hay stack.
+[Haystack](haystack/)                            | ✔ 2020     | The Haystack minigame, where players climb to the top of a hay stack.
 [Houses](houses/)                                | ❓ 2020     | -
 [Killtime](killtime/)                            | ❓ 2020     | -
 [Leaderboard](leaderboard/)                      | ✔ 2020     | The `/leaderboard` command, and database routines to calculate it.

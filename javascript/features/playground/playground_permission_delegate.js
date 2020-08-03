@@ -9,6 +9,7 @@ import { CommandPermissionDelegate } from 'components/commands/command_permissio
 export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
     #exceptions_ = null;
     #overrides_ = null;
+    #temporaryStatusOverrides_ = null;
 
     constructor() {
         super();
@@ -18,6 +19,10 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
 
         // Map from CommandDescription instance to a Player.LEVEL_* constant value.
         this.#overrides_ = new Map();
+
+        // Map from CommandDescription instance to a boolean indicated whether the given command
+        // should be restricted to temporary administrators.
+        this.#temporaryStatusOverrides_ = new Map();
 
         // Instate ourselves as the canonical permission delegate for commands on the server.
         server.commandManager.setPermissionDelegate(this);
@@ -73,16 +78,26 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
         return {
             restrictLevel: this.#overrides_.get(command) ?? command.restrictLevel,
             originalLevel: command.restrictLevel,
+
+            restrictTemporary:
+                this.#temporaryStatusOverrides_.get(command) ?? command.restrictTemporary,
+            originalTemporary: command.restrictTemporary,
         };
     }
 
     // Changes the required level for |command| to the given |level|. This will automatically
-    // release the override if it's being restored to the command's original leve;.
-    setCommandLevel(command, level) {
+    // release the override if it's being restored to the command's original level. Optionally the
+    // |restrictedToTemporaries| argument may be used, to toggle restrictions on a command.
+    setCommandLevel(command, level, restrictedToTemporaries = null) {
         if (command.restrictLevel === level)
             this.#overrides_.delete(command);
         else
             this.#overrides_.set(command, level);
+
+        if (level === Player.LEVEL_ADMINISTRATOR && restrictedToTemporaries !== null)
+            this.#temporaryStatusOverrides_.set(command, restrictedToTemporaries);
+        else
+            this.#temporaryStatusOverrides_.delete(command);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -102,7 +117,8 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
 
         // (2) Determine the actual level restriction to put in place, considering an override.
         let restrictLevel = this.#overrides_.get(command) ?? command.restrictLevel;
-        let restrictTemporary = command.restrictTemporary;
+        let restrictTemporary =
+            this.#temporaryStatusOverrides_.get(command) ?? command.restrictTemporary;
 
         // (a) If |restrictLevel| is set to all players, bail out right away.
         if (restrictLevel === Player.LEVEL_PLAYER)
@@ -138,5 +154,8 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
 
         this.#overrides_.clear();
         this.#overrides_ = null;
+
+        this.#temporaryStatusOverrides_.clear();
+        this.#temporaryStatusOverrides_ = null;
     }
 }

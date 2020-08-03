@@ -1,0 +1,15 @@
+{
+    "name": "Grenade Party",
+    "command": "grenade",
+    "goal": "Blast your enemies away with firey grenades.",
+
+    "settings": {
+        "deathmatch/map_markers": "Disabled",
+        "deathmatch/spawn_armour": false,
+        "deathmatch/spawn_weapons": [
+            { "weapon": 16, "ammo": 1000 }
+        ],
+        "fights/location": "Blueberry Farm",
+        "fights/pickups": false
+    }
+}

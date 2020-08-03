@@ -87,7 +87,9 @@ export class DiscordConnection {
     // token configured in the bot's configuration file. If a previous connection existed and the
     // connection was lost, a 6 RESUME message will be send instead.
     identify() {
-        if (this.#sessionId_ !== null) {
+        // TODO: This has been disabled in prod to identify whether session resumption attempts are
+        // the reason the Discord server keeps disconnecting after ~8 hours.
+        if (server.isTest() && this.#sessionId_ !== null) {
             return this.sendOpcodeMessage({
                 op: DiscordConnection.kOpcodeResume,
                 token: this.#configuration_.token,

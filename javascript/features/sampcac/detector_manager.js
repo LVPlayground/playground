@@ -67,6 +67,7 @@ export class DetectorManager {
         const results = new DetectorResults();
 
         // (1) Populate the meta-data fields of the results.
+        results.player = player;
         results.version = player.version;
 
         // Append "-R1" to distinguish from R2, R3 and R4, which do include the revision.

@@ -132,4 +132,25 @@ describe('PunishmentCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/scan reload'));
         assert.equal(gunther.messages.pop(), Message.PUNISHMENT_SCAN_RELOADED);
     });
+
+    it('should be able to run memory scans on all players', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // (2) Scans should return after a sensible amount of time, and explain that to the player.
+        gunther.respondToDialog({ response: 0 /* dismiss */ });
+
+        const [ commandResult, advanceResult ] = await Promise.all([
+            gunther.issueCommand('/scanall'),
+            server.clock.advance(30 * 1000 /* some excessively long amount of time*/),
+        ]);
+
+        assert.isTrue(commandResult);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.PUNISHMENT_SCAN_ALL_STARTING, server.playerManager.count));
+
+        assert.includes(gunther.lastDialog, '0.3.7-R4-mock');
+        assert.includes(gunther.lastDialog, 'Lucy');
+    });
 });

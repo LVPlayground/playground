@@ -541,6 +541,7 @@
   "POSITIONING_FORWARD": "@success I like to move it, move it (forward)!",
 
   "PUNISHMENT_ADMIN_UNBAN": "%s (Id:%d) has unbanned %s: %s",
+  "PUNISHMENT_SCAN_ALL_STARTING": "{CCCCCC}* Started scanning %d players, this could take several seconds...",
   "PUNISHMENT_SCAN_ERROR_NPC": "@error It's not possible to scan non-player characters.",
   "PUNISHMENT_SCAN_RELOADED_ADMIN": "%s (Id:%d) has reloaded the SAMPCAC configuration.",
   "PUNISHMENT_SCAN_RELOADED": "@success The SAMPCAC configuration has been reloaded.",

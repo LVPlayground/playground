@@ -14,6 +14,9 @@ export class DetectorResults {
     // Section: Meta-information about the player
     // ---------------------------------------------------------------------------------------------
 
+    // The player for whom this scan was started.
+    player = null;
+
     // Version of the SA-MP client that they're using.
     version = null;
 

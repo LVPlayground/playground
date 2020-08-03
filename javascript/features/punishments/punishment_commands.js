@@ -44,6 +44,12 @@ export class PunishmentCommands {
                 .build(PunishmentCommands.prototype.onScanReloadCommand.bind(this))
             .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(PunishmentCommands.prototype.onScanCommand.bind(this));
+
+        // /scanall
+        server.commandManager.buildCommand('scanall')
+            .description('Scans all players on the server for possible cheating.')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .build(PunishmentCommands.prototype.onScanAllCommand.bind(this));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -199,6 +205,74 @@ export class PunishmentCommands {
 
         // (3) Display the |dialog| to the |player|, and call it a day.
         await dialog.displayForPlayer(player);
+    }
+
+    // Scans all players on the server for possible cheating. Will show a dialog of all in-game
+    // human players, their SA-MP version and whether anything was detected.
+    async onScanAllCommand(player) {
+        const resultPromises = [];
+
+        // (1) Start scans for all human players connected to the server.
+        for (const target of server.playerManager) {
+            if (target.isNonPlayerCharacter())
+                continue;
+
+            resultPromises.push(this.sampcac_().detect(target));
+        }
+
+        player.sendMessage(Message.PUNISHMENT_SCAN_ALL_STARTING, resultPromises.length);
+
+        // (2) Wait until all the scans have completed. They may not be complete.
+        const results = await Promise.all(resultPromises);
+        const dialog = new Menu('Scan results', [
+            'Player',
+            'Version',
+            'Minimized',
+            'Result'
+        ], { pageSize: 50 /* just in the odd case that there's >50 people in-game... */ });
+
+        for (const result of results) {
+            const nickname = format(
+                '{%s}%s', result.player.colors.currentColor.toHexRGB(), result.player.name);
+
+            let version = null;
+
+            // (a) Format the SA-MP version used. SAMPCAC users will be highlighted in green, where
+            // users for whom detections are supported will be yellow. All others will be red.
+            if (result.sampcacVersion)
+                version = '{4CAF50}' + result.version;
+            else if (result.supported)
+                version = '{CDDC39}' + result.version;
+            else
+                version = '{FF5722}' + result.version;
+
+            const minimized = !!result.minimized ? '{FF5722}yes' : '{9E9E9E}no';
+            const detections = [ ...result.detectors ].filter(detector => {
+                return detector[1] === DetectorResults.kResultDetected;
+            });
+
+            let detectionResult = null;
+
+            // (b) Format the detection result. There either are detections (red), no detections
+            // (green), or an unknown result because scans are not supported (grey).
+            if (detections.length > 1)
+                detectionResult = `{FF5722}${detectionResult.length} detections`;
+            else if (detections.length === 1)
+                detectionResult = `{FF5722}1 detection`;
+            else if (!result.supported)
+                detectionResult = `{9E9E9E}unknown`;
+            else
+                detectionResult = `{4CAF50}no detections`;
+
+            // (c) Add the data to the dialog. Selecting a particular player will act as if the
+            // administrator executed the `/scan` command on them, for more details.
+            dialog.addItem(nickname, version, minimized, detectionResult, () => {
+                return this.onScanCommand(player, result.player);
+            });
+        }
+
+        // (3) Display the results dialog to the current |player|.
+        dialog.displayForPlayer(player);
     }
 
     // Called when someone wishes to reload the SAMPCAC definition file. Generally only needed when

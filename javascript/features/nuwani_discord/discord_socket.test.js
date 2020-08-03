@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
-import { DiscordSocket } from 'features/nuwani_discord/discord_socket.js';
+import { DiscordSocket, kInitialBackoffDelayMs } from 'features/nuwani_discord/discord_socket.js';
 import { MockSocket } from 'features/nuwani_discord/mock_socket.js';
 
 import { stringToUtf8Buffer } from 'components/networking/utf-8.js';
@@ -45,7 +45,7 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
 
         await Promise.all([
             discord.connect(kDiscordEndpoint),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.equal(discord.state, DiscordSocket.kStateConnected);
@@ -70,7 +70,8 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
         assert.equal(connectionEstablishedCalls, 0);
         assert.equal(connectionFailedCalls, 0);
 
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs));
         await Promise.resolve();
 
         // (2) The first delay passed, the first attempt has passed, and failed.
@@ -78,7 +79,8 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
         assert.equal(connectionEstablishedCalls, 0);
         assert.equal(connectionFailedCalls, 1);
 
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(1));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(1, kInitialBackoffDelayMs));
         await Promise.resolve();
 
         // (3) The second attempt has now gone through, and succeeded.
@@ -102,7 +104,7 @@ describe('DiscordSocket', (it, beforeEach, afterEach) => {
 
         await Promise.all([
             discord.connect(kDiscordEndpoint),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.equal(discord.state, DiscordSocket.kStateConnected);

@@ -8,6 +8,10 @@ import { URL } from 'components/networking/url.js';
 
 import { stringToUtf8Buffer, utf8BufferToString } from 'components/networking/utf-8.js';
 
+// Initial backoff delay for Discord connections, in milliseconds. This has been amended from the
+// IRC based back-offs because the API imposes limits on reconnection behaviour.
+export const kInitialBackoffDelayMs = 10000;
+
 // Maximum number of messages in the buffer before we'll start to prune it.
 const kMaximumBufferSize = 128;
 

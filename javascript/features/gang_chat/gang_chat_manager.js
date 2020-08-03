@@ -4,8 +4,9 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
-// Implementation of the actual gang chat feature. Will work with the gangs feature to get its data.
-class GangChatManager {
+// Implementation of the actual gang chat feature. Will work with the gangs feature to get its data,
+// and listens to the Communiaction feature to be able to intercept messages.
+export class GangChatManager {
     constructor(gangs, communication, nuwani) {
         this.gangs_ = gangs;
         this.communication_ = communication;
@@ -207,5 +208,3 @@ class GangChatManager {
         this.callbacks_.dispose();
     }
 }
-
-export default GangChatManager;

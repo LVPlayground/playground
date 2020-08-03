@@ -74,25 +74,25 @@ Feature                                          | Code Health | Description
 [Fights](fights/)                                | ✔ 2020     | Provides various fighting-based games to the players.
 [Friends](friends/)                              | ✔ 2020     | Enables players to friend other players, unlocking easier communication.
 [Gangs](gangs/)                                  | ❓ 2020     | -
-[GangChat](gang_chat/)                           | ❓ 2020     | Extends [Gangs](gangs/) with a private communication channel.
+[GangChat](gang_chat/)                           | ✔ 2020     | Extends [Gangs](gangs/) with a private communication channel.
 [GangZones](gang_zones/)                         | ❓ 2020     | Extends [Gangs](gangs/) with visual and interactive gang zones.
 [Haystack](haystack/)                            | ❓ 2020     | The Haystack minigame, where players climb to the top of a hay stack.
 [Houses](houses/)                                | ❓ 2020     | -
 [Killtime](killtime/)                            | ❓ 2020     | -
-[Leaderboard](leaderboard/)                      | ❓ 2020     | The `/leaderboard` command, and database routines to calculate it.
+[Leaderboard](leaderboard/)                      | ✔ 2020     | The `/leaderboard` command, and database routines to calculate it.
 [Location](location/)                            | ❓ 2020     | -
-[NuwaniCommands](nuwani_commands/)               | ❓ 2020     | The `/nuwani` command, enabling Management to control the bot system.
+[NuwaniCommands](nuwani_commands/)               | ✔ 2020     | The `/nuwani` command, enabling Management to control the bot system.
 [NuwaniDiscord](nuwani_discord/)                 | ✔ 2020     | Provides Discord support for the Nuwani bot system.
 [PlayerCommands](player_commands/)               | ✔ 2020     | Provides commands for the player also useable for admins. E.g. to buy weapons.
 [PlayerFavours](player_favours/)                 | ❓ 2020     | -
 [PlayerSettings](player_settings/)               | ❓ 2020     | -
-[Playground](playground/)                        | ❓ 2020     | -
-[Punishments](punishments/)                      | ❓ 2020     | Provides the ability to kick, ban and jail naughty players.
+[Playground](playground/)                        | ✔ 2020     | Access and server management, special effects and arbitrary commands.
+[Punishments](punishments/)                      | ✔ 2020     | Provides the ability to kick, ban and jail naughty players.
 [Races](races/)                                  | ❓ 2020     | -
 [Radio](radio/)                                  | ❓ 2020     | -
-[ReactionTests](reaction_tests/)                 | ❓ 2020     | Minigame where players repeat text or solve calculations in chat.
+[ReactionTests](reaction_tests/)                 | ✔ 2020     | Minigame where players repeat text or solve calculations in chat.
 [Teleportation](teleportation/)                  | ❓ 2020     | -
-[Vehicles](vehicles/)                            | ❓ 2020     | Provides all vehicles on the server, and commands to interact with them.
+[Vehicles](vehicles/)                            | ✔ 2020     | Provides all vehicles on the server, and commands to interact with them.
 
 ## 4. Deprecated features
 These are expected to be factored in to other features. While fine to use, expect to see them

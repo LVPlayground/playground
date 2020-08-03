@@ -246,7 +246,7 @@ export class PunishmentCommands {
             else
                 version = '{FF5722}' + result.version;
 
-            const minimized = !!result.minimized ? '{FF5722}yes' : '{9E9E9E}no';
+            const minimized = !!result.minimized ? '{FF5722}yes' : '{4CAF50}no';
             const detections = [ ...result.detectors ].filter(detector => {
                 return detector[1] === DetectorResults.kResultDetected;
             });

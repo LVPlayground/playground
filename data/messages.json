@@ -87,6 +87,7 @@
   "COMMUNICATION_CALL_DISCONNECTED_UNLOAD": "{DC143C}[Phone]{FFFFFF} * Your conversation with %s has ended because the feature is being reloaded.",
   "COMMUNICATION_CALL_MESSAGE": "{DC143C}[Phone]{%s} [%d] %s:{FFFFFF} %s",
   "COMMUNICATION_CLEAR_ADMIN": "%s (Id:%s) has cleared the chat.",
+  "COMMUNICATION_CREW_MESSAGE": "{33AA33}** Message sent to {FFFFFF}%s{33AA33}: {FFFFFF}%s",
   "COMMUNICATION_DIAL_ANSWER_UNKNOWN": "{DC143C}[Phone]{FFFFFF} * There are no calls to answer right now.",
   "COMMUNICATION_DIAL_BUSY_SELF": "{DC143C}[Phone]{FFFFFF} * Your phone is already calling %s. Use {DC143C}/hangup{FFFFFF} first.",
   "COMMUNICATION_DIAL_BUSY_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s is already using their phone, they need to hang up first.",
@@ -374,8 +375,6 @@
   "IGNORE_IGNORED": "{33AA33}Ignored players:{FFFFFF} %s",
   "IGNORE_REMOVED_PLAYER": "@success You'll start to receive messages from %s again.",
   "IGNORE_REMOVED_REDUNDANT": "@error You aren't ignoring %s right now.",
-
-  "IRC_CHAT_MESSAGE_SENT": "{33AA33}Message sent to {FFFFFF}%s {33AA33}as {FFFFFF}%s{33AA33}: {FFFFFF}%s",
 
   "IRC_ADMIN_MESSAGE": "{FFFF00}* %s %s (IRC): %s",
   "IRC_ANNOUNCE_ADMIN": "%s (IRC) has made an announcement.",

@@ -32,11 +32,13 @@ export class DiscordAPI {
         });
 
         if (!response.ok) {
-            console.log('Discord API error:');
-            console.log('-- Request URL: ' + url);
-            console.log('-- Request data: ' + JSON.stringify(data));
-            console.log('-- Response status: ' + response.status);
-            console.log('-- Response data: ' + (await response.text()));
+            if (!server.isTest()) {
+                console.log('Discord API error:');
+                console.log('-- Request URL: ' + url);
+                console.log('-- Request data: ' + JSON.stringify(data));
+                console.log('-- Response status: ' + response.status);
+                console.log('-- Response data: ' + (await response.text()));
+            }
             return false;
         }
 

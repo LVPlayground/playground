@@ -39,12 +39,26 @@ export class DirectCommunicationCommands {
         this.callbacks_.addEventListener(
             'ircmessage', DirectCommunicationCommands.prototype.onIrcMessageReceived.bind(this));
 
+        // /crew [message]
+        server.commandManager.buildCommand('crew')
+            .description('Send a message to the crew channel on IRC and Discord.')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
+            .build(DirectCommunicationCommands.prototype.onCrewCommand.bind(this));
+
         // /ircpm [username] [message]
         server.commandManager.buildCommand('ircpm')
             .description('Send a message to someone on IRC.')
             .parameters([ { name: 'username',  type: CommandBuilder.kTypeText },
                           { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(DirectCommunicationCommands.prototype.onIrcPrivateMessageCommand.bind(this));
+
+        // /man [message]
+        server.commandManager.buildCommand('man')
+            .description('Send a message to the Management channel on IRC and Discord.')
+            .restrict(Player.LEVEL_MANAGEMENT)
+            .parameters([{ name: 'message', type: CommandBuilder.kTypeText }])
+            .build(DirectCommunicationCommands.prototype.onManagementCommand.bind(this));
 
         // /pm [player] [message]
         server.commandManager.buildCommand('pm')
@@ -66,6 +80,17 @@ export class DirectCommunicationCommands {
             .parameters([ { name: 'player',  type: CommandBuilder.kTypePlayer },
                           { name: 'message', type: CommandBuilder.kTypeText } ])
             .build(DirectCommunicationCommands.prototype.onSecretPrivateMessageCommand.bind(this));
+    }
+
+    // /crew [message]
+    //
+    // Enables administrators (and temporary administrators) to send messages directly to admins
+    // watching over one of the Nuwani mediums.
+    onCrewCommand(player, message) {
+        const kChannelName = '#LVP.Crew';
+
+        player.sendMessage(Message.COMMUNICATION_CREW_MESSAGE, kChannelName, message);
+        this.nuwani_().echo('chat-irc', kChannelName, player.name, player.id, message);
     }
 
     // /ircpm [username] [message]
@@ -115,6 +140,17 @@ export class DirectCommunicationCommands {
             username: event.username,
             id: player.id,
         });
+    }
+
+    // /man [message]
+    //
+    // Enables Management members to send messages directly to other folks watching over one of the
+    // Nuwani mediums. Obviously restricted to Management members.
+    onManagementCommand(player, message) {
+        const kChannelName = '#LVP.Management';
+
+        player.sendMessage(Message.COMMUNICATION_CREW_MESSAGE, kChannelName, message);
+        this.nuwani_().echo('chat-irc', kChannelName, player.name, player.id, message);
     }
 
     // /pm [player] [message]
@@ -263,7 +299,9 @@ export class DirectCommunicationCommands {
     }
 
     dispose() {
+        server.commandManager.removeCommand('crew');
         server.commandManager.removeCommand('ircpm');
+        server.commandManager.removeCommand('man');
         server.commandManager.removeCommand('pm');
         server.commandManager.removeCommand('spm');
         server.commandManager.removeCommand('r');

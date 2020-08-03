@@ -4,7 +4,6 @@
 
 import { Feature } from 'components/feature_manager/feature.js';
 import InfoDialogCommand from 'features/commands/info_dialog_command.js';
-import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 import PositioningCommands from 'features/commands/positioning_commands.js';
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
@@ -40,17 +39,10 @@ export default class Commands extends Feature {
 
         // Load the seperated positioning-related commands
         this.positioningCommands_ = new PositioningCommands();
-
-        // Needed to easily send a message to IRC
-        const nuwani = this.defineDependency('nuwani');
-
-        // Load the irc-chat commands to send a message to a channel
-        this.ircChatCommands_ = new IrcChatCommands(nuwani);
     }
 
     dispose() {
         this.positioningCommands_.dispose();
-        this.ircChatCommands_.dispose();
 
         server.commandManager.removeCommand('credits');
         server.commandManager.removeCommand('guide');

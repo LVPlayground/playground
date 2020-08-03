@@ -214,4 +214,46 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         // The behaviour of `/r` is tested in the tests covering the other commands that could lead
         // to responses, e.g. `/pm` and `/spm`.
     });
+
+    it('should be able to send messages to #LVP.Crew and #LVP.Management', async (assert) => {
+        const nuwani = server.featureManager.loadFeature('nuwani');
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // (1) Ability to send messages to #LVP.Crew.
+        assert.isTrue(await gunther.issueCommand('/crew hey men!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_CREW_MESSAGE, '#LVP.Crew', 'hey men!'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'chat-irc',
+            params: [
+                '#LVP.Crew',
+                gunther.name,
+                gunther.id,
+                'hey men!',
+            ]
+        });
+
+        // (2) Ability to send messages to #LVP.Management.
+        assert.isTrue(await gunther.issueCommand('/man hai men'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_CREW_MESSAGE, '#LVP.Management', 'hai men'));
+
+        assert.equal(nuwani.messagesForTesting.length, 2);
+        assert.deepEqual(nuwani.messagesForTesting[1], {
+            tag: 'chat-irc',
+            params: [
+                '#LVP.Management',
+                gunther.name,
+                gunther.id,
+                'hai men',
+            ]
+        });
+    });
 });

@@ -75,7 +75,7 @@ export class Request extends Body {
         this.#referrer_ = init.referrer ?? 'https://play.sa-mp.nl/';
         this.#redirect_ = init.redirect ?? 'follow';
 
-        if (contentType !== null)
+        if (contentType !== null && !this.#headers_.has('Content-Type'))
             this.#headers_.set('Content-Type', contentType);
     }
 

@@ -20,6 +20,9 @@ export class Message {
     // Content of the message, as was written by the author.
     content = null;
 
+    // The guild to which the message was sent, if any.
+    guild = null;
+
     // Set of Member instances of members who were mentioned in the message.
     membersMentioned = new Set();
 
@@ -32,6 +35,7 @@ export class Message {
     constructor(messageInfo, guild) {
         this.id = messageInfo.id;
         this.content = messageInfo.content;
+        this.guild = guild;
         this.timestamp = new Date(messageInfo.timestamp);
 
         this.author = guild?.members.get(messageInfo.author.id);

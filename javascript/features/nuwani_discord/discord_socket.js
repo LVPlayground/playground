@@ -33,7 +33,7 @@ export class DiscordSocket {
     #socket_ = null;
 
     constructor(delegate) {
-        this.#backoffPolicy_ = new BackoffPolicy();
+        this.#backoffPolicy_ = new BackoffPolicy(kInitialBackoffDelayMs);
         this.#delegate_ = delegate;
         this.#socket_ = server.isTest() ? new MockSocket('websocket')
                                         : new Socket('websocket');

@@ -27,7 +27,7 @@ export class BackoffPolicy {
     // Returns the delay for the |attempt|th attempt.
     static CalculateDelayForAttempt(attempt, initial = kInitialDelayMs) {
         return Math.floor(
-            kInitialDelayMs * Math.pow(kMultiplyFactor, Math.min(attempt, kMaximumFailureCount)));
+            initial * Math.pow(kMultiplyFactor, Math.min(attempt, kMaximumFailureCount)));
     }
     
     constructor(initial = kInitialDelayMs) {
@@ -41,7 +41,7 @@ export class BackoffPolicy {
             throw new Error('Unable to progress policy state: request already in progress.');
 
         this.state_ = kPolicyStateRequestInProgress;
-        return BackoffPolicy.CalculateDelayForAttempt(this.failureCount_);
+        return BackoffPolicy.CalculateDelayForAttempt(this.failureCount_, this.initial_);
     }
 
     // Marks the in-progress request as having succeeded. The failure count will be reset, which

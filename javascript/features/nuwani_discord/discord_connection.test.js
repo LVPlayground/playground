@@ -6,6 +6,8 @@ import { BackoffPolicy } from 'features/nuwani/runtime/backoff_policy.js';
 import { DiscordConnection } from 'features/nuwani_discord/discord_connection.js';
 import { MockSocket } from 'features/nuwani_discord/mock_socket.js';
 
+import { kInitialBackoffDelayMs } from 'features/nuwani_discord/discord_socket.js';
+
 describe('DiscordConnection', (it, beforeEach, afterEach) => {
     let connection = null;
     let socket = null;
@@ -32,7 +34,7 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
         // the authentication flow as well (2 IDENTIFY message).
         await Promise.all([
             connection.connect(),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.isTrue(connection.isConnected());
@@ -64,7 +66,7 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
         // (1) Connect to the Discord server, with immediate success.
         await Promise.all([
             connection.connect(),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.isTrue(connection.isConnected());
@@ -83,7 +85,8 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
 
         // (3) Wait for the normal connection back-off. After that we expect to be connected again,
         // and the entire handshake & identification path should execute again.
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs));
         await Promise.resolve();  // allow authentication to pass
         await Promise.resolve();  // ^^^
 
@@ -99,7 +102,7 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
         // (1) Connect to the Discord server, with immediate success.
         await Promise.all([
             connection.connect(),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.isTrue(connection.isConnected());
@@ -114,7 +117,8 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
 
         assert.isFalse(connection.isConnected());
 
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs));
 
         assert.isTrue(connection.isConnected());  // <-- reconnected
 
@@ -127,7 +131,8 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
 
         assert.isFalse(connection.isConnected());
 
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs));
 
         assert.isFalse(connection.isConnected());  // <-- disconnected
     });
@@ -138,7 +143,7 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
         // (1) Connect to the Discord server, with immediate success.
         await Promise.all([
             connection.connect(),
-            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0)),
+            server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs)),
         ]);
 
         assert.isFalse(socket.wasResumption);
@@ -154,7 +159,8 @@ describe('DiscordConnection', (it, beforeEach, afterEach) => {
 
         // (3) Wait for the reconnection delay, then for the authentication to succeed. This should
         // be session based rather than be based on a new token.
-        await server.clock.advance(BackoffPolicy.CalculateDelayForAttempt(0));
+        await server.clock.advance(
+            BackoffPolicy.CalculateDelayForAttempt(0, kInitialBackoffDelayMs));
         await Promise.resolve();  // allow authentication to pass
         await Promise.resolve();  // ^^^
 

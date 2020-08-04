@@ -182,6 +182,9 @@
   "GAME_STATS_ACCURACY": "{C5CAE9}Your accuracy was at {7986CB}%d%%{C5CAE9}, with {7986CB}%d hit%s{C5CAE9} and {7986CB}%d miss%s{C5CAE9}.",
   "GAME_STATS_DAMAGE": "{C5CAE9}Finally, you inflicted {7986CB}%.2f damage{C5CAE9} and took {7986CB}%.2f damage{C5CAE9} yourself.",
   "GAME_STATS_KD_RATIO": "{C5CAE9}You killed {7986CB}%d time%s{C5CAE9} and died {7986CB}%d time%s{C5CAE9} yourself, giving a ratio of {7986CB}%.2f{C5CAE9}.",
+  "GAME_WATCH_NO_CANDIDATES": "@error Sorry, there are no active games right now for you to watch.",
+  "GAME_WATCH_NO_RUNTIME": "@error Sorry, this game is no longer available for you to watch.",
+  "GAME_WATCH_REJECTED": "@error Sorry, you can't watch that game right now because %s.",
 
   "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
   "GANG_ANNOUNCE_INTERNAL": "{29B6F6}*** %s",

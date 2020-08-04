@@ -83,6 +83,17 @@ export default class Limits extends Feature {
         });
     }
 
+    // Decides whether the |player| is able to start spectating right now. There are no time limits,
+    // but we need to make sure that they're not abusing or bugging something.
+    canSpectate(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+            ]
+        });
+    }
+
     // Decides whether the |player| is able to start a minigame. There are no time limits, but we do
     // require them to not be in a fight, nor engaged in another activity.
     canStartMinigame(player) {

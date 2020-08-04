@@ -14,6 +14,7 @@ import { Setting } from 'entities/setting.js';
 import { clone } from 'base/clone.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { equals } from 'base/equals.js';
+import { format } from 'base/format.js';
 
 // Prefix given to internal settings, that are not modifiable by the player.
 const kInternalPrefix = 'internal/';
@@ -556,7 +557,79 @@ export class GameCommands {
     // specific game is known, and they aren't preoccupied yet, they will start to spectate the
     // game's SpectateGroup as an outsider (and thus have access to all participants).
     async watchGame(description, player) {
-        // TODO: Implement the ability to watch games.
+        // (1) Collect all the active games for the given |description|, and then filter out the
+        // ones that aren't running. In practice all games will be candidates, but it's possible to
+        // hit weird race conditions that make everything go weird.
+        const activeRuntimes = this.manager_.getActiveGameRuntimes(description);
+        const candidates = [];
+
+        for (const activeRuntime of activeRuntimes) {
+            if (activeRuntime.state !== GameRuntime.kStateRunning)
+                continue;  // the game hasn't started yet, we can't watch it
+
+            candidates.push(activeRuntime);
+        }
+
+        // (a) If there are no active games, there's nothing to spectate. Boo.
+        if (!candidates.length) {
+            player.sendMessage(Message.GAME_WATCH_NO_CANDIDATES);
+            return;
+        }
+
+        // (b) If there's only a single candidate, assume that the |player| wants to watch that.
+        if (candidates.length === 1)
+            return this.watchRuntime(candidates[0], player);
+
+        // (c) Display a disambiguation dialog where the |player| can pick what they want to watch.
+        const dialog = new Menu('Which game do you want to watch?', [
+            'Name',
+            'Participants',
+        ]);
+
+        // Formats the given |participant| for display in the disambiguation dialog. We colour their
+        // nickname because for many folks it's a point of recognition.
+        function formatParticipant(participant) {
+            return format(
+                `{%s}%s{FFFFFF}`, participant.colors.currentColor.toHexRGB(), participant.name);
+        }
+
+        for (const runtime of candidates) {
+            let name = runtime.getActivityName();
+            let participants = '';
+
+            const allParticipants = [ ...runtime.players ];
+            if (allParticipants.length < 4) {
+                participants = allParticipants.map(formatParticipant).join(', ');
+            } else {
+                participants  = allParticipants.splice(0, 2).map(formatParticipant).join(', ');
+                participants += `, and ${allParticipants.length} others`;
+            }
+
+            // Add this particular |runtime| to the dialog.
+            dialog.addItem(
+                name, participants,
+                GameCommands.prototype.watchRuntime.bind(this, runtime));
+        }
+
+        // 2) Display the |dialog| to the player so that they can make a decision.
+        dialog.displayForPlayer(player);
+    }
+
+    // Called when the |player| wants to watch the |runtime|. We need to make sure that the runtime
+    // is able to take on watchers, and that the |player| is allowed to watch right now.
+    async watchRuntime(runtime, player) {
+        if (runtime.state !== GameRuntime.kStateRunning) {
+            player.sendMessage(Message.GAME_WATCH_NO_RUNTIME);
+            return;
+        }
+
+        const decision = this.limits_().canSpectate(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.GAME_WATCH_REJECTED, decision);
+            return;
+        }
+
+        // TODO: Watch the actual game.
     }
 
     // ---------------------------------------------------------------------------------------------

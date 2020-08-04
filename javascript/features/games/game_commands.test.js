@@ -10,6 +10,8 @@ import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
 import { Setting } from 'entities/setting.js';
 
+import { format } from 'base/format.js';
+
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;
     let finance = null;
@@ -517,6 +519,53 @@ describe('GameCommands', (it, beforeEach) => {
 
         assert.isNull(manager.getPlayerActivity(gunther));
         assert.equal(finance.getPlayerCash(gunther), 5000);
+    });
+
+    it('should be possible to spectate any in-progress game', async (assert) => {
+        class BubbleGame extends Game {}
+
+        commands.createCommandForGame(new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Players must be able to leave',
+            command: 'bubblegame',
+            price: 1000,
+            minimumPlayers: 1,
+        }));
+
+        finance.givePlayerCash(gunther, 5000);
+        finance.givePlayerCash(russell, 5000);
+        finance.givePlayerCash(lucy, 5000);
+
+        // (1) Have Gunther and Russell join the game in order.
+        for (const player of [ gunther, russell ]) {
+            assert.isTrue(await player.issueCommand('/bubblegame'));
+
+            await server.clock.advance(25 * 1000);  // advance the time past expiration
+            await Promise.resolve();
+
+            assert.isNotNull(manager.getPlayerActivity(player));
+            assert.instanceOf(manager.getPlayerActivity(player), GameRuntime);
+        }
+
+        // (2) Make sure that both games have fully started, and thus are watchable.
+        await runGameLoop();
+
+        // (3) There now are two active games, which should give Lucy the disambiguation dialog.
+        lucy.respondToDialog({ listitem: 0 /* First game with Gunther */ });
+
+        assert.isTrue(await lucy.issueCommand('/bubblegame watch'));
+        assert.deepEqual(lucy.getLastDialogAsTable().rows, [
+            [
+                'Bubble',
+                format('{%s}%s{FFFFFF}', gunther.colors.currentColor.toHexRGB(), gunther.name),
+            ],
+            [
+                'Bubble',
+                format('{%s}%s{FFFFFF}', russell.colors.currentColor.toHexRGB(), russell.name),
+            ],
+        ]);
+
+        // TODO: Verify that |lucy| can actually start spectating either of those games.
     });
 
     it('should support game commands that prefer a customised flow', async (assert) => {

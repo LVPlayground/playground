@@ -310,7 +310,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(gunther.gravity, Player.kDefaultGravity);
     });
 
-    it('should remove the players team if he disconnects', assert => {
+    it('should remove the players team if they disconnects', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const zone = 9;
@@ -322,7 +322,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         assert.equal(manager.playerTeam_.size, 0);
         assert.equal(gunther.team, Player.kNoTeam);
 
-        // (2) Now Russell joins too. He should be in the first team as gunther is gone.
+        // (2) Now Russell joins too. They should be in the first team as Gunther is gone.
         manager.goToDmZone(russell, zone);
 
         assert.equal(russell.team, 0);

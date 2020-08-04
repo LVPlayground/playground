@@ -89,7 +89,7 @@ export class EventMonitor extends SAMPCACEventObserver {
     }
 
     // Called when the |modelId| for the |player| has been modified. The |checksum| identifies what
-    // the actual value is, in case we might want to whitelist it.
+    // the actual value is, in case we might want to allow it.
     onPlayerGameResourceMismatch(player, modelId, componentType, checksum) {
         console.log(
             `[sampcac] Mismatch for ${player.name} for model ${modelId} (${componentType}, ` +

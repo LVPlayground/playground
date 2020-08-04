@@ -57,11 +57,11 @@ and correct, or `NULL` when they abort.
 
 Example:
 ```javascript
-const myQuestion = { /* same as in the Question example */ };
-const herQuestion = { /* another question */ };
-const hisQuestion = { /* and yet another one */ };
+const firstQuestion = { /* same as in the Question example */ };
+const secondQuestion = { /* another question */ };
+const thirdQuestion = { /* and yet another one */ };
 
-QuestionSequence.ask(player, [ myQuestion, herQuestion, hisQuesion ]).then(answers => {
+QuestionSequence.ask(player, [ firstQuestion, secondQuestion, thirdQuestion ]).then(answers => {
     if (answers)
         console.log(player.name + ' answered: ' + answers.join(', '));
     else

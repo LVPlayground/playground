@@ -35,7 +35,7 @@ describe('PlaygroundPermissionDelegate', (it, beforeEach) => {
         assert.isFalse(delegate.canExecuteCommand(gunther, null, command, /* verbose= */ false));
         assert.isFalse(delegate.canExecuteCommand(gunther, null, subCommand, /* verbose= */ false));
 
-        // (2) When the level of |command| has been changed to Player, it should work for him.
+        // (2) When the level of |command| has been changed to Player, it should work for them.
         delegate.setCommandLevel(command, Player.LEVEL_ADMINISTRATOR);
 
         assert.isTrue(delegate.canExecuteCommand(gunther, null, command, /* verbose= */ false));

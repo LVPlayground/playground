@@ -141,7 +141,7 @@ export class CommunicationManager {
         }
 
         // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
-        // not trying to make everyone else on the server go crazy by... overcommunicating.
+        // not trying to overwhelm everyone on the server by... overcommunicating.
         if (this.spamTracker_.isSpamming(player, unprocessedMessage))
             return;
 

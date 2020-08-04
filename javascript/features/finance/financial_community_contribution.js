@@ -169,7 +169,7 @@ export class FinancialCommunityContribution {
     }
 
     // Returns the configured collection delay in seconds. This method will clamp the delay to a
-    // valid range of [5, 1800] seconds, to avoid crazy values.
+    // valid range of [5, 1800] seconds, to avoid out-of-range values.
     getCollectionDelaySec() {
         const configuredDelay =
             this.settings_().getValue('financial/community_contribution_cycle_sec');

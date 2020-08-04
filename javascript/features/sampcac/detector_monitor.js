@@ -3,11 +3,10 @@
 // be found in the LICENSE file.
 
 import Abuse from 'features/abuse/abuse.js';
-import { SAMPCACNatives } from 'features/sampcac/sampcac_natives.js';
 
-// Whitelist for macro detection keys that we'll ignore. Quite a few of the function keys are
+// Allow list for macro detection keys that we'll ignore. Quite a few of the function keys are
 // inccorectly being detected as marcos by SAMPCAC.
-const kMarcoWhitelist = new Set([
+const kMacroAllowList = new Set([
     /* VK_RETURN= */ 13,
     /* VK_NUMLOCK= */ 144,
     /* VK_SCROLL= */ 145,
@@ -101,8 +100,8 @@ export class DetectorMonitor {
     // Reports that the |player| has executed a macro with the |keyId|, which is one of the common
     // virtual key codes: http://cherrytree.at/misc/vk.htm
     reportMacro(player, keyId) {
-        if (kMarcoWhitelist.has(keyId))
-            return;  // the |keyId| has been whitelisted due to frequent innocent reports
+        if (kMacroAllowList.has(keyId))
+            return;  // the |keyId| has been allowed due to frequent innocent reports
 
         if (this.isRateLimited(player, DetectorMonitor.kTypeMacro))
             return;  // the report will be rate limited

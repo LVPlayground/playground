@@ -613,7 +613,7 @@
   "VEHICLE_SAVED": "@success The %s has been %s in the database.",
   "VEHICLE_SEIZE_DRIVER": "@error %s is already driving your vehicle!",
   "VEHICLE_SEIZE_DRIVER_SELF": "@error You already are the driver of your vehicle!",
-  "VEHICLE_SEIZE_ON_FIRE": "@error The vehicle is on fire, you crazy! Get out instead!",
+  "VEHICLE_SEIZE_ON_FIRE": "@error The vehicle is on fire, you silly! Get out instead!",
   "VEHICLE_SEIZE_ON_FOOT": "@error You need to be in a vehicle in order to use this command.",
   "VEHICLE_SEIZED": "@success You've seized the vehicle, on you go.",
   "VEHICLE_SPAWN_CREATED": "@success Your %s has been created!",

@@ -169,7 +169,7 @@ describe('HouseManager', (it, beforeEach) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         await gunther.identify({ userId: 42 });
 
-        // Teleport Gunther to the entrance of his house, making him enter it.
+        // Teleport Gunther to the entrance of his house, making them enter it.
         gunther.position = new Vector(500, 500, 500);
 
         let maxticks = 10;

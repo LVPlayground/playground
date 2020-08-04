@@ -60,8 +60,8 @@ export class DeathMatchManger {
         player.respawn(); // This will call onPlayerSpawn and spawn the player on the right spot.
     }
 
-    // The player decided to leave so we will make him re-spawn. The player will be killed so that 
-    // the person who last hit him will get the kill to avoid abuse.
+    // The player decided to leave so we will make them re-spawn. The player will be killed so that
+    // the person who last hit them will get the kill to avoid abuse.
     leave(player) {
         this.restoreDefaultPlayerStatus(player);
 
@@ -314,7 +314,7 @@ export class DeathMatchManger {
         textDraw.hideForPlayer(player);
     }
 
-    // When a player spawns while in the mini game we want to teleport him back.
+    // When a player spawns while in the mini game we want to teleport them back.
     onPlayerSpawn(player) {
         // The player is playing in a death match
         if (this.playersInDeathMatch_.has(player)) {

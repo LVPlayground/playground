@@ -89,7 +89,7 @@ describe('BalancedTeamsResolver', (it, beforeEach) => {
         for (const [ player, score ] of resolver.computePlayerScores([ gunther, russell, lucy ]))
             scores[player.name] = score;
         
-        // Verify that the scores are what we expect them to be. Gunther wins because he's first
+        // Verify that the scores are what we expect them to be. Gunther wins because they're first
         // in regards to kill count, which we carry most.
         assert.deepEqual(scores, {
             Gunther: 110,
@@ -117,8 +117,8 @@ describe('BalancedTeamsResolver', (it, beforeEach) => {
         assert.isTrue(teams[DeathmatchGame.kTeamAlpha].has(russell));
         assert.isTrue(teams[DeathmatchGame.kTeamBravo].has(lucy));
 
-        // (2) Have Gunther join the game. Team Bravo is the weaker team, so he should be slotted in
-        // there to balance things out more evenly.
+        // (2) Have Gunther join the game. Team Bravo is the weaker team, so they should be slotted
+        // in there to balance things out more evenly.
         teams[resolver.resolveForPlayer(gunther)].add(gunther);
 
         assert.equal(teams[DeathmatchGame.kTeamAlpha].size, 1);

@@ -28,7 +28,7 @@ describe('VehicleCommands', (it, beforeEach) => {
         await manager.loadVehicles();
     });
 
-    // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
+    // Creates a vehicle for |player| having the |modelId| and has them enter the vehicle.
     function createVehicleForPlayer(player, { modelId = 411 /* Infernus */ } = {}) {
         const streamableVehicle = manager.createVehicle(player, modelId);
         if (!streamableVehicle || !streamableVehicle.live)

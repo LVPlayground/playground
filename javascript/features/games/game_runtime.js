@@ -51,7 +51,10 @@ export class GameRuntime extends GameActivity {
     // Gets the settings map that defines how this game should be ran.
     get settingsForTesting() { return this.settings_; }
 
-    // Getst the state the game is in. Only exposed for testing purposes.
+    // Gets the spectate group that can be observed when watching this game.
+    get spectateGroup() { return this.spectateGroup_; }
+
+    // Gets the state the game is in. Only exposed for testing purposes.
     get state() { return this.state_; }
 
     // Gets the virtual world that has bene allocated to this game.
@@ -153,9 +156,6 @@ export class GameRuntime extends GameActivity {
 
         // Serialize the |player|'s state so that we can take them back after the game.
         player.serializeState(/* restoreOnSpawn= */ false);
-        
-        // Add the |player| to the list of folks who can be watched.
-        this.spectateGroup_.addPlayer(player);
 
         // Tell the manager about the player now being engaged in this game.
         this.manager_.setPlayerActivity(player, this);
@@ -163,6 +163,9 @@ export class GameRuntime extends GameActivity {
 
         // Formally introduce the |player| to the game.
         await this.game_.onPlayerAdded(player);
+
+        // Add the |player| to the list of folks who can be watched.
+        this.spectateGroup_.addPlayer(player);
 
         // If the game had already started, we need to immediately spawn the |player| as well and
         // tell the other players that they have joined the game.
@@ -191,15 +194,15 @@ export class GameRuntime extends GameActivity {
 
         this.leaving_.add(player);
 
+        // Remove the |player| from the list of folks who can be watched.
+        this.spectateGroup_.removePlayer(player);
+
         // First remove the |player| from the game.
         try {
             await this.game_.onPlayerRemoved(player);
         } catch (exception) {
             console.log(exception);
         }
-
-        // Remove the |player| from the list of folks who can be watched.
-        this.spectateGroup_.removePlayer(player);
 
         this.manager_.setPlayerActivity(player, null);
         this.players_.delete(player);

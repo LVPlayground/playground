@@ -302,7 +302,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
                 case 1: ShowPlayerDialog(playerid, DIALOG_COMMANDS_COMMUNICATION, DIALOG_STYLE_MSGBOX, "Communication commands", "@ (contact crew)\r\n# (VIP-chat)\r\n! (Gang-chat)\r\n/me\r\n/pm\r\n/r(eply)\r\n/ircpm\r\n/call\r\n/answer\r\n/hangup\r\n/ignore\r\n/unignore\r\n/ignored", "Continue", "Exit");
 			    case 2: ShowPlayerDialog(playerid, DIALOG_COMMANDS_TELEPORTATION, DIALOG_STYLE_MSGBOX, "Teleportation commands", "/locations\r\n/taxi\r\n/tow\r\n/tp\r\n/ctp\r\n/dive\r\n/cardive\r\n/locate\r\n/tune\r\n/world", "Continue", "Exit");
-                case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs\r\n/deathmatch", "Continue", "Exit");
+                case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs\r\n/deathmatch\r\n/weapons", "Continue", "Exit");
                 case 4: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MONEY, DIALOG_STYLE_MSGBOX, "Money commands", "/properties\r\n/buy\r\n/sell\r\n/export\r\n/bank\r\n/withdraw\r\n/balance\r\n/borrow", "Continue", "Exit");
             }
             return 1;

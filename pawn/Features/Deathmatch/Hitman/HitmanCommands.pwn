@@ -52,8 +52,13 @@ class HitmanCommands {
     @command("hitman")
     public onHitmanCommand(playerId, params[]) {
         new bountyAmount = Command->integerParameter(params, 1);
-        if (Command->parameterCount(params) != 2 || bountyAmount < 1) {
+        if (Command->parameterCount(params) != 2) {
             SendClientMessage(playerId, Color::Information, "Usage: /hitman [player] [amount]");
+            return 1;
+        }
+
+        if (bountyAmount <= 0) { 
+            SendClientMessage(playerId, Color::Error, "Bounty can't be zero or a negative integer");
             return 1;
         }
 

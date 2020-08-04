@@ -93,8 +93,8 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case BonusKill:                         return 7500;
         case BonusMinigame:                     return 7500;
         case CarDiveCommand:                    return 1000;
-        case ChaseEscaped:                      return 2500;
-        case ChaseWinner:                       return 5000;
+        case ChaseEscaped:                      return 5000;
+        case ChaseWinner:                       return 10000;
         case CustomizationShopOwnerShare:       return 150;
         case DeathDropMoneyPercentage:          return 50;
         case DeathmatchChampion:                return 25000;
@@ -123,7 +123,7 @@ GetEconomyValue(EconomyValueType: type, inputValue = 0) {
         case TeleportWithVehicle:               return 2500;
         case TeleportWithoutVehicle:            return 1000;
         case TuneCommand:                       return 1250;
-        case VehicleCrusherReward:              return 2000;
+        case VehicleCrusherReward:              return 42000;
         case VehicleExportReward:               return floatround(inputValue /* vehicle health [371-1000] */ * 45 * 1.45);
         case VehicleExportRewardOwnerShare:     return floatround(inputValue /* vehicle health [371-1000] */ * 45 * 1.45 * 0.1);
         case WantedLevelAward:                  return 4775 * inputValue /* wanted level stars */;

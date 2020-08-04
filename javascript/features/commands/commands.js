@@ -16,6 +16,10 @@ export default class Commands extends Feature {
         server.commandManager.buildCommand('credits')
             .description('Tells you which amazing folks made LVP happen.')
             .build(InfoDialogCommand.create('data/commands/credits.json'));
+        
+        server.commandManager.buildCommand('discord')
+            .description('Displays information on how to join our Discord server.')
+            .build(InfoDialogCommand.create('data/commands/discord.json'));
 
         server.commandManager.buildCommand('guide')
             .description('Displays a useful guide for temporary administrators.')
@@ -45,6 +49,7 @@ export default class Commands extends Feature {
         this.positioningCommands_.dispose();
 
         server.commandManager.removeCommand('credits');
+        server.commandManager.removeCommand('discord');
         server.commandManager.removeCommand('guide');
         server.commandManager.removeCommand('help');
         server.commandManager.removeCommand('irc');

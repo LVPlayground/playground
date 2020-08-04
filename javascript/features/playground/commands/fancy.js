@@ -44,11 +44,12 @@ export default class FancyCommand extends Command {
                 pawnInvoke('RemovePlayerAttachedObject', 'ii', target.id, 0);
 
                 player.sendMessage(
-                    Message.COMMAND_SUCCESS, target.name + ' is not fancy anymore :(.');
+                    Message.COMMAND_SUCCESS, target.name + ' is not fancy anymore :(');
                 break;
 
             case 'parrot':
             case 'cow':
+            case 'shark':
                 this.fancy_.set(target, type);
                 this.onPlayerSpawn({ playerid: target.id });
 
@@ -57,7 +58,7 @@ export default class FancyCommand extends Command {
                 break;
 
             default:
-                player.sendMessage(Message.COMMAND_USAGE, '/fancy [player] [none/cow/parrot]');
+                player.sendMessage(Message.COMMAND_USAGE, '/fancy [player] [none/cow/shark/parrot]');
                 break;
         }
     }
@@ -75,6 +76,11 @@ export default class FancyCommand extends Command {
             case 'parrot':
                 pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffffii', player.id, 0, 19079, 16,
                            0.12, 0.05, 0, 180, 270, 0, 1, 1, 1, 0xFFFFFF00, 0xFFFFFF00);
+                break;
+
+           case 'shark':
+               pawnInvoke('SetPlayerAttachedObject', 'iiiifffffffff',  player.id, 0, 1608, 8,
+                         -0.20, -2 , 0, 180, 270, 190, 1, 1, 1);
                 break;
 
             case 'cow':

@@ -5,10 +5,12 @@
 import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameBase } from 'features/games/game_base.js';
-import { GameDescription, kDefaultTickIntervalMs } from 'features/games/game_description.js';
+import { GameDescription } from 'features/games/game_description.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
 import { Vector } from 'base/vector.js';
+
+import { runGameLoop } from 'features/games/game_test_helpers.js';
 
 describe('GameRuntime', (it, beforeEach) => {
     let finance = null;
@@ -47,16 +49,6 @@ describe('GameRuntime', (it, beforeEach) => {
             await runtime.addPlayer(player);
         
         return runtime;
-    }
-
-    // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
-    // deterministic manner to match what would happen in a production environment.
-    async function runGameLoop() {
-        for (let tick = 0; tick <= 2; ++tick) {
-            await server.clock.advance(kDefaultTickIntervalMs);
-            for (let i = 0; i < 5; ++i)
-                await Promise.resolve();
-        }
     }
 
     it('should serialize and later on restore participant states', async (assert) => {

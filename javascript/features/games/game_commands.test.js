@@ -4,13 +4,14 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 import { GameCommandParams } from 'features/games/game_command_params.js';
-import { GameDescription, kDefaultTickIntervalMs } from 'features/games/game_description.js';
+import { GameDescription } from 'features/games/game_description.js';
 import { GameRegistration } from 'features/games/game_registration.js';
 import { GameRuntime } from 'features/games/game_runtime.js';
 import { Game } from 'features/games/game.js';
 import { Setting } from 'entities/setting.js';
 
 import { format } from 'base/format.js';
+import { runGameLoop } from 'features/games/game_test_helpers.js';
 
 describe('GameCommands', (it, beforeEach) => {
     let commands = null;
@@ -34,16 +35,6 @@ describe('GameCommands', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
         lucy = server.playerManager.getById(/* Lucy= */ 2);
     });
-
-    // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
-    // deterministic manner to match what would happen in a production environment.
-    async function runGameLoop() {
-        for (let tick = 0; tick <= 2; ++tick) {
-            await server.clock.advance(kDefaultTickIntervalMs);
-            for (let i = 0; i < 5; ++i)
-                await Promise.resolve();
-        }
-    }
 
     it('should be able to create and remove commands on demand', assert => {
         class MyGame extends Game {}

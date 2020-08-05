@@ -5,7 +5,7 @@
 import { Color } from 'base/color.js';
 import { DeathmatchGame } from 'features/games_deathmatch/deathmatch_game.js';
 
-import { kDefaultTickIntervalMs } from 'features/games/game_description.js';
+import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
 
 describe('GamesDeathmatch', (it, beforeEach) => {
     let feature = null;
@@ -21,26 +21,6 @@ describe('GamesDeathmatch', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
         settings = server.featureManager.loadFeature('settings');
     });
-
-    // Returns the Game instance of the currently running game. When there are multiple games live
-    // on the server, only the first will be returned.
-    function getGameInstance() {
-        if (!games.manager_.runtimes_.size)
-            throw new Error('There currently are no running games on the server.');
-
-        // Return the Game instance, which is what this layer cares about.
-        return [ ...games.manager_.runtimes_ ][0].game_;
-    }
-
-    // Runs the loop that keeps the game alive, i.e. continues to fire timers and microtasks in a
-    // deterministic manner to match what would happen in a production environment.
-    async function runGameLoop() {
-        for (let tick = 0; tick <= 2; ++tick) {
-            await server.clock.advance(kDefaultTickIntervalMs);
-            for (let i = 0; i < 5; ++i)
-                await Promise.resolve();
-        }
-    }
 
     // Indices for the automatically inserted options in the customization menu.
     const kStartGameIndex = 0;

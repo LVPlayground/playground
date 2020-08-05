@@ -86,11 +86,6 @@ lvp_chase(playerId, params[]) {
         return 1;
     }
 
-    if (ShipManager->isPlayerWalkingOnShip(subjectId)) {
-        SendClientMessage(playerId, Color::Error, "This player is currently on the ship.");
-        return 1;
-    }
-
     CChase__Start(subjectId);
 
     format(g_message, sizeof(g_message), "%s (Id:%d) has started the chase on %s (Id:%d).",
@@ -151,9 +146,6 @@ lvp_fetch(playerId, params[]) {
         SetVehicleVirtualWorld(GetPlayerVehicleID(subjectId), GetPlayerVirtualWorld(playerId));
         LinkVehicleToInterior(GetPlayerVehicleID(subjectId), GetPlayerInterior(playerId));
     } else {
-        if (ShipManager->isPlayerWalkingOnShip(playerId))
-            DamageManager(subjectId)->setFighting(Time->currentTime() - 11);
-
         SetPlayerPos(subjectId, position[0] + 3, position[1], position[2]);
     }
 

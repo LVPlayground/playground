@@ -502,12 +502,6 @@ OnWaterFightCmdText(playerid)
         return 1;
     }
 
-    if (ShipManager->isPlayerWalkingOnShip(playerid))
-    {
-        ShowBoxForPlayer(playerid, "You should get off the ship to use this command!");
-        return 1;
-    }
-
     if(waterFightGetState() > WATER_FIGHT_STATE_SIGNUP)
     {
         ShowBoxForPlayer(playerid, "Water fight is currently in progress! Try again later!.");

@@ -124,11 +124,6 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (ShipManager->isPlayerWalkingOnShip(playerId)) {
-            SendClientMessage(playerId, Color::Error, "You can't change your look while on the ship.");
-            return 1;
-        }
-
         VeryImportantPlayersManager->changeVipLook(playerId, params[0]);
 
         return 1;

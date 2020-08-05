@@ -83,6 +83,7 @@ Feature                                          | Code Health | Description
 [Location](location/)                            | ❓ 2020     | -
 [NuwaniCommands](nuwani_commands/)               | ✔ 2020     | The `/nuwani` command, enabling Management to control the bot system.
 [NuwaniDiscord](nuwani_discord/)                 | ✔ 2020     | Provides Discord support for the Nuwani bot system.
+[PirateShip](pirate_ship/)                       | ✔ 2020     | Implements behaviour for the Pirate Ship found in Las Venturas.
 [PlayerCommands](player_commands/)               | ✔ 2020     | Provides commands for the player also useable for admins. E.g. to buy weapons.
 [PlayerFavours](player_favours/)                 | ❓ 2020     | -
 [PlayerSettings](player_settings/)               | ❓ 2020     | -

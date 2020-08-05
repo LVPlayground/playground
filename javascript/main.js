@@ -83,14 +83,20 @@ testRunner.run('.*\.test\.js').then(time => {
         'account', 'animations', 'player_commands', 'player_favours', 'player_settings', 
         'leaderboard', 'teleportation',
 
-        // Communication features
-        'communication_commands', 'gunther', 'reaction_tests',
-
         // -----------------------------------------------------------------------------------------
         // Regular features: Communication
         // -----------------------------------------------------------------------------------------
 
+        'communication_commands',
+        'gunther',
         'nuwani_discord',
+        'reaction_tests',
+
+        // -----------------------------------------------------------------------------------------
+        // Regular features: Gameplay
+        // -----------------------------------------------------------------------------------------
+
+        'pirate_ship',
 
         // -----------------------------------------------------------------------------------------
         // Regular features: Games and minigames

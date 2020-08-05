@@ -53,6 +53,7 @@ import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
 import NuwaniDiscord from 'features/nuwani_discord/nuwani_discord.js';
+import PirateShip from 'features/pirate_ship/pirate_ship.js';
 import PlayerColors from 'features/player_colors/player_colors.js';
 import PlayerCommands from 'features/player_commands/player_commands.js';
 import PlayerDecorations from 'features/player_decorations/player_decorations.js';
@@ -123,6 +124,7 @@ class MockServer {
             limits: Limits,
             nuwani: MockNuwani,
             nuwani_discord: NuwaniDiscord,
+            pirate_ship: PirateShip,
             player_colors: PlayerColors,
             player_commands: PlayerCommands,
             player_decorations: PlayerDecorations,

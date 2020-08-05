@@ -5,6 +5,8 @@
 import { Countdown } from 'features/games_deathmatch/interface/countdown.js';
 import { Objective } from 'features/games_deathmatch/objectives/objective.js';
 
+import { difference } from 'base/set_extensions.js';
+
 // Timed objective, where the game is limited to a certain period of time. A countdown will be
 // displayed on each participant's screen telling them about how much time is remaining.
 export class TimedObjective extends Objective {
@@ -41,14 +43,14 @@ export class TimedObjective extends Objective {
         const participants = [];
 
         // (1) Get all the necessary information from the participants.
-/*        for (const [ player, state ] of this.#state_) {
-            const statistics = player.stats.diff(state.statistics);
+        for (const player of this.game.players) {
+            const statistics = this.game.getStatisticsForPlayer(player);
             participants.push({
                 player,
                 kills: statistics.killCount,  // primary sort
                 damage: statistics.damageGiven,  // secondary sort
-            })
-        }*/
+            });
+        }
 
         // (2) Sort them in ascending order. Kill count primary, damage given secondary.
         participants.sort((left, right) => {
@@ -64,7 +66,19 @@ export class TimedObjective extends Objective {
 
         // (4) Mark all the remaining |participants| as losers in the game.
         for (const { player, kills } of participants)
-            await this.game.playerLost(player, kills);
+            this.game.playerLost(player, kills);
+    }
+
+    // Called when the given |player| has left the game. We never remove the winner, when the time
+    // ends, which also allows for the case where all participants but one leave the game.
+    async onPlayerRemoved(player) {
+        await super.onPlayerRemoved(player);
+
+        // If there are only two players left in the game, with the |player| leaving, we'll declare
+        // the remaining participant as the winner of the match.
+        const remainingPlayers = difference(this.game.players, new Set([ player ]));
+        if (remainingPlayers.size === 1)
+            this.game.playerWon([ ...remainingPlayers ][0]);
     }
 
     // Called when the game has finished, and everything is shutting down.

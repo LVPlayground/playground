@@ -56,6 +56,9 @@ export class DeathmatchGame extends GameBase {
     // Map of Player instance to DeathmatchPlayerState instance for all participants.
     #state_ = new Map();
 
+    // Gets access to the game's objective. Only to be used for testing purposes.
+    get objectiveForTesting() { return this.#objective_; }
+
     // ---------------------------------------------------------------------------------------------
 
     // Returns whether teams will be used for this game.

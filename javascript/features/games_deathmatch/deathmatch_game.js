@@ -4,11 +4,13 @@
 
 import { BalancedTeamsResolver } from 'features/games_deathmatch/teams/balanced_teams_resolver.js';
 import { Color } from 'base/color.js';
-import { Countdown } from 'features/games_deathmatch/interface/countdown.js';
+import { ContinuousObjective } from 'features/games_deathmatch/objectives/continuous_objective.js';
 import { DeathmatchPlayerState } from 'features/games_deathmatch/deathmatch_player_state.js';
 import { FreeForAllResolver } from 'features/games_deathmatch/teams/free_for_all_resolver.js';
 import { GameBase } from 'features/games/game_base.js';
+import { LivesObjective } from 'features/games_deathmatch/objectives/lives_objective.js';
 import { RandomizedTeamsResolver } from 'features/games_deathmatch/teams/randomized_teams_resolver.js';
+import { TimedObjective } from 'features/games_deathmatch/objectives/timed_objective.js';
 
 // Colours that will be assigned to participants of certain teams.
 const kTeamColorAlpha = Color.fromHex('FF3D00AA');  // red
@@ -41,8 +43,6 @@ export class DeathmatchGame extends GameBase {
     static kTeamsFreeForAll = 'Free for all';
     static kTeamsRandomized = 'Randomized teams';
 
-    #countdown_ = null;
-    #expireTime_ = null;
     #lagCompensation_ = null;
     #mapMarkers_ = DeathmatchGame.kMapMarkersEnabled;
     #objective_ = null;
@@ -84,9 +84,6 @@ export class DeathmatchGame extends GameBase {
         return state.team;
     }
 
-    // Gets the objective of the game, for testing purposes only.
-    get objectiveForTesting() { return this.#objective_; }
-
     // ---------------------------------------------------------------------------------------------
 
     async onInitialized(settings) {
@@ -112,28 +109,27 @@ export class DeathmatchGame extends GameBase {
 
         // Force the game to be continuous if this has been configured by the game's description,
         // ignoring the objective set in |settings| - this would lead to race conditions.
-        if (this.continuous)
-            this.#objective_ = { type: DeathmatchGame.kObjectiveContinuous };
-        else
-            this.#objective_ = settings.get('deathmatch/objective');
+        const objective = this.continuous ? { type: DeathmatchGame.kObjectiveContinuous }
+                                          : settings.get('deathmatch/objective');
 
-        switch (this.#objective_.type) {
-            case DeathmatchGame.kObjectiveLastManStanding:
-            case DeathmatchGame.kObjectiveBest:
-            case DeathmatchGame.kObjectiveFirstTo:
+        switch (objective.type) {
             case DeathmatchGame.kObjectiveContinuous:
+                this.#objective_ = new ContinuousObjective();
+                break;
+
+            case DeathmatchGame.kObjectiveLastManStanding:
+                this.#objective_ = new LivesObjective();
                 break;
 
             case DeathmatchGame.kObjectiveTimeLimit:
-                this.#countdown_ = new Countdown();
-                this.#expireTime_ =
-                    server.clock.monotonicallyIncreasingTime() + this.#objective_.seconds * 1000;
-
+                this.#objective_ = new TimedObjective();
                 break;
 
             default:
-                throw new Error('Invalid value given for the objective: ' + this.#objective_.type);
+                throw new Error('Invalid value given for the objective: ' + objective.type);
         }
+
+        await this.#objective_.initialize(this, objective);
 
         switch (settings.get('deathmatch/teams')) {
             case DeathmatchGame.kTeamsBalanced:
@@ -161,18 +157,16 @@ export class DeathmatchGame extends GameBase {
         // Initialize and store the |player|'s current state.
         this.#state_.set(player, new DeathmatchPlayerState(player));
 
-        // Display the countdown for the |player| if one has been created.
-        if (this.#countdown_)
-            this.#countdown_.createForPlayer(player);
-
         // Disable lag compensation for the |player| when this has been configured.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = /* disabled= */ 0;
 
         // Resolve the player's team right now when they join the game late, and there already are
         // existing, divided teams. For individual games this will set up their marker settings.
-        if (this.#teamResolved_)
+        if (this.#teamResolved_) {
             this.resolveTeamForPlayer(player);
+            await this.#objective_.onPlayerAdded(player);
+        }
     }
 
     // Called when the given |player| is spawning into the world. Here they will be assigned their
@@ -205,17 +199,7 @@ export class DeathmatchGame extends GameBase {
     // have to remove the player from it, or mark them down as having lost another live.
     async onPlayerDeath(player, killer, reason) {
         await super.onPlayerDeath(player, killer, reason);
-
-        switch (this.#objective_.type) {
-            case DeathmatchGame.kObjectiveLastManStanding:
-                await this.playerLost(player);
-                break;
-            
-            case DeathmatchGame.kObjectiveContinuous:
-                // This case is listed to trigger your <ctrl>+<f> function. When a deathmatch game
-                // is continuous, it won't stop until the last player uses the "/leave" command.
-                break;
-        }
+        await this.#objective_.onPlayerDeath(player, killer, reason);
     }
 
     // Called when the given |player| has been removed from the game, either because they've lost,
@@ -238,10 +222,6 @@ export class DeathmatchGame extends GameBase {
         // Reset the player's weapons so that they can't take game-weapons with them.
         player.resetWeapons();
 
-        // Destroy the game's countdown for the |player| if one had been created.
-        if (this.#countdown_)
-            this.#countdown_.destroyForPlayer(player);
-
         // Flip lag compensation back to its default value if it was modified.
         if (!this.#lagCompensation_)
             player.syncedData.lagCompensationMode = Player.kDefaultLagCompensationMode;
@@ -255,21 +235,9 @@ export class DeathmatchGame extends GameBase {
         // Clear the player-specific state we had stored in this game.
         this.#state_.delete(player);
 
-        // For most objectives, having only a single remaining player in the game does not make
-        // sense. Remove them as a winner in that case. We do need to consider cases where we remove
-        // players in a loop, e.g. at the end of a team-based game, where this is undesirable.
-        switch (this.#objective_.type) {
-            case DeathmatchGame.kObjectiveLastManStanding:
-                if (this.#state_.size === 1)
-                    await this.playerWon([ ...this.#state_.keys() ][0]);
-
-                break;
-
-            case DeathmatchGame.kObjectiveContinuous:
-                // Allow single-player continuous games. They're likely betting on the fact that
-                // other players will join soon, or just checking out the different areas.
-                break;
-        }
+        // Let the objectives know that the given |player| has left the game, as most games will end
+        // when only a single participant remains.
+        await this.#objective_.onPlayerRemoved(player);
     }
 
     // Shares the |statistics| with the |player|, based on how they've performed this game. A few
@@ -301,58 +269,14 @@ export class DeathmatchGame extends GameBase {
     // countdown will decrement, and we'll eventually finish the game.
     async onTick() {
         await super.onTick();
-
-        if (this.#objective_.type !== DeathmatchGame.kObjectiveTimeLimit || !this.#countdown_)
-            return;  // not a time limited game
-
-        const remaining = this.#expireTime_ - server.clock.monotonicallyIncreasingTime();
-        if (remaining > 0) {
-            this.#countdown_.update(Math.floor(remaining / 1000));
-            return;
-        }
-
-        // The game has ended. Create a tally of all remaining participants, order them by number of
-        // kills in ascending order, and then drop them out in sequence.
-        const participants = [];
-
-        // (1) Get all the necessary information from the participants.
-        for (const [ player, state ] of this.#state_) {
-            const statistics = player.stats.diff(state.statistics);
-            participants.push({
-                player,
-                kills: statistics.killCount,  // primary sort
-                damage: statistics.damageGiven,  // secondary sort
-            })
-        }
-
-        // (2) Sort them in ascending order. Kill count primary, damage given secondary.
-        participants.sort((left, right) => {
-            if (left.kills === right.kills)
-                return left.damage > right.damage ? 1 : -1;
-
-            return left.kills > right.kills ? 1 : -1;
-        });
-
-        // (3) Pop the winner from the |participants|. We'll handle them separately.
-        const winner = participants.pop();
-
-        // (4a) Mark all the remaining |participants| as losers in the game.
-        for (const { player, kills } of participants)
-            await this.playerLost(player, kills);
-        
-        // (4b) Mark the |winner| as the one who has won this game.
-        await this.playerWon(winner.player, winner.kills);
+        await this.#objective_.onTick();
     }
 
     // Called after the game has finished. Clean up state that has been initialized for the game,
     // as it will no longer be required hereafter.
     async onFinished() {
         await super.onFinished();
-
-        if (this.#countdown_) {
-            this.#countdown_.dispose();
-            this.#countdown_ = null;
-        }
+        await this.#objective_.finalize();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -371,8 +295,10 @@ export class DeathmatchGame extends GameBase {
         }
 
         // Iteration (2): apply all the remaining settings and store state for the |player|.
-        for (const { player, team } of resolution)
+        for (const { player, team } of resolution) {
             this.resolveTeamForPlayer(player, team);
+            this.#objective_.onPlayerAdded(player);
+        }
 
         this.#teamResolved_ = true;
     }

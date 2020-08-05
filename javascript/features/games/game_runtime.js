@@ -6,7 +6,6 @@ import { GameActivity } from 'features/games/game_activity.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 import { SpectateGroup } from 'features/spectate/spectate_group.js';
 
-import { difference } from 'base/set_extensions.js';
 import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate

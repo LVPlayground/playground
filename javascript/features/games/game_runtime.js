@@ -189,37 +189,59 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateRunning)
             throw new Error('Players may only be removed from the game while it is running.');
 
-        if (this.leaving_.has(player))
-            return false;  // the |player| is already in progress of leaving, which is asynchronous
+        // If the |player| already has been marked as someone leaving, ignore the call.
+        if (this.leaving_.has(player) || !this.players_.has(player))
+            return false;
 
         this.leaving_.add(player);
 
-        // Remove the |player| from the list of folks who can be watched.
-        this.spectateGroup_.removePlayer(player);
+        // If there are multiple players in the leaving queue, we add the |player| to it in order to
+        // make sure that removals happen in the intended order, irrespective of |disconnecting|.
+        if (this.leaving_.size >= 2)
+            return false;
 
-        // First remove the |player| from the game.
-        try {
-            await this.game_.onPlayerRemoved(player);
-        } catch (exception) {
-            console.log(exception);
+        const removedPlayers = [];
+
+        // Iterate over the players who are leaving the game. We want to execute those in-order,
+        // so reentrancy to removePlayer() will be handled as expected.
+        while (this.leaving_.size) {
+            const target = [ ...this.leaving_ ].shift();
+
+            // (a) Remove the |target| from the spectate groups.
+            this.spectateGroup_.removePlayer(target);
+
+            // (b) Remove the |target| from the actual Game instance. Run this in a try/catch block
+            // to avoid Game issues from bugging the player.
+            try {
+                await this.game_.onPlayerRemoved(target);
+            } catch (exception) {
+                console.log(`Unable to remove ${target.name} from ${this}:`, exception);
+            }
+
+            // (c) Clear up their internal state, which also enables them to sign up for another
+            // game or activity if they please to do so.
+            this.manager_.setPlayerActivity(target, null);
+            this.players_.delete(target);
+
+            // (d) Unless the |target| has disconnected since, restore their state in the game.
+            if (target.isConnected())
+                target.restoreState();
+
+            // (e) Clear the |target| from the queue of players who are leaving the game, and add
+            // them to the |removedPlayers| for our messaging to be consistent.
+            this.leaving_.delete(target);
+            removedPlayers.push(target);
         }
 
-        this.manager_.setPlayerActivity(player, null);
-        this.players_.delete(player);
-
-        this.leaving_.delete(player);
-
-        // Restore the |player|'s state -- back as if nothing ever happened.
-        if (!disconnecting)
-            player.restoreState();
-
-        // If the game is continuous, inform the remaining participants (if any) about the |player|
-        // having left. This might influence their decision to stick around.
-        if (this.description_.continuous) {
+        // If the game is continuous, inform the remaining participants (if any) about the list of
+        // |removedPlayers| having left. This might influence their decision to stick around.
+        if (this.description_.continuous && this.players_.size) {
             const gameName = this.description_.nameFn(this.settings_);
 
-            for (const target of difference(this.players_, this.leaving_))
-                target.sendMessage(Message.GAME_CONTINUOUS_LEFT, player.name, gameName);
+            for (const participant of this.players_) {
+                for (const target of removedPlayers)
+                    participant.sendMessage(Message.GAME_CONTINUOUS_LEFT, target.name, gameName);
+            }
         }
 
         return true;

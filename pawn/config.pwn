@@ -8,12 +8,12 @@
  */
 class Version {
     public const Major = 52;
-    public const Minor = 6;
+    public const Minor = 8;
 };
 
 // Set this to 1 if you'd like to build Las Venturas Playground in release mode. This affects
 // whether config-release.pwn tries to define the prod password salt.
-#define BuildGamemodeInReleaseMode 0
+#define BuildGamemodeInReleaseMode 1
 
 // Toggling the availability of certain features should be done by changing their values in this
 // class. Please follow existing conventions and add features based on their alphabetical order.

@@ -65,7 +65,7 @@ export class DiscordRuntime {
                 console.log(guild.members.size + ' members');
                 console.log(guild.roles.size + ' roles');
                 console.log(guild.channels.size + ' channels');
-                console.log(guild.bot + ' is our bot');
+                console.log(guild.bot.nickname + ' is our bot');
 
                 this.#guilds_.set(data.id, guild);
                 break;

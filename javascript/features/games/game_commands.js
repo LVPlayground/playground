@@ -629,7 +629,9 @@ export class GameCommands {
             return;
         }
 
-        // TODO: Watch the actual game.
+        // Make the |player| spectate the |runtime|'s spectate group. They have the ability to see
+        // all of the game's participants, and cycle through them as they please.
+        this.spectate_().spectate(player, runtime.spectateGroup);
     }
 
     // ---------------------------------------------------------------------------------------------

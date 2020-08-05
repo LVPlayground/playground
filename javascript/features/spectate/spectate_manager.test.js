@@ -42,20 +42,25 @@ describe('SpectateManager', (it, beforeEach) => {
         assert.isNull(lucy.spectateTargetForTesting);
 
         // (3) When |russell| disconnects from the server, |gunther| should move to |lucy|.
+        russell.disconnectForTesting();
 
-        // TODO
+        assert.isTrue(gunther.spectatingForTesting);
+        assert.strictEqual(gunther.spectateTargetForTesting, lucy);
 
         // (4) When |lucy|'s interior or virtual world changes, this should update for |gunther|.
-        assert.equal(gunther.virtualWorld, russell.virtualWorld);
-        assert.equal(gunther.interiorId, russell.interiorId);
+        assert.equal(gunther.virtualWorld, lucy.virtualWorld);
+        assert.equal(gunther.interiorId, lucy.interiorId);
 
-        russell.virtualWorld = 12;
-        russell.interiorId = 1;
+        lucy.virtualWorld = 12;
+        lucy.interiorId = 1;
 
         await server.clock.advance(frequency);
 
-        assert.equal(gunther.virtualWorld, russell.virtualWorld);
-        assert.equal(gunther.interiorId, russell.interiorId);
+        assert.equal(gunther.virtualWorld, lucy.virtualWorld);
+        assert.equal(gunther.interiorId, lucy.interiorId);
+
+        // (5) Stop |gunther| watching anyone at all to free up the manager.
+        manager.stopSpectate(gunther);
     });
 
     it('should be able to maintain the global spectation group', assert => {

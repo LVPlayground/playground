@@ -5,6 +5,8 @@
 import { SpectateGroup } from 'features/spectate/spectate_group.js';
 import { SpectateState } from 'features/spectate/spectate_state.js';
 
+import { shuffle } from 'base/shuffle.js';
+
 // Responsible for keeping track of which players are spectating which player groups, and maintains
 // the global player group through which all players can be spectated.
 export class SpectateManager {
@@ -154,9 +156,40 @@ export class SpectateManager {
     // ---------------------------------------------------------------------------------------------
 
     // Called when the given |group| has been updated. Will have to make sure that the interface for
-    // all people watching it will be updated as appropriate.
+    // all people watching it will be updated as appropriate. The action will depend on the
+    // behaviour specified in the group.
     onGroupUpdated(group) {
-        // TODO: Implement this function
+        for (const [ player, state ] of this.#spectating_) {
+            if (state.group !== group)
+                continue;  // the |player| is watching another group
+
+            if (group.hasPlayer(state.target))
+                continue;  // the |player|'s target is still part of the group
+
+            let identifiedSolution = false;
+
+            switch (group.abandonBehaviour) {
+                case SpectateGroup.kStopAbandonBehaviour:
+                    this.stopSpectate(player);
+                    break;
+
+                case SpectateGroup.kSwitchAbandonBehaviour:
+                    for (const target of shuffle([ ...group ])) {
+                        if (this.#spectating_.has(target))
+                            continue;  // cannot spectate others who are spectating
+
+                        identifiedSolution = true;
+
+                        this.spectate(player, group, target);
+                        break;
+                    }
+
+                    if (!identifiedSolution)
+                        this.stopSpectate(player);
+
+                    break;
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------

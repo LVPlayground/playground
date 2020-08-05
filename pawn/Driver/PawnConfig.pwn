@@ -95,6 +95,9 @@ public OnPawnConfigDataChange(PawnConfigProperty: property, Float: numberValue) 
         case kAbuseManualSawnoffDamage:
             g_abuseManualSawnoffDamage = !!intValue;
 
+        case kAbuseMaximumConnectionsPerIP:
+            g_maximumConnectionsPerIP = intValue;
+
         case kVehiclesDriftingEnabled:
             g_driftingEnabled = !!intValue;
 

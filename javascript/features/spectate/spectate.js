@@ -16,9 +16,12 @@ export default class Spectate extends Feature {
         // including administrative tools and games.
         this.markLowLevel();
 
+        // Influences behaviour and frequency of the spectation monitor.
+        const settings = this.defineDependency('settings');
+
         // The spectate manager keeps track of which players are spectating who, and makes sure that
         // their intention continues to be preseved despite player state changes.
-        this.manager_ = new SpectateManager();
+        this.manager_ = new SpectateManager(settings);
     }
 
     // ---------------------------------------------------------------------------------------------

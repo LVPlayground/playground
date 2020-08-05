@@ -4,6 +4,7 @@
 
 describe('SpectateManager', (it, beforeEach) => {
     let gunther = null;
+    let lucy = null;
     let manager = null;
     let russell = null;
 
@@ -11,8 +12,50 @@ describe('SpectateManager', (it, beforeEach) => {
         const feature = server.featureManager.loadFeature('spectate');
 
         gunther = server.playerManager.getById(/* Gunther= */ 0);
+        lucy = server.playerManager.getById(/* Lucy= */ 2);
         manager = feature.manager_;
         russell = server.playerManager.getById(/* Russell= */ 1);
+    });
+
+    it('should enable players to spectate others despite group changes', async (assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        const frequency = settings.getValue('playground/spectator_monitor_frequency_ms');
+        const group = manager.getGlobalGroup();
+
+        assert.isFalse(gunther.spectatingForTesting);
+        assert.isFalse(russell.spectatingForTesting);
+        assert.isFalse(lucy.spectatingForTesting);
+
+        // (1) |gunther| should be able to spectate |russell|.
+        assert.isTrue(manager.spectate(gunther, group, russell));
+
+        assert.isTrue(gunther.spectatingForTesting);
+        assert.isFalse(russell.spectatingForTesting);
+
+        assert.strictEqual(gunther.spectateTargetForTesting, russell);
+
+        // (2) |lucy| is unable to spectate |gunther|, as they're spectating already.
+        assert.isFalse(manager.spectate(lucy, group, gunther));
+
+        assert.isFalse(lucy.spectatingForTesting);
+        assert.isNull(lucy.spectateTargetForTesting);
+
+        // (3) When |russell| disconnects from the server, |gunther| should move to |lucy|.
+
+        // TODO
+
+        // (4) When |lucy|'s interior or virtual world changes, this should update for |gunther|.
+        assert.equal(gunther.virtualWorld, russell.virtualWorld);
+        assert.equal(gunther.interiorId, russell.interiorId);
+
+        russell.virtualWorld = 12;
+        russell.interiorId = 1;
+
+        await server.clock.advance(frequency);
+
+        assert.equal(gunther.virtualWorld, russell.virtualWorld);
+        assert.equal(gunther.interiorId, russell.interiorId);
     });
 
     it('should be able to maintain the global spectation group', assert => {

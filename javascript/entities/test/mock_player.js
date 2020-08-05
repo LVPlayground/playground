@@ -63,6 +63,9 @@ export class MockPlayer extends Player {
     #lastDialogPromise_ = null;
     #lastDialogPromiseResolve_ = null;
 
+    #spectating_ = false;
+    #spectateTarget_ = null;
+
     #streamUrl_ = null;
     #soundId_ = null;
 
@@ -355,6 +358,34 @@ export class MockPlayer extends Player {
 
     // Gets the messages that have been sent to this player.
     get messages() { return this.#messages_; }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Spectating
+    // ---------------------------------------------------------------------------------------------
+
+    spectatePlayer(player, mode = Player.kSpectateNormal) {
+        if (!this.#spectating_)
+            throw new Error('The player must be spectating before picking a target.');
+
+        this.#spectateTarget_ = player;
+    }
+
+    spectateVehicle(vehicle, mode = Player.kSpectateNormal) {
+        if (!this.#spectating_)
+            throw new Error('The player must be spectating before picking a target.');
+
+        this.#spectateTarget_ = vehicle;
+    }
+
+    get spectating() { /* this is a read-only value on the server */ }
+    set spectating(value) {
+        this.#spectating_ = !!value;
+        if (!this.#spectating_)
+            this.#spectateTarget_ = null;
+    }
+
+    get spectatingForTesting() { return this.#spectating_; }
+    get spectateTargetForTesting() { return this.#spectateTarget_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Audio

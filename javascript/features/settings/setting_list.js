@@ -129,6 +129,7 @@ export const kSettingList = [
     new Setting('playground', 'reaction_test_remember_delay_sec', Setting.TYPE_NUMBER, 150, 'How much delay should the remember tests wait for?'),
     new Setting('playground', 'reaction_test_remember_jitter_sec', Setting.TYPE_NUMBER, 90, 'How much jitter should be applied to the remember tests?'),
     new Setting('playground', 'reaction_test_unscramble_fixed', Setting.TYPE_NUMBER, 20, 'Percentage of letters that will not be moved [0-100].'),
+    new Setting('playground', 'spectator_monitor_frequency_ms', Setting.TYPE_NUMBER, 750, 'Frequency at which the spectator monitor operates.'),
 
     /** Radio related settings */
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),

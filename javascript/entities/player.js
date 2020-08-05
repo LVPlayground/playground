@@ -21,6 +21,7 @@ import { toFloat } from 'base/float.js';
 //   * Environment
 //
 //   * Interaction
+//   * Spectating
 //
 //   * Audio
 //   * Visual
@@ -88,6 +89,11 @@ export class Player extends Supplementable {
     static kSpecialActionCuffed = 24;  // does not work on skin 0 (CJ)
     static kSpecialActionCarry = 25;  // does not work on skin 0 (CJ)
     static kSpecialActionPissing = 68;
+
+    // Modes of spectating that players can be engaged in.
+    static kSpectateNormal = 0;
+    static kSpectateFixed = 1;
+    static kSpectateSide = 2;
 
     // Constants applicable to the `Player.state` property.
     static kStateNone = 0;
@@ -425,6 +431,21 @@ export class Player extends Supplementable {
 
         pawnInvoke('GameTextForPlayer', 'isii', this.id, message, time, style);
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: Spectating
+    // ---------------------------------------------------------------------------------------------
+
+    spectatePlayer(player, mode = Player.kSpectateNormal) {
+        pawnInvoke('PlayerSpectateVehicle', 'iii', this.#id_, player.id, mode);
+    }
+
+    spectateVehicle(vehicle, mode = Player.kSpectateNormal) {
+        pawnInvoke('PlayerSpectateVehicle', 'iii', this.#id_, vehicle.id, mode);
+    }
+
+    get spectating() { /* this is a read-only value on the server */ }
+    set spectating(value) { pawnInvoke('TogglePlayerSpectating', 'ii', this.#id_, value ? 1 : 0); }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Audio

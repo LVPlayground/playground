@@ -28,11 +28,17 @@ export class SpectateGroup {
     // Gets the number of players who are part of this group. May be zero.
     get size() { return this.#players_.size; }
 
+    // Provides access to the players through an iterator.
+    [Symbol.iterator]() { return this.#players_.values(); }
+
     // Adds the given |player| to the group.
     addPlayer(player) {
         this.#players_.add(player);
         this.#manager_.onGroupUpdated(this);
     }
+
+    // Returns whether the given |player| is part of this group.
+    hasPlayer(player) { return this.#players_.has(player); }
 
     // Removes the given |player| from the group.
     removePlayer(player) {

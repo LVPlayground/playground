@@ -569,6 +569,13 @@ public OnPlayerDeath(playerid, killerid, reason) {
     if (!g_isDisconnecting[playerid])
         SetPlayerHealth(playerid, 100);
 
+    // Fixes desyncs caused by killing each other with knifes.
+    if (reason == WEAPON_KNIFE && g_abuseKnifeDesyncFix) {
+        new const originalVirtualWorld = GetPlayerVirtualWorld(playerid);
+        SetPlayerVirtualWorld(playerid, originalVirtualWorld + 1);
+        SetPlayerVirtualWorld(playerid, originalVirtualWorld);
+    }
+
     // Corrects the |killerid| when the "ninja jacking" bug has been used, and issues a monitor-
     // level abuse report on the player abusing that bug, informing administrators.
     if (killerid == INVALID_PLAYER_ID &&

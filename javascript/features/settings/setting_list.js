@@ -19,6 +19,7 @@ export const kSettingList = [
     new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
     new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
     new Setting('abuse', 'kill_attribution_time_sec', Setting.TYPE_NUMBER, 10, 'Time after last hit when deaths should be attributed for.'),
+    new Setting('abuse', 'knife_desync_fix', Setting.TYPE_BOOLEAN, true, 'Whether desyncs caused by knife kills should be fixed.'),
     new Setting('abuse', 'manual_sawnoff_damage', Setting.TYPE_BOOLEAN, false, 'Whether we want to manually calculate sawn-off damage.'),
     new Setting('abuse', 'maximum_connections_per_ip', Setting.TYPE_NUMBER, 3, 'Maximum number of connections allowed per IP address.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),

@@ -30,7 +30,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
             settingsFrozen: GameDescription.kDefaultSettings,
             settings: [
                 new Setting(
-                    'deathmatch', 'objective', new ObjectiveSetting, { type: 'Last man standing' },
+                    'deathmatch', 'objective', new ObjectiveSetting, { type: 'Continuous' },
                     'Objective')
             ],
         });
@@ -57,7 +57,7 @@ describe('GameCustomSetting', (it, beforeEach) => {
             ],
             [
                 'Objective',
-                'Last man standing',
+                'Continuous',
             ]
         ]);
 
@@ -69,72 +69,30 @@ describe('GameCustomSetting', (it, beforeEach) => {
 
         assert.isTrue(settings.has('deathmatch/objective'));
         assert.typeOf(settings.get('deathmatch/objective'), 'object');
-        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Last man standing' });
+        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Continuous' });
 
-        // (3) Gunther is able to start a Last man standing game.
+        // (3) Gunther is able to start a # of lives game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Last man standing */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Number of lives... */ })).then(
+            () => gunther.respondToDialog({ inputtext: '5' /* five lives */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
         
         settings = await commands.determineSettings(description, gunther, params);
         assert.isNotNull(settings);
 
         assert.isTrue(settings.has('deathmatch/objective'));
-        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Last man standing' });
+        assert.deepEqual(settings.get('deathmatch/objective'), {
+            type: 'Number of lives...',
+            lives: 5,
+        });
 
         assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
         assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
             'Objective',
-            'Last man standing',
+            '{FFFF00}Lives (5)',
         ]);
 
-if (false) {
-        // (4) Gunther is able to start a Best of... game.
-        gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 1 /* Best of... */ })).then(
-            () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* try again */ })).then(
-            () => gunther.respondToDialog({ inputtext: '9999' /* invalid */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* try again */ })).then(
-            () => gunther.respondToDialog({ inputtext: '42' /* valid */ })).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-        
-        settings = await commands.determineSettings(description, gunther, params);
-        assert.isNotNull(settings);
-
-        assert.isTrue(settings.has('deathmatch/objective'));
-        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Best of...', kills: 42 });
-
-        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
-        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
-            'Objective',
-            '{FFFF00}Best of 42 rounds',
-        ]);
-
-        // (5) Gunther is able to start a First to... game.
-        gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
-            () => gunther.respondToDialog({ listitem: 2 /* First to... */ })).then(
-            () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* try again */ })).then(
-            () => gunther.respondToDialog({ inputtext: '9999' /* invalid */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* try again */ })).then(
-            () => gunther.respondToDialog({ inputtext: '31' /* valid */ })).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
-        
-        settings = await commands.determineSettings(description, gunther, params);
-        assert.isNotNull(settings);
-
-        assert.isTrue(settings.has('deathmatch/objective'));
-        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'First to...', kills: 31 });
-
-        assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
-        assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
-            'Objective',
-            '{FFFF00}First to 31 kills',
-        ]);
-}
-
-        // (6) Gunther is able to start a Time limit... game.
+        // (4) Gunther is able to start a Time limit... game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
             () => gunther.respondToDialog({ listitem: 1 /* Time limit... */ })).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
@@ -157,7 +115,7 @@ if (false) {
             '{FFFF00}Time limit (12 minutes)',
         ]);
 
-        // (7) Gunther is able to start a Continuous game.
+        // (5) Gunther is able to start a Continuous game.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
             () => gunther.respondToDialog({ listitem: 2 /* Continuous */ })).then(
             () => gunther.respondToDialog({ listitem: 0 /* Start the game! */ }));
@@ -171,10 +129,10 @@ if (false) {
         assert.equal(gunther.getLastDialogAsTable().rows.length, 3);
         assert.deepEqual(gunther.getLastDialogAsTable().rows[2], [
             'Objective',
-            '{FFFF00}Continuous',
+            'Continuous',  // default value
         ]);
 
-        // (8) Gunther should be able to opt out of the dialog immediately.
+        // (6) Gunther should be able to opt out of the dialog immediately.
         gunther.respondToDialog({ listitem: 2 /* Objective */ }).then(
             () => gunther.respondToDialog({ listitem: 1 /* Time limit... */ })).then(
             () => gunther.respondToDialog({ inputtext: 'banana' /* invalid */ })).then(
@@ -185,6 +143,6 @@ if (false) {
         assert.isNotNull(settings);
 
         assert.isTrue(settings.has('deathmatch/objective'));
-        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Last man standing' });
+        assert.deepEqual(settings.get('deathmatch/objective'), { type: 'Continuous' });
     });
 });

@@ -9,8 +9,7 @@ import { SpawnWeaponsSetting } from 'features/games_deathmatch/settings/spawn_we
 export class DeathmatchDescription {
     // Available values for some of the enumeration-based deathmatch options.
     static kMapMarkerOptions = ['Enabled', 'Team only', 'Disabled'];
-    static kObjectiveOptions =
-        ['Last man standing', 'Best of...', 'First to..', 'Time limit...', 'Continuous'];
+    static kObjectiveOptions = ['Continuous', 'Number of lives...', 'Time limit...'];
     static kTeamOptions = [ 'Balanced teams', 'Free for all', 'Randomized teams' ];
 
     // Whether players should be subject to lag compensation during this game.
@@ -66,23 +65,19 @@ export class DeathmatchDescription {
                 throw new Error(`[${this.name}] Invalid value given for the objective type.`);
 
             switch (options.objective.type) {
-                case 'Last man standing':
                 case 'Continuous':
                     break;
                 
-                case 'Best of...':
-                    if (!options.objective.hasOwnProperty('rounds'))
-                        throw new Error(`[${this.name}] The objective.rounds option is missing.`);
+                case 'Number of lives...':
+                    if (!options.objective.hasOwnProperty('lives'))
+                        throw new Error(`[${this.name}] The objective.lives option is missing.`);
+
                     break;
 
-                case 'First to...':
-                    if (!options.objective.hasOwnProperty('kills'))
-                        throw new Error(`[${this.name}] The objective.kills option is missing.`);
-                    break;
-                
                 case 'Time limit...':
                     if (!options.objective.hasOwnProperty('seconds'))
                         throw new Error(`[${this.name}] The objective.seconds option is missing.`);
+
                     break;
             }
 
@@ -92,8 +87,7 @@ export class DeathmatchDescription {
                 type: settings.getValue('games/deathmatch_objective_default'),
 
                 // We don't know what the given |type| is, so just duplicate the value for each...
-                rounds: settings.getValue('games/deathmatch_objective_value_default'),
-                kills: settings.getValue('games/deathmatch_objective_value_default'),
+                lives: settings.getValue('games/deathmatch_objective_value_default'),
                 seconds: settings.getValue('games/deathmatch_objective_value_default'),
             };
         }

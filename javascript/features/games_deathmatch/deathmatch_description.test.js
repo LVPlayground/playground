@@ -22,8 +22,7 @@ describe('DeathmatchDescription', it => {
                 type: settings.getValue('games/deathmatch_objective_default'),
 
                 // The specific values are duplicated for the default value.
-                rounds: settings.getValue('games/deathmatch_objective_value_default'),
-                kills: settings.getValue('games/deathmatch_objective_value_default'),
+                lives: settings.getValue('games/deathmatch_objective_value_default'),
                 seconds: settings.getValue('games/deathmatch_objective_value_default'),
             });
 
@@ -54,7 +53,7 @@ describe('DeathmatchDescription', it => {
             const description = new DeathmatchDescription(/* description= */ null, {
                 lagCompensation: true,
                 mapMarkers: 'Team only',
-                objective: { type: 'Best of...', rounds: 3 },
+                objective: { type: 'Time limit...', seconds: 180 },
                 skin: 121,
                 spawnArmour: true,
                 spawnWeapons: [ { weapon: 16, ammo: 50 } ],
@@ -65,7 +64,7 @@ describe('DeathmatchDescription', it => {
 
             assert.isTrue(description.lagCompensation);
             assert.equal(description.mapMarkers, 'Team only');
-            assert.deepEqual(description.objective, { type: 'Best of...', rounds: 3 });
+            assert.deepEqual(description.objective, { type: 'Time limit...', seconds: 180 });
             assert.equal(description.skin, 121);
             assert.isTrue(description.spawnArmour);
             assert.deepEqual(description.spawnWeapons, [ { weapon: 16, ammo: 50 } ]);

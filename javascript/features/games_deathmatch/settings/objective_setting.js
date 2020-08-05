@@ -26,11 +26,8 @@ export class ObjectiveSetting extends GameCustomSetting {
     // with the specialization given by the player, e.g. best of X.
     getCustomizationDialogValue(currentValue) {
         switch (currentValue.type) {
-            case 'Best of...':
-                return format('Best of %d rounds', currentValue.kills);
-
-            case 'First to...':
-                return format('First to %d kills', currentValue.kills);
+            case 'Number of lives...':
+                return format('Lives (%d)', currentValue.lives);
 
             case 'Time limit...':
                 return format('Time limit (%s)', timeDifferenceToString(currentValue.seconds));
@@ -49,17 +46,9 @@ export class ObjectiveSetting extends GameCustomSetting {
 
         const options = [
             [
-                'Last man standing',
-                ObjectiveSetting.prototype.applyOption.bind(this, settings, 'Last man standing')
-            ],/*
-            [
-                'Best of...',
-                ObjectiveSetting.prototype.handleBestOfSetting.bind(this, settings, player)
+                'Number of lives...',
+                ObjectiveSetting.prototype.handleNumberOfLivesSetting.bind(this, settings, player)
             ],
-            [
-                'First to...',
-                ObjectiveSetting.prototype.handleFirstToSetting.bind(this, settings, player)
-            ],*/
             [
                 'Time limit...',
                 ObjectiveSetting.prototype.handleTimeLimitSetting.bind(this, settings, player)
@@ -83,45 +72,25 @@ export class ObjectiveSetting extends GameCustomSetting {
     // Applies the given |option| as the desired objective.
     applyOption(settings, option) { settings.set('deathmatch/objective', { type: option }); }
 
-    // Handles the case where the objective should be "Best of X rounds".
-    async handleBestOfSetting(settings, player) {
-        const rounds = await Question.ask(player, {
+    // Handles the case where the objective should be "Number of lives...". This allows the person
+    // creating the game to choose a sensible number of lives for each participant.
+    async handleNumberOfLivesSetting(settings, player) {
+        const lives = await Question.ask(player, {
             question: 'Game objective',
-            message: `Please enter the number of rounds for the game.`,
+            message: `Please enter the number of lives each participant has.`,
             constraints: {
-                validation: isNumberInRange.bind(null, 2, 50),
-                explanation: 'The number of rounds must be between 2 and 50.',
-                abort: 'You need to give a reasonable number of rounds for the game.',
+                validation: isNumberInRange.bind(null, 1, 50),
+                explanation: 'The number of lives must be between 1 and 50.',
+                abort: 'You need to give a reasonable number of lives for the game.',
             }
         });
 
-        if (!rounds)
+        if (!lives)
             return null;
 
         settings.set('deathmatch/objective', {
-            type: 'Best of...',
-            kills: parseInt(rounds, 10),
-        });
-    }
-
-    // Handles the case where the objective should be "First to X kills".
-    async handleFirstToSetting(settings, player) {
-        const kills = await Question.ask(player, {
-            question: 'Game objective',
-            message: `Please enter the number of kills for the game.`,
-            constraints: {
-                validation: isNumberInRange.bind(null, 2, 50),
-                explanation: 'The number of kills must be between 2 and 50.',
-                abort: 'You need to give a reasonable number of kills for the game.',
-            }
-        });
-
-        if (!kills)
-            return null;
-
-        settings.set('deathmatch/objective', {
-            type: 'First to...',
-            kills: parseInt(kills, 10),
+            type: 'Number of lives...',
+            lives: parseInt(lives, 10),
         });
     }
 
@@ -132,7 +101,7 @@ export class ObjectiveSetting extends GameCustomSetting {
             message: `Please enter the game's time limit in seconds.`,
             constraints: {
                 validation: isNumberInRange.bind(null, 30, 1800),
-                explanation: 'The time limit must be between 30 seconds and 1800 seconds, which ' +
+                explanation: 'The time limit must be between 30 seconds and 1,800 seconds, which ' +
                              'is 30 minutes.',
                 abort: 'You need to give a reasonable time limit for the game.',
             }
@@ -163,12 +132,9 @@ export class ObjectiveSetting extends GameCustomSetting {
             return '';
         
         switch (option) {
-            case 'Best of...':
-                return format('{FFFF00}%d rounds', currentValue.kills);
+            case 'Number of lives...':
+                return format('{FFFF00}%d lives', currentValue.lives);
 
-            case 'First to...':
-                return format('{FFFF00}%d kills', currentValue.kills);
-            
             case 'Time limit...':
                 return format('{FFFF00}%s', timeDifferenceToString(currentValue.seconds));
         }

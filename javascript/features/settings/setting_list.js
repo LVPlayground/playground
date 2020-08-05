@@ -69,8 +69,8 @@ export const kSettingList = [
 
     /** Game-related settings */
     new Setting('games', 'deathmatch_lag_compensation_default', Setting.TYPE_BOOLEAN, true, 'Whether deathmatch games should default to lag compensation.'),
-    new Setting('games', 'deathmatch_objective_default', Setting.TYPE_STRING, 'Last man standing', 'The default objective for deathmatch games.'),
-    new Setting('games', 'deathmatch_objective_value_default', Setting.TYPE_NUMBER, 0, 'Default value for an objective\'s value. Not always applicable.'),
+    new Setting('games', 'deathmatch_objective_default', Setting.TYPE_STRING, 'Number of lives...', 'The default objective for deathmatch games.'),
+    new Setting('games', 'deathmatch_objective_value_default', Setting.TYPE_NUMBER, 1, 'Default value for an objective\'s value. Not always applicable.'),
     new Setting('games', 'deathmatch_spawn_armour_default', Setting.TYPE_BOOLEAN, true, 'Whether participants should get spawn armour by default.'),
     new Setting('games', 'deathmatch_team_damage_default', Setting.TYPE_BOOLEAN, true, 'Whether participants in the same team can issue each other damage.'),
     new Setting('games', 'fight_default_location', Setting.TYPE_STRING, 'Counter Strike 1.6: Inferno', 'Default location for fights.'),

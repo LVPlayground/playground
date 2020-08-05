@@ -25,11 +25,9 @@ export class DeathmatchGame extends GameBase {
     static kMapMarkersDisabled = 'Disabled';
 
     // The objective which defines the winning conditions of this game.
-    static kObjectiveLastManStanding = 'Last man standing';
-    static kObjectiveBestOf = 'Best of...';
-    static kObjectiveFirstTo = 'First to...';
-    static kObjectiveTimeLimit = 'Time limit...';
     static kObjectiveContinuous = 'Continuous';
+    static kObjectiveLives = 'Number of lives...';
+    static kObjectiveTimeLimit = 'Time limit...';
 
     // Indicates which team a player can be part of. Individuals are always part of team 0, whereas
     // players can be part of either Team Alpha or Team Bravo in team-based games.
@@ -120,7 +118,7 @@ export class DeathmatchGame extends GameBase {
                 this.#objective_ = new ContinuousObjective();
                 break;
 
-            case DeathmatchGame.kObjectiveLastManStanding:
+            case DeathmatchGame.kObjectiveLives:
                 this.#objective_ = new LivesObjective();
                 break;
 

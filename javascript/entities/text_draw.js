@@ -256,7 +256,7 @@ export class TextDraw extends Supplementable {
         if (this.isConnected())
             this.#natives_.destroy(this.#id_);
 
-        this.#id_ = TextLabel.kInvalidId;
+        this.#id_ = TextDraw.kInvalidId;
         this.#natives_ = null;
 
         this.#manager_.didDisposeTextDraw(this);

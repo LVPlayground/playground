@@ -13,6 +13,7 @@ export class ScopedEntities {
         this.npcs_ = new Set();
         this.objects_ = new Set();
         this.pickups_ = new Set();
+        this.textDraws_ = new Set();
         this.textLabels_ = new Set();
         this.vehicles_ = new Set();
 
@@ -256,6 +257,23 @@ export class ScopedEntities {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Creates a text draw with the given |options|, which must match those accepted by the
+    // TextDrawManager in //entities. The object will be removed automatically with this instance.
+    createTextDraw(options) {
+        if (!this.textDraws_)
+            throw new Error('Unable to create the text draw, this object has been disposed of.');
+
+        const textDraw = server.textDrawManager.createTextDraw(options);
+
+        this.textDraws_.add(textDraw);
+        return textDraw;
+    }
+
+    // Returns whether the given |textDraw| is part of this collection.
+    hasTextDraw(textDraw) { return this.textDraws_ && this.textDraws_.has(textDraw); }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Creates the text label with the |options|, which must match those of the TextLabelManager.
     // The object will be removed automatically when this instance is being disposed of.
     createTextLabel(options) {
@@ -354,6 +372,9 @@ export class ScopedEntities {
 
         this.pickups_.forEach(safeDisposeEntity);
         this.pickups_ = null;
+
+        this.textDraws_.forEach(safeDisposeEntity);
+        this.textDraws_ = null;
 
         this.textLabels_.forEach(safeDisposeEntity);
         this.textLabels_ = null;

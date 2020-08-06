@@ -64,13 +64,10 @@ describe('CollectableCommands', (it, beforeEach) => {
     });
 
     it('should be able to display the available benefits', async (assert) => {
-        // (1) Executing the /benefits command.
         gunther.respondToDialog({ response: 0 /* Dismiss */ });
 
         assert.isTrue(await gunther.issueCommand('/benefits'));
-        console.log(gunther.getLastDialogAsTable());
-
-        assert.isTrue(false);
+        assert.doesNotThrow(() => gunther.getLastDialogAsTable());
     });
 
     it('should enable players to read the instructions for a series', async (assert) => {

@@ -9,6 +9,27 @@ import { VehicleModel } from 'entities/vehicle_model.js';
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 
+// Additional block list for vehicles that cannot be saved as house vehicles.
+const kVehicleModelBlockList = new Set([
+    406 /* Dumper */,
+    408 /* Trashmaster */,
+    427 /* Enforcer */,
+    431 /* Bus */,
+    432 /* Rhino */,
+    444 /* Monaster */,
+    486 /* Dozer */,
+    524 /* Cement Truck */,
+    528 /* FBI Truck */,
+    532 /* Combine Harvester */,
+    537 /* Freight Train */,
+    538 /* Passenger Train */,
+    544 /* Firetruck */,
+    556 /* Monster A */,
+    557 /* Monster B */,
+    578 /* DFT-30 */,
+    601 /* SWAT Tank */,
+]);
+
 // Responsible for allowing players to save any vehicle as their house vehicles, even when they have
 // tuned and/or customised it to their liking with the server's regular abilities.
 export class HouseVehicleCommands extends VehicleCommandDelegate {
@@ -191,6 +212,9 @@ export class HouseVehicleCommands extends VehicleCommandDelegate {
 
         const vehicleModel = vehicle.model;
         if (!vehicleModel)
+            return false;
+
+        if (kVehicleModelBlockList.has(vehicleModel.id))
             return false;
 
         return !vehicleModel.isAirborne() &&

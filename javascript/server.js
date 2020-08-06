@@ -18,6 +18,7 @@ import { ObjectManager } from 'entities/object_manager.js';
 import { PickupManager } from 'entities/pickup_manager.js';
 import { PlayerManager } from 'entities/player_manager.js';
 import { TextDrawManager as DeprecatedTextDrawManager } from 'components/text_draw/text_draw_manager.js';
+import { TextDrawManager } from 'entities/text_draw_manager.js';
 import { TextLabelManager } from 'entities/text_label_manager.js';
 import { VehicleManager } from 'entities/vehicle_manager.js';
 import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
@@ -46,6 +47,7 @@ export class Server {
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
+        this.textDrawManager_ = new TextDrawManager();
         this.textLabelManager_ = new TextLabelManager();
         this.vehicleManager_ = new VehicleManager();
         this.virtualWorldManager_ = new VirtualWorldManager();
@@ -111,6 +113,9 @@ export class Server {
     // Gets the global player manager that knows the details and whereabouts of all in-game players.
     get playerManager() { return this.playerManager_; }
 
+    // Gets the manager that's responsible for text draws.
+    get textDrawManager() { return this.textDrawManager_; }
+
     // Gets the global text label manager, that allows creation of text labels.
     get textLabelManager() { return this.textLabelManager_; }
 
@@ -143,6 +148,7 @@ export class Server {
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
+        this.textDrawManager_.dispose();
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();

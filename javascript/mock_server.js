@@ -15,6 +15,7 @@ import { NpcManager } from 'entities/npc_manager.js';
 import { ObjectManager } from 'entities/object_manager.js';
 import { PlayerManager } from 'entities/player_manager.js';
 import { TextDrawManager as DeprecatedTextDrawManager } from 'components/text_draw/text_draw_manager.js';
+import { TextDrawManager } from 'entities/text_draw_manager.js';
 import { TextLabelManager } from 'entities/text_label_manager.js';
 import { VehicleManager } from 'entities/vehicle_manager.js';
 import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
@@ -94,6 +95,7 @@ class MockServer {
         this.objectManager_ = new ObjectManager(MockGameObject /* objectConstructor */);
         this.pickupManager_ = new MockPickupManager(MockPickup /* pickupConstructor */);
         this.playerManager_ = new PlayerManager(MockPlayer /* playerConstructor */);
+        this.textDrawManager_ = new TextDrawManager();
         this.textLabelManager_ = new TextLabelManager(MockTextLabel /* textLabelConstructor */);
         this.vehicleManager_ = new VehicleManager(MockVehicle /* vehicleConstructor */);
         this.virtualWorldManager_ = new VirtualWorldManager();
@@ -215,6 +217,9 @@ class MockServer {
     // Gets the real player manager that maintains mocked players.
     get playerManager() { return this.playerManager_; }
 
+    // Gets the manager that's responsible for text draws.
+    get textDrawManager() { return this.textDrawManager_; }
+
     // Gets the real text label manager that maintains mocked text labels.
     get textLabelManager() { return this.textLabelManager_; }
 
@@ -247,6 +252,7 @@ class MockServer {
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
+        this.textDrawManager_.dispose();
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();

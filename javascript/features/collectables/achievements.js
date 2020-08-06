@@ -11,8 +11,8 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
 export const kAchievementSprayTagBronze = 1;  // kBenefitBasicSprayQuickVehicleAccess
-export const kAchievementSprayTagSilver = 2;
-export const kAchievementSprayTagGold = 3;  // kBenefitBombShop
+export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
+export const kAchievementSprayTagGold = 3;
 export const kAchievementSprayTagPlatinum = 4;  // kBenefitFullQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.

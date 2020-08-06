@@ -9,6 +9,7 @@ import { Menu } from 'components/menu/menu.js';
 import { Treasures } from 'features/collectables/treasures.js';
 
 import { kAchievements } from 'features/collectables/achievements.js';
+import { kBenefits } from 'features/collectables/benefits.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
@@ -51,6 +52,15 @@ export class CollectableCommands {
             .description('Status and hints for collecting Red Barrels.')
             .build(CollectableCommands.prototype.onSpecificSeriesCommand.bind(this, 'barrels'));
 
+        // /benefits [player]?
+        server.commandManager.buildCommand('benefits')
+            .description('Displays the available benefits you can collect.')
+            .sub(CommandBuilder.kTypePlayer, 'player')
+                .description('Displays information about benefits available to another player.')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(CollectableCommands.prototype.onBenefitsCommand.bind(this))
+            .build(CollectableCommands.prototype.onBenefitsCommand.bind(this));
+
         // /collectables
         server.commandManager.buildCommand('collectables')
             .description('Status and hints for all available collectables.')
@@ -89,6 +99,39 @@ export class CollectableCommands {
             const colour = achieved ? '{FFFF00}' : '{CCCCCC}';
 
             dialog.addItem(colour + name, colour + text);
+        }
+
+        await dialog.displayForPlayer(currentPlayer);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // /benefits [player]?
+    //
+    // Displays information about the benefits that are available on the server, and which of the
+    // achievements are able to unlock them. Will highlight benefits already obtained.
+    async onBenefitsCommand(currentPlayer, targetPlayer) {
+        const player = targetPlayer || currentPlayer;
+        const dialog = new Menu('Benefits', [
+            'Name',
+            'Description',
+
+        ], { pageSize: 25 });
+
+        const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
+        const benefits = [ ...kBenefits ];
+
+        // Sort the |benefits| alphabetically by their name, to have a point of recognition.
+        benefits.sort((lhs, rhs) => lhs[1].name.localeCompare(rhs[1].name));
+
+        for (const [ benefit, info ] of benefits) {
+            const achievement = kAchievements.get(info.achievement);
+            const achieved =
+                achievements.hasAchievement(player, info.achievement, /* round= */ false);
+
+            const colour = achieved ? '{FFFF00}' : '{CCCCCC}';
+
+            dialog.addItem(colour + info.name, colour + achievement.text);
         }
 
         await dialog.displayForPlayer(currentPlayer);
@@ -410,6 +453,7 @@ export class CollectableCommands {
     dispose() {
         server.commandManager.removeCommand('treasures');
         server.commandManager.removeCommand('tags');
+        server.commandManager.removeCommand('benefits');
         server.commandManager.removeCommand('barrels');
 
         server.commandManager.removeCommand('collectables');

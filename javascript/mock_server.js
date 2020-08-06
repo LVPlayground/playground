@@ -14,7 +14,7 @@ import { MockPickupManager } from 'entities/test/mock_pickup_manager.js';
 import { NpcManager } from 'entities/npc_manager.js';
 import { ObjectManager } from 'entities/object_manager.js';
 import { PlayerManager } from 'entities/player_manager.js';
-import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
+import { TextDrawManager as DeprecatedTextDrawManager } from 'components/text_draw/text_draw_manager.js';
 import { TextLabelManager } from 'entities/text_label_manager.js';
 import { VehicleManager } from 'entities/vehicle_manager.js';
 import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
@@ -86,7 +86,7 @@ class MockServer {
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
         this.dialogManager_ = new DialogManager();
         this.raceCheckpointManager_ = new CheckpointManager(CheckpointManager.kRaceCheckpoints);
-        this.textDrawManager_ = new TextDrawManager();
+        this.deprecatedTextDrawManager_ = new DeprecatedTextDrawManager();
 
         this.actorManager_ = new ActorManager(MockActor /* actorConstructor */);
         this.areaManager_ = new AreaManager(MockArea /* areaConstructor */);
@@ -189,7 +189,7 @@ class MockServer {
     get raceCheckpointManager() { return this.raceCheckpointManager_; }
 
     // Gets the manager that's responsible for text draws.
-    get textDrawManager() { return this.textDrawManager_; }
+    get deprecatedTextDrawManager() { return this.deprecatedTextDrawManager_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ class MockServer {
         this.checkpointManager_.dispose();
         this.dialogManager_.dispose();
         this.raceCheckpointManager_.dispose();
-        this.textDrawManager_.dispose();
+        this.deprecatedTextDrawManager_.dispose();
 
         await this.npcManager_.dispose();
 

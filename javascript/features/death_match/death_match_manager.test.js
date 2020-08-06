@@ -285,7 +285,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
         
         managerForDisposal.dispose();
 
-        assert.equal(server.textDrawManager.getForPlayer(gunther, textDraw), null);
+        assert.equal(server.deprecatedTextDrawManager.getForPlayer(gunther, textDraw), null);
     });
 
     it('should set gravity upon joining low gravity zone', assert => {

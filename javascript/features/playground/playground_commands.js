@@ -36,6 +36,14 @@ export class PlaygroundCommands {
 
         // -----------------------------------------------------------------------------------------
 
+        // The `/tempfix [player]` command enables the rights of a particular player to be fixed if
+        // they have been granted temporary administrator rights.
+        server.commandManager.buildCommand('tempfix')
+            .description('Grants temporary rights to a particular player.')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
+            .build(PlaygroundCommands.prototype.onTempFixCommand.bind(this));
+
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
@@ -104,6 +112,24 @@ export class PlaygroundCommands {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Used when the |player| would like to fix the temporary rights of |target|. This is a work-
+    // around until the account system moves to JavaScript properly.
+    onTempFixCommand(player, target) {
+        if (player.isAdministrator()) {
+            player.sendMessage(`{DC143C}Error{FFFFFF}: ${target.name} already is an administrator.`)
+            return;
+        }
+
+        target.level = Player.LEVEL_ADMINISTRATOR;
+        player.levelIsTemporary = true;
+
+        player.sendMessage(`{33AA33}Success{FFFFFF}: ${target.name} their rights have been fixed.`);
+
+        this.announce_().announceToAdministrators(
+            `%s (Id:%d) has fixed temporary rights for %s (Id:%d)`, player.name, player.name,
+            target.name, target.id);
+    }
 
     // Provides administrators with thorough access controls for all of Las Venturas Playground's
     // commands. The |player| will be able and control commands accessible to them.
@@ -1101,6 +1127,7 @@ export class PlaygroundCommands {
 
     dispose() {
         server.commandManager.removeCommand('lvp');
+        server.commandManager.removeCommand('tempfix');
 
         this.commands_.forEach((command, name) => {
             server.commandManager.removeCommand(name);

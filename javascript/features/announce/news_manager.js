@@ -61,6 +61,9 @@ export class NewsManager {
                 outline: 1,
             }));
         }
+
+        // Observe the player manager to be told when someone has joined the server.
+        server.playerManager.addObserver(this, /* replayHistory= */ true);
     }
 
     // Provides access to the local text draw array. Must only be used for testing purposes.
@@ -238,11 +241,18 @@ export class NewsManager {
     // Visibility controls
     // ---------------------------------------------------------------------------------------------
 
-    // TODO
+    // Called when the |player| has connected to the server. Enables the news message text draws for
+    // them, so that they'll be receiving the messages.
+    onPlayerConnect(player) {
+        for (const textDraw of this.#textDraws_)
+            textDraw.displayForPlayer(player);
+    }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        server.playerManager.removeObserver(this);
+
         for (const textDraw of this.#textDraws_)
             textDraw.dispose();
 

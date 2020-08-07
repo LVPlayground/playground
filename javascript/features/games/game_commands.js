@@ -224,8 +224,11 @@ export class GameCommands {
         const activeRuntimes = this.manager_.getActiveGameRuntimes(description);
 
         for (const activeRuntime of activeRuntimes) {
+            if (!activeRuntime.description.continuous)
+                continue;  // only continuous games can be joined this way
+
             if (activeRuntime.state != GameRuntime.kStateRunning)
-                continue;
+                continue;  // the game isn't running yet, or is already shutting down
 
             // TODO: We might want to support settings and custom options for continuous games, in
             // which case joining the first one is not the right thing to do. This requires a
@@ -599,7 +602,7 @@ export class GameCommands {
         }
 
         // 2) Display the |dialog| to the player so that they can make a decision.
-        dialog.displayForPlayer(player);
+        await dialog.displayForPlayer(player);
     }
 
     // Called when the |player| wants to watch the |runtime|. We need to make sure that the runtime

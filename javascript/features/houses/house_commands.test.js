@@ -117,7 +117,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.HOUSE_MODIFY_NONE_NEAR);
     });
 
-    it('should display an identity beam when modifying a nearby house', async(assert) => {
+    it('should display an identity beam when modifying a nearby house', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const objectCount = server.objectManager.count;
 
@@ -125,7 +125,9 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
-        assert.isTrue(gunther.issueCommand('/house modify'));
+        const commandPromise = gunther.issueCommand('/house modify');
+
+        await Promise.resolve();
         await manager.findClosestLocation(gunther);
 
         assert.equal(gunther.messages.length, 0);

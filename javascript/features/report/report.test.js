@@ -15,14 +15,14 @@ describe('Report', (it, beforeEach) => {
         server.featureManager.loadFeature('report');
     });
 
-    it('should report a player to the admins', assert => {
+    it('should report a player to the admins', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy */);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(lucy.issueCommand('/report 0 health freezed'));
+        assert.isTrue(await lucy.issueCommand('/report 0 health freezed'));
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
@@ -30,11 +30,11 @@ describe('Report', (it, beforeEach) => {
                            'health freezed'));
     });
 
-    it('should show a message back to the player who reports a player', assert => {
+    it('should show a message back to the player who reports a player', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
+        assert.isTrue(await russell.issueCommand('/report 0 bullet-amount freezed'));
 
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0],
@@ -42,13 +42,13 @@ describe('Report', (it, beforeEach) => {
                            'bullet-amount freezed'));
     });
 
-    it('should show a message back to only non-administrators about report-delivery', assert => {
+    it('should show a message back to only non-administrators about report-delivery', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
 
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
+        assert.isTrue(await russell.issueCommand('/report 0 bullet-amount freezed'));
 
         assert.equal(russell.messages.length, 1);
         assert.notEqual(russell.messages[0],
@@ -57,13 +57,13 @@ describe('Report', (it, beforeEach) => {
     });
 
     it('should show an error to an other player if the reported player is reported less than 60' +
-        ' seconds ago', assert => {
+        ' seconds ago', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
-        assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
+        assert.isTrue(await russell.issueCommand('/report 0 bullet-amount freezed'));
+        assert.isTrue(await lucy.issueCommand('/report 0 weird weapon-use'));
 
         assert.equal(lucy.messages.length, 1);
         assert.equal(lucy.messages[0],
@@ -76,12 +76,12 @@ describe('Report', (it, beforeEach) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         const lucy    = server.playerManager.getById(2 /* Lucy    */);
 
-        assert.isTrue(russell.issueCommand('/report 0 bullet-amount freezed'));
+        assert.isTrue(await russell.issueCommand('/report 0 bullet-amount freezed'));
 
         // Advance the server's time by two minutes to fake the wait having passed.
         await server.clock.advance(120000);
 
-        assert.isTrue(lucy.issueCommand('/report 0 weird weapon-use'));
+        assert.isTrue(await lucy.issueCommand('/report 0 weird weapon-use'));
 
         assert.equal(lucy.messages.length, 1);
         assert.equal(lucy.messages[0],

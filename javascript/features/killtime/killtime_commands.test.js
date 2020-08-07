@@ -22,49 +22,49 @@ describe('Killtime', (it, beforeEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
     });
 
-    it('should show the usage for administrators without any parameters', assert => {
-        assert.isTrue(gunther.issueCommand('/killtime'));
+    it('should show the usage for administrators without any parameters', async (assert) => {
+        assert.isTrue(await gunther.issueCommand('/killtime'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.COMMAND_USAGE, Message.KILLTIME_USAGE));
     });
 
-    it('should not be able to be started outside of the time limitations', assert => {
-        assert.isTrue(gunther.issueCommand('/killtime start 1'));
+    it('should not be able to be started outside of the time limitations', async (assert) => {
+        assert.isTrue(await gunther.issueCommand('/killtime start 1'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_MINIMUM_TWO_MINUTES);
 
         gunther.clearMessages();
 
-        assert.isTrue(gunther.issueCommand('/killtime start 100'));
+        assert.isTrue(await gunther.issueCommand('/killtime start 100'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_MAXIMUM_TEN_MINUTES);
     });
 
-    it('should be able to be started for the standard 2 minutes by a registered administrator', assert => {
+    it('should be able to be started for the standard 2 minutes by a registered administrator', async (assert) => {
         const minutesToRun = 2;
         const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
 
-        assert.isTrue(gunther.issueCommand('/killtime start'));
+        assert.isTrue(await gunther.issueCommand('/killtime start'));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-    it('should be able to be started for 3 minutes by a registered administrator', assert => {
+    it('should be able to be started for 3 minutes by a registered administrator', async (assert) => {
         const minutesToRun = 3;
         const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
 
-        assert.isTrue(gunther.issueCommand('/killtime start ' + minutesToRun));
+        assert.isTrue(await gunther.issueCommand('/killtime start ' + minutesToRun));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 
-    it('should show that at a manual stop it is stopped by an administrator without a winner', assert => {
-        assert.isTrue(gunther.issueCommand('/killtime start'));
+    it('should show that at a manual stop it is stopped by an administrator without a winner', async (assert) => {
+        assert.isTrue(await gunther.issueCommand('/killtime start'));
         gunther.clearMessages();
-        assert.isTrue(gunther.issueCommand('/killtime stop'));
+        assert.isTrue(await gunther.issueCommand('/killtime stop'));
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
@@ -78,7 +78,7 @@ describe('Killtime', (it, beforeEach) => {
         const prizeMoney = 25000; // Correct money is handled and unittested in economy
         const prizeMessage = Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney);
 
-        assert.isTrue(gunther.issueCommand('/killtime start'));
+        assert.isTrue(await gunther.issueCommand('/killtime start'));
 
         luce.die(russell);
         russell.die(gunther);
@@ -88,7 +88,7 @@ describe('Killtime', (it, beforeEach) => {
 
         await server.clock.advance(61 * 1000);
         gunther.clearMessages();
-        assert.isTrue(gunther.issueCommand('/killtime stop'));
+        assert.isTrue(await gunther.issueCommand('/killtime stop'));
 
         const finance = server.featureManager.loadFeature('finance');
 
@@ -102,7 +102,7 @@ describe('Killtime', (it, beforeEach) => {
     });
 
     it('should show that the time is over without a winner', async(assert) => {
-        assert.isTrue(gunther.issueCommand('/killtime start'));
+        assert.isTrue(await gunther.issueCommand('/killtime start'));
         await server.clock.advance(61 * 1000);
         gunther.clearMessages();
         await server.clock.advance(60 * 1000);
@@ -119,7 +119,7 @@ describe('Killtime', (it, beforeEach) => {
         const prizeMoney = 27000; // Correct money is handled and unittested in economy
         const prizeMessage = Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney);
 
-        assert.isTrue(gunther.issueCommand('/killtime start'));
+        assert.isTrue(await gunther.issueCommand('/killtime start'));
         await server.clock.advance(61 * 1000);
         gunther.clearMessages();
 
@@ -167,7 +167,7 @@ describe('Killtime', (it, beforeEach) => {
     });
 
     it('should give error upon using an invalid weapon', async assert => {
-        assert.isTrue(gunther.issueCommand('/killtime start 2 0'));
+        assert.isTrue(await gunther.issueCommand('/killtime start 2 0'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_INVALID_WEAPON);
     });
@@ -176,7 +176,7 @@ describe('Killtime', (it, beforeEach) => {
         const minutesToRun = 2;
         const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
 
-        assert.isTrue(gunther.issueCommand('/killtime start 2 35'));
+        assert.isTrue(await gunther.issueCommand('/killtime start 2 35'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });

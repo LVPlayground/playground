@@ -47,13 +47,13 @@ describe('JetpackCommand', (it, beforeEach) => {
         assert.equal(russell.specialAction, Player.kSpecialActionJetpack);
     });
 
-    it('should enable administrators to remove administrators from players', assert => {
+    it('should enable administrators to remove administrators from players', async (assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.specialAction = Player.kSpecialActionJetpack;
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueCommand('/jetpack ' + russell.name + ' remove'));
+        assert.isTrue(await gunther.issueCommand('/jetpack ' + russell.name + ' remove'));
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.LVP_JETPACK_REMOVED_OTHER,

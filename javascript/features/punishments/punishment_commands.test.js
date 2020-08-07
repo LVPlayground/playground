@@ -116,7 +116,8 @@ describe('PunishmentCommands', (it, beforeEach) => {
 
         const [ commandResult, advanceResult ] = await Promise.all([
             gunther.issueCommand('/scan Gunther'),
-            server.clock.advance(30 * 1000 /* some excessively long amount of time*/), 
+            Promise.resolve().then(() =>
+                server.clock.advance(30 * 1000 /* some excessively long amount of time*/)),
         ]);
 
         assert.isTrue(commandResult);
@@ -141,7 +142,8 @@ describe('PunishmentCommands', (it, beforeEach) => {
 
         const [ commandResult, advanceResult ] = await Promise.all([
             gunther.issueCommand('/scanall'),
-            server.clock.advance(30 * 1000 /* some excessively long amount of time*/),
+            Promise.resolve().then(() =>
+                server.clock.advance(30 * 1000 /* some excessively long amount of time*/)),
         ]);
 
         assert.isTrue(commandResult);

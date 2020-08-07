@@ -525,7 +525,6 @@ describe('GameCommands', (it, beforeEach) => {
 
         finance.givePlayerCash(gunther, 5000);
         finance.givePlayerCash(russell, 5000);
-        finance.givePlayerCash(lucy, 5000);
 
         // (1) Have Gunther and Russell join the game in order.
         for (const player of [ gunther, russell ]) {
@@ -537,6 +536,10 @@ describe('GameCommands', (it, beforeEach) => {
             assert.isNotNull(manager.getPlayerActivity(player));
             assert.instanceOf(manager.getPlayerActivity(player), GameRuntime);
         }
+
+        // Verify that |gunther| and |russell| don't find themselves in the same game...
+        assert.notStrictEqual(
+            manager.getPlayerActivity(gunther), manager.getPlayerActivity(russell));
 
         // (2) Make sure that both games have fully started, and thus are watchable.
         await runGameLoop();

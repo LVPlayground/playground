@@ -203,7 +203,7 @@ export class PlaygroundCommands {
 
                 case Player.LEVEL_ADMINISTRATOR:
                     level = '{FFFF00}Administrators';
-                    if (command.restrictTemporary)
+                    if (restrictTemporary)
                         level += ' {F44336}*';
 
                     break;

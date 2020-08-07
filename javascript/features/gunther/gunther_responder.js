@@ -67,6 +67,10 @@ export class GuntherResponder {
         if (!server.isTest())
             console.log(queryResult);
 
+        // Bail out if the |queryResult| doesn't have a fulfillmentText property.
+        if (!queryResult.hasOwnProperty('fulfillmentText'))
+            return null;
+
         let responseText = queryResult.fulfillmentText;
 
         // (1) Replace placeholders in the |fulfillmentText| with their intended values.

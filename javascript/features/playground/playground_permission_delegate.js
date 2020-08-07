@@ -4,10 +4,15 @@
 
 import { CommandPermissionDelegate } from 'components/commands/command_permission_delegate.js';
 
+// Time, in milliseconds, after which exceptions expire after disconnecting from the server. We set
+// this to 15 minutes which allows people to take a reasonable break.
+export const kExceptionExpirationTimeMs = 15 * 60 * 1000;
+
 // Delegate that defers command permission access checking to the Playground feature, adding various
 // abilities for overrides and exceptions on top of the generic command system.
 export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
     #exceptions_ = null;
+    #expired_ = null;
     #overrides_ = null;
     #temporaryStatusOverrides_ = null;
 
@@ -17,12 +22,18 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
         // Map from CommandDescription instance to a Set of Player entries.
         this.#exceptions_ = new Map();
 
+        // Map of expired exceptions, keyed by User ID, valued by { expirationTime, commands }.
+        this.#expired_ = new Map();
+
         // Map from CommandDescription instance to a Player.LEVEL_* constant value.
         this.#overrides_ = new Map();
 
         // Map from CommandDescription instance to a boolean indicated whether the given command
         // should be restricted to temporary administrators.
         this.#temporaryStatusOverrides_ = new Map();
+
+        // Observe login and disconnect events to enable exceptions to last between sessions.
+        server.playerManager.addObserver(this);
 
         // Instate ourselves as the canonical permission delegate for commands on the server.
         server.commandManager.setPermissionDelegate(this);
@@ -101,6 +112,62 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // PlayerManager observer:
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the given |player| has logged in. Any exceptions that they were previously savvy
+    // to will be restored, if they reconnected within the allocated amount of time.
+    onPlayerLogin(player) {
+        const data = this.#expired_.get(player.account.userId);
+        if (!data)
+            return;  // no exception data was stored for the |player|
+
+        // Delete the data, as it's not going to be expired anymore in either case.
+        this.#expired_.delete(player.account.userId);
+
+        if (data.expirationTime <= server.clock.monotonicallyIncreasingTime())
+            return;  // the |data| has expired, we won't apply it anymore
+
+        // (a) Restore the exceptions for the |player|.
+        for (const command of data.commands)
+            this.addException(player, command);
+
+        // (b) Let the |player| know that the exceptions have been restored.
+        player.sendMessage(Message.LVP_ACCESS_EXCEPTIONS_RESTORED, data.commands.length);
+    }
+
+    // Called when the given |player| has disconnected from the server.  Any exceptions that they
+    // have been granted will be stored with their user ID, in case they reconnect soon after.
+    onPlayerDisconnect(player) {
+        if (!player.account.isIdentified())
+            return;  // exceptions can only be stored for identified players
+
+        const commands = [];
+        for (const [ command, players ] of this.#exceptions_) {
+            if (!players.has(player))
+                continue;  // this |command| does not have an exception for the |player|
+
+            commands.push(command);
+            players.delete(player);
+
+            // Clean up the entire listing for the |command| if there are no more exceptions left,
+            // in which case there's no need for the entry to exist at all.
+            if (!players.size)
+                this.#exceptions_.delete(command);
+        }
+
+        // If the |player| had exceptions, store them in the expired map which enables it to be
+        // re-instated if they connect within |kExceptionExpirationTimeMs|.
+        if (commands.length) {
+            this.#expired_.set(player.account.userId, {
+                commands,
+                expirationTime:
+                    server.clock.monotonicallyIncreasingTime() + kExceptionExpirationTimeMs
+            });
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // CommandPermissionDelegate implementation:
     // ---------------------------------------------------------------------------------------------
 
@@ -148,6 +215,7 @@ export class PlaygroundPermissionDelegate extends CommandPermissionDelegate {
 
     dispose() {
         server.commandManager.setPermissionDelegate(null);
+        server.playerManager.removeObserver(this);
 
         this.#exceptions_.clear();
         this.#exceptions_ = null;

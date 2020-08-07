@@ -263,7 +263,7 @@ export class PlaygroundCommands {
             dialog.addItem('----------');
 
             // (a) Sort the |exceptions| by player name, in ascending order.
-            exceptions.sort((lhr, rhs) => lhs.name.localeCompare(rhs.name));
+            exceptions.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
             // (b) Add each of the |exceptions to the created |dialog|.
             for (const exceptedPlayer of exceptions) {

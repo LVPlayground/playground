@@ -131,7 +131,7 @@ CWWTW__OnCommand(playerid)
 
     Responses->respondMinigameSignedUp(playerid, WalkiesWeaponsTeamWarMinigame, "Walkies Weapons Team War", WWTW_SIGNUPTIME);
     format(string, sizeof(string), "~r~~h~%s~w~ has signed up for ~y~Walkies Weapons Team War~w~ (~p~/wwtw~w~)", Player(playerid)->nicknameString());
-    NewsController->show(string);
+    AnnounceNewsMessage(string);
 
     iSignupCount++;
 
@@ -290,14 +290,14 @@ CWWTW__OnExit(playerid, iReason)
             if(iTeamID == WWTW_TEAMATTACK)
             {
                 format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~b~~h~The Defenders~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
                 CWWTW__End(WWTW_TEAMDEFEND);
                 return 1;
             }
             else
             {
                 format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~r~~h~The Attackers~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
                 CWWTW__End(WWTW_TEAMATTACK);
                 return 1;
             }
@@ -329,14 +329,14 @@ CWWTW__OnExit(playerid, iReason)
                 if(iTeamID == WWTW_TEAMATTACK)
                 {
                     format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~b~~h~The Defenders~w~ have won!");
-                    NewsController->show(notice);
+                    AnnounceNewsMessage(notice);
                     CWWTW__End(WWTW_TEAMDEFEND);
                     return 1;
                 }
                 else
                 {
                     format(notice, sizeof(notice), "~y~Walkies Weapons Team War~w~ has finished: ~r~~h~The Attackers~w~ have won!");
-                    NewsController->show(notice);
+                    AnnounceNewsMessage(notice);
                     CWWTW__End(WWTW_TEAMATTACK);
                     return 1;
                 }

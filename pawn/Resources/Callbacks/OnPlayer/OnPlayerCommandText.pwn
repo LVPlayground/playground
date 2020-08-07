@@ -422,7 +422,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         new notice[64];
         format(notice, sizeof(notice), "~r~~h~%s~w~ has killed themselves (~p~/kill~w~)", Player(playerid)->nicknameString());
-        NewsController->show(notice);
+        AnnounceNewsMessage(notice);
 
         return 1;
     }
@@ -748,7 +748,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 
         format(message, sizeof(message), "~r~~h~%s~w~ has set the airport customs tax as ~y~$%d~w~ (~p~/customtax~w~)",
             Player(playerid)->nicknameString(), ctax);
-        NewsController->show(message);
+        AnnounceNewsMessage(message);
 
         g_FlagTime[playerid] = Time->currentTime();
         return 1;

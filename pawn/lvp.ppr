@@ -182,9 +182,6 @@
     <DiskObject>\Features\Visual\Countdown.pwn</DiskObject>
     <DiskObject>\Features\Visual\Interface.pwn</DiskObject>
     <DiskObject>\Features\Visual\NeedToIdentifyForSpawnMessage.pwn</DiskObject>
-    <DiskObject>\Features\Visual\News\</DiskObject>
-    <DiskObject>\Features\Visual\News\NewsController.pwn</DiskObject>
-    <DiskObject>\Features\Visual\News\NewsMessage.pwn</DiskObject>
     <DiskObject>\Features\Visual\PlayerStatisticsInterface.pwn</DiskObject>
     <DiskObject>\Framework\</DiskObject>
     <DiskObject>\Framework\Annotations.pwn</DiskObject>

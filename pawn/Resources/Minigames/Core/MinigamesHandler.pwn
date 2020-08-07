@@ -107,7 +107,7 @@ MiniGamesSignup(playerId, minigame) {
 
             format(notice, sizeof(notice), "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
                 Player(playerId)->nicknameString(), ReturnMinigameName(minigame), ReturnMinigameCmd(minigame));
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
 
             Announcements->announceMinigameSignup(DeathmatchMinigame, ReturnMinigameName(minigame),
                 ReturnMinigameCmd(minigame), price, playerId);
@@ -135,7 +135,7 @@ MiniGamesSignup(playerId, minigame) {
 
                 format(notice, sizeof(notice), "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
                     Player(playerId)->nicknameString(), ReturnMinigameName(minigame), ReturnMinigameCmd(minigame));
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
             }
 
             if (MinigameTypeInfo[Players] == minigameMaxPlayers) {
@@ -258,11 +258,11 @@ PlayerLigtUitMiniGame(playerId, reason) {
 
                     if (ShipTDM_GetTeam(contestant) == 0 && !iHasSendMsg) {
                         format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Da Nang Boys~w~ have won!");
-                        NewsController->show(message);
+                        AnnounceNewsMessage(message);
                         iHasSendMsg = 1;
                     } else if (iHasSendMsg == 0){
                         format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Maffia~w~ have won!");
-                        NewsController->show(message);
+                        AnnounceNewsMessage(message);
                         iHasSendMsg = 1;
                     }
 
@@ -295,7 +295,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                     if (MinigameTypeInfo[Progress] > 1) {
                         format(notice, sizeof(notice), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!",
                             ReturnMinigameName(minigame), Player(contestant)->nicknameString());
-                        NewsController->show(notice);
+                        AnnounceNewsMessage(notice);
 
                         GiveRegulatedMoney(contestant, MinigameVictory, MinigameTypeInfo[Players]);
 

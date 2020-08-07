@@ -368,7 +368,7 @@ CFightClub__OnCommand(playerid, params[]) {
         new string[128];
         format(string, sizeof(string), "A fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ has started! ~r~~h~(/fight watch %d)",
             PlayerName(Matches[matchId][player1]), PlayerName(Matches[matchId][player2]), matchId);
-        NewsController->show(string);
+        AnnounceNewsMessage(string);
 
         format(string, sizeof(string), "%s %d %s %d",
             PlayerName(Matches[matchId][player1]), Matches[matchId][player1], PlayerName(Matches[matchId][player2]), Matches[matchId][player2]);
@@ -687,7 +687,7 @@ CFightClub__OnDisconnect(playerId)
             format(message, sizeof(message), "The fight between ~r~~h~%s~w~ and ~r~~h~%s~w~ ended due to ~r~~h~%s~w~ leaving the server!",
                 PlayerName(firstPlayer), PlayerName(secondPlayer), PlayerName(playerId));
 
-            NewsController->show(message);
+            AnnounceNewsMessage(message);
         }
 
         CFightClub__ResetMatch(i);
@@ -1067,7 +1067,7 @@ CFightClub__EndMatch(matchid, deathPlayerId)
     }
 
 
-    NewsController->show(sMessage);
+    AnnounceNewsMessage(sMessage);
 
     if(Player(iPlayer1)->isConnected())
     {

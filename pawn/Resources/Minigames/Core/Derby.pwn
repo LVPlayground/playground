@@ -583,7 +583,7 @@ CDerby__PlayerExit(iPlayerID, iReason)
         if(g_DerbyData[iDerbyID][2] == 1)
         {
             format(szMessage, sizeof(szMessage), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!", CDerby__GetName(iDerbyID), Player(iPlayerID)->nicknameString());
-            NewsController->show(szMessage);
+            AnnounceNewsMessage(szMessage);
 
             new const prize = GetEconomyValue(MinigameVictory, g_DerbyData[iDerbyID][19] /* participants */);
             new message[128];
@@ -1400,7 +1400,7 @@ CDerby__OnCommand(playerid, params[])
     Responses->respondMinigameSignedUp(playerid, DerbyMinigame, CDerby__GetName(iDerbyID), 20);
     format(str, sizeof(str), "~r~~h~%s~w~ has signed up for ~y~%s derby~w~ (~p~/derby %d~w~)", Player(playerid)->nicknameString(),
         CDerby__GetName(iDerbyID), iDerbyID);
-    NewsController->show(str);
+    AnnounceNewsMessage(str);
 
     TakeRegulatedMoney(playerid, MinigameParticipation);
     return 1;

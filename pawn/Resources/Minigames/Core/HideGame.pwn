@@ -1056,7 +1056,7 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
     Admin(iPlayerID, sAdminMsg);
 
     format(sAdminMsg, sizeof(sAdminMsg), "~r~~h~%s~w~ has signed up for ~y~Hide 'n Seek~w~ (~p~/has~w~)", Player(iPlayerID)->nicknameString());
-    NewsController->show(sAdminMsg);
+    AnnounceNewsMessage(sAdminMsg);
 
     #pragma unused params
     return 1;
@@ -1080,7 +1080,7 @@ CHideGame__onLeaveCommand( iPlayerID )
         {
             new notice[128];
             format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
             CHideGame__ResetVariables();
         }
     }
@@ -1158,7 +1158,7 @@ CHideGame__onPlayerDisconnect( iPlayerID )
         {
             new notice[128];
             format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
             CHideGame__ResetVariables();
         }
     }
@@ -1194,7 +1194,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         // Send them a message.
         new notice[128];
         format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-        NewsController->show(notice);
+        AnnounceNewsMessage(notice);
         CHideGame__ResetVariables();
     }
     else
@@ -1214,7 +1214,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         }
 
         format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
-        NewsController->show(sMessage);
+        AnnounceNewsMessage(sMessage);
 
         ReleasePlayerGameColor(iPlayerID);
         SetPlayerVisibility(iPlayerID, true);
@@ -1254,7 +1254,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         CHideGame__LoadPos( iSeekerPlayer );
 
         format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ has finished: ~r~~h~%s~w~ has won the minigame!", Player(iWinner)->nicknameString());
-        NewsController->show(sMessage);
+        AnnounceNewsMessage(sMessage);
 
         CHideGame__ResetVariables();
 

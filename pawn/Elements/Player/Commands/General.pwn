@@ -771,7 +771,7 @@ lvp_interest(playerid,params[])
     new str[256];
     format(str,256,"~r~~h~%s~w~ has changed the interest rate to ~y~%d~w~ percent (~p~/interest~w~)",
         Player(playerid)->nicknameString(),iInterest);
-    NewsController->show(str);
+    AnnounceNewsMessage(str);
     bankRente = iInterest;
     ShowBoxForPlayer(playerid, "Interest rates updated!");
     return 1;

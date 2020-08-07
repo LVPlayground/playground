@@ -350,7 +350,7 @@ waterFightProcess()
 
                 new szEndMsg[128];
                 format(szEndMsg, sizeof(szEndMsg), "~y~WaterFight~w~ has finished: ~r~~h~%s~w~ has won!", Player(i)->nicknameString());
-                NewsController->show(szEndMsg);
+                AnnounceNewsMessage(szEndMsg);
                 ShowBoxForPlayer(i, "You have won the WaterFight minigame!");
                 waterFightRemovePlayer(i);
                 WonMinigame[ i ]++;
@@ -527,7 +527,7 @@ OnWaterFightCmdText(playerid)
     }
     Responses->respondMinigameSignedUp(playerid, WaterFightMinigame, "WaterFight", 20);
     format(szAdminMsg, sizeof(szAdminMsg), "~r~~h~%s~w~ has signed up for ~y~WaterFight~w~ (~p~/waterfight~w~)", Player(playerid)->nicknameString());
-    NewsController->show(szAdminMsg);
+    AnnounceNewsMessage(szAdminMsg);
 
     format(szAdminMsg, 128, "%s (Id:%d) has signed up for /waterfight.", PlayerName(playerid), playerid);
     Admin(playerid, szAdminMsg);

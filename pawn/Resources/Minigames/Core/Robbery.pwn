@@ -664,7 +664,7 @@ CRobbery__OnCommand(playerid)
     new string[128];
     Responses->respondMinigameSignedUp(playerid, CasinoRobberyMinigame, "Casino Robbery", 30);
     format(string, sizeof(string), "~r~~h~%s~w~ has signed up for ~y~Casino Robbery~w~ (~p~/robbery~w~)", Player(playerid)->nicknameString());
-    NewsController->show(string);
+    AnnounceNewsMessage(string);
 
     format(string, 128, "%s (Id:%d) has signed up for /robbery.", PlayerName(playerid), playerid);
     Admin(playerid, string);
@@ -758,7 +758,7 @@ CRobbery__Process()
     if(casinoData[timer] == 0) {
         // Defenders are winners!
         format(notice, sizeof(notice), "~y~Casino Robbery~w~ has finished: ~b~~h~Defenders~w~ have won!");
-        NewsController->show(notice);
+        AnnounceNewsMessage(notice);
         casinoData[winners] = ROBBERY_TEAMDEFEND;
         CRobbery__End();
         return;
@@ -884,7 +884,7 @@ CRobbery__Process()
                     {
                         // Win!
                         format(string, sizeof(string), "~y~Casino Robbery~w~ has finished: ~r~~h~Attackers~w~ have won!");
-                        NewsController->show(string);
+                        AnnounceNewsMessage(string);
                         casinoData[winners] = ROBBERY_TEAMATTACK;
                         CRobbery__End();
                         return;
@@ -1018,13 +1018,13 @@ CRobbery__PlayerExit(playerid)
                 {
                     casinoData[winners] = 1;
                     format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~b~~h~Defenders~w~ have won!");
-                    NewsController->show(iStr);
+                    AnnounceNewsMessage(iStr);
                 }
                 if(casteam == 1)
                 {
                     casinoData[winners] = 0;
                     format(iStr, sizeof(iStr), "~y~Casino Robbery~w~ has finished: ~r~~h~Attackers~w~ have won!");
-                    NewsController->show(iStr);
+                    AnnounceNewsMessage(iStr);
                 }
 
                 CRobbery__End();

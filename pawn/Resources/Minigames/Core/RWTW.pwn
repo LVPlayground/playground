@@ -517,7 +517,7 @@ rwSignPlayerUp(playerid)
 
     Responses->respondMinigameSignedUp(playerid, RunWeaponsTeamWarMinigame, "Run Weapons Team War", 20);
     format(szAdminMsg, sizeof(szAdminMsg), "~r~~h~%s~w~ has signed up for ~y~Run Weapons Team War~w~ (~p~/rwtw~w~)", Player(playerid)->nicknameString());
-    NewsController->show(szAdminMsg);
+    AnnounceNewsMessage(szAdminMsg);
 
     rwData[rwSignupCount]++;
 }
@@ -633,13 +633,13 @@ rwOnPlayerDeath(playerid, killerid)
         {
             rwEnd();
             format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
         }
         else
         {
             rwEnd();
             format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~r~~h~Red Team~w~ have won!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
         }
     }
 }

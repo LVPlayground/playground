@@ -123,7 +123,7 @@ CBrief__SignPlayerUp(playerid)
 
     new message[128];
     format(message, sizeof(message), "~r~~h~%s~w~ has signed up for ~y~Capture the Briefcase~w~ (~p~/brief~w~)", Player(playerid)->nicknameString());
-    NewsController->show(message);
+    AnnounceNewsMessage(message);
 
     return 1;
 }
@@ -202,7 +202,7 @@ CBrief__Checkpoint(playerid)
 
             SendClientMessage(playerid,COLOR_PINK,str);           
             format(str, sizeof(str), "~y~Capture the Briefcase~w~ has finished: ~r~~h~%s~w~ has deliverd the briefcase!", Player(playerid)->nicknameString());
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CBrief__Cancel();
             return 1;
         }

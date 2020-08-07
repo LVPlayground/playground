@@ -49,7 +49,7 @@ export class NewsManager {
             this.#textDraws_.push(server.textDrawManager.createTextDraw({
                 position: [
                     kNewsMessageHorizontalOffsetPx,
-                    kNewsMessageVerticalOffsetPx + index * kNewsMessageVerticalSpacingPx,
+                    kNewsMessageVerticalOffsetPx - index * kNewsMessageVerticalSpacingPx,
                 ],
 
                 text: kEmptyNewsMessage,
@@ -120,6 +120,9 @@ export class NewsManager {
     // Removes the news message with the given |message|. All other messages that are still shown
     // will be moved down a row, to keep all news messages at the bottom of the screen.
     removeNewsMessage(message) {
+        if (!this.#textDraws_)
+            return;  // |this| instance got disposed of since
+
         for (let index = 0; index < kNewsMessageCount; ++index) {
             if (this.#textDraws_[index].text !== message)
                 continue;  // this text draw describes another message

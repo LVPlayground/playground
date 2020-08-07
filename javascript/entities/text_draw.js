@@ -110,11 +110,11 @@ export class TextDraw extends Supplementable {
     // Section: interaction
     // ---------------------------------------------------------------------------------------------
 
-    displayForAll() { this.#natives_.displayForAll(); }
-    displayForPlayer(player) { this.#natives_.displayForPlayer(player); }
+    displayForAll() { this.#natives_.displayForAll(this.#id_); }
+    displayForPlayer(player) { this.#natives_.displayForPlayer(this.#id_, player); }
 
-    hideForAll() { return this.#natives_.hideForAll(); }
-    hideForPlayer(player) { this.#natives_.hideForPlayer(player); }
+    hideForAll() { this.#natives_.hideForAll(this.#id_); }
+    hideForPlayer(player) { this.#natives_.hideForPlayer(this.#id_, player); }
 
     // ---------------------------------------------------------------------------------------------
     // Section: text & positioning

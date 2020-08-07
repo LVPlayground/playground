@@ -28,8 +28,8 @@ class TextDrawNativesInterface {
     setString(id, text) {}
     setTextSize(id, x, y) {}
 
-    showForAll(id) {}
-    showForPlayer(id, player) {}
+    displayForAll(id) {}
+    displayForPlayer(id, player) {}
 
     hideForAll(id) {}
     hideForPlayer(id, player) {}
@@ -108,8 +108,8 @@ export class PlayerTextDrawNatives extends TextDrawNativesInterface {
         pawnInvoke('PlayerTextDrawTextSize', 'iiff', this.#playerId_, id, x, y);
     }
 
-    showForAll(id) { throw new Error(`Invalid operation for per-player text-draws.`); }
-    showForPlayer(id, player) {
+    displayForAll(id) { throw new Error(`Invalid operation for per-player text-draws.`); }
+    displayForPlayer(id, player) {
         if (player.id !== this.#playerId_)
             throw new Error(`Invalid operation for per-player text-draws.`);
 
@@ -157,11 +157,11 @@ export class TextDrawNatives extends TextDrawNativesInterface {
     setString(id, text) { pawnInvoke('TextDrawSetString', 'is', id, text); }
     setTextSize(id, x, y) { pawnInvoke('TextDrawTextSize', 'iff', id, x, y); }
 
-    showForAll(id) { pawnInvoke('TextDrawShowForAll', 'i', id); }
-    showForPlayer(id, player) { pawnInvoke('TextDrawShowForPlayer', 'ii', id, player.id); }
+    displayForAll(id) { pawnInvoke('TextDrawShowForAll', 'i', id); }
+    displayForPlayer(id, player) { pawnInvoke('TextDrawShowForPlayer', 'ii', player.id, id); }
 
     hideForAll(id) { pawnInvoke('TextDrawHideForAll', 'i', id); }
-    hideForPlayer(id, player) { pawnInvoke('TextDrawHideForPlayer', 'ii', id, player.id); }
+    hideForPlayer(id, player) { pawnInvoke('TextDrawHideForPlayer', 'ii', player.id, id); }
 }
 
 // Interface through which text draws can be tested. Mocks behaviour of the server in a way that

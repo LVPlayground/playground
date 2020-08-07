@@ -4,6 +4,7 @@
 
 import { AnnounceManager } from 'features/announce/announce_manager.js';
 import { Feature } from 'components/feature_manager/feature.js';
+import { NewsManager } from 'features/announce/news_manager.js';
 
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.
@@ -17,6 +18,14 @@ export default class Announce extends Feature {
         // Depend on the Nuwani feature to be able to announce messages to IRC. Features wishing to
         // send their own IRC messages should depend on Nuwani individually.
         const nuwani = this.defineDependency('nuwani');
+
+        // Depend on the Settings module because various parts of the news messaging behaviour are
+        // configurable by Management members, using the "/lvp settings" argument.
+        const settings = this.defineDependency('settings');
+
+        // Manages the news medium for making announcements to players. Optionally displayed at the
+        // bottom of their screens, it's convenient for less important messaging.
+        this.newsManager_ = new NewsManager(settings);
 
         this.manager_ = new AnnounceManager(nuwani);
     }
@@ -35,6 +44,12 @@ export default class Announce extends Feature {
     // |command| themselves to participate in the minigame as well.
     announceMinigameParticipation(player, name, command) {
         this.manager_.announceMinigameParticipation(player, name, command);
+    }
+
+    // Announces the given |message| to all players who see news messages. The |message| will be
+    // formatted according to the |params| when given. Must follow game text styling.
+    announceNewsMessage(message, ...params) {
+        this.newsManager_.announceNewsMessage(message, ...params);
     }
 
     // Announces |message| to all in-game players. This will automatically generate an IRC message
@@ -64,5 +79,12 @@ export default class Announce extends Feature {
     // administrators. This will automatically generate an IRC message with the "report" tag.
     announceReportToAdministrators(player, reportedPlayer, reason) {
         this.manager_.announceReportToAdministrators(player, reportedPlayer, reason);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {
+        this.newsManager_.dispose();
+        this.newsManager_ = null;
     }
 }

@@ -200,7 +200,7 @@ export class TextDraw extends Supplementable {
             return;
 
         this.#outline_ = value;
-        this.#natives_.setOutline(value);
+        this.#natives_.setOutline(this.#id_, value);
     }
 
     get shadow() { return this.#shadow_; }

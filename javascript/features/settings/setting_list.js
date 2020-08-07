@@ -118,6 +118,7 @@ export const kSettingList = [
     new Setting('playground', 'leaderboard_limit_days', Setting.TYPE_NUMBER, 4, 'Number of days of history the leaderboards should consider.'),
     new Setting('playground', 'leaderboard_limit_entries', Setting.TYPE_NUMBER, 25, 'Number of entries that should be shown on the leaderboard.'),
     new Setting('playground', 'leaderboard_page_count', Setting.TYPE_NUMBER, 25, 'Number of entries to show per page on the leaderboard.'),
+    new Setting('playground', 'news_message_onscreen_sec', Setting.TYPE_NUMBER, 20, 'Number of seconds a news message should be on-screen.'),
     new Setting('playground', 'notification_display_time_sec', Setting.TYPE_NUMBER, 5, 'Number of seconds for which a notification should be displayed.'),
     new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),

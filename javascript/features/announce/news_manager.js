@@ -7,6 +7,9 @@ import { TextDraw } from 'entities/text_draw.js';
 
 import { format } from 'base/format.js';
 
+// Value assigned to an empty text message. Underscores won't show up in text draws.
+const kEmptyNewsMessage = '_';
+
 // Keyboard mappings which are valid and can be contained in news messages.
 const kKeyboardMappings = new Set([
     'CONVERSATION_NO', 'CONVERSATION_YES', 'GO_BACK', 'GO_FORWARD', 'GO_LEFT', 'GO_RIGHT',
@@ -39,7 +42,29 @@ export class NewsManager {
     constructor(settings) {
         this.#settings_ = settings;
         this.#textDraws_ = [];
+
+        // Build the text draw entities that will be used by the news manager. They are ordered
+        // bottom-up, so index 0 is the lowest, where index |kNewsMessageCount - 1| is the highest.
+        for (let index = 0; index < kNewsMessageCount; ++index) {
+            this.#textDraws_.push(server.textDrawManager.createTextDraw({
+                position: [
+                    kNewsMessageHorizontalOffsetPx,
+                    kNewsMessageVerticalOffsetPx + index * kNewsMessageVerticalSpacingPx,
+                ],
+
+                text: kEmptyNewsMessage,
+
+                backgroundColor: Color.fromRGBA(0x00, 0x00, 0x00, 0xFF),
+                color: Color.fromRGBA(0xFF, 0xFF, 0xFF, 0xFF),
+                font: TextDraw.kFontSansSerif,
+                letterSize: [ 0.17, 0.79 ],
+                outline: 1,
+            }));
+        }
     }
+
+    // Provides access to the local text draw array. Must only be used for testing purposes.
+    get textDrawsForTesting() { return this.#textDraws_; }
 
     // ---------------------------------------------------------------------------------------------
     // Displaying and sanitizing messages
@@ -50,6 +75,58 @@ export class NewsManager {
     announceNewsMessage(message, ...params) {
         const formattedMessage = format(message, ...params);
         const sanitizedMessage = this.sanitizeMessage(formattedMessage);
+
+        let broadcasted = false;
+
+        // First attempt to find an available text draw for the news message. If one is found, set
+        // the message's text and it'll be shown to all players.
+        for (const textDraw of this.#textDraws_) {
+            if (textDraw.text !== kEmptyNewsMessage)
+                continue;  // this |textDraw| is already in use
+
+            // Set a flag to mark that the message has been broadcasted.
+            broadcasted = true;
+
+            textDraw.text = sanitizedMessage;
+            break;
+        }
+
+        // If the message could not be broadcasted, we replace the first text draw which is known
+        // to be the oldest one. All other text draws have to move one along.
+        //
+        // |--------------------|        |--------------------|
+        // | MESSAGE_3          |        | sanitizedMessage   |
+        // | MESSAGE_2          |  --->  | MESSAGE_3          |
+        // | MESSAGE_1          |        | MESSAGE_2          |
+        // | MESSAGE_0          |        | MESSAGE_1          |
+        // |--------------------|        |--------------------|
+        if (!broadcasted) {
+            for (let index = 0; index < kNewsMessageCount - 1; ++index)
+                this.#textDraws_[index].text = this.#textDraws_[index + 1].text;
+
+            this.#textDraws_[kNewsMessageCount - 1].text = sanitizedMessage;
+        }
+
+        // The message now has certainly been broadcasted. Start a timer for the intended display
+        // duration after which the message will be removed again.
+        wait(this.#settings_().getValue('playground/news_message_onscreen_sec') * 1000).then(() => {
+            this.removeNewsMessage(sanitizedMessage);
+        });
+    }
+
+    // Removes the news message with the given |message|. All other messages that are still shown
+    // will be moved down a row, to keep all news messages at the bottom of the screen.
+    removeNewsMessage(message) {
+        for (let index = 0; index < kNewsMessageCount; ++index) {
+            if (this.#textDraws_[index].text !== message)
+                continue;  // this text draw describes another message
+
+            for (let moveIndex = index; moveIndex < kNewsMessageCount - 1; ++moveIndex)
+                this.#textDraws_[moveIndex].text = this.#textDraws_[moveIndex + 1].text;
+
+            this.#textDraws_[kNewsMessageCount - 1].text = kEmptyNewsMessage;
+            break;
+        }
     }
 
     // Sanitizes the given |message|. Ensures that the following conditions hold true:

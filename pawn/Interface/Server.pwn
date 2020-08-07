@@ -18,6 +18,7 @@ native CAC_GetStatus(player_id);
 #endif
 
 // Provided by the PlaygroundJS plugin.
+native AnnounceNewsMessage(const message[]);
 native IsPlayerEligibleForBenefit(playerid, benefit);
 native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);

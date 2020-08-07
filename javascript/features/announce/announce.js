@@ -3,12 +3,17 @@
 // be found in the LICENSE file.
 
 import { AnnounceManager } from 'features/announce/announce_manager.js';
+import { AnnounceNatives } from 'features/announce/announce_natives.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { NewsManager } from 'features/announce/news_manager.js';
 
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.
 export default class Announce extends Feature {
+    manager_ = null;
+    natives_ = null;
+    newsManager_ = null;
+
     constructor() {
         super();
 
@@ -22,6 +27,10 @@ export default class Announce extends Feature {
         // Depend on the Settings module because various parts of the news messaging behaviour are
         // configurable by Management members, using the "/lvp settings" argument.
         const settings = this.defineDependency('settings');
+
+        // Provides native functions for the announce feature, which have access to a selected sub-
+        // set of the public API exposed by this feature.
+        this.natives_ = new AnnounceNatives(this);
 
         // Manages the news medium for making announcements to players. Optionally displayed at the
         // bottom of their screens, it's convenient for less important messaging.
@@ -86,5 +95,8 @@ export default class Announce extends Feature {
     dispose() {
         this.newsManager_.dispose();
         this.newsManager_ = null;
+
+        this.natives_.dispose();
+        this.natives_ = null;
     }
 }

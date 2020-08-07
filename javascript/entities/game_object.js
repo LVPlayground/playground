@@ -150,8 +150,10 @@ export class GameObject {
     dispose() {
         this.destroyInternal();
 
-        this.#manager_.didDisposeObject(this);
-        this.#manager_ = null;
+        if (this.#manager_) {
+            this.#manager_.didDisposeObject(this);
+            this.#manager_ = null;
+        }
 
         this.#id_ = GameObject.kInvalidId;
     }

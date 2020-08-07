@@ -82,6 +82,7 @@ export class PlayerAccountSupplement extends Supplement {
             player.colors.customColor = Color.fromNumberRGBA(databaseRow.custom_color);
 
         // Statistics that will be stored by the PlayerStatsSupplement instead.
+        player.stats.enduring.reactionTests = databaseRow.stats_reaction;
         player.stats.enduring.onlineTime = databaseRow.online_time;
         player.stats.enduring.deathCount = databaseRow.death_count;
         player.stats.enduring.killCount = databaseRow.kill_count;

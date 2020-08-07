@@ -58,7 +58,8 @@ const FINALIZE_PLAYER_SESSION_QUERY = `
         sessions.session_damage_taken = ?,
         sessions.session_shots_hit = ?,
         sessions.session_shots_missed = ?,
-        sessions.session_shots_taken = ?
+        sessions.session_shots_taken = ?,
+        sessions.session_reaction_tests = ?
     WHERE
         sessions.session_id = ?`;
 
@@ -122,6 +123,6 @@ export class ActivityRecorder {
         server.database.query(FINALIZE_PLAYER_SESSION_QUERY, 
             sessionStats.deathCount, sessionStats.killCount, sessionStats.damageGiven,
             sessionStats.damageTaken, sessionStats.shotsHit, sessionStats.shotsMissed,
-            sessionStats.shotsTaken, sessionId);
+            sessionStats.shotsTaken, sessionStats.reactionTests, sessionId);
     }
 }

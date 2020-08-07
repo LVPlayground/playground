@@ -17,6 +17,8 @@ export class PlayerStatsView {
 
     // ---------------------------------------------------------------------------------------------
 
+    reactionTests = 0;
+
     // Gets or sets the online time. This is decided based on a base value, and a start time to be
     // able to return live values without having to update data all the time.
     get onlineTime() {

@@ -110,6 +110,8 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance((delay + jitter) * 1000);
 
         assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.stats.enduring.reactionTests, 0);
+        assert.equal(gunther.stats.session.reactionTests, 0);
         assert.equal(gunther.account.reactionTests, 0);
         assert.equal(finance.getPlayerCash(gunther), 0);
         
@@ -123,6 +125,8 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
         assert.includes(gunther.messages[3], driver.activeTest_.answer.toLowerCase());
 
+        assert.equal(gunther.stats.enduring.reactionTests, 1);
+        assert.equal(gunther.stats.session.reactionTests, 1);
         assert.equal(gunther.account.reactionTests, 1);
         assert.equal(finance.getPlayerCash(gunther), prize);
 

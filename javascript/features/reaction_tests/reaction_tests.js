@@ -193,6 +193,9 @@ export default class ReactionTests extends Feature {
             }
 
             // Increment the number of wins in the player's statistics.
+            player.stats.enduring.reactionTests++;
+            player.stats.session.reactionTests++;
+
             player.account.reactionTests++;
 
             this.awardAchievementWhenApplicable(player, difference);

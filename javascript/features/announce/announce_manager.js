@@ -15,6 +15,19 @@ export class AnnounceManager {
         this.nuwani_ = nuwani;
     }
 
+    // Announces the given |message| to all players, optionally filtered by the given |predicate|.
+    publishAnnouncement({ message, predicate = null } = {}) {
+        for (const player of server.playerManager) {
+            if (player.isNonPlayerCharacter())
+                continue;  // never send messages to non-player characters
+
+            if (predicate && !predicate(player))
+                continue;  // the |predicate| decided to not distribute this message
+
+            player.sendMessage(message);
+        }
+    }
+
     // Announces that the |name| has started. Players can join by typing |command|.
     announceMinigame(player, name, command) {
         const formattedMessage = format(Message.ANNOUNCE_MINIGAME, name, command);

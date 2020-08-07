@@ -7,6 +7,8 @@ import { AnnounceNatives } from 'features/announce/announce_natives.js';
 import { Feature } from 'components/feature_manager/feature.js';
 import { NewsManager } from 'features/announce/news_manager.js';
 
+import { format } from 'base/format.js';
+
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.
 export default class Announce extends Feature {
@@ -47,11 +49,15 @@ export default class Announce extends Feature {
     // Announces that a game has started with the given |name|, which others can join by executing
     // the given |command|. Will be announced to all players, both in and out-of-game.
     announceGame(player, name, command, price) {
-        const message = !price ? Message.ANNOUNCE_GAME_REGISTRATION_FREE
-                               : Message.ANNOUNCE_GAME_REGISTRATION;
+        this.manager_.publishAnnouncement({
+            message: format(!price ? Message.ANNOUNCE_GAME_REGISTRATION_FREE
+                                   : Message.ANNOUNCE_GAME_REGISTRATION, name, command, price),
 
-        // TODO: Filter the announcement for the given |player|?
-        this.announceToPlayers(message, name, command, price);
+            // Exclude the |player| from the announcement, they'll get targetted messaging.
+            predicate: recipient => {
+                return recipient !== player;
+            },
+        });
     }
 
     // Announces that the |player| has signed up for a game with the given |name|, which others can

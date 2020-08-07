@@ -92,7 +92,7 @@ class Announcements {
                 Player(playerId)->nicknameString(), playerId);
 
             // Inform the |playerId| of running an outdated version of SA-MP if they are.
-            if (strlen(version) >= 1 && !strcmp(version, "0.3.7-R4", true, 8)) {
+            if (strlen(version) >= 1 && strcmp(version, "0.3.7-R4", true, 8) != 0) {
                 SendClientMessage(
                     playerId, Color::Error,
                     "*** You are running an old version of SA-MP, consider updating to the latest version!");

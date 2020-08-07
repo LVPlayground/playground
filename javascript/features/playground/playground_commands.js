@@ -11,10 +11,13 @@ import { Setting } from 'entities/setting.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
+import { format } from 'base/format.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
+import { timeDifferenceToString } from 'base/time.js';
 
 // A series of general commands that don't fit in any particular
 export class PlaygroundCommands {
+    activeTrace_ = false;
     announce_ = null;
     commands_ = null;
     communication_ = null;
@@ -54,6 +57,11 @@ export class PlaygroundCommands {
                 .description(`Amend some of the server's settings.`)
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
+            .sub('trace')
+                .description(`Capture a detailed trace of the server's processing.`)
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .parameters([ { name: 'seconds', type: CommandBuilder.kTypeNumber } ])
+                .build(PlaygroundCommands.prototype.onPlayergroundTraceCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
 
@@ -1019,6 +1027,58 @@ export class PlaygroundCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Captures a trace of the server's activities for the given number of |seconds|. The name of
+    // the trace will be automatically generated based on the current time and date.
+    async onPlayergroundTraceCommand(player, seconds) {
+        if (!seconds || seconds < 10 || seconds > 1800) {
+            player.sendMessage(Message.LVP_TRACE_USAGE);
+            return;
+        }
+
+        if (this.activeTrace_) {
+            player.sendMessage(Message.LVP_TRACE_IN_PROGRESS);
+            return;
+        }
+
+        // (1) Mark that a trace is in progress, effectively locking this command.
+        this.activeTrace_ = true;
+
+        const duration = timeDifferenceToString(seconds);
+
+        // (2) Announce the trace to administrators, in case lag is experienced.
+        this.announce_().announceToAdministrators(
+            Message.LVP_TRACE_ADMIN_STARTED, player.name, player.id, duration);
+
+        // (3) Start the actual trace, and acknowledge this action to the |player|.
+        player.sendMessage(Message.LVP_TRACE_STARTED, duration);
+
+        startTrace();
+
+        // (4) Wait for the trace to be completed. Mind that the |player| might disconnect in this
+        // time, particularly for longer-running traces of 10 minutes or more.
+        await wait(seconds * 1000);
+
+        // (5) Capture the trace to the generated |filename|. This could lock up the server for a
+        // second or so, particularly if the trace ran for a longer period of time.
+        const date = new Date();
+        const filename = format(
+            'trace-%s-%02d-%02d-%02d-%02d-%02d.json', date.getFullYear(), date.getMonth() + 1,
+            date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+
+        stopTrace(filename);
+
+        // (6) Tell administrators about the trace having succeeded.
+        this.announce_().announceToAdministrators(Message.LVP_TRACE_ADMIN_FINISHED, filename);
+
+        // (7) If the |player| is still connected, let them know about the successful trace too.
+        if (player.isConnected())
+            player.sendMessage(Message.LVP_TRACE_FINISHED, filename);
+
+        this.activeTrace_ = false;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see
     // a list of sub-commands that they're allowed to execute.
     onPlaygroundCommand(player) {
@@ -1028,7 +1088,7 @@ export class PlaygroundCommands {
             options.push('access', 'settings');
 
         if (player.isManagement())
-            options.push('profile', 'reload');
+            options.push('profile', 'reload', 'trace');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)

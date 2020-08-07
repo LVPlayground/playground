@@ -46,7 +46,7 @@ describe('PlaygroundCommands', (it, beforeEach) => {
             () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
-        assert.equal(gunther.getLastDialogAsTable().rows.length, 4);
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 5);
 
         // (1) Players with an exception cannot modify commands above their pay grade.
         let command = server.commandManager.resolveCommand('/lvp access');
@@ -480,5 +480,42 @@ describe('PlaygroundCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.includes(gunther.messages[0], 'is reloading all in-game messages');  // admin notice
         assert.includes(gunther.messages[1], 'messages have been reloaded');  // acknowledgement
+    });
+
+    it('should be able to capture a trace', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Override the global `startTrace()` and `stopTrace()` functions, provided by PlaygroundJS,
+        // to avoid capturing an actual trace while this command is running.
+        const originalStartTrace = global.startTrace;
+        const originalStopTrace = global.stopTrace;
+
+        let filename = null;
+        let running = false;
+
+        global.startTrace = () => running = true;
+        global.stopTrace = (inFilename) => {
+            filename = inFilename;
+            running = false;
+        };
+
+        // Start the command. We can't wait on it because that takes ages.
+        const commandPromise = gunther.issueCommand('/lvp trace 180');
+        await Promise.resolve();
+
+        assert.isTrue(running);
+        assert.equal(gunther.messages.length, 2);
+
+        // Wait for the 180 seconds the trace is meant to last. In reality we fast-forward.
+        await server.clock.advance(180 * 1000);
+
+        assert.isTrue(await commandPromise);
+        assert.isFalse(running);
+
+        assert.equal(gunther.messages.length, 4);
+
+        // Restore the original tracing functions on the global scope.
+        global.startTrace = originalStartTrace;
+        global.stopTrace = originalStopTrace;
     });
 });

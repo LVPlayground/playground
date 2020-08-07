@@ -418,7 +418,6 @@
   "LVP_ACCESS_EXCEPTION_REMOVED_ADMIN": "%s (Id:%d) has removed the \"%s\" command from %s (Id:%d)",
   "LVP_ACCESS_EXCEPTION_REMOVED_FYI": "{ADFF2F}*** %s (Id:%d) has revoked your ability to use the \"%s\" command.",
   "LVP_ACCESS_EXCEPTIONS_RESTORED": "{ADFF2F}*** Your %d command exceptions have been restored.",
-
   "LVP_ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has %s the %s option.",
   "LVP_ANNOUNCE_CMD_AVAILABLE": "%s has made the /%s command available to players.",
   "LVP_ANNOUNCE_CMD_EXCEPTION": "%s (Id:%d) has allowed %s to use /%s.",
@@ -457,6 +456,12 @@
   "LVP_SETTING_INVALID_STRING": "Whuh? Your value needs to be between [1, 255] characters!",
   "LVP_SETTING_TOGGLED": "The {FFA500}%s{A9C4E4} setting has been %s.",
   "LVP_SETTING_UPDATED": "The {FFA500}%s{A9C4E4} setting has been updated to {FFA500}%s{A9C4E4}.",
+  "LVP_TRACE_ADMIN_FINISHED": "a server trace has been captured to \"%s\".",
+  "LVP_TRACE_ADMIN_STARTED": "%s (Id:%d) has started a trace capturing %s of data.",
+  "LVP_TRACE_FINISHED": "@success Ace! Your trace has completed and has been written to disk.",
+  "LVP_TRACE_IN_PROGRESS": "@error There's already in trace in progress, please try again later.",
+  "LVP_TRACE_STARTED": "@success Tracing information will be captured for %s.",
+  "LVP_TRACE_USAGE": "@usage /lvp trace [seconds (10-1800)]",
 
   "MUTE_ADMIN_MUTED": "%s (Id:%d) has muted %s (Id:%d) for %s.",
   "MUTE_ADMIN_MUTED_IRC": "%s (IRC) has muted %s (Id:%d) for %s.",

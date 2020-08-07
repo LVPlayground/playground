@@ -16,16 +16,9 @@ lvp_settings(playerId, params[])
 
     // Do we have any parameters passed on?
     if (!strlen(paramOption)) {
-        SendClientMessage(playerId, Color::Information, "Usage: /settings [infomsg/newsmsg/showmsg] [on/off]");
+        SendClientMessage(playerId, Color::Information, "Usage: /settings [infomsg/showmsg] [on/off]");
         return 1;
     }
-
-    // First check whether any /settings command has been registered by individual features, as this
-    // takes precedence over anything defined in the if/else list that follows. Syntax for any
-    // methods listening to this switch is: onSettingsFooCommand(playerId, params[]).
-    new result = Annotation::ExpandSwitch<SettingsCommand>(paramOption, playerId, params);
-    if (result != -1) // it can still either be 0 or 1, but something handled it.
-        return result;
 
     // For /showmessages
     if (!strcmp(paramOption, "showmsg", true, 7))

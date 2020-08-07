@@ -232,8 +232,14 @@ export class PunishmentCommands {
         ], { pageSize: 50 /* just in the odd case that there's >50 people in-game... */ });
 
         for (const result of results) {
-            const nickname = format(
-                '{%s}%s', result.player.colors.currentColor.toHexRGB(), result.player.name);
+            let nickname = '';
+
+            if (result.player.colors?.currentColor) {
+                nickname = format(
+                    '{%s}%s', result.player.colors.currentColor.toHexRGB(), result.player.name);
+            } else {
+                nickname = result.player.name;
+            }
 
             let version = null;
 

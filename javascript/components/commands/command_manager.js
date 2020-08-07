@@ -105,7 +105,8 @@ export class CommandManager {
         event.preventDefault();
 
         // (3) Execute the actual command |description| for the invoking |player|.
-        return this.#executor_.executeCommand(player, result.description, result.commandText);
+        return Promise.resolve().then(() =>
+            this.#executor_.executeCommand(player, result.description, result.commandText));
     }
 
     // Returns the { description, commandText } of the given |command|, as it's about to be executed

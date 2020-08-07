@@ -22,9 +22,9 @@ const kInternalPrefix = 'internal/';
 // This class is responsible for making sure that all the appropriate commands for games on the
 // server are made available, as well as canonical functionality such as the `/challenge` command.
 export class GameCommands {
+    announce_ = null;
     finance_ = null;
     limits_ = null;
-    nuwani_ = null;
     settings_ = null;
     spectate_ = null;
 
@@ -36,10 +36,10 @@ export class GameCommands {
     // Gets the |commands_| map for testing purposes.
     get commandsForTesting() { return this.commands_; }
 
-    constructor(finance, limits, nuwani, settings, spectate, manager, registry) {
+    constructor(announce, finance, limits, settings, spectate, manager, registry) {
+        this.announce_ = announce;
         this.finance_ = finance;
         this.limits_ = limits;
-        this.nuwani_ = nuwani;
         this.settings_ = settings;
         this.spectate_ = spectate;
 
@@ -210,8 +210,9 @@ export class GameCommands {
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED, pendingRegistration.getActivityName());
 
-            this.nuwani_().echo(
-                'notice-minigame', player.name, player.id, pendingRegistration.getActivityName());
+            // Announce the |player|'s participation in this game to all other players.
+            this.announce_().announceGameParticipation(
+                player, pendingRegistration.getActivityName(), description.command);
 
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
@@ -237,8 +238,9 @@ export class GameCommands {
             player.sendMessage(
                 Message.GAME_REGISTRATION_JOINED_CONTINUOUS, activeRuntime.getActivityName());
 
-            this.nuwani_().echo(
-                'notice-minigame', player.name, player.id, activeRuntime.getActivityName());
+            // Announce the |player|'s participation in this game to all other players.
+            this.announce_().announceGameParticipation(
+                player, activeRuntime.getActivityName(), description.command);
 
             // Actually have the |player| join the |activeRuntime|, and we're done here.
             await activeRuntime.addPlayer(player, description.price);
@@ -278,12 +280,18 @@ export class GameCommands {
         if (!description.isFree())
             this.finance_().takePlayerCash(player, description.price);
 
-        // Let people watching Nuwani see that the minigame has started.
-        this.nuwani_().echo(
-            'notice-minigame', player.name, player.id, registration.getActivityName());
-
         // Register the |player| to participate in the |registration|.
         registration.registerPlayer(player, description.price)
+
+        // Append the registration's ID after the command that the player has to enter in case there
+        // are multiple active sign-ups, so that interested people can join the right game.
+        let command = description.command;
+
+        if (pendingPublicRegistrations > 0)
+            command += ` ${registration.id}`;
+
+        // Announce the |player|'s participation in this game to all other players.
+        this.announce_().announceGameParticipation(player, registration.getActivityName(), command);
 
         // If the |player| is the only on available for the game, and the game allows single-player
         // participation, it's possible that it's immediately started.
@@ -302,31 +310,10 @@ export class GameCommands {
         wait(expirationTimeSec * 1000).then(() =>
             this.onCommandRegistrationExpired(registration));
 
-        // Append the registration's ID after the command that the player has to enter in case there
-        // are multiple active sign-ups, so that interested people can join the right game.
-        let command = description.command;
-
-        if (pendingPublicRegistrations > 0)
-            command += ` ${registration.id}`;
-
-        // Send a message to all other unengaged people on the server to see if the want to
-        // participate in the game as well. They're welcome to sign up.
-        const formattedMessage = description.isFree() ? Message.GAME_REGISTRATION_ANNOUNCEMENT_FREE
-                                                      : Message.GAME_REGISTRATION_ANNOUNCEMENT;
-
-        const formattedAnnouncement =
-            Message.format(formattedMessage, registration.getActivityName(), command,
-                           description.price);
-
-        for (const recipient of server.playerManager) {
-            if (recipient === player || recipient.isNonPlayerCharacter())
-                continue;  // no need to send to either the |player| or to bots
-
-            if (this.manager_.getPlayerActivity(recipient))
-                continue;  // the |recipient| is already involved in another game
-
-            recipient.sendMessage(formattedAnnouncement);
-        }
+        // Announce to all players that the game has started. This is something that happens less
+        // often, so should be broadcasted more visiblity for players to participate.
+        this.announce_().announceGame(
+            player, registration.getActivityName(), command, description.price);
     }
 
     // ---------------------------------------------------------------------------------------------

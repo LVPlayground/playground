@@ -96,7 +96,7 @@ describe('GameCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.equal(
             russell.messages[0],
-            Message.format(Message.GAME_REGISTRATION_ANNOUNCEMENT, 'Bubble', 'bubblegame', 5000));
+            Message.format(Message.ANNOUNCE_GAME_REGISTRATION, 'Bubble', 'bubblegame', 5000));
 
         // (3) There should be an error if Gunther tries to join the game again.
         assert.isTrue(await gunther.issueCommand('/bubblegame'));

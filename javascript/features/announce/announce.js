@@ -13,6 +13,7 @@ export default class Announce extends Feature {
     manager_ = null;
     natives_ = null;
     newsManager_ = null;
+    nuwani_ = null;
 
     constructor() {
         super();
@@ -22,7 +23,7 @@ export default class Announce extends Feature {
 
         // Depend on the Nuwani feature to be able to announce messages to IRC. Features wishing to
         // send their own IRC messages should depend on Nuwani individually.
-        const nuwani = this.defineDependency('nuwani');
+        this.nuwani_ = this.defineDependency('nuwani');
 
         // Depend on the Settings module because various parts of the news messaging behaviour are
         // configurable by Management members, using the "/lvp settings" argument.
@@ -36,11 +37,50 @@ export default class Announce extends Feature {
         // bottom of their screens, it's convenient for less important messaging.
         this.newsManager_ = new NewsManager(settings);
 
-        this.manager_ = new AnnounceManager(nuwani);
+        this.manager_ = new AnnounceManager(this.nuwani_);
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Public API of the announce feature.
+    // Public API: High-level announcements
+    // ---------------------------------------------------------------------------------------------
+
+    // Announces that a game has started with the given |name|, which others can join by executing
+    // the given |command|. Will be announced to all players, both in and out-of-game.
+    announceGame(player, name, command, price) {
+        const message = !price ? Message.ANNOUNCE_GAME_REGISTRATION_FREE
+                               : Message.ANNOUNCE_GAME_REGISTRATION;
+
+        // TODO: Filter the announcement for the given |player|?
+        this.announceToPlayers(message, name, command, price);
+    }
+
+    // Announces that the |player| has signed up for a game with the given |name|, which others can
+    // join with the given |command|. Will be announced to all players, but subtly.
+    announceGameParticipation(player, name, command) {
+        this.announceNewsMessage(
+            Message.ANNOUNCE_GAME_PARTICIPATION_NEWS, player.name, name, command);
+
+        this.nuwani_().echo('notice-minigame', player.name, player.id, name);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Public API: Low-level announcements
+    // ---------------------------------------------------------------------------------------------
+
+    // Announces |message| to all in-game administrators, as well as administrators watching through
+    // Nuwani on either Discord or IRC. The |message| will be formatted with the |params|.
+    announceToAdministrators(message, ...params) {
+        this.manager_.announceToAdministrators(message, ...params);
+    }
+
+    // Announces the given |message| to all players who see news messages. The |message| will be
+    // formatted according to the |params| when given. Must follow game text styling.
+    announceNewsMessage(message, ...params) {
+        this.newsManager_.announceNewsMessage(message, ...params);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // TODO: Clean up these things
     // ---------------------------------------------------------------------------------------------
 
     // Announces that the |name| has started by |player|. Players can join by typing |command|, and
@@ -55,24 +95,10 @@ export default class Announce extends Feature {
         this.manager_.announceMinigameParticipation(player, name, command);
     }
 
-    // Announces the given |message| to all players who see news messages. The |message| will be
-    // formatted according to the |params| when given. Must follow game text styling.
-    announceNewsMessage(message, ...params) {
-        this.newsManager_.announceNewsMessage(message, ...params);
-    }
-
     // Announces |message| to all in-game players. This will automatically generate an IRC message
     // with the "announce" tag. The |args| will only be used if |message| is a Message object.
     announceToPlayers(message, ...args) {
         this.manager_.announceToPlayers(message, ...args);
-    }
-
-    // Announces |message| to all in-game administrators that have uncategorized messages enabled. 
-    // This will automatically generate an IRC message with the "admin" tag if uncategorized 
-    // announcements are enabled in the settings. The |args| will only be used if |message| is a 
-    // Message object.
-    announceToAdministrators(message, ...args) {
-        this.manager_.announceToAdministrators(message, ...args);
     }
 
     // Announces |message| to all in-game administrators who have the |announceSubcategory| and 
@@ -93,6 +119,8 @@ export default class Announce extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
+        this.nuwani_ = null;
+
         this.newsManager_.dispose();
         this.newsManager_ = null;
 

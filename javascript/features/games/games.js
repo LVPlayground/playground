@@ -22,6 +22,9 @@ export default class Games extends Feature {
         // Games are critical to the server, thus this is a low-level feature.
         this.markLowLevel();
 
+        // Game announcements will be made through the Announce feature.
+        const announce = this.defineDependency('announce');
+
         // Participating in a game costs some money, but can also reward a prize.
         const finance = this.defineDependency('finance');
 
@@ -47,7 +50,7 @@ export default class Games extends Feature {
         
         // Implements the commands with which players can start and stop games.
         this.commands_ = new GameCommands(
-            finance, limits, nuwani, settings, spectate, this.manager_, this.registry_);
+            announce, finance, limits, settings, spectate, this.manager_, this.registry_);
     }
 
     // ---------------------------------------------------------------------------------------------

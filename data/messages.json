@@ -37,6 +37,9 @@
   "ANNOUNCE_ADMINISTRATORS": "{FFFF00}Admin notice{FFFFFF}: %s",
   "ANNOUNCE_ADMIN_NOTICE": "%s (Id:%d) has made an announcement: %s",
   "ANNOUNCE_ALL": "{80CBC4}*** %s",
+  "ANNOUNCE_GAME_PARTICIPATION_NEWS": "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
+  "ANNOUNCE_GAME_REGISTRATION": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
+  "ANNOUNCE_GAME_REGISTRATION_FREE": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join.",
   "ANNOUNCE_HEADER": "{DC143C}-------------------------",
   "ANNOUNCE_MESSAGE": "{FFFF00}%s",
   "ANNOUNCE_MINIGAME": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}%s{CCD782} to join.",
@@ -163,8 +166,6 @@
 
   "GAME_CONTINUOUS_JOINED": "{CCD782}* %s has joined the %s.",
   "GAME_CONTINUOUS_LEFT": "{CCD782}* %s has left the %s.",
-  "GAME_REGISTRATION_ANNOUNCEMENT": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join for %$.",
-  "GAME_REGISTRATION_ANNOUNCEMENT_FREE": "{CCD782}Sign up for the {838F31}%s{CCD782}! Type {838F31}/%s{CCD782} to join.",
   "GAME_REGISTRATION_CREATED": "{CCD782}Please allow for up to {838F31}%d seconds{CCD782} for the game to start.",
   "GAME_REGISTRATION_INVALID_ID": "@error Sorry, but the game you're trying to join isn't taking registrations anymore.",
   "GAME_REGISTRATION_JOINED_CONTINUOUS": "{CCD782}You have joined the {838F31}%s{CCD782}, enjoy!",

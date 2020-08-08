@@ -260,6 +260,9 @@ export class GameRuntime extends GameActivity {
 
     // Called when the |player| is spawning in the world, while playing in this game.
     async onPlayerSpawn(player) {
+        if (this.leaving_.has(player) || !this.players_.has(player))
+            return;
+
         let countdown = undefined;
 
         // Make sure that the |player| is in the right virtual world.

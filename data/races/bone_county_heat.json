@@ -6,8 +6,7 @@
 
     "environment": {
         "weather": 1,
-        "time": [14, 0],
-        "interior": 0
+        "time": [14, 0]
     },
 
     "spawn_positions": [

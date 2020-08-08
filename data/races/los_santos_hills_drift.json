@@ -10,34 +10,26 @@
         "time": [11, 13]
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [979.0795,-646.4989,121.5894],
-            "rotation": 118.0861,
-            "vehicle": {
-                "model": 562
-            }
+            "facingAngle": 118.0861,
+            "vehicleModelId": 562
         },
         {
             "position": [977.8179,-642.5900,121.5789],
-            "rotation": 115.9929,
-            "vehicle": {
-                "model": 562
-            }
+            "facingAngle": 115.9929,
+            "vehicleModelId": 562
         },
         {
             "position": [976.2587,-638.8738,121.5764],
-            "rotation": 113.4525,
-            "vehicle": {
-                "model": 562
-            }
+            "facingAngle": 113.4525,
+            "vehicleModelId": 562
         },
         {
             "position": [973.9557,-636.4841,121.6250],
-            "rotation": 119.9810,
-            "vehicle": {
-                "model": 562
-            }
+            "facingAngle": 119.9810,
+            "vehicleModelId": 562
         }
     ],
 

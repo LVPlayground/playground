@@ -189,6 +189,26 @@ export const kRotationVectorProperty = {
 
 // -------------------------------------------------------------------------------------------------
 
+// Structured way of expressing a checkpoint that's part of a game.
+export const kGameCheckpoints = {
+    name: 'checkpoints',
+    type: StructuredGameDescription.kTypeArray,
+    elementType: {
+        type: StructuredGameDescription.kTypeObject,
+        structure: [
+            {
+                name: 'position',
+                ...kPositionProperty,
+            },
+            {
+                name: 'size',
+                type: StructuredGameDescription.kTypeNumber,
+                defaultValue: 10,
+            },
+        ]
+    }
+};
+
 // Structured way of expressing a game's environment settings.
 export const kGameEnvironment = {
     name: 'environment',

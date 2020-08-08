@@ -95,6 +95,15 @@ Various templates for use with the `## StructuredGameDescription` are available 
 are canonical, tested, and, should be preferred over individual games defining their own structures
 where possible.
 
+### Game checkpoints (`kGameCheckpoints`)
+The `kGameCheckpoints` template can be used to describe the checkpoints that should be created as
+part of a game, for instance the route to drive when participating in a race. Properties are:
+
+Property   | Description
+-----------|-------------
+`position` | Position of the object, as a `[ x, y, z ]` array. Will be stored as a `Vector`.
+`size`     | Diameter of the checkpoint, in in-game units. Defaults to ten units.
+
 ### Game Environment (`kGameEnvironment`)
 The `kGameEnvironment` template can be used to configure a game's environment settings. All of the
 properties are optional, as is definition of an environment by itself. Properties are:

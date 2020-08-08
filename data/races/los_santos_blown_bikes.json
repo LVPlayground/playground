@@ -31,8 +31,8 @@
     ],
 
     "settings": {
-        "allow_leave_vehicle": true,
-        "unlimited_nos": true
+        "allowLeaveVehicle": true,
+        "unlimitedNos": true
     },
 
     "checkpoints": [

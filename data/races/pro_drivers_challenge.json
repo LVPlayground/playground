@@ -34,7 +34,7 @@
     ],
 
     "settings": {
-        "disable_vehicle_damage": true
+        "disableVehicleDamage": true
     },
 
     "checkpoints": [

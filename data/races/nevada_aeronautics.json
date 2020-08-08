@@ -30,10 +30,6 @@
         }
     ],
 
-    "settings": {
-        "use_airplane_checkpoints": true
-    },
-
     "checkpoints": [
         { "position": [ 170.1583, 2503.0449, 17.8560 ], "size": 15 },
         { "position": [ 385.0237, 2503.8149, 34.9587 ], "size": 15 },

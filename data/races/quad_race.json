@@ -31,7 +31,7 @@
     ],
 
     "settings": {
-        "allow_leave_vehicle": true,
+        "allowLeaveVehicle": true,
         "nos": 1
     },
 

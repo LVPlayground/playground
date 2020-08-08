@@ -31,7 +31,7 @@
     ],
 
     "settings": {
-        "unlimited_nos": true
+        "unlimitedNos": true
     },
 
     "checkpoints": [

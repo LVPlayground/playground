@@ -116,7 +116,7 @@ export class PlaygroundCommands {
     // Used when the |player| would like to fix the temporary rights of |target|. This is a work-
     // around until the account system moves to JavaScript properly.
     onTempFixCommand(player, target) {
-        if (player.isAdministrator()) {
+        if (target.isAdministrator()) {
             player.sendMessage(`{DC143C}Error{FFFFFF}: ${target.name} already is an administrator.`)
             return;
         }

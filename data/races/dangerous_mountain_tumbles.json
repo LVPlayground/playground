@@ -2,9 +2,6 @@
     "name": "Dangerous Mountain Tumbles",
     "id": 3,
 
-    "time_limit": 500,
-    "laps": 1,
-
     "environment": {
         "weather": 19,
         "time": [19, 0]

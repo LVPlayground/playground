@@ -2,8 +2,7 @@
     "name": "Engine in Jeopardy",
     "id": 9,
 
-    "time_limit": 900,
-    "laps": 1,
+    "timeLimit": 900,
 
     "environment": {
         "weather": 18,

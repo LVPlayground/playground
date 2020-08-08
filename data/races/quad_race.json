@@ -2,9 +2,6 @@
     "name": "Quad Race",
     "id": 4,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
         "weather": 10,
         "time": [14, 0]

@@ -2,9 +2,6 @@
     "name": "Desert Race",
     "id": 5,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
         "weather": 8,
         "time": [13, 0]

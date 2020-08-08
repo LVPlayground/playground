@@ -2,9 +2,6 @@
     "name": "Los Santos Blown Bikes",
     "id": 2,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
         "weather": 18,
         "time": [21, 0]

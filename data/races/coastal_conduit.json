@@ -2,9 +2,6 @@
     "name": "Coastal Conduit",
     "id": 1,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
         "weather": 18,
         "time": [12, 0]

@@ -2,7 +2,7 @@
     "name": "Pro's Drivers Challenge",
     "id": 11,
 
-    "time_limit": 1200,
+    "timeLimit": 1200,
     "laps": 4,
 
     "environment": {

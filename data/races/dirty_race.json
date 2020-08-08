@@ -2,9 +2,6 @@
     "name": "Dirty Race",
     "id": 6,
 
-    "time_limit": 600,
-    "laps": 2,
-
     "environment": {
         "weather": 10,
         "time": [11, 0],

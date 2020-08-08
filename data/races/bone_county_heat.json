@@ -2,8 +2,6 @@
     "name": "Bone County Heat",
     "id": 41,
 
-    "laps": 1,
-
     "environment": {
         "weather": 1,
         "time": [14, 0]

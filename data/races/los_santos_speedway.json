@@ -2,8 +2,6 @@
     "name": "Los Santos Speedway",
     "id": 40,
 
-    "laps": 1,
-
     "environment": {
         "weather": 1,
         "time": [12, 0]

@@ -2,9 +2,6 @@
     "name": "Visage street hustle",
     "id": 39,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
         "weather": 0,
         "time": [11, 13]

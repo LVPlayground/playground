@@ -102,6 +102,7 @@ testRunner.run('.*\.test\.js').then(time => {
         // Regular features: Games and minigames
         // -----------------------------------------------------------------------------------------
 
+        'derbies',
         'fights',
         'haystack',
         'races',

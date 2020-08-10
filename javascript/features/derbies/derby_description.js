@@ -24,6 +24,8 @@ export class DerbyDescription extends StructuredGameDescription {
             },
 
             kGameEnvironment,
+            kGameObjects,
+            kGamePickups,
             kGameSpawnPositions,
 
             {
@@ -52,9 +54,6 @@ export class DerbyDescription extends StructuredGameDescription {
                     }
                 ],
             },
-
-            kGameObjects,
-            kGamePickups,
         ]);
     }
 }

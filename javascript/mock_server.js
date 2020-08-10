@@ -41,6 +41,7 @@ import Collectables from 'features/collectables/collectables.js';
 import Communication from 'features/communication/communication.js';
 import CommunicationCommands from 'features/communication_commands/communication_commands.js';
 import Decorations from 'features/decorations/decorations.js';
+import Derbies from 'features/derbies/derbies.js';
 import Economy from 'features/economy/economy.js';
 import Fights from 'features/fights/fights.js';
 import Finance from 'features/finance/finance.js';
@@ -114,6 +115,7 @@ class MockServer {
             communication: Communication,
             communication_commands: CommunicationCommands,
             decorations: Decorations,
+            derbies: Derbies,
             economy: Economy,
             fights: Fights,
             finance: Finance,

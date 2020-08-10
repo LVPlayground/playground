@@ -4,40 +4,45 @@
 
 import { DerbyDescription } from 'features/derbies/derby_description.js';
 
-// Directory in which the derby configuration files reside.
+// Directory in which each of the derby configuration files have been defined.
 const kDerbyDirectory = 'data/derbies/';
 
-// Has the ability to load all derbies from disk, and keep track of which ones are in existence. The
-// registry is further responsible for keeping each of the derbies registered with the Games API,
-// to make sure that the individual games are able to load.
+// Registry for containing information about all derbies available on Las Venturas Playground. The
+// derbies themselves are contained in JSON configuration files, which can be imported using the
+// DerbyDescription class which follows the canonical structured game description syntax.
 export class DerbyRegistry {
-    derbies_ = null;
+    #derbies_ = null;
 
-    constructor() {
-        this.derbies_ = new Map();
+    // Ensures that the registry has been initialized. This will happen the first time any derby
+    // data has to be accessed by one of the methods in the registry.
+    ensureInitialized() {
+        if (this.#derbies_)
+            return;
+
+        this.#derbies_ = new Map();
+        for (const filename of glob(kDerbyDirectory, '.*\.json')) {
+            const description = new DerbyDescription(kDerbyDirectory + filename);
+            if (this.#derbies_.has(description.id))
+                throw new Error(`${description}: duplicate derby ID found: ${description.id}.`);
+
+            this.#derbies_.set(description.id, description);
+        }
     }
 
-    // Gets the number of derbies known to this registry.
-    get size() { return this.derbies_.size; }
+    // ---------------------------------------------------------------------------------------------
 
-    // Initializes all the derbies that exist on the filesystem, creates the necessary Derby-
-    // Description objects for them, and registers them with the Games API.
-    initialize() {
-        if (this.derbies_.size)
-            throw new Error('The DerbyRegistry has already been initialized.');
+    // Provides access to a derby with the given |derbyId|, or NULL when it cannot be found.
+    getDerby(derbyId) { this.ensureInitialized(); return this.#derbies_.get(derbyId) ?? null; }
 
-        const filenames = glob(kDerbyDirectory, '.*\.json');
-        for (const filename of filenames) {
-            let description = null;
-            try {
-                description = new DerbyDescription(kDerbyDirectory + filename);
-                if (this.derbies_.has(description.id))
-                    throw new Error(`[${description.name}] Duplicate derby Id found`);
-                
-                this.derbies_.set(description.id, description);
-            } catch (exception) {
-                console.log(`Unable to load derby from ${filename}:`, exception);
-            }
-        }
+    // Provides an iterator through which all of the derbies can be accessed.
+    derbies() { this.ensureInitialized(); return this.#derbies_.values(); }
+
+    // ---------------------------------------------------------------------------------------------
+
+    dispose() {
+        if (this.#derbies_)
+            this.#derbies_.clear();
+
+        this.#derbies_ = null;
     }
 }

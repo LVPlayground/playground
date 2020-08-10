@@ -122,7 +122,7 @@ export class PlaygroundCommands {
         }
 
         target.level = Player.LEVEL_ADMINISTRATOR;
-        player.levelIsTemporary = true;
+        target.levelIsTemporary = true;
 
         player.sendMessage(`{33AA33}Success{FFFFFF}: ${target.name} their rights have been fixed.`);
 

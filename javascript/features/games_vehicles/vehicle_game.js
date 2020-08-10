@@ -6,13 +6,21 @@ import { GameBase } from 'features/games/game_base.js';
 
 import { shuffle } from 'base/shuffle.js';
 
+// Number of milliseconds to wait before positioning the player in a vehicle, split between their
+// initial spawn and subsequent spawns, which are less intense for the client.
+export const kInitialSpawnLoadDelayMs = 1500;
+export const kSubsequentSpawnLoadDelayMs = 750;
+
 // Base class for vehicle-based games where each participant spawns in a vehicle. Supports any
 // number of spawn positions, environment settings, countdowns and advanced spawn configuration.
 export class VehicleGame extends GameBase {
     #description_ = null;
 
     #availableSpawns_ = null;
+
+    #playerSpawned_ = new Set();
     #playerSpawns_ = new Map();
+    #playerVehicle_ = new Map();
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -68,13 +76,34 @@ export class VehicleGame extends GameBase {
                 boundaries.maximumX, boundaries.minimumX, boundaries.maximumY, boundaries.minimumY);
         }
 
-        // (b) Force-update the streamer for the player, based on where they will be spawning.
-        player.updateStreamer(
-            spawnPosition.position, this.scopedEntities.virtualWorld,
-            this.#description_.environment.interiorId, /* STREAMER_TYPE_OBJECT= */ 0);
-
-        // (c) Freeze the player, preventing them from falling off the map.
+        // (b) Freeze the player, preventing them from falling off the map.
         player.controllable = false;
+
+        // (c) Force-update the streamer for the player, based on where they will be spawning. This
+        // is only necessary if the |player| hasn't previously spawned in this game yet.
+        if (!this.#playerSpawned_.has(player)) {
+            player.updateStreamer(
+                spawnPosition.position, this.scopedEntities.virtualWorld,
+                this.#description_.environment.interiorId, /* STREAMER_TYPE_OBJECT= */ 0);
+
+            await wait(kInitialSpawnLoadDelayMs);
+        } else {
+            await wait(kSubsequentSpawnLoadDelayMs);
+        }
+
+        // (2) Create a vehicle for the |player|, and position them within it.
+        const vehicle = this.scopedEntities.createVehicle({
+            modelId: spawnPosition.vehicleModelId,
+            position: spawnPosition.position,
+            rotation: spawnPosition.facingAngle,
+        });
+
+        player.enterVehicle(vehicle);
+        player.controllable = true;
+
+        // (3) Store their |vehicle|, and mark them as having spawned if that hadn't been done yet.
+        this.#playerSpawned_.add(player);
+        this.#playerVehicle_.set(player, vehicle);
     }
 
     async onPlayerRemoved(player) {
@@ -84,6 +113,16 @@ export class VehicleGame extends GameBase {
         const spawnPosition = this.#playerSpawns_.get(player);
 
         this.#availableSpawns_.unshift(spawnPosition);
+        this.#playerSpawned_.delete(player);
         this.#playerSpawns_.delete(player);
+
+        // (2) Delete their vehicle if that hasn't been done yet.
+        if (this.#playerVehicle_.has(player)) {
+            const vehicle = this.#playerVehicle_.get(player);
+            if (vehicle.isConnected());
+                vehicle.dispose();
+
+            this.#playerVehicle_.delete(player);
+        }
     }
 }

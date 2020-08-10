@@ -89,7 +89,7 @@ export class RaceCommands {
     async onRaceStartCommand(player, raceId) {
         const description = this.#registry_.getRace(raceId);
         if (!description) {
-            player.sendMessage(Message.RACE_ERROR_INVALID_RACE_ID);
+            player.sendMessage(Message.RACES_ERROR_INVALID_ID);
             return;
         }
 

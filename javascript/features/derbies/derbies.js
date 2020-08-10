@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
+import { DerbyCommands } from 'features/derbies/derby_commands.js';
 import { DerbyGame } from 'features/derbies/derby_game.js';
 import { DerbyRegistry } from 'features/derbies/derby_registry.js';
 import { Setting } from 'entities/setting.js';
@@ -10,6 +11,7 @@ import { Setting } from 'entities/setting.js';
 // The Derbies feature is responsible for providing the derbies interface on the server. It builds
 // on top of the Games API, for ensuring consistent behaviour of games on the server.
 export default class Derbies extends Feature {
+    commands_ = null;
     games_ = null;
     registry_ = null;
 
@@ -22,6 +24,9 @@ export default class Derbies extends Feature {
 
         // The registry is responsible for keeping tabs on the available derbies.
         this.registry_ = new DerbyRegistry();
+
+        // Provides the commands through which players can interact with the race system.
+        this.commands_ = new DerbyCommands(this.games_, this.registry_);
 
         // Immediately register the DerbyGame so that the Games API knows of its existence.
         this.registerGame();
@@ -57,6 +62,9 @@ export default class Derbies extends Feature {
 
         this.games_.removeReloadObserver(this);
         this.games_ = null;
+
+        this.commands_.dispose();
+        this.commands_ = null;
 
         this.registry_.dispose();
         this.registry_ = null;

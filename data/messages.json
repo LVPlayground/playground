@@ -152,6 +152,8 @@
   "DEBUG_TRACE_STARTED": "{33AA33}The trace you requested is now being recorded.",
   "DEBUG_TRACE_FINISHED": "{33AA33}The trace you requested has finished recording.",
 
+  "DERBIES_ERROR_INVALID_ID": "@error Sorry, that is not a known derby. Type /derby for an overview!",
+
   "FINANCE_CONTRIBUTION_PAID": "{FFEB3B}You've been selected to donate {FF9800}%${FFEB3B} to the {FF9800}%s{FFEB3B} fund!",
   "FINANCE_CONTRIBUTION_WHY": "{FFEB3B}Your hard earned cash helps keep the local San Andreas economy going!",
 

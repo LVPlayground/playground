@@ -22,8 +22,9 @@ export class StructuredGameDescription {
     static kTypeNumber = 0;
     static kTypeBoolean = 1;
     static kTypeString = 2;
-    static kTypeArray = 3;
-    static kTypeObject = 4;
+    static kTypeEnumeration = 3;
+    static kTypeArray = 4;
+    static kTypeObject = 5;
 
     // ---------------------------------------------------------------------------------------------
 
@@ -82,11 +83,12 @@ export class StructuredGameDescription {
     // expected to be contained within the |value|.
     loadProperty(name, value, property) {
         const kTypes = new Map([
-            [ StructuredGameDescription.kTypeNumber,   'number'  ],
-            [ StructuredGameDescription.kTypeBoolean,  'boolean' ],
-            [ StructuredGameDescription.kTypeString,   'string'  ],
-            [ StructuredGameDescription.kTypeArray,    'array'   ],
-            [ StructuredGameDescription.kTypeObject,   'object'  ],
+            [ StructuredGameDescription.kTypeNumber,      'number'  ],
+            [ StructuredGameDescription.kTypeBoolean,     'boolean' ],
+            [ StructuredGameDescription.kTypeString,      'string'  ],
+            [ StructuredGameDescription.kTypeEnumeration, 'string' ],
+            [ StructuredGameDescription.kTypeArray,       'array'   ],
+            [ StructuredGameDescription.kTypeObject,      'object'  ],
         ]);
 
         if (!property.hasOwnProperty('type') || !kTypes.has(property.type))
@@ -108,6 +110,7 @@ export class StructuredGameDescription {
             case StructuredGameDescription.kTypeNumber:
             case StructuredGameDescription.kTypeBoolean:
             case StructuredGameDescription.kTypeString:
+            case StructuredGameDescription.kTypeEnumeration:
                 const optional = property.hasOwnProperty('defaultValue');
                 if (!optional && ['null', 'undefined'].includes(typeof value)) {
                     throw new Error(
@@ -118,6 +121,26 @@ export class StructuredGameDescription {
                 if (typeof propertyValue !== typeName) {
                     throw new Error(`Property "${name}" must be a ${typeName}, but actually ` +
                                     `is a ${typeof propertyValue}.`);
+                }
+
+                // For enumerations, which are strings, we validate that the |propertyValue| is one
+                // of the defined `options` of the property. This is an implicit validation.
+                if (type === StructuredGameDescription.kTypeEnumeration) {
+                    if (!property.hasOwnProperty('options') || !Array.isArray(property.options)) {
+                        throw new Error(`Enumeration property "${name}" must have an "options" ` +
+                                        `array given, to indicate the enumeration's values.`);
+                    }
+
+                    const nonTextualFields = property.options.filter(x => typeof x !== 'string');
+                    if (nonTextualFields.length > 0) {
+                        throw new Error(`Enumeration property "${name}" must have an "options" ` +
+                                        `array given that only contains strings.`);
+                    }
+
+                    if (!property.options.includes(propertyValue)) {
+                        throw new Error(`Value "${propertyValue}" is not a valid value for the ` +
+                                        `enumeration "${name}".`);
+                    }
                 }
 
                 const validatedValue = validator(propertyValue);

@@ -65,6 +65,73 @@ describe('StructuredGameDescription', it => {
         }
     });
 
+    it('is able to deal with textual enumerations', assert => {
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                // missing `options` array in the field definition
+            }, [
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeEnumeration,
+                }
+            ]);
+        });
+
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                // non-textual option included in the `options` array
+                value: 'Kiwi',
+            }, [
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeEnumeration,
+                    options: [ 'Kiwi', 1.23 ],
+                }
+            ]);
+        });
+
+        assert.throws(() => {
+            new StructuredGameDescription('game', {
+                // missing `value` with an invalid `defaultValue`
+            }, [
+                {
+                    name: 'value',
+                    type: StructuredGameDescription.kTypeEnumeration,
+                    options: [ 'Banana', 'Apple', 'Strawberry' ],
+                    defaultValue: 'Kiwi',
+                }
+            ]);
+        });
+
+        const defaultDescription = new StructuredGameDescription('game', {}, [
+            {
+                name: 'value',
+                type: StructuredGameDescription.kTypeEnumeration,
+                options: [ 'Banana', 'Apple', 'Strawberry' ],
+                defaultValue: 'Banana',
+            }
+        ]);
+
+        assert.isTrue(defaultDescription.hasOwnProperty('value'));
+        assert.typeOf(defaultDescription.value, 'string');
+        assert.equal(defaultDescription.value, 'Banana');
+
+        const valuedDescription = new StructuredGameDescription('game', {
+            value: 'Strawberry',
+        }, [
+            {
+                name: 'value',
+                type: StructuredGameDescription.kTypeEnumeration,
+                options: [ 'Banana', 'Apple', 'Strawberry' ],
+                defaultValue: 'Banana',
+            }
+        ]);
+
+        assert.isTrue(valuedDescription.hasOwnProperty('value'));
+        assert.typeOf(valuedDescription.value, 'string');
+        assert.equal(valuedDescription.value, 'Strawberry');
+    });
+
     it('is able to deal with nested arrays in the structure', assert => {
         assert.doesNotThrow(() => {
             new StructuredGameDescription('game', {

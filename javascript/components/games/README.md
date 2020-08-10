@@ -57,6 +57,19 @@ optional by default, although their properties may be required.
 }
 ```
 
+### Enumerations
+It's possible to define lists of accepted values using enumerations. Each of the entries must be a
+string. A `defaultValue` may be given, but it must be included in the enumeration values as well.
+
+```javascript
+{
+    name: 'gravity',
+    type: StructuredGameDescription.kTypeEnumeration,
+    options: [ 'Low', 'Normal', 'High' ],
+    defaultValue: 'Normal',
+}
+```
+
 ### Scalar types
 Three scalar types are available: numbers, booleans and strings. They can have a `defaultValue` set,
 which marks them as optional. An example declaration looks like:

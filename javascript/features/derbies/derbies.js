@@ -4,9 +4,13 @@
 
 import { Feature } from 'components/feature_manager/feature.js';
 import { DerbyCommands } from 'features/derbies/derby_commands.js';
+import { DerbyDescription } from 'features/derbies/derby_description.js';
 import { DerbyGame } from 'features/derbies/derby_game.js';
-import { DerbyRegistry } from 'features/derbies/derby_registry.js';
 import { Setting } from 'entities/setting.js';
+import { VehicleGameRegistry } from 'features/games_vehicles/vehicle_game_registry.js';
+
+// Directory in which each of the derby configuration files have been defined.
+const kDerbyDirectory = 'data/derbies/';
 
 // The Derbies feature is responsible for providing the derbies interface on the server. It builds
 // on top of the Games API, for ensuring consistent behaviour of games on the server.
@@ -23,7 +27,7 @@ export default class Derbies extends Feature {
         this.games_.addReloadObserver(this, () => this.registerGame());
 
         // The registry is responsible for keeping tabs on the available derbies.
-        this.registry_ = new DerbyRegistry();
+        this.registry_ = new VehicleGameRegistry('derby', kDerbyDirectory, DerbyDescription);
 
         // Provides the commands through which players can interact with the race system.
         this.commands_ = new DerbyCommands(this.games_, this.registry_);

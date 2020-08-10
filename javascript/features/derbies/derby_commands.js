@@ -37,7 +37,7 @@ export class DerbyCommands {
         const dialog = new Menu('Derbies');
 
         // Populate the |dialog| with each of the available derbies from the registry.
-        for (const description of this.#registry_.derbies()) {
+        for (const description of this.#registry_.descriptions()) {
             const name = description.name;
             const listener =
                 DerbyCommands.prototype.onDerbyStartCommand.bind(this, player, description.id);
@@ -54,7 +54,7 @@ export class DerbyCommands {
     // Called when the |player| wants to start the derby identified by |derbyId|. Will defer to the
     // Games API, where limits checks and player availability will be executed.
     async onDerbyStartCommand(player, derbyId) {
-        const description = this.#registry_.getDerby(derbyId);
+        const description = this.#registry_.getDescription(derbyId);
         if (!description) {
             player.sendMessage(Message.DERBIES_ERROR_INVALID_ID);
             return;

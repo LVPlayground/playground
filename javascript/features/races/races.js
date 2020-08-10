@@ -6,9 +6,13 @@ import { Feature } from 'components/feature_manager/feature.js';
 import { MockRaceDatabase } from 'features/races/mock_race_database.js';
 import { RaceCommands } from 'features/races/race_commands.js';
 import { RaceDatabase } from 'features/races/race_database.js';
+import { RaceDescription } from 'features/races/race_description.js';
 import { RaceGame } from 'features/races/race_game.js';
-import { RaceRegistry } from 'features/races/race_registry.js';
 import { Setting } from 'entities/setting.js';
+import { VehicleGameRegistry } from 'features/games_vehicles/vehicle_game_registry.js';
+
+// Directory in which each of the race configuration files have been defined.
+const kRaceDirectory = 'data/races/';
 
 // The Races feature is responsible for providing the race interface on the server. It builds on top
 // of the Games API, for ensuring consistent behaviour of games on the server.
@@ -31,7 +35,7 @@ export default class Races extends Feature {
                                          : new RaceDatabase();
 
         // The registry is responsible for keeping tabs on the available races.
-        this.registry_ = new RaceRegistry();
+        this.registry_ = new VehicleGameRegistry('race', kRaceDirectory, RaceDescription);
 
         // Provides the commands through which players can interact with the race system.
         this.commands_ = new RaceCommands(this.database_, this.games_, this.registry_);

@@ -52,7 +52,7 @@ export class RaceCommands {
         const dialog = new Menu('Races', columns);
 
         // Populate the |dialog| with each of the available races from the registry.
-        for (const description of this.#registry_.races()) {
+        for (const description of this.#registry_.descriptions()) {
             const name = description.name;
             const listener =
                 RaceCommands.prototype.onRaceStartCommand.bind(this, player, description.id);
@@ -88,7 +88,7 @@ export class RaceCommands {
     // Called when the |player| wants to start the race identified by |raceId|. Will defer to the
     // Games API, where limits checks and player availability will be executed.
     async onRaceStartCommand(player, raceId) {
-        const description = this.#registry_.getRace(raceId);
+        const description = this.#registry_.getDescription(raceId);
         if (!description) {
             player.sendMessage(Message.RACES_ERROR_INVALID_ID);
             return;

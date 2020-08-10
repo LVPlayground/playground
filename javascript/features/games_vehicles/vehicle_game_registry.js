@@ -45,6 +45,16 @@ export class VehicleGameRegistry {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Sets the given |description|, associated with the given |id|, for testing purposes.
+    setDescriptionForTesting(id, description) {
+        if (!this.#descriptions_)
+            this.#descriptions_ = new Map();
+
+        this.#descriptions_.set(id, description);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         if (this.#descriptions_)
             this.#descriptions_.clear();

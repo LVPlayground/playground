@@ -33,6 +33,7 @@ export class PickupManager {
     }
 
     get count() { return this.pickups_.size; }
+    get size() { return this.pickups_.size; }
 
     // ---------------------------------------------------------------------------------------------
 

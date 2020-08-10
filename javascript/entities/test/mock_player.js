@@ -53,6 +53,7 @@ export class MockPlayer extends Player {
     #team_ = Player.kNoTeam;
     #time_ = [0, 0];
     #wantedLevel_ = 0;
+    #weather_ = 0;
 
     #messages_ = [];
     #lastDialogId_ = null;
@@ -284,7 +285,9 @@ export class MockPlayer extends Player {
     set wantedLevel(value) { this.#wantedLevel_ = value; }
 
     get weather() { throw new Error('Unable to get the current weather for players.'); }
-    set weather(value) { /* no need to mock write-only values */ }
+    set weather(value) { this.#weather_ = value; }
+
+    get weatherForTesting() { return this.#weather_; }
 
     // ---------------------------------------------------------------------------------------------
     // Section: Appearance

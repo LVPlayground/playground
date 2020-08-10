@@ -124,9 +124,31 @@ properties are optional, as is definition of an environment by itself. Propertie
 Property     | Default     | Description
 -------------|-------------|-------------
 `boundaries` | `null`      | World boundaries to apply to the game. Optional.
+`gravity`    | `Normal`    | The gravity to apply during this game. Optional.
 `interiorId` | `0`         | Interior Id in which the game will be taking place.
-`time`       | `[ 12, 0 ]` | Time to apply in the game, as `[ hour, minute ]`. Defaults to noon.
-`weather`    | `10`        | Weather to apply in the game. Defaults to SUNNY_VEGAS.
+`time`       | `Afternoon` | Time to apply in the game. Defaults to noon.
+`weather`    | `Sunny`     | Weather to apply in the game. Defaults to Sunny.
+
+#### Possible `gravity` values
+  * `Low`: gravity value of 0.0035
+  * `Normal`: gravity value of 0.08
+  * `High`: gravity value of 0.012
+
+#### Possible `time` values
+  * `Morning`: 8am
+  * `Afternoon`: 3pm
+  * `Evening`: 8pm
+  * `Night`: 2am
+
+#### Possible `weather` values
+  * `Cloudy`: weather ID 7
+  * `Foggy`: weather ID 9
+  * `Heatwave`: weather ID 11
+  * `Rainy`: weather ID 8
+  * `Sandstorm`: weather ID 19
+  * `Sunny`: weather ID 10
+
+Weather IDs are documented on the SA-MP forums: https://wiki.sa-mp.com/wiki/WeatherID
 
 ### Game objects (`kGameObjects`)
 The `kGameObjects` template can be used to accept a list of objects as part of the game's config,

@@ -4,11 +4,6 @@
 
     "laps": 2,
 
-    "environment": {
-        "weather": 0,
-        "time": [11, 13]
-    },
-
     "spawnPositions": [
         {
             "position": [979.0795,-646.4989,121.5894],

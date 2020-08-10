@@ -3,8 +3,7 @@
     "id": 10,
 
     "environment": {
-        "weather": 10,
-        "time": [19, 0]
+        "time": "Evening"
     },
 
     "spawnPositions": [

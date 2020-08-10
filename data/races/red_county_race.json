@@ -3,8 +3,7 @@
     "id": 38,
 
     "environment": {
-        "weather": 0,
-        "time": [ 11, 13 ]
+        "time": "Morning"
     },
 
     "spawnPositions": [

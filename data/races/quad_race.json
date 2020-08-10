@@ -2,11 +2,6 @@
     "name": "Quad Race",
     "id": 4,
 
-    "environment": {
-        "weather": 10,
-        "time": [14, 0]
-    },
-
     "spawnPositions": [
         {
             "position": [ 2470.0000, -44.2200, 26.0000 ],

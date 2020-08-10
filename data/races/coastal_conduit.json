@@ -2,11 +2,6 @@
     "name": "Coastal Conduit",
     "id": 1,
 
-    "environment": {
-        "weather": 18,
-        "time": [12, 0]
-    },
-
     "spawnPositions": [
         {
             "position": [ 2877.3500, -1586.1000, 10.6021 ],

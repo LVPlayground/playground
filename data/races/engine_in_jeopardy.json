@@ -5,8 +5,8 @@
     "timeLimit": 900,
 
     "environment": {
-        "weather": 18,
-        "time": [20, 0]
+        "weather": "Heatwave",
+        "time": "Evening"
     },
 
     "spawnPositions": [

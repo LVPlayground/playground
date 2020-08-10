@@ -102,22 +102,6 @@ function spawnPositionValidator(spawnPositions) {
         throw new Error('At least a single spawn position must be defined.');
 }
 
-// Validator function to validate configured times.
-function timePropertyValidator(timeArray) {
-    if (!timeArray.length)
-        return [ 12, 0 ];  // noon
-    
-    if (timeArray.length !== 2)
-        throw new Error(`Times must be indicated as a [hour, minutes] array.`);
-    
-    if (timeArray[0] < 0 || timeArray[0] > 23)
-        throw new Error(`The hour of a time array must be in range of [0, 23].`);
-    if (timeArray[1] < 0 || timeArray[0] > 59)
-        throw new Error(`The minutes of a time array must be in range of [0, 59].`);
-    
-    return timeArray;
-}
-
 // Validator for vehicle model Ids. Will translate "0" to NULL as well.
 function vehicleModelIdValidator(vehicleModelId) {
     if (!vehicleModelId)
@@ -209,7 +193,8 @@ export const kGameCheckpoints = {
     }
 };
 
-// Structured way of expressing a game's environment settings.
+// Structured way of expressing a game's environment settings. This maps to the environment settings
+// that are available for games, in //features/games/environment_settings.js.
 export const kGameEnvironment = {
     name: 'environment',
     type: StructuredGameDescription.kTypeObject,
@@ -219,23 +204,27 @@ export const kGameEnvironment = {
             ...kPositionRectangleProperty,
         },
         {
+            name: 'gravity',
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Low', 'Normal', 'High' ],
+            defaultValue: 'Normal',
+        },
+        {
             name: 'interiorId',
             type: StructuredGameDescription.kTypeNumber,
             defaultValue: 0,  // main world
         },
         {
             name: 'time',
-            type: StructuredGameDescription.kTypeArray,
-            elementType: {
-                type: StructuredGameDescription.kTypeNumber,
-            },
-
-            validator: timePropertyValidator,
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Morning', 'Afternoon', 'Evening', 'Night' ],
+            defaultValue: 'Afternoon',
         },
         {
             name: 'weather',
-            type: StructuredGameDescription.kTypeNumber,
-            defaultValue: 10,  // SUNNY_VEGAS
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Cloudy', 'Foggy', 'Heatwave', 'Rainy', 'Sandstorm', 'Sunny' ],
+            defaultValue: 'Sunny',
         }
     ],
 };

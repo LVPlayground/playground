@@ -6,6 +6,7 @@ import { GameCustomSetting } from 'features/games/game_custom_setting.js';
 import { Menu } from 'components/menu/menu.js';
 
 // Configuration and mappings for the gravity options available to games.
+// Sync: //components/games/structured_game_description_templates.js
 const kGravityConfiguration = new Map([
     [ 'Low', 0.0035 ],
     [ 'Normal', null ],
@@ -13,6 +14,7 @@ const kGravityConfiguration = new Map([
 ]);
 
 // Configuration and mappings for the time options available to games.
+// Sync: //components/games/structured_game_description_templates.js
 const kTimeConfiguration = new Map([
     [ 'Morning', 8 ],
     [ 'Afternoon', 15 ],
@@ -21,6 +23,7 @@ const kTimeConfiguration = new Map([
 ]);
 
 // Configuration and mappings for the weather options available to games.
+// Sync: //components/games/structured_game_description_templates.js
 const kWeatherConfiguration = new Map([
     [ 'Cloudy', 7 ],
     [ 'Foggy', 9 ],

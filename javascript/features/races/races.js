@@ -21,8 +21,8 @@ export default class Races extends Feature {
     constructor() {
         super();
 
-        // The Races feature depends on the Games API for providing its functionality.
-        this.games_ = this.defineDependency('games');
+        // The Races feature depends on the Games Vehicles API for providing its functionality.
+        this.games_ = this.defineDependency('games_vehicles');
         this.games_.addReloadObserver(this, () => this.registerGame());
 
         // The database, in which high scores and checkpoint data will be stored. Will also be used

@@ -58,6 +58,7 @@ testRunner.run('.*\.test\.js').then(time => {
         'collectables',
         'games',
         'games_deathmatch',
+        'games_vehicles',
         'player_decorations',
         'spectate',
         'streamer',

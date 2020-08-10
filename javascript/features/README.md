@@ -53,6 +53,7 @@ Feature                                   | Code Health | Description
 [Collectables](collectables/)             | ✔ 2020     | Provides achievements, benefits thereof and the actual collectables.
 [Games](games/)                           | ✔ 2020     | Driver for all sorts of interactive games on the server.
 [GamesDeathmatch](games_deathmatch/)      | ✔ 2020     | Driver for deathmatch-based games on the server.
+[GamesVehicles](games_vehicles/)          | ✔ 2020     | Driver for vehicle-based games on the server.
 [PlayerDecorations](player_decorations/)  | ✔ 2020     | Provide the ability for players to have a customised appearance.
 [SAMPCAC](sampcac/)                       | ✔ 2020     | Integration with the SAMPCAC anti cheat system, optional for players.
 [Spectate](spectate/)                     | ✔ 2020     | Offers the ability to spectate specific player(s).

@@ -11,7 +11,13 @@ describe('Races', it => {
         assert.isTrue(await server.featureManager.liveReload('races'));
         assert.isTrue(server.commandManager.hasCommand('race'));
 
+        assert.isTrue(await server.featureManager.liveReload('games_vehicles'));
+        assert.isTrue(server.commandManager.hasCommand('race'));
+
         assert.isTrue(await server.featureManager.liveReload('games'));
+        assert.isTrue(server.commandManager.hasCommand('race'));
+
+        assert.isTrue(await server.featureManager.liveReload('games_vehicles'));
         assert.isTrue(server.commandManager.hasCommand('race'));
 
         assert.isTrue(await server.featureManager.liveReload('races'));

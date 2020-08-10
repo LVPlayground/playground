@@ -61,7 +61,7 @@ export class DerbyCommands {
         }
 
         const params = new GameCommandParams();
-        params.settings.set('derbies/derby_id', description.id);
+        params.settings.set('game/description_id', description.id);
         params.type = GameCommandParams.kTypeStart;
 
         // Apply the game's environment settings as defaults for this derby.

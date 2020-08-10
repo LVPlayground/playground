@@ -58,8 +58,8 @@ export default class Races extends Feature {
             price: 0,
 
             settings: [
-                // Option: Race ID (number)
-                new Setting('races', 'race_id', Setting.TYPE_NUMBER, -1, 'Race ID'),
+                // Option: Game Description ID (number)
+                new Setting('game', 'description_id', Setting.TYPE_NUMBER, -1, 'Description ID'),
             ],
 
         }, this.registry_);

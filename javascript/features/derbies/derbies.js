@@ -50,8 +50,8 @@ export default class Derbies extends Feature {
             price: 0,
 
             settings: [
-                // Option: Derby ID (number)
-                new Setting('derbies', 'derby_id', Setting.TYPE_NUMBER, -1, 'Derby ID'),
+                // Option: Game Description ID (number)
+                new Setting('game', 'description_id', Setting.TYPE_NUMBER, -1, 'Description ID'),
             ],
 
         }, this.registry_);

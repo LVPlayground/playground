@@ -11,3 +11,10 @@ the `GamesVehicles.registerGame()` function instead. Pass in a class that extend
 
 Your feature must depend on the `games_vehicles` instead of the `games` feature.
 
+## Provided functionality
+The _Games Vehicle API_ is able to provide vehicle-based games with the following capabilities:
+
+  * Application of all environment settings (`kGameEnvironment`).
+  * Application of all object settings (`kGameObjects`).
+  * Application of all pickup settings (`kGamePickups`).
+  * Safe spawning of players in their vehicles, in randomized positions.

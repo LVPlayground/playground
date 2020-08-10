@@ -74,4 +74,8 @@ export class Game {
         this.#runtime_ = runtime;
         this.#scopedEntities_ = scopedEntities;
     }
+
+    toString() {
+        return `[object ${this.constructor.name}("${this.#runtime_.getActivityName()}")]`;
+    }
 }

@@ -21,10 +21,10 @@ function positionPropertyValidator(positionArray) {
         throw new Error('Positions must be indicated as [x, y, z] arrays.');
     
     const position = new Vector(positionArray[0], positionArray[1], positionArray[2]);
-    if (position.x < -4500 || position.x >= 4500)
-        throw new Error('The x-coordinate of positions must be within [-4500, 4500]');
-    if (position.y < -4500 || position.y >= 4500)
-        throw new Error('The y-coordinate of positions must be within [-4500, 4500]');
+    if (position.x < -5500 || position.x >= 5500)
+        throw new Error('The x-coordinate of positions must be within [-5500, 5500]');
+    if (position.y < -5500 || position.y >= 5500)
+        throw new Error('The y-coordinate of positions must be within [-5500, 5500]');
     if (position.z < -100 || position.z >= 1850)
         throw new Error('The z-coordinate of positions must be within [-100, 1850');
 

@@ -2,12 +2,17 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Color } from 'base/color.js';
+
 // Query to fetch the high scores across races, including the person who set it.
 const kQueryHighscores = `
     SELECT
         race_results.race_id,
         race_results.result_time,
-        users.username
+        users.username,
+        IF(users_gangs.user_use_gang_color = 1,
+            IFNULL(gangs.gang_color, users_mutable.custom_color),
+            users_mutable.custom_color) AS color
     FROM
         (SELECT
              inner_race_results.race_id,
@@ -20,7 +25,13 @@ const kQueryHighscores = `
         race_results ON race_results.race_id = inner_race_results.race_id AND
         race_results.result_time = inner_race_results.result_time
     LEFT JOIN
-        users ON users.user_id = race_results.user_id`;
+        users ON users.user_id = race_results.user_id
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = race_results.user_id
+    LEFT JOIN
+        users_gangs ON users_gangs.user_id = race_results.user_id AND users_gangs.left_gang IS NULL
+    LEFT JOIN
+        gangs ON gangs.gang_id = users_gangs.gang_id AND gangs.gang_color IS NOT NULL`;
 
 // Query to fetch the high scores across races for a particular player.
 const kQueryPlayerHighscores = `
@@ -44,6 +55,7 @@ export class RaceDatabase {
 
         for (const result of await this.getHighscoresQuery()) {
             scores.set(result.race_id, {
+                color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
                 username: result.username,
                 time: result.result_time
             });

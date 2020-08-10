@@ -53,8 +53,11 @@ export class RaceCommands {
 
             let highscore = '{9E9E9E}-';
             if (highscores.has(description.id)) {
-                const { username, time } = highscores.get(description.id);
-                highscore = `${formatTime(time)} (${username})`;
+                const { color, username, time } = highscores.get(description.id);
+                if (color)
+                    highscore = `${formatTime(time)} ({${color.toHexRGB()}}${username}{FFFFFF})`;
+                else
+                    highscore = `${formatTime(time)} (${username})`;
             }
 
             // If |personalHighscores| are available, consider those, otherwise just add the race's

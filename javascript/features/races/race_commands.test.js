@@ -24,7 +24,7 @@ describe('RaceCommands', (it, beforeEach) => {
 
         // Verify that global high scores are included.
         assert.includes(gunther.lastDialog, '02:03 (Badeend)');
-        assert.includes(gunther.lastDialog, '03:54 (Lithirm)');
+        assert.includes(gunther.lastDialog, '03:54 ({FF1493}Lithirm{FFFFFF})');
 
         // Verify that personal high scores are included.
         assert.includes(gunther.lastDialog, '02:08');

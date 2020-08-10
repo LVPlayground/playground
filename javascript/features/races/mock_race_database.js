@@ -12,11 +12,13 @@ export class MockRaceDatabase extends RaceDatabase {
                 race_id: 1 /* Coastal Conduit */,
                 result_time: 123,
                 username: 'Badeend',
+                color: 0,
             },
             {
                 race_id: 2 /* Los Santos Blown Bikes */,
                 result_time: 234,
                 username: 'Lithirm',
+                color: -15428694,
             }
         ];
     }

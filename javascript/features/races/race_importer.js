@@ -229,12 +229,17 @@ class RaceImporter {
     // Imports the spawn positions for the race. There must be at least a single spawn position that
     // exists of positional coordinates, rotation of the vehicle and the vehicle's model id.
     importSpawnPositions() {
-        if (!Array.isArray(this.data_.spawn_positions) || this.data_.spawn_positions.length == 0)
-            throw new Error('At least a single entry must be defined in the `spawn_positions`.');
+        if (!Array.isArray(this.data_.spawnPositions) || this.data_.spawnPositions.length == 0)
+            throw new Error('At least a single entry must be defined in the `spawnPositions`.');
 
-        this.data_.spawn_positions.forEach(spawnPosition => {
+        this.data_.spawnPositions.forEach(spawnPosition => {
             if (typeof spawnPosition !== 'object')
                 throw new Error('Every `spawn_position` for a race must be an object.');
+
+            if (spawnPosition.hasOwnProperty('facingAngle'))
+                spawnPosition.rotation = spawnPosition.facingAngle;
+            if (spawnPosition.hasOwnProperty('vehicleModelId'))
+                spawnPosition.vehicle = { model: spawnPosition.vehicleModelId };
 
             if (!spawnPosition.hasOwnProperty('position') ||
                 !spawnPosition.hasOwnProperty('rotation')) {
@@ -356,16 +361,16 @@ class RaceImporter {
             if (typeof object !== 'object' || Array.isArray(object))
                 throw new Error('Each object associated with a race must be an object.');
 
-            if (!object.hasOwnProperty('model') || !object.hasOwnProperty('position') ||
+            if (!object.hasOwnProperty('modelId') || !object.hasOwnProperty('position') ||
                 !object.hasOwnProperty('rotation')) {
-                throw new Error('Each object must have a `model`, `position` and `rotation`.');
+                throw new Error('Each object must have a `modelId`, `position` and `rotation`.');
             }
 
             // TODO: Validate the model id of the object.
-            if (typeof object.model !== 'number')
+            if (typeof object.modelId !== 'number')
                 throw new Error('The model id for an object must be a number.');
 
-            this.race_.addObject(object.model,
+            this.race_.addObject(object.modelId,
                                  this.createVector(object.position),
                                  this.createVector(object.rotation));
         });
@@ -387,14 +392,14 @@ class RaceImporter {
         if (settings.hasOwnProperty('disable_checkpoint_markers'))
             this.disableCheckpointMarkers_ = !!settings.disable_checkpoint_markers;
 
-        if (settings.hasOwnProperty('disable_vehicle_damage'))
-            this.race_.disableVehicleDamage = !!settings.disable_vehicle_damage;
+        if (settings.hasOwnProperty('disableVehicleDamage'))
+            this.race_.disableVehicleDamage = !!settings.disableVehicleDamage;
 
-        if (settings.hasOwnProperty('allow_leave_vehicle'))
-            this.race_.allowLeaveVehicle = !!settings.allow_leave_vehicle;
+        if (settings.hasOwnProperty('allowLeaveVehicle'))
+            this.race_.allowLeaveVehicle = !!settings.allowLeaveVehicle;
 
-        if (settings.hasOwnProperty('unlimited_nos'))
-            this.race_.unlimitedNos = !!settings.unlimited_nos;
+        if (settings.hasOwnProperty('unlimitedNos'))
+            this.race_.unlimitedNos = !!settings.unlimitedNos;
     }
 
     // Creates a vector from |value| having {x, y, z} coordinates, each of which must be numbers.

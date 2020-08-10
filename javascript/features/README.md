@@ -89,7 +89,7 @@ Feature                                          | Code Health | Description
 [PlayerSettings](player_settings/)               | ❓ 2020     | -
 [Playground](playground/)                        | ✔ 2020     | Access and server management, special effects and arbitrary commands.
 [Punishments](punishments/)                      | ✔ 2020     | Provides the ability to kick, ban and jail naughty players.
-[Races](races/)                                  | ❓ 2020     | -
+[Races](races/)                                  | ✔ 2020     | The `/race` command, and the ability to participate in any race.
 [Radio](radio/)                                  | ❓ 2020     | -
 [ReactionTests](reaction_tests/)                 | ✔ 2020     | Minigame where players repeat text or solve calculations in chat.
 [Teleportation](teleportation/)                  | ❓ 2020     | -
@@ -104,5 +104,4 @@ Feature                      | Code Health | Description
 [ActivityLog](activity_log/) | ❓ 2020     | -
 [Commands](commands/)        | ❓ 2020     | -
 [Debug](debug/)              | ❓ 2020     | -
-[Minigames](minigames/)      | ❓ 2020     | Deprecated minigame driver, superseded by the [Games](games/) feature.
 [Report](report/)            | ❓ 2020     | -

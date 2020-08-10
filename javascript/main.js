@@ -67,7 +67,7 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
-        'economy', 'location', 'minigames',
+        'economy', 'location',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',
@@ -109,7 +109,7 @@ testRunner.run('.*\.test\.js').then(time => {
         // -----------------------------------------------------------------------------------------
 
         // v1 features - these need to be cleaned up
-        'activity_log', 'commands', 'death_feed', 'debug', 'races'
+        'activity_log', 'commands', 'death_feed', 'debug',
     ]);
 
 }, failures => {

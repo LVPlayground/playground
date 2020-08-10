@@ -1,37 +1,20 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import RaceCommands from 'features/races/race_commands.js';
-import RaceImporter from 'features/races/race_importer.js';
-import RaceManager from 'features/races/race_manager.js';
+import { RaceRegistry } from 'features/races/race_registry.js';
 
-// In which directory are the race data files stored?
-const RACE_DATA_DIRECTORY = 'data/races';
+// The Races feature is responsible for providing the race interface on the server. It builds on top
+// of the Games API, for ensuring consistent behaviour of games on the server.
+export default class Races extends Feature {
+    registry_ = null;
 
-// This class represents the Feature that contains all racing functionality of Las Venturas
-// Playground. It also provides the interface for features depending on races.
-class Races extends Feature {
     constructor() {
         super();
 
-        // This feature hasn't been designed to handle changing interactions with the Minigames. It
-        // is possible to update this, but it'd be a fair amount of work.
-        this.disableLiveReload();
-
-        // Races depend on the minigame system to provide lifetime management.
-        const minigames = this.defineDependency('minigames');
-
-        this.manager_ = new RaceManager(server.database, minigames);
-        this.commands_ = new RaceCommands(this.manager_);
-
-        // Load all the races from the /data/races/ directory. No need to specify them individually.
-        glob(RACE_DATA_DIRECTORY, '.*\.json').forEach(file =>
-            this.manager_.registerRace(RaceImporter.fromFile(RACE_DATA_DIRECTORY + '/' + file)));
-
-        // Load the best times for all races from the database.
-        this.manager_.loadRecordTimes();
+        // The registry is responsible for keeping tabs on the available races.
+        this.registry_ = new RaceRegistry();
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -39,9 +22,7 @@ class Races extends Feature {
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
-        this.commands_.dispose();
-        this.manager_.dispose();
+        this.registry_.dispose();
+        this.registry_ = null;
     }
 }
-
-export default Races;

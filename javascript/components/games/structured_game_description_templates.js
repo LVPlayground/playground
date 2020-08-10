@@ -203,7 +203,7 @@ export const kGameCheckpoints = {
             {
                 name: 'size',
                 type: StructuredGameDescription.kTypeNumber,
-                defaultValue: 10,
+                defaultValue: 20,
             },
         ]
     }

@@ -62,6 +62,7 @@ import PlayerSettings from 'features/player_settings/player_settings.js';
 import PlayerStats from 'features/player_stats/player_stats.js';
 import Playground from 'features/playground/playground.js';
 import Punishments from 'features/punishments/punishments.js';
+import Races from 'features/races/races.js';
 import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Sampcac from 'features/sampcac/sampcac.js';
@@ -134,6 +135,7 @@ class MockServer {
             player_stats: PlayerStats,
             playground: Playground,
             punishments: Punishments,
+            races: Races,
             radio: Radio,
             reaction_tests: ReactionTests,
             sampcac: Sampcac,

@@ -3,7 +3,9 @@
 // be found in the LICENSE file.
 
 import { CommandBuilder } from 'components/commands/command_builder.js';
+import { GameCommandParams } from 'features/games/game_command_params.js';
 import { Menu } from 'components/menu/menu.js';
+import { RaceGame } from 'features/races/race_game.js';
 
 import { formatTime } from 'base/time.js';
 
@@ -19,12 +21,15 @@ export class RaceCommands {
         this.#games_ = games;
         this.#registry_ = registry;
 
-        // /race [id]?
+        // /race [watch/[id]]?
         server.commandManager.buildCommand('race')
             .description(`Compete in one of Las Venturas Playground's races.`)
             .sub(CommandBuilder.kTypeNumber, 'id')
                 .description(`Compete in a specific race, identified by ID.`)
                 .build(RaceCommands.prototype.onRaceStartCommand.bind(this))
+            .sub('watch')
+                .description(`Spectate one of the on-going races.`)
+                .build(RaceCommands.prototype.onRaceWatchCommand.bind(this))
             .build(RaceCommands.prototype.onRaceCommand.bind(this));
     }
 
@@ -82,7 +87,28 @@ export class RaceCommands {
     // Called when the |player| wants to start the race identified by |raceId|. Will defer to the
     // Games API, where limits checks and player availability will be executed.
     async onRaceStartCommand(player, raceId) {
+        const description = this.#registry_.getRace(raceId);
+        if (!description) {
+            player.sendMessage(Message.RACE_ERROR_INVALID_RACE_ID);
+            return;
+        }
 
+        const params = new GameCommandParams();
+        params.settings.set('races/race_id', description.id);
+        params.type = GameCommandParams.kTypeStart;
+
+        return this.#games_().executeGameCommand(RaceGame, player, params);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| wants to spectate one of the in-progress races, if any. Will defer
+    // to the generic spectating functionality provided by the Games API.
+    async onRaceWatchCommand(player) {
+        const params = new GameCommandParams();
+        params.type = GameCommandParams.kTypeWatch;
+
+        return this.#games_().executeGameCommand(RaceGame, player, params);
     }
 
     // ---------------------------------------------------------------------------------------------

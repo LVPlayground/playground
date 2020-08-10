@@ -46,6 +46,24 @@ export class EnvironmentSettings extends GameCustomSetting {
     static getTimeForOption(option) { return kTimeConfiguration.get(option) ?? null; }
     static getWeatherForOption(option) { return kWeatherConfiguration.get(option) ?? null; }
 
+    // Applies the environment configuration from the given `description`, which must be an instance
+    // of the StructuredGameDescription class supporting `kGameEnvironment`, to the given `settings`
+    // Map that's being created as a default for the game.
+    static applyDescriptionSettings(settings, description) {
+        if (!description.hasOwnProperty('environment') ||
+                !description.environment.hasOwnProperty('gravity') ||
+                !description.environment.hasOwnProperty('time') ||
+                !description.environment.hasOwnProperty('weather')) {
+            throw new Error(`The ${description} does not seem to be a StructuredGameDescription.`);
+        }
+
+        settings.set('game/environment', {
+            gravity: description.environment.gravity ?? 'Normal',
+            time: description.environment.time ?? 'Afternoon',
+            weather: description.environment.weather ?? 'Sunny',
+        });
+    }
+
     // Returns the value that is to be displayed in the generic customization dialog for games.
     getCustomizationDialogValue(currentValue) {
         let value = null;

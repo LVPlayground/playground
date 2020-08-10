@@ -4,6 +4,7 @@
 
 import { CommandBuilder } from 'components/commands/command_builder.js';
 import { GameCommandParams } from 'features/games/game_command_params.js';
+import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { Menu } from 'components/menu/menu.js';
 import { RaceGame } from 'features/races/race_game.js';
 
@@ -96,6 +97,9 @@ export class RaceCommands {
         const params = new GameCommandParams();
         params.settings.set('races/race_id', description.id);
         params.type = GameCommandParams.kTypeStart;
+
+        // Apply the game's environment settings as defaults for this race.
+        EnvironmentSettings.applyDescriptionSettings(params.settings, description);
 
         return this.#games_().executeGameCommand(RaceGame, player, params);
     }

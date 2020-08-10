@@ -69,7 +69,7 @@ Feature                                          | Code Health | Description
 [DeathFeed](death_feed/)                         | ❓ 2020     | -
 [DeathMatch](death_match/)                       | ❓ 2020     | -
 [Decorations](decorations/)                      | ✔ 2020     | Powers JSON-based decorations on the server.
-[Derbies](derbies/)                              | ❓ 2020     | -
+[Derbies](derbies/)                              | ✔ 2020     | The `/derby` command, and the ability to participate in any derby.
 [Economy](economy/)                              | ✔ 2020     | Provides routines for calculating the prices of things on the server.
 [Fights](fights/)                                | ✔ 2020     | Provides various fighting-based games to the players.
 [Friends](friends/)                              | ✔ 2020     | Enables players to friend other players, unlocking easier communication.

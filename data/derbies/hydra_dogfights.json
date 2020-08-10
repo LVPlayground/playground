@@ -1,0 +1,20 @@
+{
+    "name": "Hydra Dogfight",
+    "id": 4,
+
+    "environment": {
+        "boundaries": {
+            "minimumX": 1002.005,
+            "maximumX": 2216.413,
+            "minimumY": 715.1132,
+            "maximumY": 2324.229
+        }
+    },
+
+    "spawnPositions": [
+        { "position": [ 1484.0715,1724.1497,10.3529 ], "facingAngle": 180.3527, "vehicleModelId": 520 },
+        { "position": [ 1471.0756,1196.9135,10.3607 ], "facingAngle":   1.1638, "vehicleModelId": 520 },
+        { "position": [ 1472.0077,1723.1943,10.3475 ], "facingAngle": 183.0180, "vehicleModelId": 520 },
+        { "position": [ 1482.6915,1197.6506,10.3597 ], "facingAngle": 358.5121, "vehicleModelId": 520 }
+    ]
+}

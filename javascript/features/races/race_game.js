@@ -25,18 +25,19 @@ export class RaceGame extends VehicleGame {
     async onPlayerSpawned(player, countdown) {
         await super.onPlayerSpawned(player, countdown);
 
-        // Spawning is highly asynchronous, it's possible they've disconnected since.
+        // Spawning is highly asynchronous, it's possible they've disconnected since. It's important
+        // to note that the |player| might not be in their vehicle yet.
         if (!player.isConnected())
             return;
 
-        // If they're not currently in a vehicle they might be bugged or minimized. Throw them out
-        // of the game as there's no point in them participating this way.
-        if (!player.vehicle)
-            return this.playerLost(player);
-
         // (1) Players only spawn once in a race, so we have to display our own countdown to them.
         // First disable their engines, then display the countdown, then enable their engines.
-        player.vehicle.toggleEngine(/* engineRunning= */ false);
+        const vehicle = this.getVehicleForPlayer(player);
+        if (!vehicle)
+            throw new Error(`${this}: expected a vehicle to have been created.`);
+
+        // Disable their engine, so that they can't drive off while the countdown is active.
+        vehicle.toggleEngine(/* engineRunning= */ false);
 
         await Countdown.displayForPlayer(player, kCountdownSeconds, () => this.players.has(player));
 
@@ -45,7 +46,7 @@ export class RaceGame extends VehicleGame {
         if (!player.isConnected() || !this.players.has(player))
             return;
 
-        if (!player.vehicle)
+        if (player.vehicle !== vehicle)
             return this.playerLost(player);
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);

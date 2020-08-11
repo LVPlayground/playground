@@ -22,6 +22,9 @@ export class VehicleGame extends GameBase {
     #playerSpawns_ = new Map();
     #playerVehicle_ = new Map();
 
+    // Utility function to get the vehicle assigned to the |player|, if any.
+    getVehicleForPlayer(player) { return this.#playerVehicle_.get(player); }
+
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
 
@@ -30,7 +33,11 @@ export class VehicleGame extends GameBase {
         if (!this.#description_)
             throw new Error(`Invalid game ID specified in ${this}.`);
 
-        // (2) Create the objects and pickups that are part of the game.
+        // (2) Make sure that the scopedEntities is set to our interior ID. This isn't yet known in
+        // the earlier stages of game initialization, where the actual location is unknown.
+        this.scopedEntities.interiorId = this.#description_.environment.interiorId;
+
+        // (3) Create the objects and pickups that are part of the game.
         if (this.#description_.hasOwnProperty('objects')) {
             for (const objectInfo of this.#description_.objects)
                 this.scopedEntities.createObject(objectInfo);
@@ -41,7 +48,7 @@ export class VehicleGame extends GameBase {
                 this.scopedEntities.createPickup(pickupInfo);
         }
 
-        // (3) Compile a list of the spawn positions from the |description|. The spawn positions
+        // (4) Compile a list of the spawn positions from the |description|. The spawn positions
         // will be shuffled to reduce predictability of the game.
         this.#availableSpawns_ = shuffle(this.#description_.spawnPositions);
     }
@@ -96,7 +103,6 @@ export class VehicleGame extends GameBase {
             modelId: spawnPosition.vehicleModelId,
             position: spawnPosition.position,
             rotation: spawnPosition.facingAngle,
-            interiorId: this.#description_.environment.interiorId,
         });
 
         player.enterVehicle(vehicle);

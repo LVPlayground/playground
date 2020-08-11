@@ -25,6 +25,7 @@ export class ScopedEntities {
 
     // Gets the Interior Id that this object is associated with.
     get interiorId() { return this.interiorId_; }
+    set interiorId(value) { this.interiorId_ = value; }
 
     // Gets the Virtual World that this object is associated with.
     get virtualWorld() { return this.virtualWorld_; }

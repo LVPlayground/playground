@@ -50,16 +50,6 @@ describe('RaceGame', (it, beforeEach) => {
                     facingAngle: 90,
                     vehicleModelId: 411,
                 },
-                {
-                    position: new Vector(20, 20, 20),
-                    facingAngle: 190,
-                    vehicleModelId: 411,
-                },
-                {
-                    position: new Vector(30, 30, 30),
-                    facingAngle: 270,
-                    vehicleModelId: 411,
-                },
             ],
 
             objects: [],

@@ -1,0 +1,21 @@
+{
+    "name": "Bowl-ing",
+    "id": 15,
+
+    "spawnPositions": [
+        { "position": [ 3775.44311, -1308.77124, 122.47608 ], "facingAngle": 358.8740, "vehicleModelId": 405 },
+        { "position": [ 3765.07617, -1284.36132, 113.33392 ], "facingAngle":   0.0000, "vehicleModelId": 405 },
+        { "position": [ 3791.68554, -1218.96777, 128.28576 ], "facingAngle": 179.4122, "vehicleModelId": 405 },
+        { "position": [ 3829.32568, -1286.40063, 133.36990 ], "facingAngle":  94.5585, "vehicleModelId": 405 },
+        { "position": [ 3718.69384, -1291.44470, 142.36791 ], "facingAngle":  94.5538, "vehicleModelId": 405 }
+    ],
+
+    "settings": {
+        "lowerAltitudeLimit": 100,
+        "timeLimit": 260
+    },
+
+    "objects": [
+        { "modelId": 18882, "position": [ 3777.6853, -1266.6505, 130.8702 ], "rotation": [ 0, 0, 0 ] }
+    ]
+}

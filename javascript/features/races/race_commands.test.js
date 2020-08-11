@@ -2,7 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
+import { kCountdownSeconds } from 'features/races/race_game.js';
 
 describe('RaceCommands', (it, beforeEach) => {
     let gunther = null;
@@ -53,6 +56,9 @@ describe('RaceCommands', (it, beforeEach) => {
         const game = getGameInstance();
 
         assert.isTrue(game.players.has(gunther));
+
+        // Advance past the countdown, so that all participants will have fully spawned.
+        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
 
         // Russell now is interested in watching the race. Have them use the watch command.
         assert.isFalse(russell.spectatingForTesting);

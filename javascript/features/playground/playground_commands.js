@@ -127,7 +127,7 @@ export class PlaygroundCommands {
         player.sendMessage(`{33AA33}Success{FFFFFF}: ${target.name} their rights have been fixed.`);
 
         this.announce_().announceToAdministrators(
-            `%s (Id:%d) has fixed temporary rights for %s (Id:%d)`, player.name, player.name,
+            `%s (Id:%d) has fixed temporary rights for %s (Id:%d)`, player.name, player.id,
             target.name, target.id);
     }
 

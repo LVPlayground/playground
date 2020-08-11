@@ -96,6 +96,7 @@ export class VehicleGame extends GameBase {
             modelId: spawnPosition.vehicleModelId,
             position: spawnPosition.position,
             rotation: spawnPosition.facingAngle,
+            interiorId: this.#description_.environment.interiorId,
         });
 
         player.enterVehicle(vehicle);

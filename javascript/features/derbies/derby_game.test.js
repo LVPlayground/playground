@@ -132,4 +132,39 @@ describe('DerbyGame', (it, beforeEach) => {
         assert.isTrue(gunther.colors.visible);
     });
 
+    it('should kick people out when they have left their vehicle', async (assert) => {
+        installDescription(/* default description */);
+
+        assert.isTrue(await gunther.issueCommand('/derby 1'));
+        assert.isTrue(await russell.issueCommand('/derby 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        const game = getGameInstance();
+
+        // Wait past the frozen stage as well as the countdown.
+        await server.clock.advance(kInitialSpawnLoadDelayMs);
+        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+
+        assert.isTrue(game.players.has(gunther));
+        assert.isTrue(game.players.has(russell));
+
+        // Russell now leaves their vehicle. They should be dropped out of the game.
+        russell.vehicle = null;
+
+        await runGameLoop();
+
+        // TODO: Mark players as winners when they're the only one left in the derby.
+        assert.isTrue(game.players.has(gunther));
+        assert.isFalse(game.players.has(russell));
+
+        // Have |gunther| and |russell| leave the game, to wind it down gracefully.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
+    });
+
 });

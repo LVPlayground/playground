@@ -65,6 +65,32 @@ export class DerbyGame extends VehicleGame {
         this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
+    async onTick() {
+        await super.onTick();
+
+        // Process the derby's lower altitude limit, as well as players who have left their vehicles
+        // which is prohibited in derbies. We'll consider each of them a drop-out.
+        const dropouts = [];
+
+        for (const player of this.players) {
+            if (!player.vehicle)
+                dropouts.push([ player, /* vehicle health= */ 0 ]);
+        }
+
+        // Sort the |dropouts| based on the remaining health of their vehicle, in descending order.
+        // This decides who will be dropping out of the game first, if a race condition occurs.
+        dropouts.sort((lhs, rhs) => {
+            if (lhs[1] === rhs[1])
+                return 0;
+
+            return lhs[1] > rhs[1] ? -1 : 1;
+        });
+
+        // Drop out each of the |dropouts| as losers. You can't win if you fall down :)
+        for (const [ player ] of dropouts)
+            this.playerLost(player);
+    }
+
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
 

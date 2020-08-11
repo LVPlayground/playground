@@ -5,6 +5,8 @@
 import { Countdown } from 'features/games_vehicles/interface/countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 
+import { difference } from 'base/set_extensions.js';
+
 // How many seconds should the derby's countdown last for?
 export const kCountdownSeconds = 3;
 
@@ -97,5 +99,11 @@ export class DerbyGame extends VehicleGame {
         // Make sure that the |player|'s visible is restored.
         if (!player.colors.visible)
             player.colors.visible = true;
+
+        // If there's only a single player left in the derby, mark them as the winner. The |player|
+        // who's currently being removed will still live in the players set, however.
+        const remainingPlayers = difference(this.players, new Set([ player ]));
+        if (remainingPlayers.size === 1)
+            this.playerWon([ ...remainingPlayers ][0]);
     }
 }

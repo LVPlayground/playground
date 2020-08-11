@@ -153,17 +153,20 @@ describe('DerbyGame', (it, beforeEach) => {
         // Russell now leaves their vehicle. They should be dropped out of the game.
         russell.vehicle = null;
 
+        // What happens now is that |russell| will be marked as the loser, which leaves |gunther| as
+        // the only participant, who will thus be marked as the winner.
         await runGameLoop();
 
-        // TODO: Mark players as winners when they're the only one left in the derby.
-        assert.isTrue(game.players.has(gunther));
+        assert.isFalse(game.players.has(gunther));
         assert.isFalse(game.players.has(russell));
 
-        // Have |gunther| and |russell| leave the game, to wind it down gracefully.
-        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[2], '1st');
 
-        await runGameLoop();
+        assert.equal(russell.messages.length, 3);
+        assert.includes(russell.messages[2], '2nd');
 
+        // Verify that the derby has indeed been shut down in its entirety.
         assert.throws(() => getGameInstance());
     });
 

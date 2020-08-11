@@ -18,6 +18,7 @@ export class MockVehicle extends Vehicle {
     #health_ = 1000;
     #velocity_ = new Vector(0, 0, 0);
 
+    #engine_ = true;
     #respawnCounter_ = 0;
 
     // Overridden to avoid creating an actual vehicle on the server.
@@ -72,8 +73,9 @@ export class MockVehicle extends Vehicle {
 
     repair() { this.#health_ = 1000; }
 
-    toggleEngine(engineRunning) {}
+    toggleEngine(engineRunning) { this.#engine_ = !!engineRunning; }
 
+    get engineForTesting() { return this.#engine_; }
     get respawnCountForTesting() { return this.#respawnCounter_; }
 
     // ---------------------------------------------------------------------------------------------

@@ -4,14 +4,29 @@
 
 import { Countdown } from 'features/games_vehicles/interface/countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
+import { Vehicle } from 'entities/vehicle.js';
 
 // How many seconds should the race's countdown last for?
 export const kCountdownSeconds = 3;
 
+// Every how many milliseconds should infinite NOS be issued to vehicles? This roughly maps to the
+// time a single nitro injection will last, without needing to wait for it to recover.
+export const kNitrousInjectionIssueTimeMs = 20000;
+
 // Provides the implementation of actual races, building on top of the Games API infrastructure. An
 // instance of this class is strictly scoped to the running race.
 export class RaceGame extends VehicleGame {
+    // The level of nitrous injection that should be available to participants.
+    static kNitrousInjectionNone = 0;
+    static kNitrousInjectionSingleShot = 1;
+    static kNitrousInjectionFiveShot = 5;
+    static kNitrousInjectionTenShot = 10;
+    static kNitrousInjectionInfinite = 100;
+
     #description_ = null;
+
+    #nitrousInjection_ = RaceGame.kNitrousInjectionNone;
+    #nitrousInjectionTime_ = null;
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -20,6 +35,12 @@ export class RaceGame extends VehicleGame {
         this.#description_ = registry.getDescription(settings.get('game/description_id'));
         if (!this.#description_)
             throw new Error(`Invalid race ID specified in ${this}.`);
+
+        // (2) Determine the level of nitrous injection that should be available to participants.
+        if (this.#description_.settings.unlimitedNos)
+            this.#nitrousInjection_ = RaceGame.kNitrousInjectionInfinite;
+        else if ([ 1, 5, 10 ].includes(this.#description_.settings.nos))
+            this.#nitrousInjection_ = this.#description_.settings.nos;
     }
 
     async onPlayerSpawned(player, countdown) {
@@ -30,11 +51,30 @@ export class RaceGame extends VehicleGame {
         if (!player.isConnected())
             return;
 
-        // (1) Players only spawn once in a race, so we have to display our own countdown to them.
-        // First disable their engines, then display the countdown, then enable their engines.
+        // Players only spawn once in a race, so we have to display our own countdown to them. First
+        // disable their engines, then display the countdown, then enable their engines.
         const vehicle = this.getVehicleForPlayer(player);
         if (!vehicle)
             throw new Error(`${this}: expected a vehicle to have been created.`);
+
+        // Apply the non-infinite nitrous injection components to their vehicle.
+        switch (this.#nitrousInjection_) {
+            case RaceGame.kNitrousInjectionInfinite:
+                this.#nitrousInjectionTime_ = server.clock.monotonicallyIncreasingTime();
+                /* deliberate fall-through */
+
+            case RaceGame.kNitrousInjectionSingleShot:
+                vehicle.addComponent(Vehicle.kComponentNitroSingleShot);
+                break;
+
+            case RaceGame.kNitrousInjectionFiveShot:
+                vehicle.addComponent(Vehicle.kComponentNitroFiveShots);
+                break;
+
+            case RaceGame.kNitrousInjectionTenShot:
+                vehicle.addComponent(Vehicle.kComponentNitroTenShots);
+                break;
+        }
 
         // Disable their engine, so that they can't drive off while the countdown is active.
         vehicle.toggleEngine(/* engineRunning= */ false);
@@ -50,5 +90,22 @@ export class RaceGame extends VehicleGame {
             return this.playerLost(player);
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
+    }
+
+    async onTick() {
+        await super.onTick();
+
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+
+        // (1) If infinite nitrous has been configured, re-issue it to all participant's vehicles
+        // every |kNitrousInjectionIssueTimeMs| to remove the regular cooldown time.
+        if ((currentTime - this.#nitrousInjectionTime_) >= kNitrousInjectionIssueTimeMs) {
+            for (const player of this.players) {
+                if (player.vehicle)
+                    player.vehicle.addComponent(Vehicle.kComponentNitroSingleShot);
+            }
+
+            this.#nitrousInjectionTime_ = currentTime;
+        }
     }
 }

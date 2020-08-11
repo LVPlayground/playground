@@ -84,9 +84,7 @@ describe('GamesVehicles', (it, beforeEach) => {
     it('automatically re-registers games when the Games feature reloads', async (assert) => {
         assert.isFalse(server.commandManager.hasCommand('drive'));
 
-        createVehicleGame('Driving Game', 'drive', class DrivingGame extends VehicleGame {}, {
-            id: kTestingDescriptionId,
-        });
+        createVehicleGame('Driving Game', 'drive', VehicleGame);
 
         assert.isTrue(server.commandManager.hasCommand('drive'));
 
@@ -96,7 +94,7 @@ describe('GamesVehicles', (it, beforeEach) => {
     });
 
     it('should be able to apply object and pickup settings', async (assert) => {
-        createVehicleGame('Driving Game', 'drive', class DrivingGame extends VehicleGame {}, {
+        createVehicleGame('Driving Game', 'drive', VehicleGame, {
             objects: [
                 { modelId: 1225, position: new Vector(0, 0, 0), rotation: new Vector(0, 0, 0) },
                 { modelId: 1225, position: new Vector(0, 0, 0), rotation: new Vector(0, 0, 0) },
@@ -136,7 +134,7 @@ describe('GamesVehicles', (it, beforeEach) => {
     });
 
     it('should be able to safely spawn players in vehicles', async (assert) => {
-        createVehicleGame('Driving Game', 'drive', class DrivingGame extends VehicleGame {});
+        createVehicleGame('Driving Game', 'drive', VehicleGame);
 
         const originalVehicleCount = server.vehicleManager.size;
 

@@ -77,6 +77,8 @@ export class DerbyGame extends VehicleGame {
         for (const player of this.players) {
             if (!player.vehicle)
                 dropouts.push([ player, /* vehicle health= */ 0 ]);
+            else if (player.vehicle.position.z < this.#description_.settings.lowerAltitudeLimit)
+                dropouts.push([ player, player.vehicle.health ]);
         }
 
         // Sort the |dropouts| based on the remaining health of their vehicle, in descending order.

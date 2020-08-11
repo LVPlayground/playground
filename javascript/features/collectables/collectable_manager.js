@@ -3,8 +3,8 @@
 // be found in the LICENSE file.
 
 import { Achievements } from 'features/collectables/achievements.js';
+import { Banner } from 'components/interface/banner.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { CollectableNotification } from 'features/collectables/collectable_notification.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
@@ -121,9 +121,12 @@ export class CollectableManager {
             const displayTime =
                 this.settings_().getValue('playground/notification_display_time_sec');
 
-            await CollectableNotification.showForPlayer(
-                player, displayTime, notification.title, notification.message);
-            
+            await Banner.displayForPlayer(player, {
+                title: notification.title,
+                message: notification.message,
+                time: displayTime * 1000,
+            });
+
             await wait(displayTime * 1000 * 0.1);  // 10% of display time between notifications
             
             queue.shift();

@@ -7,6 +7,7 @@ import { StructuredGameDescription } from 'components/games/structured_game_desc
 import { kGameCheckpoints,
          kGameEnvironment,
          kGameObjects,
+         kGamePickups,
          kGameSpawnPositions } from 'components/games/structured_game_description_templates.js';
 
 // Describes the settings of an individual race, as loaded from its JSON configuration file.
@@ -38,9 +39,7 @@ export class RaceDescription extends StructuredGameDescription {
             kGameSpawnPositions,
             kGameCheckpoints,
             kGameObjects,
-
-            // TODO:
-            // kGamePickups
+            kGamePickups,
 
             {
                 name: 'settings',

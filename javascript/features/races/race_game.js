@@ -34,6 +34,8 @@ export class RaceGame extends VehicleGame {
     #nitrousInjection_ = RaceGame.kNitrousInjectionNone;
     #nitrousInjectionTime_ = null;
 
+    #playerStartTime_ = new WeakMap();
+
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
 
@@ -100,6 +102,9 @@ export class RaceGame extends VehicleGame {
             return this.playerLost(player);
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
+
+        // Store the time at which the |player| actually started to drive in the race.
+        this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
     }
 
     async onTick() {

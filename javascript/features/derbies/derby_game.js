@@ -14,6 +14,7 @@ export const kCountdownSeconds = 3;
 // An instance of this class is strictly scoped to the running derby.
 export class DerbyGame extends VehicleGame {
     #description_ = null;
+    #expiration_ = null;
 
     #playerStartTime_ = new WeakMap();
 
@@ -65,10 +66,22 @@ export class DerbyGame extends VehicleGame {
 
         // Store the time at which the |player| actually started to drive in the derby.
         this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
+
+        // Store the expiration time for the derby is one has been configured. We do this after the
+        // players spawn, to not be affected by the time it takes for the countdown and all.
+        if (this.#description_.settings.timeLimit && !this.#expiration_) {
+            this.#expiration_ = server.clock.monotonicallyIncreasingTime() +
+                                    this.#description_.settings.timeLimit * 1000;
+        }
     }
 
     async onTick() {
         await super.onTick();
+
+        // Whether or not the derby has expired. When this is the case, all participants will be
+        // dropped out whether they like it or not - time's up!
+        const expired =
+            this.#expiration_ && this.#expiration_ < server.clock.monotonicallyIncreasingTime();
 
         // Process the derby's lower altitude limit, as well as players who have left their vehicles
         // which is prohibited in derbies. We'll consider each of them a drop-out.
@@ -79,16 +92,23 @@ export class DerbyGame extends VehicleGame {
                 dropouts.push([ player, /* vehicle health= */ 0 ]);
             else if (player.vehicle.position.z < this.#description_.settings.lowerAltitudeLimit)
                 dropouts.push([ player, player.vehicle.health ]);
+            else if (expired)
+                dropouts.push([ player, player.vehicle.health ]);
         }
 
-        // Sort the |dropouts| based on the remaining health of their vehicle, in descending order.
+        // Sort the |dropouts| based on the remaining health of their vehicle, in ascending order.
         // This decides who will be dropping out of the game first, if a race condition occurs.
         dropouts.sort((lhs, rhs) => {
             if (lhs[1] === rhs[1])
                 return 0;
 
-            return lhs[1] > rhs[1] ? -1 : 1;
+            return lhs[1] > rhs[1] ? 1 : -1;
         });
+
+        // If the derby |expired| and more than a single player is being dropped out, remove the
+        // player with the most health from the |dropouts| as they should be marked as the winner.
+        if (expired && dropouts.length >= 2)
+            dropouts.pop();
 
         // Drop out each of the |dropouts| as losers. You can't win if you fall down :)
         for (const [ player ] of dropouts)

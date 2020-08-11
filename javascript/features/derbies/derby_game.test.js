@@ -7,8 +7,8 @@ import { Countdown } from 'features/games_vehicles/interface/countdown.js';
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
 
 import { kCountdownSeconds } from 'features/derbies/derby_game.js';
+import { kDefaultLimitSec } from 'features/derbies/derby_description.js';
 import { kInitialSpawnLoadDelayMs } from 'features/games_vehicles/vehicle_game.js';
-import { Vector } from 'base/vector.js';
 
 describe('DerbyGame', (it, beforeEach) => {
     let gunther = null;
@@ -213,4 +213,46 @@ describe('DerbyGame', (it, beforeEach) => {
         assert.throws(() => getGameInstance());
     });
 
+    it('should kick people out when the time limit expires', async (assert) => {
+        installDescription({
+            settings: {
+                timeLimit: kDefaultLimitSec,
+            }
+        });
+
+        assert.isTrue(await gunther.issueCommand('/derby 1'));
+        assert.isTrue(await russell.issueCommand('/derby 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        const game = getGameInstance();
+
+        // Wait past the frozen stage as well as the countdown.
+        await server.clock.advance(kInitialSpawnLoadDelayMs);
+        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+
+        assert.isTrue(game.players.has(gunther));
+        assert.isTrue(game.players.has(russell));
+
+        // Slightly decrease the health of Russell's vehicle, which means that they should be marked
+        // as the derby's loser. Then wait for the derby to expire in its entirety.
+        russell.vehicle.health -= 10;
+
+        await server.clock.advance(kDefaultLimitSec * 1000);
+        await runGameLoop();
+
+        // Verify that both participants have been removed, and that |gunther| won the game.
+        assert.isFalse(game.players.has(gunther));
+        assert.isFalse(game.players.has(russell));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[2], '1st');
+
+        assert.equal(russell.messages.length, 3);
+        assert.includes(russell.messages[2], '2nd');
+
+        // Verify that the derby has indeed been shut down in its entirety.
+        assert.throws(() => getGameInstance());
+    });
 });

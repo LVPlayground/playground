@@ -9,6 +9,9 @@ import { kGameEnvironment,
          kGamePickups,
          kGameSpawnPositions } from 'components/games/structured_game_description_templates.js';
 
+// The default time limit that will apply to derbies.
+export const kDefaultLimitSec = 600;
+
 // Describes the settings of an individual derby game, as loaded from its JSON configuration file.
 // Validation of data is strict, to make sure problems are discovered at launch time, not run time.
 export class DerbyDescription extends StructuredGameDescription {
@@ -45,7 +48,7 @@ export class DerbyDescription extends StructuredGameDescription {
                     {
                         name: 'timeLimit',
                         type: StructuredGameDescription.kTypeNumber,
-                        defaultValue: 600,
+                        defaultValue: kDefaultLimitSec,
                     }
                 ],
             },

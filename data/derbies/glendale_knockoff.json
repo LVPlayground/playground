@@ -1,0 +1,18 @@
+{
+    "name": "Glendale Knockoff",
+    "id": 9,
+
+    "spawnPositions": [
+        { "position": [ 105.7646, -297.5073, 26.9187 ], "facingAngle": 176.7283, "vehicleModelId": 604 },
+        { "position": [ 103.2484, -327.7744, 26.4674 ], "facingAngle": 359.1966, "vehicleModelId": 604 },
+        { "position": [  72.4374, -327.1983, 26.5737 ], "facingAngle": 359.5457, "vehicleModelId": 604 },
+        { "position": [  72.4607, -297.1990, 26.9800 ], "facingAngle": 178.1536, "vehicleModelId": 604 },
+        { "position": [  32.2245, -326.4200, 26.7049 ], "facingAngle": 357.6919, "vehicleModelId": 604 },
+        { "position": [  30.3863, -296.0876, 26.9559 ], "facingAngle": 178.1714, "vehicleModelId": 604 }
+    ],
+
+    "settings": {
+        "lowerAltitudeLimit": 23,
+        "timeLimit": 60
+    }
+}

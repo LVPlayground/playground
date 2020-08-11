@@ -1,0 +1,18 @@
+{
+    "name": "Stadium Pushout",
+    "id": 8,
+
+    "spawnPositions": [
+        { "position": [ 2724.5347, -1695.0281, 36.7653 ], "facingAngle": 191.9675, "vehicleModelId": 411 },
+        { "position": [ 2751.1086, -1825.6765, 36.6874 ], "facingAngle":   2.3994, "vehicleModelId": 411 },
+        { "position": [ 2672.7542, -1765.3245, 37.1026 ], "facingAngle": 268.4554, "vehicleModelId": 411 },
+        { "position": [ 2803.4539, -1759.7716, 36.9369 ], "facingAngle":  87.9803, "vehicleModelId": 411 },
+        { "position": [ 2678.6702, -1790.8400, 36.8025 ], "facingAngle": 300.1769, "vehicleModelId": 411 },
+        { "position": [ 2794.2986, -1726.0154, 36.8700 ], "facingAngle": 121.4944, "vehicleModelId": 411 }
+    ],
+
+    "settings": {
+        "lowerAltitudeLimit": 33,
+        "timeLimit": 60
+    }
+}

@@ -13,6 +13,9 @@ export const kCountdownSeconds = 3;
 // time a single nitro injection will last, without needing to wait for it to recover.
 export const kNitrousInjectionIssueTimeMs = 20000;
 
+// Every how many milliseconds should vehicle damage be reset for infinite health games?
+export const kVehicleDamageRepairTimeMs = 2000;
+
 // Provides the implementation of actual races, building on top of the Games API infrastructure. An
 // instance of this class is strictly scoped to the running race.
 export class RaceGame extends VehicleGame {
@@ -24,6 +27,9 @@ export class RaceGame extends VehicleGame {
     static kNitrousInjectionInfinite = 100;
 
     #description_ = null;
+
+    #infiniteHealth_ = null;
+    #infiniteHealthTime_ = null;
 
     #nitrousInjection_ = RaceGame.kNitrousInjectionNone;
     #nitrousInjectionTime_ = null;
@@ -41,6 +47,10 @@ export class RaceGame extends VehicleGame {
             this.#nitrousInjection_ = RaceGame.kNitrousInjectionInfinite;
         else if ([ 1, 5, 10 ].includes(this.#description_.settings.nos))
             this.#nitrousInjection_ = this.#description_.settings.nos;
+
+        // (3) Determine if infinite health should be available to participants.
+        this.#infiniteHealth_ = this.#description_.settings.disableVehicleDamage;
+        this.#infiniteHealthTime_ = server.clock.monotonicallyIncreasingTime();
     }
 
     async onPlayerSpawned(player, countdown) {
@@ -106,6 +116,18 @@ export class RaceGame extends VehicleGame {
             }
 
             this.#nitrousInjectionTime_ = currentTime;
+        }
+
+        // (2) If infinite health has been enabled, repair all participant's vehicles every bunch of
+        // milliseconds to not just make them drive great, but also to make them look great.
+        if (this.#infiniteHealth_ &&
+                (currentTime - this.#infiniteHealthTime_) >= kVehicleDamageRepairTimeMs) {
+            for (const player of this.players) {
+                if (player.vehicle)
+                    player.vehicle.repair();
+            }
+
+            this.#infiniteHealthTime_ = currentTime;
         }
     }
 }

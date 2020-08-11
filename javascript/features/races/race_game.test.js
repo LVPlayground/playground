@@ -7,7 +7,9 @@ import { Vehicle } from 'entities/vehicle.js';
 
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
 
-import { kCountdownSeconds, kNitrousInjectionIssueTimeMs } from 'features/races/race_game.js';
+import { kCountdownSeconds,
+         kNitrousInjectionIssueTimeMs,
+         kVehicleDamageRepairTimeMs } from 'features/races/race_game.js';
 import { kInitialSpawnLoadDelayMs } from 'features/games_vehicles/vehicle_game.js';
 
 describe('RaceGame', (it, beforeEach) => {
@@ -175,6 +177,44 @@ describe('RaceGame', (it, beforeEach) => {
         await runGameLoop();
 
         assert.equal(gunther.vehicle.getComponentInSlot(Vehicle.kComponentSlotNitro), 1009);
+
+        // Have |gunther| leave the game, to wind it down gracefully.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
+    });
+
+    it('should be able to give vehicles infinite health', async (assert) => {
+        installDescription({
+            settings: {
+                disableVehicleDamage: true,
+            }
+        });
+
+        assert.isTrue(await gunther.issueCommand('/race 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.doesNotThrow(() => getGameInstance());
+
+        // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
+        await server.clock.advance(kInitialSpawnLoadDelayMs);
+        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+
+        assert.isNotNull(gunther.vehicle);
+        assert.equal(gunther.vehicle.health, 1000);
+
+        // Reduce the health of |gunther|'s vehicle, then expect it to be repaired shortly after.
+        gunther.vehicle.health = 800;
+
+        await server.clock.advance(kVehicleDamageRepairTimeMs);
+        await runGameLoop();
+
+        assert.isNotNull(gunther.vehicle);
+        assert.equal(gunther.vehicle.health, 1000);
 
         // Have |gunther| leave the game, to wind it down gracefully.
         assert.isTrue(await gunther.issueCommand('/leave'));

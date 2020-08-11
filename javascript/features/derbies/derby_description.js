@@ -40,12 +40,12 @@ export class DerbyDescription extends StructuredGameDescription {
                     {
                         name: 'lowerAltitudeLimit',
                         type: StructuredGameDescription.kTypeNumber,
-                        defaultValue: 0,  // no limit
+                        defaultValue: -100,  // no limit
                     },
                     {
                         name: 'timeLimit',
                         type: StructuredGameDescription.kTypeNumber,
-                        defaultValue: 0,  // no limit
+                        defaultValue: 600,
                     }
                 ],
             },

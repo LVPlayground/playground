@@ -23,9 +23,6 @@ LegacyPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     // Robbery
     CRobbery__OnKey(playerid, newkeys);
 
-    // Derby
-    CDerby__KeyStateChange(playerid, newkeys);
-
     // Ramping
     if (PRESSED(KEY_ACTION))
         OnPlayerPressRampKey(playerid);

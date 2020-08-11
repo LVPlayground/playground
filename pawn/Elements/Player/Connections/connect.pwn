@@ -31,7 +31,6 @@ OnPlayerLVPConnect(playerid) {
     CCrush__Connect(playerid);
     InitializeMapZoneTextDrawsForPlayer(playerid);
     DisablePlayerCheckpoint(playerid);
-    CDerby__InitPlayerData( playerid );
 
     if (!strcmp(Player(playerid)->nicknameString(), iRecordName, false))
         iServerChampion = playerid;

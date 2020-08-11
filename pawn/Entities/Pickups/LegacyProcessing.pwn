@@ -6,12 +6,6 @@ new playerVipRoomEntryTime[MAX_PLAYERS];
 
 LegacyOnPlayerPickUpPickup(playerid, pickupid)
 {
-    // First of all check for derby pickups
-    if(CDerby__CheckPlayerPickupPickup(playerid, pickupid) == 1)
-    {
-        return 1;   // done \o
-    }
-
     // Capture the briefcase
     if(CBrief__CheckPickup(playerid, pickupid))
     {

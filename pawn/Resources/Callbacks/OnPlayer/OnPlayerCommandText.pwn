@@ -476,7 +476,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(Teles,          5, PlayerLevel);
     lvp_command(Find,           4, PlayerLevel);
     lvp_command(Has,            3, PlayerLevel);
-    lvp_command(Derby,          5, PlayerLevel);
     lvp_command(locate,         6, PlayerLevel);
     lvp_command(lyse,           4, PlayerLevel);
     lvp_command(taxi,           4, PlayerLevel);

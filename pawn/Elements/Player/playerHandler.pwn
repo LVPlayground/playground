@@ -3,12 +3,12 @@
 // be found in the LICENSE file.
 
 #define STATUS_NONE         0
-#define STATUS_DERBY1       1
-#define STATUS_DERBY2       2
-#define STATUS_DERBY3       3
-#define STATUS_DERBY4       4
-#define STATUS_DERBY5       5
-#define STATUS_DERBY6       6
+#define STATUS_DERBY1       1  // Converted
+#define STATUS_DERBY2       2  // Converted
+#define STATUS_DERBY3       3  // Converted
+#define STATUS_DERBY4       4  // Converted
+#define STATUS_DERBY5       5  // Converted
+#define STATUS_DERBY6       6  // Converted
 #define STATUS_BATFIGHT     7  // Converted
 #define STATUS_CHAINSAW     8
 #define STATUS_DILDO        9

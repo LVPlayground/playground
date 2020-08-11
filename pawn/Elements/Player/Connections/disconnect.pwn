@@ -20,7 +20,6 @@ OnPlayerLVPDisconnect(playerId, reason) {
     CBrief__SignPlayerOut(playerId);            // Capture the briefcase
 
     CChase__Disconnect(playerId);               // Chase handler
-    CDerby__Disconnect(playerId);               // Derby handler.
 #if Feature::DisableFights == 0
     CWWTW__OnDisconnect(playerId);              // Walkies Weapons Team War minigame
 #endif

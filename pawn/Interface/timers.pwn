@@ -44,7 +44,6 @@ class DeprecatedTimerRuntime {
         waterFightProcess();
 #endif
 
-        CDerby__Process();
         CRobbery__Process();
 
         CLyse__Process();
@@ -88,7 +87,6 @@ class DeprecatedTimerRuntime {
             CSave__Process(playerId);
 
             CBomb__CheckPlayer (playerId);
-            CDerby__PlayerProcess (playerId);
             TeleportCheatProcess(playerId);
             ProcessPlayerBox(playerId);
             CheckPlayerClubAudioStream(playerId);

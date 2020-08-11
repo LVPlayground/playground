@@ -16,23 +16,21 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             if (response) {
 #if Feature::DisableFights == 1
                 switch (listitem) {
-                    case 0: CDerby__ShowMainDialog(playerid);
+                    case 0: CRobbery__MenuActivate(playerid);
+                    case 1: CBrief__MenuActivate(playerid);
+                    case 2: CShell__MenuActivate(playerid);
+                    case 3: CLyse__MenuActivate(playerid);
+                }
+#else
+                switch (listitem) {
+                    case 0: ShowDeathmatchDialog(playerid);
                     case 1: CRobbery__MenuActivate(playerid);
                     case 2: CBrief__MenuActivate(playerid);
                     case 3: CShell__MenuActivate(playerid);
                     case 4: CLyse__MenuActivate(playerid);
-                }
-#else
-                switch (listitem) {
-                    case 0: CDerby__ShowMainDialog(playerid);
-                    case 1: ShowDeathmatchDialog(playerid);
-                    case 3: CRobbery__MenuActivate(playerid);
-                    case 4: CBrief__MenuActivate(playerid);
-                    case 5: CShell__MenuActivate(playerid);
-                    case 6: CLyse__MenuActivate(playerid);
-                    case 7: CWWTW__MenuActivate(playerid);
-                    case 8: rwMenuActivate(playerid);
-                    case 9: OnWaterFightCmdText(playerid);
+                    case 5: CWWTW__MenuActivate(playerid);
+                    case 6: rwMenuActivate(playerid);
+                    case 7: OnWaterFightCmdText(playerid);
                 }
 #endif
             }
@@ -344,15 +342,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             return 1;
         }
 
-        case DIALOG_DERBY_MAIN: {
-            if (response) {
-                new params[6];
-                format(params, sizeof(params), "%d", listitem);
-                CDerby__OnCommand(playerid, params);
-            }
-            return 1;
-        }
-
         case DIALOG_JUMP_RACES: {
             if (response)
                 OnMapZoneJumpDialogResponse(playerid, listitem);
@@ -382,11 +371,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 return 1;
             }
 
-            if (listitem == 4) {
-                CDerby__ShowMainDialog(playerid);
-                return 1;
-            }
-
 #if Feature::DisableFights == 0
             if (listitem == 5) {
                 ShowDeathmatchDialog(playerid);
@@ -395,7 +379,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 #endif
 
             if (listitem == 6) {
-                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
+                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Deathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
                 return 1;
             }
         }

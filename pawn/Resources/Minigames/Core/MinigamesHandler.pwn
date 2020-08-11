@@ -347,9 +347,6 @@ IsPlayerMinigameFree(playerId) {
     if (isPlayerBrief[playerId])
         return 0;
 
-    if (CDerby__GetPlayerState(playerId) >= 2)
-        return 0;
-
     if (CLyse__GetPlayerState(playerId) >= 1)
         return 0;
 
@@ -388,9 +385,6 @@ IsPlayerInMinigame(playerId) {
         return 1;
 
     if (CHideGame__GetPlayerState(playerId) == 2)
-        return 1;
-
-    if (CDerby__GetPlayerState(playerId) > 2)
         return 1;
 
     if (isPlayerBrief[playerId] && briefStatus == 2)

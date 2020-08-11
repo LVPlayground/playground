@@ -55,11 +55,6 @@ LegacyPlayerStateChange(playerid, newstate, oldstate) {
         return 1;
     }
 
-    if (CDerby__GetPlayerState(playerid) >= DERBY_STATE_COUNTDOWN) {
-        CDerby__StateChange(playerid, newstate, oldstate);
-        return 1;
-    }
-
     if (newstate == PLAYER_STATE_DRIVER) {
         new const vehicleId = GetPlayerVehicleID(playerid);
 

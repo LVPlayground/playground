@@ -20,9 +20,9 @@ lvp_Minigames(playerid, params[])
     }
 
 #if Feature::DisableFights == 0
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Deathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
 #else
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Robbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
 #endif
 
     #pragma unused params
@@ -50,13 +50,6 @@ lvp_minigaming(playerid, params[]) {
 
         if (IsPlayerInMapZone(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s jump\t-", minigaming,
-                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
-            continue;
-        }
-
-        if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s derby\t-", minigaming,
                 GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
@@ -437,16 +430,6 @@ lvp_slapback(playerId, params[]) { return lvp_slapb(playerId, params); }
 lvp_lyse(playerid, params[]) {
     return CLyse__OnCommand(playerid);
     #pragma unused params
-}
-
-// Command: /derby
-// Level: Player
-// Params: derbyid
-// Desc: Using the derby handler, this signs a player up for a derby.
-// Author: Jay
-lvp_Derby(playerid,params[])
-{
-    return CDerby__OnCommand(playerid, params);
 }
 
 // Command: /locate

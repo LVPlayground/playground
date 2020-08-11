@@ -72,16 +72,6 @@ RemovePlayerFromAnyGame(playerId) {
     }
 #endif
 
-    if (CDerby__GetPlayerState(playerId) == DERBY_STATE_SIGNUP) {
-        CDerby__PlayerExit(playerId, SIGNOUT);
-        return 1;
-    }
-
-    if (CDerby__GetPlayerState(playerId) >= DERBY_STATE_COUNTDOWN) {
-        CDerby__PlayerExit(playerId, LEFT);
-        return 1;
-    }
-
     if (IsPlayerInMapZone(playerId)) {
         SetPlayerMapZone(playerId, -1);
         return 1;

@@ -33,11 +33,6 @@ export class DerbyDescription extends StructuredGameDescription {
                 type: StructuredGameDescription.kTypeObject,
                 structure: [
                     {
-                        name: 'cannon',
-                        type: StructuredGameDescription.kTypeBoolean,
-                        defaultValue: false,
-                    },
-                    {
                         name: 'invisible',
                         type: StructuredGameDescription.kTypeBoolean,
                         defaultValue: false,

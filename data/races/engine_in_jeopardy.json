@@ -2,8 +2,6 @@
     "name": "Engine in Jeopardy",
     "id": 9,
 
-    "timeLimit": 900,
-
     "environment": {
         "weather": "Heatwave",
         "time": "Evening"
@@ -33,7 +31,8 @@
     ],
 
     "settings": {
-        "nos": 5
+        "nos": 5,
+        "timeLimit": 900
     },
 
     "checkpoints": [

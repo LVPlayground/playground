@@ -2,8 +2,6 @@
     "name": "Los Santos Hills drift race",
     "id": 37,
 
-    "laps": 2,
-
     "spawnPositions": [
         {
             "position": [979.0795,-646.4989,121.5894],
@@ -29,6 +27,7 @@
 
     "settings": {
         "disableVehicleDamage": true,
+        "laps": 2,
         "unlimitedNos": true
     },
 

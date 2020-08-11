@@ -2,9 +2,6 @@
     "name": "Pro's Drivers Challenge",
     "id": 11,
 
-    "timeLimit": 1200,
-    "laps": 4,
-
     "spawnPositions": [
         {
             "position": [ -525.54, -3702.24, 3.40 ],
@@ -29,7 +26,9 @@
     ],
 
     "settings": {
-        "disableVehicleDamage": true
+        "disableVehicleDamage": true,
+        "laps": 4,
+        "timeLimit": 1200
     },
 
     "checkpoints": [

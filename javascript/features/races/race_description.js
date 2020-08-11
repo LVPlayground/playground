@@ -24,17 +24,6 @@ export class RaceDescription extends StructuredGameDescription {
                 type: StructuredGameDescription.kTypeNumber,
             },
 
-            {
-                name: 'timeLimit',
-                type: StructuredGameDescription.kTypeNumber,
-                defaultValue: 600,
-            },
-            {
-                name: 'laps',
-                type: StructuredGameDescription.kTypeNumber,
-                defaultValue: 1,
-            },
-
             kGameEnvironment,
             kGameSpawnPositions,
             kGameCheckpoints,
@@ -56,9 +45,19 @@ export class RaceDescription extends StructuredGameDescription {
                         defaultValue: false,
                     },
                     {
+                        name: 'laps',
+                        type: StructuredGameDescription.kTypeNumber,
+                        defaultValue: 1,
+                    },
+                    {
                         name: 'nos',
                         type: StructuredGameDescription.kTypeNumber,
                         defaultValue: 0,
+                    },
+                    {
+                        name: 'timeLimit',
+                        type: StructuredGameDescription.kTypeNumber,
+                        defaultValue: 600,
                     },
                     {
                         name: 'unlimitedNos',

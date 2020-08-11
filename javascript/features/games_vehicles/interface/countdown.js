@@ -26,7 +26,7 @@ export class Countdown {
 
     // Displays the countdown for the |player|. Returns a promise that will be resolved when the
     // countdown sequence has finished, and racing can begin.
-    static async displayForPlayer(player, seconds = 3) {
+    static async displayForPlayer(player, seconds = 3, validFn = null) {
         const elements = {
             background: createBackgroundElement(),
             description: createDescriptionElement(player),
@@ -41,6 +41,10 @@ export class Countdown {
         while (seconds > 0) {
             await wait(1000);
 
+            // Bail out of the countdown for the |player| no longer is relevant.
+            if (validFn && !validFn(player))
+                break;
+
             if (--seconds > 0) {
                 elements.foreground.text = seconds.toString();
             } else {
@@ -51,7 +55,8 @@ export class Countdown {
 
         // (3) Wait for an additional 300ms for the timer to be spent, then remove the elements if
         // the |player| is still connected to the server.
-        await wait(300);
+        if (!validFn || validFn(player))
+            await wait(300);
 
         if (player.isConnected()) {
             for (const element of Object.values(elements))

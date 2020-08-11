@@ -20,6 +20,13 @@ export class TextDrawManager {
 
     // Gets the total number of text draws that has been created on the server.
     get count() { return this.#globalTextDraws_.size + this.#playerTextDraws_.size; }
+    get size() { return this.count; }
+
+    // Provides the ability to iterate over all created text draws on the server.
+    *[Symbol.iterator]() {
+        yield* this.#globalTextDraws_.values();
+        yield* this.#playerTextDraws_.values();
+    }
 
     // Creates a text draw on the server. The position and text are required, all other values are
     // optional. When a |player| is given, a per-player text draw will be created, otherwise a

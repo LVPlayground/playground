@@ -18,3 +18,35 @@ The _Games Vehicle API_ is able to provide vehicle-based games with the followin
   * Application of all object settings (`kGameObjects`).
   * Application of all pickup settings (`kGamePickups`).
   * Safe spawning of players in their vehicles, in randomized positions.
+
+## Interface elements
+
+### Countdown
+Defined in [interface/countdown.js](interface/countdown.js), this object enables you to display a
+quick and consistent countdown for our vehicle-based minigames. It's an asynchronous mechanism that
+takes three parameters:
+
+```javascript
+async Countdown.displayForPlayer(player, seconds, validFn) { /* ... */ }
+```
+
+  * `player`: the Player instance for whom to display the countdown,
+  * `seconds`: number of seconds the countdown should be displayed for,
+  * `validFn`: function, to return a boolean, indicating if the countdown should continue.
+
+Example usage is as follows:
+
+```javascript
+async displayCountdown(player, seconds = 3) {
+    await Countdown.displayForPlayer(player, seconds, () => {
+        return player.isConnected();
+    });
+}
+```
+
+For testing purposes, a helper method is available that can fast forward past the countdown, based
+on the microtask invocations created by the system.
+
+```javascript
+await Countdown.advanceCountdownForTesting(/* seconds= */ 3);
+```

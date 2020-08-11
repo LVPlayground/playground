@@ -38,7 +38,7 @@ export class RaceGame extends VehicleGame {
         // First disable their engines, then display the countdown, then enable their engines.
         player.vehicle.toggleEngine(/* engineRunning= */ false);
 
-        await Countdown.displayForPlayer(player, kCountdownSeconds);
+        await Countdown.displayForPlayer(player, kCountdownSeconds, () => this.players.has(player));
 
         // Again, verify that they're still part of this game before re-enabling their engine, and
         // throw them out if they're no longer in their vehicle. This is a bit tedious.

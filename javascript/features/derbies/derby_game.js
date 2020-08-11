@@ -24,6 +24,14 @@ export class DerbyGame extends VehicleGame {
             throw new Error(`Invalid derby ID specified in ${this}.`);
     }
 
+    async onPlayerAdded(player) {
+        await super.onPlayerAdded(player);
+
+        // Apply invisibility to the |player| if this has been configured.
+        if (this.#description_.settings.invisible)
+            player.colors.visible = false;
+    }
+
     async onPlayerSpawned(player, countdown) {
         await super.onPlayerSpawned(player, countdown);
 
@@ -55,5 +63,13 @@ export class DerbyGame extends VehicleGame {
 
         // Store the time at which the |player| actually started to drive in the derby.
         this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+
+    async onPlayerRemoved(player) {
+        await super.onPlayerRemoved(player);
+
+        // Make sure that the |player|'s visible is restored.
+        if (!player.colors.visible)
+            player.colors.visible = true;
     }
 }

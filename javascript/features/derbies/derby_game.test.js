@@ -56,7 +56,7 @@ describe('DerbyGame', (it, beforeEach) => {
     }
 
     it('should keep players frozen until the countdown finishes', async (assert) => {
-        installDescription( /* default description */);
+        installDescription(/* default description */);
 
         assert.isTrue(await gunther.issueCommand('/derby 1'));
         assert.isTrue(await russell.issueCommand('/derby 1'));
@@ -102,4 +102,34 @@ describe('DerbyGame', (it, beforeEach) => {
 
         assert.throws(() => getGameInstance());
     });
+
+    it('should be able to make people invisible on the map', async (assert) => {
+        installDescription({
+            settings: {
+                invisible: true,
+            }
+        });
+
+        assert.isTrue(gunther.colors.visible);
+        assert.isTrue(await gunther.issueCommand('/derby 1'));
+        assert.isTrue(await russell.issueCommand('/derby 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.doesNotThrow(() => getGameInstance());
+
+        // Verify that |gunther| has been made invisible.
+        assert.isFalse(gunther.colors.visible);
+
+        // Have |gunther| and |russell| leave the game, to wind it down gracefully.
+        assert.isTrue(await gunther.issueCommand('/leave'));
+        assert.isTrue(await russell.issueCommand('/leave'));
+
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
+        assert.isTrue(gunther.colors.visible);
+    });
+
 });

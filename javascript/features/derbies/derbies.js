@@ -22,6 +22,9 @@ export default class Derbies extends Feature {
     constructor() {
         super();
 
+        // It's possible for players to become invisible while playing a derby.
+        this.defineDependency('player_colors');
+
         // The Derby feature depends on the Games API for providing its functionality.
         this.games_ = this.defineDependency('games');
         this.games_.addReloadObserver(this, () => this.registerGame());

@@ -14,6 +14,7 @@ export const kDecorations = new Set([
     { filename: 'fantasy_island.json', setting: 'decorations/fantasy_island' },
     { filename: 'gunther.json', setting: 'decorations/gunther' },
     { filename: 'las_venturas_scrapyard.json', setting: 'decorations/las_venturas_scrapyard' },
+    { filename: 'las_venturas_taxi_rank.json', setting: 'decorations/las_venturas_taxi_rank' },
     { filename: 'los_santos_winter.json', setting: 'decorations/los_santos_winter' },
     { filename: 'pilots.json', setting: 'decorations/pilots' },
     { filename: 'pirate_ship_party.json', setting: 'decorations/pirate_ship_party' },

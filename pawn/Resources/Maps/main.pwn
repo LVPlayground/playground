@@ -21,8 +21,6 @@
     // Vent blocker in cailgulars casino:
     CreateDynamicObject(1500, 2142.30, 1621.13, 1000.16, 0.00, 0.00, 0.00);
 
-    #include    Resources/Maps/TaxiRank.pwn
-
 #if Feature::DisableFights == 0
     #include    Resources/Maps/IslandDM.pwn
 #endif

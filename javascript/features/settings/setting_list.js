@@ -46,6 +46,7 @@ export const kSettingList = [
     new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
     new Setting('decorations', 'las_venturas_scrapyard', Setting.TYPE_BOOLEAN, true, 'Should the scrapyard in Las Venturas be enabled?'),
+    new Setting('decorations', 'las_venturas_taxi_rank', Setting.TYPE_BOOLEAN, true, 'Should the taxi rank at Las Venturas Airport be enabled?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
     new Setting('decorations', 'pilots', Setting.TYPE_BOOLEAN, false, 'Should the pilots by flying around San Andreas?'),
     new Setting('decorations', 'pirate_ship_party', Setting.TYPE_BOOLEAN, true, 'Should there be a party on the Pirate Ship?'),

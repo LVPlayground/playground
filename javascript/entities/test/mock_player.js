@@ -401,6 +401,8 @@ export class MockPlayer extends Player {
     stopAudioStream() { this.#streamUrl_ = null; }
 
     get soundIdForTesting() { return this.#soundId_; }
+    set soundIdForTesting(value) { return this.#soundId_ = value; }
+
     get streamUrlForTesting() { return this.#streamUrl_; }
 
     // ---------------------------------------------------------------------------------------------

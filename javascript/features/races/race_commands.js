@@ -50,9 +50,13 @@ export class RaceCommands {
             columns.push('Personal best');
 
         const dialog = new Menu('Races', columns);
+        const descriptions = [ ...this.#registry_.descriptions() ];
+
+        // Sort the |descriptions| alphabetically by name.
+        descriptions.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
         // Populate the |dialog| with each of the available races from the registry.
-        for (const description of this.#registry_.descriptions()) {
+        for (const description of descriptions) {
             const name = description.name;
             const listener =
                 RaceCommands.prototype.onRaceStartCommand.bind(this, player, description.id);

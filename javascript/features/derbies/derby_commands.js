@@ -35,9 +35,13 @@ export class DerbyCommands {
     // Called when the `/derby` command is executed without specifying a particular derby.
     async onDerbyCommand(player) {
         const dialog = new Menu('Derbies');
+        const descriptions = [ ...this.#registry_.descriptions() ];
+
+        // Sort the |descriptions| alphabetically by name.
+        descriptions.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
         // Populate the |dialog| with each of the available derbies from the registry.
-        for (const description of this.#registry_.descriptions()) {
+        for (const description of descriptions) {
             const name = description.name;
             const listener =
                 DerbyCommands.prototype.onDerbyStartCommand.bind(this, player, description.id);

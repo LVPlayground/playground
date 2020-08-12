@@ -57,7 +57,10 @@ describe('TimedObjective', it => {
 
         assert.doesNotThrow(() => getGameInstance());
 
-        await server.clock.advance(180 * 1000);  // wait for the entire duration of the game
+        // Tick the countdown. This has to be done in several iterations.
+        for (let seconds = 180; seconds > 0; --seconds)
+            await server.clock.advance(1000);
+
         await runGameLoop();  // allow the game to finish
 
         assert.throws(() => getGameInstance());

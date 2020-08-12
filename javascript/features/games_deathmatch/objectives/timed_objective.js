@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_deathmatch/interface/countdown.js';
+import { Countdown } from 'components/interface/countdown.js';
 import { Objective } from 'features/games_deathmatch/objectives/objective.js';
 
 import { difference } from 'base/set_extensions.js';
@@ -11,33 +11,25 @@ import { difference } from 'base/set_extensions.js';
 // displayed on each participant's screen telling them about how much time is remaining.
 export class TimedObjective extends Objective {
     #countdown_ = null;
-    #expireTime_ = null;
 
     // Called when the game initializes, with the |settings| that have been given for the particular
     // game, which is either predefined or configured by a player.
     async initialize(game, settings) {
         await super.initialize(game, settings);
 
-        this.#countdown_ = new Countdown();
-        this.#expireTime_ =
-            server.clock.monotonicallyIncreasingTime() + settings.seconds * 1000;
+        this.#countdown_ = new Countdown({ seconds: settings.seconds });
+        this.#countdown_.finished.then(() => this.onCountdownFinished());
     }
 
     // Called when the given |player| has been added to the game. We use this time to make sure that
     // the countdown will have been appropriately created for the |player|.
     async onPlayerAdded(player) {
-        this.#countdown_.createForPlayer(player);
+        this.#countdown_.displayForPlayer(player);
     }
 
-    // Called every second or so as the game progresses. Makes sure that we decide the rankings and
-    // throw players out of the game in order when the countdown reaches zero.
-    async onTick() {
-        const remaining = this.#expireTime_ - server.clock.monotonicallyIncreasingTime();
-        if (remaining > 0) {
-            this.#countdown_.update(Math.floor(remaining / 1000));
-            return;
-        }
-
+    // Called when the countdown has finished. Will rank all players and drop them out in order,
+    // making sure that a winner will be decided based on their kills & death ratios.
+    onCountdownFinished() {
         // The game has ended. Create a tally of all remaining participants, order them by number of
         // kills in ascending order, and then drop them out in sequence.
         const participants = [];
@@ -73,6 +65,9 @@ export class TimedObjective extends Objective {
     // ends, which also allows for the case where all participants but one leave the game.
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
+
+        // Remove the countdown for the given |player|, they won't care anymore.
+        this.#countdown_.hideForPlayer(player);
 
         // If there are only two players left in the game, with the |player| leaving, we'll declare
         // the remaining participant as the winner of the match.

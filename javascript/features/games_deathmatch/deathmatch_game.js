@@ -266,13 +266,6 @@ export class DeathmatchGame extends GameBase {
         }
     }
 
-    // Called periodically to update the game's state. For games on a time limit, this is where the
-    // countdown will decrement, and we'll eventually finish the game.
-    async onTick() {
-        await super.onTick();
-        await this.#objective_.onTick();
-    }
-
     // Called after the game has finished. Clean up state that has been initialized for the game,
     // as it will no longer be required hereafter.
     async onFinished() {

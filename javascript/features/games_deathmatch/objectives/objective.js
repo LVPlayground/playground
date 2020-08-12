@@ -16,9 +16,6 @@ export class Objective {
         this.#game_ = game;
     }
 
-    // Called every second or so as the game progresses.
-    async onTick() {}
-
     // Called when the given |player| has been added to the game.
     async onPlayerAdded(player) {}
 

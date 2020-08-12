@@ -2,13 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+import { Countdown } from 'components/interface/countdown.js';
+import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
 
-import { kCountdownSeconds } from 'features/derbies/derby_game.js';
 import { kDefaultLimitSec } from 'features/derbies/derby_description.js';
 import { kInitialSpawnLoadDelayMs } from 'features/games_vehicles/vehicle_game.js';
+import { kStartCountdownSeconds } from 'features/derbies/derby_game.js';
 
 describe('DerbyGame', (it, beforeEach) => {
     let gunther = null;
@@ -86,7 +87,7 @@ describe('DerbyGame', (it, beforeEach) => {
         assert.isFalse(russell.vehicle.engineForTesting);
 
         // (3) The countdown has started. We need to wait for it to pass.
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         // (4) Now the vehicles of |gunther| and |russell| should be unlocked. Off they go!
         assert.isNotNull(gunther.vehicle);
@@ -146,7 +147,7 @@ describe('DerbyGame', (it, beforeEach) => {
 
         // Wait past the frozen stage as well as the countdown.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isTrue(game.players.has(gunther));
         assert.isTrue(game.players.has(russell));
@@ -188,7 +189,7 @@ describe('DerbyGame', (it, beforeEach) => {
 
         // Wait past the frozen stage as well as the countdown.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isTrue(game.players.has(gunther));
         assert.isTrue(game.players.has(russell));
@@ -230,7 +231,7 @@ describe('DerbyGame', (it, beforeEach) => {
 
         // Wait past the frozen stage as well as the countdown.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isTrue(game.players.has(gunther));
         assert.isTrue(game.players.has(russell));
@@ -239,7 +240,7 @@ describe('DerbyGame', (it, beforeEach) => {
         // as the derby's loser. Then wait for the derby to expire in its entirety.
         russell.vehicle.health -= 10;
 
-        await server.clock.advance(kDefaultLimitSec * 1000);
+        await Countdown.advanceCountdownForTesting(kDefaultLimitSec);
         await runGameLoop();
 
         // Verify that both participants have been removed, and that |gunther| won the game.

@@ -2,16 +2,16 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 import { Vehicle } from 'entities/vehicle.js';
-
-// How many seconds should the race's countdown last for?
-export const kCountdownSeconds = 3;
 
 // Every how many milliseconds should infinite NOS be issued to vehicles? This roughly maps to the
 // time a single nitro injection will last, without needing to wait for it to recover.
 export const kNitrousInjectionIssueTimeMs = 20000;
+
+// How many seconds should the race's countdown last for?
+export const kStartCountdownSeconds = 3;
 
 // Every how many milliseconds should vehicle damage be reset for infinite health games?
 export const kVehicleDamageRepairTimeMs = 2000;
@@ -91,7 +91,8 @@ export class RaceGame extends VehicleGame {
         // Disable their engine, so that they can't drive off while the countdown is active.
         vehicle.toggleEngine(/* engineRunning= */ false);
 
-        await Countdown.displayForPlayer(player, kCountdownSeconds, () => this.players.has(player));
+        await StartCountdown.displayForPlayer(
+            player, kStartCountdownSeconds, () => this.players.has(player));
 
         // Again, verify that they're still part of this game before re-enabling their engine, and
         // throw them out if they're no longer in their vehicle. This is a bit tedious.

@@ -20,6 +20,12 @@ const kStressedBackgroundColor = Color.fromRGBA(0x80, 0, 0, 0xAA);
 // participants know how much time is left. This countdown is implemented using a text draw, which
 // has been abstracted away under this interface.
 export class Countdown {
+    // Advances past the countdown for testing purposes.
+    static async advanceCountdownForTesting(seconds) {
+        while (seconds--)
+            await server.clock.advance(1000);
+    }
+
     #disposed_ = false;
     #element_ = null;
 

@@ -2,15 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 
-describe('Countdown', it => {
+describe('StartCountdown', it => {
     it('should be able to safely run a countdown for a player', async (assert) => {
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
         const originalTextDrawCount = server.textDrawManager.size;
 
         let shouldContinue = true;
-        const promise = Countdown.displayForPlayer(gunther, 4, () => {
+        const promise = StartCountdown.displayForPlayer(gunther, 4, () => {
             return shouldContinue;
         });
 

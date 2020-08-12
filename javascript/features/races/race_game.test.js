@@ -2,13 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { Vehicle } from 'entities/vehicle.js';
 
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
 
-import { kCountdownSeconds,
-         kNitrousInjectionIssueTimeMs,
+import { kNitrousInjectionIssueTimeMs,
+         kStartCountdownSeconds,
          kVehicleDamageRepairTimeMs } from 'features/races/race_game.js';
 import { kInitialSpawnLoadDelayMs } from 'features/games_vehicles/vehicle_game.js';
 
@@ -59,7 +59,7 @@ describe('RaceGame', (it, beforeEach) => {
     }
 
     it('should keep players frozen until the countdown finishes', async (assert) => {
-        installDescription( /* default description */);
+        installDescription(/* default description */);
 
         assert.isTrue(await gunther.issueCommand('/race 1'));
         assert.isTrue(await russell.issueCommand('/race 1'));
@@ -88,7 +88,7 @@ describe('RaceGame', (it, beforeEach) => {
         assert.isFalse(russell.vehicle.engineForTesting);
 
         // (3) The countdown has started. We need to wait for it to pass.
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         // (4) Now the vehicles of |gunther| and |russell| should be unlocked. Off they go!
         assert.isNotNull(gunther.vehicle);
@@ -122,7 +122,7 @@ describe('RaceGame', (it, beforeEach) => {
 
         // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isNotNull(gunther.vehicle);
 
@@ -153,7 +153,7 @@ describe('RaceGame', (it, beforeEach) => {
 
         // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isNotNull(gunther.vehicle);
 
@@ -192,7 +192,7 @@ describe('RaceGame', (it, beforeEach) => {
 
         // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
         await server.clock.advance(kInitialSpawnLoadDelayMs);
-        await Countdown.advanceCountdownForTesting(kCountdownSeconds);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
 
         assert.isNotNull(gunther.vehicle);
         assert.equal(gunther.vehicle.health, 1000);
@@ -212,5 +212,9 @@ describe('RaceGame', (it, beforeEach) => {
         await runGameLoop();
 
         assert.throws(() => getGameInstance());
+    });
+
+    it('should kick people out when the time limit expires', async (assert) => {
+
     });
 });

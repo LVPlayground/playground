@@ -2,21 +2,20 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { Countdown } from 'features/games_vehicles/interface/countdown.js';
+import { Countdown } from 'components/interface/countdown.js';
+import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 
 import { difference } from 'base/set_extensions.js';
 
 // How many seconds should the derby's countdown last for?
-export const kCountdownSeconds = 3;
+export const kStartCountdownSeconds = 3;
 
 // Provides the implementation of actual derbies, building on top of the Games API infrastructure.
 // An instance of this class is strictly scoped to the running derby.
 export class DerbyGame extends VehicleGame {
+    #countdown_ = null;
     #description_ = null;
-    #expiration_ = null;
-
-    #playerStartTime_ = new WeakMap();
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -52,7 +51,8 @@ export class DerbyGame extends VehicleGame {
         // Disable their engine, so that they can't drive off while the countdown is active.
         vehicle.toggleEngine(/* engineRunning= */ false);
 
-        await Countdown.displayForPlayer(player, kCountdownSeconds, () => this.players.has(player));
+        await StartCountdown.displayForPlayer(
+            player, kStartCountdownSeconds, () => this.players.has(player));
 
         // Again, verify that they're still part of this game before re-enabling their engine, and
         // throw them out if they're no longer in their vehicle. This is a bit tedious.
@@ -64,24 +64,20 @@ export class DerbyGame extends VehicleGame {
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
 
-        // Store the time at which the |player| actually started to drive in the derby.
-        this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
-
         // Store the expiration time for the derby is one has been configured. We do this after the
         // players spawn, to not be affected by the time it takes for the countdown and all.
-        if (this.#description_.settings.timeLimit && !this.#expiration_) {
-            this.#expiration_ = server.clock.monotonicallyIncreasingTime() +
-                                    this.#description_.settings.timeLimit * 1000;
+        if (!this.#countdown_ && this.#description_.settings.timeLimit) {
+            this.#countdown_ = new Countdown({ seconds: this.#description_.settings.timeLimit });
+            this.#countdown_.finished.then(() =>
+                this.processDropouts([ ...this.players ], /* expired= */ true));
         }
+
+        if (this.#countdown_)
+            this.#countdown_.displayForPlayer(player);
     }
 
     async onTick() {
         await super.onTick();
-
-        // Whether or not the derby has expired. When this is the case, all participants will be
-        // dropped out whether they like it or not - time's up!
-        const expired =
-            this.#expiration_ && this.#expiration_ < server.clock.monotonicallyIncreasingTime();
 
         // Process the derby's lower altitude limit, as well as players who have left their vehicles
         // which is prohibited in derbies. We'll consider each of them a drop-out.
@@ -89,16 +85,28 @@ export class DerbyGame extends VehicleGame {
 
         for (const player of this.players) {
             if (!player.vehicle)
-                dropouts.push([ player, /* vehicle health= */ 0 ]);
+                dropouts.push(player);
             else if (player.vehicle.position.z < this.#description_.settings.lowerAltitudeLimit)
-                dropouts.push([ player, player.vehicle.health ]);
-            else if (expired)
-                dropouts.push([ player, player.vehicle.health ]);
+                dropouts.push(player);
         }
+
+        if (dropouts.length)
+            this.processDropouts(dropouts, /* expired= */ false);
+    }
+
+    // Processes the array of |dropouts| for the game, and removes them one by one after sorting by
+    // their score. When |expired| is set, the top ranking player will not be removed.
+    processDropouts(dropouts, expired = false) {
+        const dropoutsWithScore = dropouts.map(player => {
+            if (player.vehicle)
+                return [ player, player.vehicle.health ];
+            else
+                return [ player, /* vehicle health= */ 0 ];
+        });
 
         // Sort the |dropouts| based on the remaining health of their vehicle, in ascending order.
         // This decides who will be dropping out of the game first, if a race condition occurs.
-        dropouts.sort((lhs, rhs) => {
+        dropoutsWithScore.sort((lhs, rhs) => {
             if (lhs[1] === rhs[1])
                 return 0;
 
@@ -107,11 +115,11 @@ export class DerbyGame extends VehicleGame {
 
         // If the derby |expired| and more than a single player is being dropped out, remove the
         // player with the most health from the |dropouts| as they should be marked as the winner.
-        if (expired && dropouts.length >= 2)
-            dropouts.pop();
+        if (expired && dropoutsWithScore.length >= 2)
+            dropoutsWithScore.pop();
 
         // Drop out each of the |dropouts| as losers. You can't win if you fall down :)
-        for (const [ player ] of dropouts)
+        for (const [ player ] of dropoutsWithScore)
             this.playerLost(player);
     }
 
@@ -127,5 +135,14 @@ export class DerbyGame extends VehicleGame {
         const remainingPlayers = difference(this.players, new Set([ player ]));
         if (remainingPlayers.size === 1)
             this.playerWon([ ...remainingPlayers ][0]);
+    }
+
+    async onFinished() {
+        await super.onFinished();
+
+        if (this.#countdown_) {
+            this.#countdown_.dispose();
+            this.#countdown_ = null;
+        }
     }
 }

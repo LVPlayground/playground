@@ -14,7 +14,7 @@ const kForegroundColor = Color.fromRGBA(255, 255, 0, 255);
 // This class implements the visual count down that will be presented to the player right before
 // they can start a race. This gives each player the chance to see the environment prior to starting
 // and gives San Andreas the chance to load the resources in the surrounding area.
-export class Countdown {
+export class StartCountdown {
     // Advances past the countdown for testing purposes.
     static async advanceCountdownForTesting(seconds) {
         while (seconds--)

@@ -583,6 +583,8 @@
   "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
   "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
 
+  "SAMPCAC_ADMIN_DETECTOR_HIT": "%s (Id:%d) has installed %s, please keep an eye out.",
+
   "VEHICLE_ANNOUNCE_ACCESS": "%s (Id:%d) has restricted a %s to %s.",
   "VEHICLE_ANNOUNCE_ACCESS_LIFTED": "%s (Id:%d) has lifted restrictions from a %s.",
   "VEHICLE_ANNOUNCE_DELETED": "%s (Id:%d) has deleted a %s from the database.",

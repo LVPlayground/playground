@@ -10,6 +10,7 @@ export class Detector {
     static kTypeBlockList = 1;
 
     #address_ = null;
+    #automatic_ = null;
     #bytes_ = null;
     #name_ = null;
     #type_ = null;
@@ -48,6 +49,8 @@ export class Detector {
             throw new Error(`${this}: Detector either has to be a blocked or allowed type.`);
         }
 
+        this.#automatic_ = detector.hasOwnProperty('automatic') && !!detector.automatic;
+
         if (this.#resultBytes_ !== null && !Array.isArray(this.#resultBytes_))
             throw new Error(`${this}: Result bytes must be specified as an array.`);
 
@@ -60,6 +63,9 @@ export class Detector {
 
     // Gets the name for this detector, will be shown in the dialogs.
     get name() { return this.#name_; }
+
+    // Gets whether this detector should automatically run when a player connects.
+    get automatic() { return this.#automatic_; }
 
     // Gets the address at which memory has to be read.
     get address() { return this.#address_; }

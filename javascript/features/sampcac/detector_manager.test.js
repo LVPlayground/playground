@@ -2,10 +2,11 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Detector } from 'features/sampcac/detector.js';
 import { DetectorResults } from 'features/sampcac/detector_results.js';
 import { MockSAMPCACStatus } from 'features/sampcac/mock_sampcac_natives.js';
 
-import { kMemoryReadTimeoutMs } from 'features/sampcac/detector_manager.js';
+import { kAutomaticDetectionDelayMs, kMemoryReadTimeoutMs } from 'features/sampcac/detector_manager.js';
 
 describe('DetectorManager', (it, beforeEach) => {
     let gunther = null;
@@ -78,5 +79,46 @@ describe('DetectorManager', (it, beforeEach) => {
         gunther.disconnectForTesting();
 
         assert.isNull(await disconnectedRequest);
+    });
+
+    it('is able to run automatic detectors when a player connects', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+        await russell.identify();
+
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+
+        // Write the blocked memory for |gunther|, and add a detector which does exactly that.
+        status.writeMemory(0xDEADBEEF, [ 0x01, 0x02, 0x03, 0x04 ]);
+
+        manager.detectors_ = new Set([
+            new Detector({
+                name: 'lithirm.cs',
+                automatic: true,
+
+                address: 0xDEADBEEF,
+                bytes: 4,
+
+                blocked: {
+                    bytes: [ 0x01, 0x02, 0x03, 0x04 ],
+                }
+            }),
+        ]);
+
+        // (1) Fire OnPlayerConnect in the manager. This should do nothing until the automatic
+        // delay has passed, which exists to reduce flakiness immediately after joining.
+        manager.onPlayerConnect(gunther);
+
+        await server.clock.advance(kAutomaticDetectionDelayMs);
+
+        // (2) The detection should now have started, but this takes a little while. Therefore wait
+        // until the memory read timeout has expired as well.
+        await server.clock.advance(kMemoryReadTimeoutMs);
+
+        // (3) Verify that |russell| has received a message with the warning.
+        assert.equal(russell.messages.length, 1);
+        assert.includes(
+            russell.messages[0],
+            Message.format(Message.SAMPCAC_ADMIN_DETECTOR_HIT, gunther.name, gunther.id,
+                           'lithirm.cs'));
     });
 });

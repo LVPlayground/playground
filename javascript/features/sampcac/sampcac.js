@@ -27,13 +27,16 @@ export default class SAMPCAC extends Feature {
         // which includes the ability to record and store evidence.
         const abuse = this.defineDependency('abuse');
 
+        // Automatic detections will share announcements with in-game administrators.
+        const announce = this.defineDependency('announce');
+
         // Native function provider for SAMPCAC. Will be mocked out for testing purposes, as there
         // certainly isn't a connected player while running those.
         this.natives_ = server.isTest() ? new MockSAMPCACNatives()
                                         : new SAMPCACNatives();
 
         // Manages detectors and their ability to fire for a particular player.
-        this.manager_ = new DetectorManager(this.natives_);
+        this.manager_ = new DetectorManager(announce, this.natives_);
 
         // The detector monitor takes information from other sources and shares it with parties as
         // appropriate, which includes detection of false positives and rate limiting.

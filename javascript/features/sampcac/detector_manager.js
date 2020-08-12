@@ -10,6 +10,9 @@ import { equals } from 'base/equals.js';
 // Address from which we obtain the player's uptime.
 const kAddressPlayerUptime = 0x42983D;
 
+// Number of milliseconds to wait after a player connects before running automatic scans.
+export const kAutomaticDetectionDelayMs = 10000;
+
 // File (not checked in) in which detectors are located. Not required.
 const kDetectorConfiguration = 'detectors.json';
 
@@ -19,16 +22,24 @@ export const kMemoryReadTimeoutMs = 3500;
 // Manages the SAMPCAC detectors that are available on the server. Will load its information from
 // a configuration file, unless tests are active, in which case they can be injected.
 export class DetectorManager {
+    announce_ = null;
+    natives_ = null;
+
     cleo_ = null;
     detectors_ = null;
-    natives_ = null;
+    disposed_ = false;
     responseResolvers_ = null;
 
-    constructor(natives) {
+    constructor(announce, natives) {
+        this.announce_ = announce;
         this.cleo_ = new WeakSet();
         this.detectors_ = null;
         this.natives_ = natives;
         this.responseResolvers_ = new Map();
+
+        // Automatically initialize the detectors if we're not running tests.
+        if (!server.isTest())
+            this.initializeDetectors();
 
         server.playerManager.addObserver(this);
     }
@@ -218,6 +229,42 @@ export class DetectorManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the given |player| has connected to the server. We have the ability to run
+    // certain detectors automatically when we've got sufficient confidence in them.
+    onPlayerConnect(player) {
+        if (!this.detectors_)
+            return;  // the system hasn't been initialized yet
+
+        const detectors = [];
+
+        // (1) Collate all the detectors that should automatically run.
+        for (const detector of this.detectors_) {
+            if (detector.automatic)
+                detectors.push(detector);
+        }
+
+        if (!detectors.length)
+            return;  // none should be ran, bail out
+
+        // (2) Run the detectors after waiting for the |kAutomaticDetectionDelayMs| delay.
+        wait(kAutomaticDetectionDelayMs).then(() => {
+            if (this.disposed_ || !player.isConnected())
+                return;  // cancel the scan
+
+            // (3) Run the actual detectors, and if any come back positive, immediately inform the
+            // in-game administrators of the |player| using the given |detector|.
+            for (const detector of detectors) {
+                this.requestDetection(player, detector).then(result => {
+                    if (result !== DetectorResults.kResultDetected)
+                        return;
+
+                    this.announce_().announceToAdministrators(
+                        Message.SAMPCAC_ADMIN_DETECTOR_HIT, player.name, player.id, detector.name);
+                });
+            }
+        });
+    }
+
     // Called when the |response| has been received from the |player|, following a read request for
     // the given |address|. When known, the Promise waiting for the response will be settled.
     onMemoryResponse(player, address, response) {
@@ -254,5 +301,6 @@ export class DetectorManager {
         server.playerManager.removeObserver(this);
 
         this.responseResolvers_.clear();
+        this.disposed_ = true;
     }
 }

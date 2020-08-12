@@ -66,7 +66,6 @@ Feature                                          | Code Health | Description
 -------------------------------------------------|-------------|------------------------------------------------------------------
 [Account](account/)                              | ✔ 2020     | Provides account-related commands to in-game players
 [CommunicationCommands](communication_commands/) | ✔ 2020     | Provides commands related to communication, e.g. `/pm`, `/mute` etc.
-[Cruise](cruise/)                                | ❓ 2020     | -
 [DeathFeed](death_feed/)                         | ❓ 2020     | -
 [DeathMatch](death_match/)                       | ❓ 2020     | -
 [Decorations](decorations/)                      | ✔ 2020     | Powers JSON-based decorations on the server.

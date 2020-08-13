@@ -262,7 +262,7 @@ export class PunishmentCommands {
             // (b) Format the detection result. There either are detections (red), no detections
             // (green), or an unknown result because scans are not supported (grey).
             if (detections.length > 1)
-                detectionResult = `{FF5722}${detectionResult.length} detections`;
+                detectionResult = `{FF5722}${detections.length} detections`;
             else if (detections.length === 1)
                 detectionResult = `{FF5722}1 detection`;
             else if (!result.supported)

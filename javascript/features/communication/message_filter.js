@@ -75,7 +75,7 @@ export class MessageFilter {
             userId: player.account.userId,
             nickname: player.name,
             before, after,
-            expression: new RegExp('(' + escape(before) + ')', 'gi'),
+            expression: new RegExp('(' + escape(before) + ')', 'i'),
         };
 
         this.replacements_.add(replacement);
@@ -106,7 +106,31 @@ export class MessageFilter {
             message = this.recapitalize(message);
         }
 
-        // (2) Apply each of the replacements to the |message|, to remove any bad words that may be
+        // (2a) Experimental: run a number of permutations of the |message| which are intended to
+        // detect players trying to avoid the block. We don't block these messages yet.
+        const permutations = [
+            [ 'no-spaces', message.replaceAll(' ', '') ],
+            [ 'numbers-3', message.replaceAll('3', 'e') ],
+            [ 'numbers-3-spaces', message.replaceAll('3', 'e').replaceAll(' ', '') ],
+            [ 'numbers-4', message.replaceAll('4', 'a') ],
+            [ 'numbers-4-spaces', message.replaceAll('4', 'a').replaceAll(' ', '') ],
+            [ 'numbers-34', message.replaceAll('3', 'e').replaceAll('4', 'a') ],
+            [ 'numbers-34-spaces', message.replaceAll('3', 'e').replaceAll('4', 'a').replaceAll(' ', '') ],
+        ];
+
+        for (const replacement of this.replacements_) {
+            if (replacement.expression.test(message))
+                continue;  // they'd be caught
+
+            for (const [ experiment, modifiedMessage ] of permutations) {
+                if (!replacement.expression.test(modifiedMessage))
+                    continue;  // they'd be caught
+
+                console.log(`[filterpp][${experiment}] ${player.name}: ${message}`);
+            }
+        }
+
+        // (2b) Apply each of the replacements to the |message|, to remove any bad words that may be
         // included in it with alternatives. Replacements will maintain case.
         for (const replacement of this.replacements_) {
             if (!replacement.expression.test(message))
@@ -274,7 +298,7 @@ export class MessageFilter {
                 nickname: replacement.username,
                 before: replacement.replacement_before,
                 after: replacement.replacement_after,
-                expression: new RegExp('(' + escape(replacement.replacement_before) + ')', 'gi'),
+                expression: new RegExp('(' + escape(replacement.replacement_before) + ')', 'i'),
             });
         }
     }

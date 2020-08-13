@@ -64,10 +64,14 @@ export class RaceCommands {
             let highscore = '{9E9E9E}-';
             if (highscores.has(description.id)) {
                 const { color, username, time } = highscores.get(description.id);
-                if (color)
-                    highscore = `${formatTime(time)} ({${color.toHexRGB()}}${username}{FFFFFF})`;
+                const seconds = time / 1000;
+
+                if (!username)
+                    ;  // edge-case where the |username| has been removed sine
+                else if (color)
+                    highscore = `${formatTime(seconds)} ({${color.toHexRGB()}}${username}{FFFFFF})`;
                 else
-                    highscore = `${formatTime(time)} (${username})`;
+                    highscore = `${formatTime(seconds)} (${username})`;
             }
 
             // If |personalHighscores| are available, consider those, otherwise just add the race's
@@ -75,7 +79,7 @@ export class RaceCommands {
             if (personalHighscores !== null) {
                 let personalHighscore = '{9E9E9E}-';
                 if (personalHighscores.has(description.id))
-                    personalHighscore = formatTime(personalHighscores.get(description.id));
+                    personalHighscore = formatTime(personalHighscores.get(description.id) / 1000);
 
                 dialog.addItem(name, highscore, personalHighscore, listener);
             } else {

@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { Countdown } from 'components/interface/countdown.js';
+import { Scoreboard } from 'features/derbies/interface/scoreboard.js';
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 
@@ -16,6 +17,7 @@ export const kStartCountdownSeconds = 3;
 export class DerbyGame extends VehicleGame {
     #countdown_ = null;
     #description_ = null;
+    #scoreboard_ = null;
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -64,6 +66,12 @@ export class DerbyGame extends VehicleGame {
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
 
+        // Create the score board. This is only applicable after the countdown has completed.
+        if (!this.#scoreboard_)
+            this.#scoreboard_ = new Scoreboard(this.#description_);
+
+        this.#scoreboard_.displayForPlayer(player);
+
         // Store the expiration time for the derby is one has been configured. We do this after the
         // players spawn, to not be affected by the time it takes for the countdown and all.
         if (!this.#countdown_ && this.#description_.settings.timeLimit) {
@@ -78,6 +86,9 @@ export class DerbyGame extends VehicleGame {
 
     async onTick() {
         await super.onTick();
+
+        // Update the scoreboard with all the players who are still participating.
+        this.#scoreboard_.update(this.players);
 
         // Process the derby's lower altitude limit, as well as players who have left their vehicles
         // which is prohibited in derbies. We'll consider each of them a drop-out.
@@ -130,6 +141,14 @@ export class DerbyGame extends VehicleGame {
         if (!player.colors.visible)
             player.colors.visible = true;
 
+        // Make sure that the visual elements are removed from their screens. There's a possible
+        // race condition here where the |player| quits before the game has loaded.
+        if (this.#countdown_)
+            this.#countdown_.hideForPlayer(player);
+
+        if (this.#scoreboard_)
+            this.#scoreboard_.hideForPlayer(player);
+
         // If there's only a single player left in the derby, mark them as the winner. The |player|
         // who's currently being removed will still live in the players set, however.
         const remainingPlayers = difference(this.players, new Set([ player ]));
@@ -143,6 +162,11 @@ export class DerbyGame extends VehicleGame {
         if (this.#countdown_) {
             this.#countdown_.dispose();
             this.#countdown_ = null;
+        }
+
+        if (this.#scoreboard_) {
+            this.#scoreboard_.dispose();
+            this.#scoreboard_ = null;
         }
     }
 }

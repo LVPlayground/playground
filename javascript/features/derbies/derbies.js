@@ -48,7 +48,7 @@ export default class Derbies extends Feature {
             name: 'Derby',  // TODO: have a name generator
             goal: 'Be the last person standing in a vehicle war.',
 
-            minimumPlayers: 2,
+            minimumPlayers: 1,
             maximumPlayers: 4,
             price: 0,
 

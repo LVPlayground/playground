@@ -2,12 +2,14 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Banner } from 'components/interface/banner.js';
 import { Countdown } from 'components/interface/countdown.js';
 import { Scoreboard } from 'features/derbies/interface/scoreboard.js';
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 
 import { difference } from 'base/set_extensions.js';
+import { format } from 'base/format.js';
 
 // How many seconds should the derby's countdown last for?
 export const kStartCountdownSeconds = 3;
@@ -15,6 +17,11 @@ export const kStartCountdownSeconds = 3;
 // Provides the implementation of actual derbies, building on top of the Games API infrastructure.
 // An instance of this class is strictly scoped to the running derby.
 export class DerbyGame extends VehicleGame {
+    // Reasons indicating why a particular player dropped out of the game.
+    static kDropoutReasonLeftVehicle = 0;
+    static kDropoutReasonTooLate = 1;
+    static kDropoutReasonTooLow = 2;
+
     #countdown_ = null;
     #description_ = null;
     #scoreboard_ = null;
@@ -95,10 +102,14 @@ export class DerbyGame extends VehicleGame {
         const dropouts = [];
 
         for (const player of this.players) {
-            if (!player.vehicle)
+            if (!player.vehicle) {
+                this.displayDropoutBanner(player, DerbyGame.kDropoutReasonLeftVehicle);
                 dropouts.push(player);
-            else if (player.vehicle.position.z < this.#description_.settings.lowerAltitudeLimit)
+
+            } else if (player.vehicle.position.z < this.#description_.settings.lowerAltitudeLimit) {
+                this.displayDropoutBanner(player, DerbyGame.kDropoutReasonTooLow);
                 dropouts.push(player);
+            }
         }
 
         if (dropouts.length)
@@ -130,8 +141,39 @@ export class DerbyGame extends VehicleGame {
             dropoutsWithScore.pop();
 
         // Drop out each of the |dropouts| as losers. You can't win if you fall down :)
-        for (const [ player ] of dropoutsWithScore)
+        for (const [ player ] of dropoutsWithScore) {
+            if (expired)
+                this.displayDropoutBanner(player, DerbyGame.kDropoutReasonTooLate);
+
             this.playerLost(player);
+        }
+    }
+
+    // Displays a banner to the |player| as they dropped out of the derby because of the given
+    // |reason|, which has to be one of the constants in this class.
+    displayDropoutBanner(player, reason) {
+        let message = null;
+
+        switch (reason) {
+            case DerbyGame.kDropoutReasonLeftVehicle:
+                message = 'you left your vehicle';
+                break;
+
+            case DerbyGame.kDropoutReasonTooLate:
+                message = 'you ran out of time';
+                break;
+
+            case DerbyGame.kDropoutReasonTooLow:
+                message = format('you fell off the %s derby', this.#description_.name);
+                break;
+        }
+
+        if (message) {
+            Banner.displayForPlayer(player, {
+                title: 'knocked out!',
+                message,
+            });
+        }
     }
 
     async onPlayerRemoved(player) {

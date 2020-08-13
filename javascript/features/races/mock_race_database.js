@@ -10,13 +10,13 @@ export class MockRaceDatabase extends RaceDatabase {
         return [
             {
                 race_id: 1 /* Coastal Conduit */,
-                result_time: 123,
+                result_time: 123000,
                 username: 'Badeend',
                 color: 0,
             },
             {
                 race_id: 2 /* Los Santos Blown Bikes */,
-                result_time: 234,
+                result_time: 234000,
                 username: 'Lithirm',
                 color: -15428694,
             }
@@ -27,7 +27,7 @@ export class MockRaceDatabase extends RaceDatabase {
         return [
             {
                 race_id: 1 /* Coastal Conduit */,
-                result_time: 128,
+                result_time: 128000,
             }
         ];
     }

@@ -54,7 +54,7 @@ export class GameDescription {
     countdownCamera_ = null;
     countdownView_ = null;
 
-    command_ = null;
+    commandFn_ = null;
     continuous_ = false;
     environment_ = null;
     maximumPlayers_ = kDefaultMaximumPlayers;
@@ -123,7 +123,11 @@ export class GameDescription {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
-    get command() { return this.command_; }
+    get command() { return this.commandFn_(new Map()) ?? null; }
+
+    // Gets the function through which the command name can be generated. May only be provided when
+    // |command| is not given, and will be used as a substitute for ID-based games.
+    get commandFn() { return this.commandFn_; }
 
     // Gets whether this is a continuous game, rather than one that requires sign-up.
     get continuous() { return this.continuous_; }
@@ -328,6 +332,18 @@ export class GameDescription {
                 throw new Error(`[${this.name}] The game's command must be given as a string.`);
             
             this.command_ = options.command;
+        }
+
+        if (options.hasOwnProperty('commandFn')) {
+            if (options.hasOwnProperty('command'))
+                throw new Error(`[${this.name}] command and commandFn are mutually exclusive.`);
+
+            if (typeof options.commandFn !== 'function')
+                throw new Error(`[${this.name}] The game's command function must be.. a function.`);
+
+            this.commandFn_ = options.commandFn;
+        } else {
+            this.commandFn_ = () => this.command_;
         }
 
         if (options.hasOwnProperty('continuous')) {

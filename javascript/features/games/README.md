@@ -82,6 +82,7 @@ Option              | Description
 Option              | Description
 --------------------|--------------
 `command`           | Name of the command through which the game can be started. Optional.
+`commandFn`         | Function that can be called to determine what the public command should be.
 `continuous`        | Whether this is a continuous game rather than one requiring sign-up. (Default is `false`.)
 `minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
 `maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)

@@ -80,7 +80,7 @@ export class VehicleGame extends GameBase {
         const boundaries = this.#description_.environment.boundaries;
         if (boundaries) {
             player.setWorldBoundaries(
-                boundaries.maximumX, boundaries.minimumX, boundaries.maximumY, boundaries.minimumY);
+                boundaries.maxX, boundaries.minX, boundaries.maxY, boundaries.minY);
         }
 
         // (b) Freeze the player, preventing them from falling off the map.
@@ -131,5 +131,9 @@ export class VehicleGame extends GameBase {
 
             this.#playerVehicle_.delete(player);
         }
+
+        // (3) Reset their world boundaries if we changed them for the game.
+        if (this.#description_.environment.boundaries)
+            player.resetWorldBoundaries();
     }
 }

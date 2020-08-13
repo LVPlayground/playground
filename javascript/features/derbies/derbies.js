@@ -45,7 +45,8 @@ export default class Derbies extends Feature {
     // entry point for derbies will still be the "/derby" command manually provided.
     registerGame() {
         this.games_().registerGame(DerbyGame, {
-            name: 'Derby',  // TODO: have a name generator
+            name: Derbies.prototype.generateDerbyName.bind(this),
+            commandFn: Derbies.prototype.generateDerbyCommand.bind(this),
             goal: 'Be the last person standing in a vehicle war.',
 
             minimumPlayers: 1,
@@ -58,6 +59,22 @@ export default class Derbies extends Feature {
             ],
 
         }, this.registry_);
+    }
+
+    // Generates the command through which a particular derby can be started, information which will
+    // be conveyed through the |settings| argument. NULL when absent.
+    generateDerbyCommand(settings) {
+        const description = this.registry_.getDescription(settings.get('game/description_id'));
+        return description ? `derby ${description.id}`
+                           : null;
+    }
+
+    // Generates the name for the derby described by the given |settings|. It depends on the game's
+    // ID that's contained within the |settings|, which should be known to the registry.
+    generateDerbyName(settings) {
+        const description = this.registry_.getDescription(settings.get('game/description_id'));
+        return description ? description.name
+                           : 'Derby';
     }
 
     // ---------------------------------------------------------------------------------------------

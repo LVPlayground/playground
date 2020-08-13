@@ -288,7 +288,7 @@ export class GameCommands {
 
         // Append the registration's ID after the command that the player has to enter in case there
         // are multiple active sign-ups, so that interested people can join the right game.
-        let command = description.command;
+        let command = description.commandFn(settings);
 
         if (pendingPublicRegistrations > 0)
             command += ` ${registration.id}`;

@@ -106,7 +106,6 @@ export const kSettingList = [
     new Setting('limits', 'throttle_teleportation_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds players have to wait between teleportations.'),
 
     /** Playground related settings */
-    new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
     new Setting('playground', 'enable_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('playground', 'collectable_hint_price_min', Setting.TYPE_NUMBER, 25000, 'Minimum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_hint_price_max', Setting.TYPE_NUMBER, 5000000, 'Maximum price for a hint towards the closest collectable'),
@@ -138,6 +137,11 @@ export const kSettingList = [
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),
     new Setting('radio', 'restricted_to_vehicles', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be restricted to players in vehicles?'),
+
+    /** Server-level commands */
+    new Setting('server', 'auto_restart_enabled', Setting.TYPE_BOOLEAN, false, 'Whether the server should automatically restart itself.'),
+    new Setting('server', 'auto_restart_interval_hours', Setting.TYPE_NUMBER, 24, 'Minimum interval between automatic restarts of the server.'),
+    new Setting('server', 'beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
 
     /** Vehicle related settings */
     new Setting('vehicles', 'drifting_enabled', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),

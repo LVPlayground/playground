@@ -88,7 +88,7 @@ export class AccountCommands {
             sessions: this.getSettingValue('session_visibility'),
 
             // Special case: Beta-server features for amending otherwise immutable settings.
-            beta: this.settings_().getValue('playground/enable_beta_features'),
+            beta: this.settings_().getValue('server/beta_features'),
         };
 
         const dialog = new Menu('Account management');
@@ -689,7 +689,7 @@ export class AccountCommands {
     // can sign up to create an account. When beta functionality is enabled, a brief registration
     // flow will be started immediately instead.
     async onRegisterCommand(player) {
-        if (!this.settings_().getValue('playground/enable_beta_features')) {
+        if (!this.settings_().getValue('server/beta_features')) {
             if (!this.registrationDialogCache_)
                 this.registrationDialogCache_ = JSON.parse(readFile(kRegistrationFile));
 

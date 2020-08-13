@@ -556,7 +556,7 @@ describe('AccountCommands', (it, beforeEach) => {
     });
 
     it('should change /register depending on whether beta features are enabled', async (assert) => {
-        settings.setValue('playground/enable_beta_features', false);
+        settings.setValue('server/beta_features', false);
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
 
@@ -565,7 +565,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 0);
 
         // Now enable beta features, which will change /register to actually create accounts.
-        settings.setValue('playground/enable_beta_features', true);
+        settings.setValue('server/beta_features', true);
 
         gunther.respondToDialog({ inputtext: '1234' /* insecure */ }).then(
             () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
@@ -584,7 +584,7 @@ describe('AccountCommands', (it, beforeEach) => {
     });
 
     it('should enable players on the beta server to change their account', async (assert) => {
-        settings.setValue('playground/enable_beta_features', true);
+        settings.setValue('server/beta_features', true);
 
         gunther.name = 'Ricky92';  // Gunther has special behaviour
 

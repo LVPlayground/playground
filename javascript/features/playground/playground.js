@@ -37,7 +37,7 @@ export default class Playground extends Feature {
         const settings = this.defineDependency('settings');
 
         // Responsible for driving persistent effects, such as the Free VIP feature.
-        this.manager_ = new PlaygroundManager(settings);
+        this.manager_ = new PlaygroundManager(this.announce_, settings);
 
         // The Permission Delegate provides specialized behaviour for the command system's access
         // system, which allows this feature to create overrides and exceptions.

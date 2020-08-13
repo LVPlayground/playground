@@ -139,7 +139,6 @@ function createCountdownElement() {
         text: '_',
 
         alignment: TextDraw.kAlignCenter,
-
         backgroundColor: Color.fromNumberRGBA(255),
         boxColor: kRegularBackgroundColor,
         box: true,

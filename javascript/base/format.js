@@ -23,7 +23,10 @@ const kNumberPlaceholders = new Set('dfi$'.split(''));
 
 // Regular expression used to fully understand the syntax of a placeholder.
 const kPlaceholderExpression =
-    /^(?:\{([^\}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
+    /^(?:\{(\\\}|[^\}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
+
+// Regular expression for parsing the specifier part of a placeholder.
+const kSpecifierExpression = /^(\d+)|(\w+)$/;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -117,7 +120,6 @@ export function format(message, ...parameters) {
 
         const negative = kNumberPlaceholders.has(format.type) && parameter < 0;
 
-        let prefix = null;
         let value = null;
 
         switch (format.type) {
@@ -271,9 +273,21 @@ export function parseMessageToFormattingList(message) {
 
         let formatting = { type: match[7] };
 
+        // The first matching value is either the index of the parameter, its name when named
+        // substitutions are used, and potentially linguistical formatting modifiers.
+        if (match[1] !== undefined) {
+            const specifierMatches = kSpecifierExpression.exec(match[1]);
+            if (!specifierMatches)
+                throw new Error(`Unparseable specifier in placeholder found: "${message}".`);
+
+            if (specifierMatches[1] !== undefined)
+                formatting.index = parseInt(specifierMatches[1], 10);
+            else if (specifierMatches[2] !== undefined)
+                formatting.property = specifierMatches[2];
+        }
+
         // Append each of the other parameter values in a sanitized way. These properties will be
         // absent on placeholder entries where they haven't been specified.
-        if (match[1] !== undefined) formatting.index = parseInt(match[1], 10);
         if (match[2] !== undefined) formatting.sign = true;
         if (match[3] !== undefined) formatting.padding = match[3].replace(/^[']/, '');
         if (match[4] !== undefined) formatting.leftAlign = true;

@@ -200,5 +200,13 @@ describe('format', it => {
             { type: '$', index: 0 },
             { type: '📝', text: ' c' },
         ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{name}s b %{price}$ c`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', property: 'name' },
+            { type: '📝', text: ' b ' },
+            { type: '$', property: 'price' },
+            { type: '📝', text: ' c' },
+        ]);
     });
 });

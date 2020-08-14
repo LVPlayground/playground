@@ -40,6 +40,7 @@ describe('format', it => {
         assert.equal(format('[%d]', -10000), '[-10,000]');
         assert.equal(format('[%+d]', 10000), '[+10,000]');
         assert.equal(format('[%{1}d]', 10, -10), '[-10]');
+        assert.equal(format('[%{value}d]', { value: -10 }), '[-10]');
 
         // Placeholder: %f
         assert.equal(format('[%f]', 1), '[1]');
@@ -73,6 +74,7 @@ describe('format', it => {
         assert.equal(format('[%+f]', 10000.25), '[+10,000.25]');
         assert.equal(format('[%f]', -10000.56432189), '[-10,000.56]');
         assert.equal(format('[%{1}f]', 25, -10000.56432189), '[-10,000.56]');
+        assert.equal(format('[%{value}f]', { value: -10000.56432189 }), '[-10,000.56]');
 
         // Placeholder: %s
         assert.equal(format('[%s]', ''), '[]');
@@ -90,6 +92,7 @@ describe('format', it => {
         assert.equal(format(`[%'a5.3s]`, 'banana'), '[aaban]');
         assert.equal(format(`[%'a-5.3s]`, 'banana'), '[banaa]');
         assert.equal(format(`[%{1}'a-5.3s]`, 'banana', 'jip'), '[jipaa]');
+        assert.equal(format(`[%{value}'a-5.3s]`, { value: 'jip' }), '[jipaa]');
 
         // Placeholder: %x
         assert.equal(format('[%x]', 15), '[f]');
@@ -125,6 +128,8 @@ describe('format', it => {
         assert.equal(format('%d %s', 255, 'Foo Bar'), '255 Foo Bar');
         assert.equal(format('%{0}d %{1}s', 255, 'Foo Bar'), '255 Foo Bar');
         assert.equal(format('%{1}d %{0}s', 'Foo Bar', 255), '255 Foo Bar');
+        assert.equal(
+            format('%{first}d %{second}s', { first: 255, second: 'Foo Bar' }), '255 Foo Bar');
     });
 
     it('it able to parse messages to formatting lists', assert => {

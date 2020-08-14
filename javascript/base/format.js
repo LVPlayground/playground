@@ -111,6 +111,15 @@ export function format(message, ...parameters) {
             
             parameter = originalParameters[format.index];
 
+        } else if (format.hasOwnProperty('property')) {
+            if (originalParameters.length !== 1 || typeof originalParameters[0] !== 'object')
+                throw new Error(`Invalid parameter given for property substitution: "${message}".`);
+
+            if (!originalParameters[0].hasOwnProperty(format.property))
+                throw new Error(`Invalid property given for substitution: "${message}".`);
+
+            parameter = originalParameters[0][format.property];
+
         } else if (format.type !== kTypePassthrough) {
             if (!parameters.length)
                 throw new Error(`Not enough substitution parmeters supplied: "${message}".`);

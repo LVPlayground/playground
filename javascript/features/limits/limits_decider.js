@@ -9,6 +9,7 @@ import { format } from 'base/format.js';
 import { timeDifferenceToString } from 'base/time.js';
 
 import * as requirements from 'features/limits/requirements.js';
+import { kDeferredEventReadIntervalMs } from 'components/events/deferred_event_manager.js';
 
 // Formats the difference in |seconds| to a string. On top of `timeDifferenceToString`, we'll also
 // remove leading "1"s to say "once per minute" instead of "once per 1 minute".
@@ -233,12 +234,16 @@ export class LimitsDecider extends PlayerEventObserver {
     // PlayerManager listeners
     // ---------------------------------------------------------------------------------------------
 
-    // Called when a player has respawned in the world. Various throttles will be reset.
+    // Called when a player has respawned in the world. Various throttles will be reset. We wait for
+    // the |kDeferredEventReadIntervalMs| cycle to have passed, as shot events are delivered using
+    // deferred events, which could thus race with the realtime `onPlayerSpawn`.
     onPlayerSpawn(player) {
-        this.deathmatchDamageIssuedTime_.delete(player);
-        this.deathmatchDamageTakenTime_.delete(player);
-        this.deathmatchWeaponShotTime_.delete(player);
-        this.throttles_.delete(player);
+        wait(kDeferredEventReadIntervalMs).then(() => {
+            this.deathmatchDamageIssuedTime_.delete(player);
+            this.deathmatchDamageTakenTime_.delete(player);
+            this.deathmatchWeaponShotTime_.delete(player);
+            this.throttles_.delete(player);
+        });
     }
 
     // ---------------------------------------------------------------------------------------------

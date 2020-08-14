@@ -6,6 +6,7 @@ import { format } from 'base/format.js';
 import { formatTimeDifference } from 'features/limits/limits_decider.js';
 
 import * as throttles from 'features/limits/throttles.js';
+import { kDeferredEventReadIntervalMs } from 'components/events/deferred_event_manager.js';
 
 describe('Limits', (it, beforeEach) => {
     let decider = null;
@@ -89,17 +90,23 @@ describe('Limits', (it, beforeEach) => {
         gunther.shoot();
         gunther.respawn();
 
+        await server.clock.advance(kDeferredEventReadIntervalMs);
+
         assert.isNull(decider.processDeathmatchRequirement(
             gunther, server.clock.monotonicallyIncreasingTime()));
 
         gunther.shoot({ target: russell });
         gunther.respawn();
 
+        await server.clock.advance(kDeferredEventReadIntervalMs);
+
         assert.isNull(decider.processDeathmatchRequirement(
             gunther, server.clock.monotonicallyIncreasingTime()));
 
         russell.shoot({ target: gunther });
         gunther.respawn();
+
+        await server.clock.advance(kDeferredEventReadIntervalMs);
 
         assert.isNull(decider.processDeathmatchRequirement(
             gunther, server.clock.monotonicallyIncreasingTime()));

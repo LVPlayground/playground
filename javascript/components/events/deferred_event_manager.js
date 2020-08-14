@@ -7,7 +7,7 @@ import { SAMPCACEventObserver } from 'components/events/sampcac_event_observer.j
 import { Vector } from 'base/vector.js';
 
 // Every how many milliseconds should pending deferred events be read from the server.
-const kDeferredEventReadIntervalMs = 40;  // 25Hz
+export const kDeferredEventReadIntervalMs = 40;  // 25Hz
 
 // Responsible for pulling dispatched events from the PlaygroundJS plugin, and delivering those to
 // parts of the gamemode instead. This acts as a severe performance improvement, as it allows the

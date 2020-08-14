@@ -414,8 +414,11 @@ export class Player extends Supplementable {
     }
 
     sendMessage(message, ...args) {
-        if (args.length)
+        if (typeof message === 'function') {
+            message = message({ params: args });
+        } else if (args.length) {
             message = format(message, ...args);
+        }
 
         // Escape all percentage signs with double percentage signs, as the |message| parameter of
         // SendClientMessage is ran through vsprintf within the SA-MP server, which could crash.

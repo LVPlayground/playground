@@ -213,5 +213,23 @@ describe('format', it => {
             { type: '$', property: 'price' },
             { type: '📝', text: ' c' },
         ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{name, =0(foo) =other(bar)}s b`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', property: 'name', options: { '0': 'foo', 'other': 'bar' } },
+            { type: '📝', text: ' b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{1, =0(foo) =other(bar)}s b`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', index: 1, options: { '0': 'foo', 'other': 'bar' } },
+            { type: '📝', text: ' b' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{=0(foo) =other(bar)}s b`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', options: { '0': 'foo', 'other': 'bar' } },
+            { type: '📝', text: ' b' },
+        ]);
     });
 });

@@ -19,14 +19,17 @@ const kNumberFormat = new Intl.NumberFormat('en-US', {
 });
 
 // Placeholder types (single characters) that expect a number value to be given.
-const kNumberPlaceholders = new Set('dfi$'.split(''));
+const kNumberPlaceholders = new Set([ 'd', 'f', 'i', '$' ]);
 
 // Regular expression used to fully understand the syntax of a placeholder.
 const kPlaceholderExpression =
     /^(?:\{(\\\}|[^\}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
 
 // Regular expression for parsing the specifier part of a placeholder.
-const kSpecifierExpression = /^(\d+)|(\w+)$/;
+const kSpecifierExpression = /^(((\d+)|(\w+))(\s*,\s*)?)?((=[^\(]+\([^\)]+\)\s*)*)?$/;
+
+// Regular expression for parsing the options enclosed in a particular specifier.
+const kSpecifierOptionsExpression = /(=([^\(]+)\(([^\)]+)\))/g;
 
 // Type of substitution that represents a literal passthrough for some text.
 const kTypePassthrough = '📝';
@@ -57,7 +60,8 @@ const kTypePassthrough = '📝';
 //     1. An optional parameter index, when deriving from the regular order. These can be specified
 //        in JavaScript array-index-like syntax:
 //
-//        format('[%{1}d]', 10, 20);   -->  '[20]'
+//        format('[%{1}d]', 10, 20);                -->  '[20]'
+//        format('[%{name}s]', { name: 'Fritz' });  --> '[Fritz]'
 //
 //     2. An optional `+` sign that will force the plus sign to be displayed on numeric values,
 //        which is omitted by default.
@@ -289,10 +293,18 @@ export function parseMessageToFormattingList(message) {
             if (!specifierMatches)
                 throw new Error(`Unparseable specifier in placeholder found: "${message}".`);
 
-            if (specifierMatches[1] !== undefined)
-                formatting.index = parseInt(specifierMatches[1], 10);
-            else if (specifierMatches[2] !== undefined)
-                formatting.property = specifierMatches[2];
+            if (specifierMatches[3] !== undefined)
+                formatting.index = parseInt(specifierMatches[3], 10);
+            else if (specifierMatches[4] !== undefined)
+                formatting.property = specifierMatches[4];
+
+            if (specifierMatches[6] !== undefined) {
+                formatting.options = {};
+
+                let optionMatches = null;
+                while (optionMatches = kSpecifierOptionsExpression.exec(specifierMatches[6]))
+                    formatting.options[optionMatches[2]] = optionMatches[3];
+            }
         }
 
         // Append each of the other parameter values in a sanitized way. These properties will be

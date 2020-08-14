@@ -131,7 +131,7 @@ export class AccountCommands {
         // accessible to administrators and Management members.
         if (features.record) {
             dialog.addItem(
-                message.account_label_view_record,
+                messages.account_label_view_record,
                 AccountCommands.prototype.displayRecord.bind(this, currentPlayer, targetPlayer));
         }
 

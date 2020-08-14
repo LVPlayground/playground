@@ -9,9 +9,15 @@ import { format } from 'base/format.js';
 // both localization and formatting as appropriate.
 export class Messages {
     #messages_ = null;
+    #placeholders_ = null;
 
     constructor() {
         this.#messages_ = new Map();
+        this.#placeholders_ = [
+            [ '@error', '{DC143C}Error{FFFFFF}:' ],
+            [ '@success', '{33AA33}Success{FFFFFF}:' ],
+            [ '@usage', '{FF9900}Usage{FFFFFF}:' ],
+        ];
     }
 
     // Gets an iterator that can be used to iterate over this collection, as [ [key, value] ].
@@ -51,7 +57,11 @@ export class Messages {
         if (!this.#messages_.has(message))
             throw new Error(`Invalid message supplied: ${message}`);
 
-        return format(this.#messages_.get(message), ...params);
+        let text = this.#messages_.get(message);
+        for (const [ placeholder, replacement ] of this.#placeholders_)
+            text = text.replaceAll(placeholder, replacement);
+
+        return format(text, ...params);
     }
 
     // Removes an individual |message| from |this| collection. Removes it both from our internal

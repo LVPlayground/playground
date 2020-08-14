@@ -237,8 +237,15 @@ export class DirectCommunicationCommands {
 
             if (!target || target.name !== previousMessage.name) {
                 for (const otherPlayer of server.playerManager) {
-                    if (otherPlayer.account.userId !== previousMessage.userId)
+                    if (previousMessage.userId) {
+                        if (otherPlayer.account.userId !== previousMessage.userId)
+                            continue;
+
+                        /** the |otherPlayer| shares an account with |previousMessage| */
+
+                    } else if (otherPlayer.name !== previousMessage.name) {
                         continue;
+                    }
 
                     previousMessage.id = otherPlayer.id;
                     previousMessage.name = otherPlayer.name;

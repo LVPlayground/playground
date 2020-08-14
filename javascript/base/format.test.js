@@ -130,6 +130,13 @@ describe('format', it => {
         assert.equal(format('%{1}d %{0}s', 'Foo Bar', 255), '255 Foo Bar');
         assert.equal(
             format('%{first}d %{second}s', { first: 255, second: 'Foo Bar' }), '255 Foo Bar');
+
+        // Options in formats
+        assert.equal(format('[%{=0(zero) =1(one)}d]', 0), '[zero]');
+        assert.equal(format('[%{=0(zero) =1(one)}d]', 1), '[one]');
+        assert.equal(format('[%{=0(zero) =1(one)}d]', 2), '[2]');
+        assert.equal(format('[%{=0(zero) =1(one)}d]', 1234), '[1,234]');
+        assert.equal(format('[%{=other(yes)}d]', 1), '[yes]');
     });
 
     it('it able to parse messages to formatting lists', assert => {

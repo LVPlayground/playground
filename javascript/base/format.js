@@ -135,60 +135,72 @@ export function format(message, ...parameters) {
 
         let value = null;
 
-        switch (format.type) {
-            case kTypePassthrough:
-                ropes.push(format.text);
-                break;
-            
-            case 'b':
-                value = parseInt(parameter, 10).toString(2);
-                break;
+        // If the |format| has options defined, we might have to substitute the actual value with
+        // something that the formatting rules defined, e.g. for plural rules.
+        if (format.hasOwnProperty('options')) {
+            const textualValue = String(parameter);
+            if (format.options.hasOwnProperty(textualValue))
+                value = format.options[textualValue];
+            if (format.options.hasOwnProperty('other'))
+                value = format.options.other;
+        }
 
-            case 'd':
-            case 'i':
-                value = kNumberFormat.format(parseInt(parameter, 10));
-                break;
-            
-            case 'f':
-                value = parseFloat(parameter);
-                if (Number.isNaN(value)) {
-                    value = 'NaN';
-                } else if (format.hasOwnProperty('precision')) {
-                    value = new Intl.NumberFormat('en-US', {
-                        maximumFractionDigits: format.precision
-                    }).format(value);
-                } else {
-                    value = kNumberFormat.format(value);
-                }
+        if (!value) {
+            switch (format.type) {
+                case kTypePassthrough:
+                    ropes.push(format.text);
+                    break;
 
-                break;
+                case 'b':
+                    value = parseInt(parameter, 10).toString(2);
+                    break;
 
-            case 'o':
-                value = parseInt(parameter, 10).toString(8);
-                break;
+                case 'd':
+                case 'i':
+                    value = kNumberFormat.format(parseInt(parameter, 10));
+                    break;
 
-            case 's':
-                if (format.hasOwnProperty('precision'))
-                    value = parameter.substring(0, format.precision);
-                else
-                    value = parameter;
+                case 'f':
+                    value = parseFloat(parameter);
+                    if (Number.isNaN(value)) {
+                        value = 'NaN';
+                    } else if (format.hasOwnProperty('precision')) {
+                        value = new Intl.NumberFormat('en-US', {
+                            maximumFractionDigits: format.precision
+                        }).format(value);
+                    } else {
+                        value = kNumberFormat.format(value);
+                    }
 
-                break;
-            
-            case 'x':
-                value = (parseInt(parameter, 10) >>> 0).toString(16);
-                break;
-            
-            case 'X':
-                value = (parseInt(parameter, 10) >>> 0).toString(16).toUpperCase();
-                break;
+                    break;
 
-            case '$':
-                value = kCurrencyFormat.format(parseInt(parameter, 10));
-                break;
+                case 'o':
+                    value = parseInt(parameter, 10).toString(8);
+                    break;
 
-            default:
-                throw new Error(`Invalid formatting type found: ${format.type}.`);
+                case 's':
+                    if (format.hasOwnProperty('precision'))
+                        value = parameter.substring(0, format.precision);
+                    else
+                        value = parameter;
+
+                    break;
+
+                case 'x':
+                    value = (parseInt(parameter, 10) >>> 0).toString(16);
+                    break;
+
+                case 'X':
+                    value = (parseInt(parameter, 10) >>> 0).toString(16).toUpperCase();
+                    break;
+
+                case '$':
+                    value = kCurrencyFormat.format(parseInt(parameter, 10));
+                    break;
+
+                default:
+                    throw new Error(`Invalid formatting type found: ${format.type}.`);
+            }
         }
 
         // If a |value| has been given then we're dealing with a substituted value, rather than a

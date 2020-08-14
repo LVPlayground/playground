@@ -75,7 +75,9 @@ export class AnnounceManager {
     // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
     // which is common infrastructure for user-visible text.
     announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
-        if (args.length)
+        if (typeof message === 'function')
+            message = message(null, ...args);
+        else if (args.length)
             message = format(message, ...args);
 
         const formattedMessage = format(Message.ANNOUNCE_ADMINISTRATORS, message);

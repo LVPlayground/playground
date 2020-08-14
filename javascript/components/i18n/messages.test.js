@@ -15,13 +15,13 @@ describe('Messages', it => {
         assert.isTrue(messages.hasOwnProperty('testing_message'));
         assert.typeOf(messages.testing_message, 'function');
 
-        assert.equal(messages.testing_message({ params: [ 'world' ] }), 'Hello, world!');
+        assert.equal(messages.testing_message(null, 'world'), 'Hello, world!');
 
         const updatedMessages = messages.extend({
             testing_message: 'Howdy, %s!',
         });
 
         assert.strictEqual(messages, updatedMessages);
-        assert.equal(messages.testing_message({ params: [ 'world' ] }), 'Howdy, world!');
+        assert.equal(messages.testing_message(null, 'world'), 'Howdy, world!');
     });
 });

@@ -349,7 +349,9 @@ export class MockPlayer extends Player {
     // Sends |message| to the player. It will be stored in the local messages array and can be
     // retrieved through the |messages| getter.
     sendMessage(message, ...args) {
-        if (args.length)
+        if (typeof message === 'function')
+            message = message(null, ...args);
+        else if (args.length)
             message = format(message, ...args);
 
         if (message.length <= 144) // SA-MP-implementation does not send longer messages

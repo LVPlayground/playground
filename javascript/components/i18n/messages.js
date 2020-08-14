@@ -44,7 +44,7 @@ export class Messages {
 
     // Formats the given |message|, substituting the |params| per the format() syntax defined in
     // //base/format.js. The text will be retrieved from our local database.
-    format(message, { params = [] } = {}) {
+    format(message, options, ...params) {
         if (!this.#messages_.has(message))
             throw new Error(`Invalid message supplied: ${message}`);
 
@@ -62,5 +62,5 @@ export class Messages {
     }
 }
 
-// Exports the global `messages` object, used for all messages defined on the server.
-export const messages = new Messages();
+// Exports the global `globalMessages` object, used for all messages defined on the server.
+export const globalMessages = new Messages();

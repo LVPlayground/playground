@@ -9,9 +9,9 @@ to indicate its purpose. In such a file, you're expected to register the message
 to your component or feature. You do this by defining them as an object:
 
 ```javascript
-import { messages } from 'components/i18n/messages.js';
+import { globalMessages } from 'components/i18n/messages.js';
 
-export const messages = messages.extend({
+export const messages = globalMessages.extend({
     feature_message_name: 'Hi %{name}s, how are you doing?',
 });
 ```

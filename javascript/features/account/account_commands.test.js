@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { messages } from 'features/account/account.messages.js';
+
 describe('AccountCommands', (it, beforeEach) => {
     let commands = null;
     let database = null;
@@ -203,8 +205,8 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, 'Gunther', gunther.id,
-                           gunther.name));
+            messages.account_admin_nickname_changed(
+                null, { player: { id: 0, name: 'Gunther' }, nickname: 'NewNick' }));
     });
 
     it('should enable players to change their password', async (assert) => {
@@ -302,7 +304,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, 'Gunther', gunther.id));
+            messages.account_admin_password_changed(null, { player: gunther }));
     });
 
     it('should enable VIPs to see a list of their aliases', async (assert) => {
@@ -400,8 +402,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_ALIAS_CREATED, gunther.name, gunther.id,
-                           'NewNick'));
+            messages.account_admin_alias_created(null, { player: gunther, alias: 'NewNick' }));
 
         settings.setValue('account/vip_alias_limit_player', 2);
 
@@ -459,8 +460,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_ALIAS_DELETED, gunther.name, gunther.id,
-                           'WoodPecker'));
+            messages.account_admin_alias_deleted(null, { player: gunther, alias: 'WoodPecker' }));
     });
 
     it('should be able to show information about an account', async (assert) => {
@@ -580,7 +580,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_CREATED, gunther.name, gunther.id));
+            messages.account_admin_registered(null, { player: gunther }));
     });
 
     it('should enable players on the beta server to change their account', async (assert) => {

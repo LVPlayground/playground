@@ -11,6 +11,7 @@ import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { formatDate, fromNow } from 'base/time.js';
 import { format } from 'base/format.js';
+import { messages } from 'features/account/account.messages.js';
 import { random } from 'base/random.js';
 
 // File in which the registration message has been stored.
@@ -74,7 +75,7 @@ export class AccountCommands {
         const player = targetPlayer || currentPlayer;
 
         if (!player.account.isRegistered()) {
-            currentPlayer.sendMessage(Message.ACCOUNT_NOT_REGISTERED, player.name);
+            currentPlayer.sendMessage(messages.account_not_registered, { player });
             return;
         }
 
@@ -151,7 +152,7 @@ export class AccountCommands {
         }
 
         if (!dialog.hasItems()) {
-            currentPlayer.sendMessage(Message.ACCOUNT_NOT_AVAILABLE);
+            currentPlayer.sendMessage(messages.account_not_available);
             return;
         }
 
@@ -217,8 +218,10 @@ export class AccountCommands {
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, player.name, player.id, newNickname);
+        this.announce_().announceToAdministrators(messages.account_admin_nickname_changed, {
+            nickname: newNickname,
+            player,
+        });
 
         // Update the nickname of |player|. This will sync to Pawn as well.
         player.name = newNickname;
@@ -324,11 +327,14 @@ export class AccountCommands {
                     break;
             }
 
-            this.announce_().announceToAdministrators(
-                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED2, player.name, player.id, fakePassword);
+            this.announce_().announceToAdministrators(messages.account_admin_password_changed2, {
+                password: fakePassword,
+                player,
+            });
         } else {
-            this.announce_().announceToAdministrators(
-                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+            this.announce_().announceToAdministrators(messages.account_admin_password_changed, {
+                player
+            });
         }
 
         return alert(player, {
@@ -439,8 +445,10 @@ export class AccountCommands {
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_ALIAS_CREATED, player.name, player.id, newAlias);
+        this.announce_().announceToAdministrators(messages.account_admin_alias_created, {
+            alias: newAlias,
+            player,
+        });
 
         return alert(player, {
             title: 'Alias management',
@@ -486,8 +494,10 @@ export class AccountCommands {
         // Actually delete the |alias|, and inform administrators of this change.
         await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
 
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_ALIAS_DELETED, player.name, player.id, alias.nickname);
+        this.announce_().announceToAdministrators(messages.account_admin_alias_deleted, {
+            alias: alias.nickname,
+            player,
+        });
 
         return alert(player, {
             title: 'Alias management',
@@ -634,8 +644,10 @@ export class AccountCommands {
                     message: 'The level has been changed. They will now be force disconnected.'
                 });
 
-                this.announce_().announceToAdministrators(
-                    Message.ACCOUNT_ADMIN_LEVEL_CHANGED, player.name, player.id, targetLevel);
+                this.announce_().announceToAdministrators(messages.account_admin_level_changed, {
+                    level: targetLevel,
+                    player,
+                });
 
                 wait(1000).then(() => player.kick());
             };
@@ -665,9 +677,10 @@ export class AccountCommands {
                     message: 'The VIP status has been changed. They will now be force disconnected.'
                 });
 
-                this.announce_().announceToAdministrators(
-                    Message.ACCOUNT_ADMIN_VIP_CHANGED, player.name, player.id,
-                    targetSetting ? 'enabled' : 'disabled');
+                this.announce_().announceToAdministrators(messages.account_admin_vip_changed, {
+                    enabled: targetSetting ? 'enabled' : 'disabled',
+                    player,
+                });
 
                 wait(1000).then(() => player.kick());
             };
@@ -753,8 +766,7 @@ export class AccountCommands {
 
         // Tell other administrators about the new account, giving everyone some opportunity to know
         // what's going on. Not least of all the people watching through Nuwani.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_CREATED, player.name, player.id);
+        this.announce_().announceToAdministrators(messages.account_admin_registered, { player });
 
         await alert(player, {
             title: 'Register your account',

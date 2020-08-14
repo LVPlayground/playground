@@ -415,7 +415,7 @@ export class Player extends Supplementable {
 
     sendMessage(message, ...args) {
         if (typeof message === 'function') {
-            message = message({ params: args });
+            message = message(null, ...args);
         } else if (args.length) {
             message = format(message, ...args);
         }

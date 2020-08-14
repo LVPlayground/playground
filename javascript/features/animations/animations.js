@@ -8,6 +8,8 @@ import { Feature } from 'components/feature_manager/feature.js';
 import { Menu } from 'components/menu/menu.js';
 import { PlayerAnimation } from 'features/animations/player_animation.js';
 
+import { messages } from 'features/animations/animations.messages.js';
+
 // Configuration file that declaratively details how an animation should be executed.
 const kConfigurationFile = 'data/animations.json';
 
@@ -79,21 +81,24 @@ export default class Animations extends Feature {
 
         // Utility function to fix the pronoun in a particular message.
         const fixPronoun = message => {
-            return player === currentPlayer ? message
-                                            : message.replace('you', 'they')
-                                                     .replace('your', 'their');
+            return player === currentPlayer ? String(message)
+                                            : String(message).replace('you', 'they')
+                                                             .replace('your', 'their');
         };
 
         // (1a) Animations can only be started when the player is on-foot.
         if (player.state !== Player.kStateOnFoot) {
-            currentPlayer.sendMessage(fixPronoun(Message.ANIMATIONS_NOT_ON_FOOT));
+            currentPlayer.sendMessage(fixPronoun(messages.animations_not_on_foot));
             return;
         }
 
         // (1b) Animations can only been started when the player hasn't recently been fighting.
         const decision = this.limits_().canAnimate(player);
         if (!decision.isApproved()) {
-            currentPlayer.sendMessage(Message.ANIMATIONS_NOT_IDLE, fixPronoun(decision.toString()));
+            currentPlayer.sendMessage(messages.animations_not_idle, {
+                reason: fixPronoun(decision.toString())
+            });
+
             return;
         }
 
@@ -104,20 +109,25 @@ export default class Animations extends Feature {
         if (!targetPlayer || currentPlayer === targetPlayer)
             return;
 
-        currentPlayer.sendMessage(
-            Message.ANIMATIONS_EXECUTED, animation.command, targetPlayer.name, targetPlayer.id);
+        currentPlayer.sendMessage(messages.animations_executed, {
+            command: animation.command,
+            player: targetPlayer,
+        });
 
-        targetPlayer.sendMessage(
-            Message.ANIMATIONS_EXECUTE_BY_ADMIN, currentPlayer.name, currentPlayer.id,
-            animation.command);
+        targetPlayer.sendMessage(messages.animations_executed_fyi, {
+            command: animation.command,
+            player: currentPlayer,
+        });
 
         // (4) When required, announce that an animation was forced on a player.
         if (!this.settings_().getValue('abuse/announce_admin_animation'))
             return;
 
-        this.announce_().announceToAdministrators(
-            Message.ANIMATIONS_ADMIN_NOTICE, currentPlayer.name, currentPlayer.id,
-            animation.command, targetPlayer.name, targetPlayer.id);
+        this.announce_().announceToAdministrators(messages.animations_admin_notice, {
+            command: animation.command,
+            player: currentPlayer,
+            target: targetPlayer,
+        });
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -170,9 +180,9 @@ export default class Animations extends Feature {
         // Show a usage message if the passed |style| is not valid.
         if (!kDanceSpecialActions.has(style)) {
             if (player.isAdministrator())
-                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE_ADMIN);
+                player.sendMessage(messages.animations_dance_usage_admin);
             else
-                player.sendMessage(Message.ANIMATIONS_DANCE_USAGE);
+                player.sendMessage(messages.animations_dance_usage);
             return;
         }
 

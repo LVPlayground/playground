@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { messages } from 'features/animations/animations.messages.js';
+
 describe('Animations', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
@@ -66,13 +68,13 @@ describe('Animations', (it, beforeEach) => {
         assert.equal(russell.specialAction, Player.kSpecialActionNone);
         assert.equal(
             russell.messages[0],
-            Message.format(Message.ANIMATIONS_EXECUTED, 'piss', gunther.name, gunther.id));
+            messages.animations_executed(null, { command: 'piss', player: gunther }));
 
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.specialAction, Player.kSpecialActionPissing);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.ANIMATIONS_EXECUTE_BY_ADMIN, russell.name, russell.id, 'piss'));
+            messages.animations_executed_fyi(null, { command: 'piss', player: russell }));
     });
 
     it('should be able to make players dance', async (assert) => {

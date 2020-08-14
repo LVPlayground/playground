@@ -32,8 +32,11 @@ export class Messages {
         for (const [ message, text ] of Object.entries(messages)) {
             this.#messages_.set(message, text);
 
+            const messageFunction = Messages.prototype.format.bind(this, message);
+            messageFunction.toString = () => messageFunction.call(null, null);
+
             Object.defineProperty(this, message, {
-                value: Messages.prototype.format.bind(this, message),
+                value: messageFunction,
                 configurable: true,
                 writable: false,
             });

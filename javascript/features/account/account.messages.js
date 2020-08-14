@@ -20,6 +20,16 @@ export const messages = globalMessages.extend({
     account_admin_registered: '%{player.name}s (Id:%{player.id}d) has registered an account.',
     account_admin_vip_changed:
         '%{player.name}s (Id:%{player.id}d) has changed their VIP status to %{enabled}s.',
+
+    account_dialog_management: 'Account management',
+    account_label_change_nickname: 'Change your nickname',
+    account_label_change_password: 'Change your password',
+    account_label_manage_account: '{90CAF9}[Beta] Manage your account',
+    account_label_manage_aliases: 'Manage nickname aliases',
+    account_label_view_information: 'View account information',
+    account_label_view_record: 'View player record',
+    account_label_view_sessions: 'View recent sessions',
+
     account_not_available: '@error All account management options have been disabled.',
     account_not_registered:
         '@error %{player.name}s is not a registered account. Create yours on https://sa-mp.nl/!',

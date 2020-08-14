@@ -92,14 +92,14 @@ export class AccountCommands {
             beta: this.settings_().getValue('server/beta_features'),
         };
 
-        const dialog = new Menu('Account management');
+        const dialog = new Menu(messages.account_dialog_management);
 
         // Enables the |player| to change their nickname. This can only be done a limited number of
         // times in a specific time period. Changing their nickname will immediately apply. This
         // option may only be used when the |player| is the current player.
         if (features.changename && player === currentPlayer) {
             dialog.addItem(
-                'Change your nickname',
+                messages.account_label_change_nickname,
                 AccountCommands.prototype.changeNickname.bind(this, currentPlayer));
         }
 
@@ -108,7 +108,7 @@ export class AccountCommands {
         // when the |player| is the current player.
         if (features.changepass && player === currentPlayer) {
             dialog.addItem(
-                'Change your password',
+                messages.account_label_change_password,
                 AccountCommands.prototype.changePassword.bind(this, currentPlayer));
         }
 
@@ -116,14 +116,14 @@ export class AccountCommands {
         // names on top of their username, which they are able to control themselves.
         if (features.aliases) {
             dialog.addItem(
-                'Manage nickname aliases',
+                messages.account_label_manage_aliases,
                 AccountCommands.prototype.manageAliases.bind(this, currentPlayer, targetPlayer));
         }
 
         // Enables the |player| to see information about their account.
         if (features.information) {
             dialog.addItem(
-                'View account information',
+                messages.account_label_view_information,
                 AccountCommands.prototype.displayInfo.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -131,7 +131,7 @@ export class AccountCommands {
         // accessible to administrators and Management members.
         if (features.record) {
             dialog.addItem(
-                'View player record',
+                message.account_label_view_record,
                 AccountCommands.prototype.displayRecord.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -139,7 +139,7 @@ export class AccountCommands {
         // information that can be shown about the session.
         if (features.sessions) {
             dialog.addItem(
-                'View recent sessions',
+                messages.account_label_view_sessions,
                 AccountCommands.prototype.displaySessions.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -147,7 +147,7 @@ export class AccountCommands {
         // members. They can give themselves VIP rights, and change their own level.
         if (features.beta) {
             dialog.addItem(
-                '{90CAF9}[Beta] Manage your account',
+                messages.account_label_manage_account,
                 AccountCommands.prototype.displayManage.bind(this, currentPlayer, targetPlayer));
         }
 

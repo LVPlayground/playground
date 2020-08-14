@@ -16,6 +16,8 @@ describe('format', it => {
     });
     
     it('should be able to substitute formatting parameters', assert => {
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+
         assert.equal(format(''), '');
         assert.equal(format('Hello, world'), 'Hello, world');
         assert.equal(format('Hello, %%orld'), 'Hello, %orld');
@@ -131,6 +133,10 @@ describe('format', it => {
         assert.equal(
             format('%{first}d %{second}s', { first: 255, second: 'Foo Bar' }), '255 Foo Bar');
 
+        // Nested parameter names
+        assert.equal(
+            format('%{player.name}s (Id:%{player.id}d)', { player: gunther }), 'Gunther (Id:0)');
+
         // Options in formats
         assert.equal(format('[%{=0(zero) =1(one)}d]', 0), '[zero]');
         assert.equal(format('[%{=0(zero) =1(one)}d]', 1), '[one]');
@@ -215,15 +221,21 @@ describe('format', it => {
 
         assert.deepEqual(parseMessageToFormattingList(`a %{name}s b %{price}$ c`), [
             { type: '📝', text: 'a ' },
-            { type: 's', property: 'name' },
+            { type: 's', property: [ 'name' ] },
             { type: '📝', text: ' b ' },
-            { type: '$', property: 'price' },
+            { type: '$', property: [ 'price' ] },
             { type: '📝', text: ' c' },
+        ]);
+
+        assert.deepEqual(parseMessageToFormattingList(`a %{name.sub}s b`), [
+            { type: '📝', text: 'a ' },
+            { type: 's', property: [ 'name', 'sub' ] },
+            { type: '📝', text: ' b' },
         ]);
 
         assert.deepEqual(parseMessageToFormattingList(`a %{name, =0(foo) =other(bar)}s b`), [
             { type: '📝', text: 'a ' },
-            { type: 's', property: 'name', options: { '0': 'foo', 'other': 'bar' } },
+            { type: 's', property: [ 'name' ], options: { '0': 'foo', 'other': 'bar' } },
             { type: '📝', text: ' b' },
         ]);
 

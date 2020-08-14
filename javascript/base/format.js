@@ -26,7 +26,7 @@ const kPlaceholderExpression =
     /^(?:\{(\\\}|[^\}]+)\})?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([bdfoisxX\$])/;
 
 // Regular expression for parsing the specifier part of a placeholder.
-const kSpecifierExpression = /^(((\d+)|(\w+))(\s*,\s*)?)?((=[^\(]+\([^\)]+\)\s*)*)?$/;
+const kSpecifierExpression = /^(((\d+)|([\.\w]+))(\s*,\s*)?)?((=[^\(]+\([^\)]+\)\s*)*)?$/;
 
 // Regular expression for parsing the options enclosed in a particular specifier.
 const kSpecifierOptionsExpression = /(=([^\(]+)\(([^\)]+)\))/g;
@@ -119,10 +119,15 @@ export function format(message, ...parameters) {
             if (originalParameters.length !== 1 || typeof originalParameters[0] !== 'object')
                 throw new Error(`Invalid parameter given for property substitution: "${message}".`);
 
-            if (!originalParameters[0].hasOwnProperty(format.property))
-                throw new Error(`Invalid property given for substitution: "${message}".`);
+            parameter = originalParameters[0];
+            for (const component of format.property) {
+                if (typeof parameter !== 'object' || typeof parameter[component] === 'undefined') {
+                    throw new Error(
+                        `Invalid property path given for substitution ("${message}"): ${component}`)
+                }
 
-            parameter = originalParameters[0][format.property];
+                parameter = parameter[component];
+            }
 
         } else if (format.type !== kTypePassthrough) {
             if (!parameters.length)
@@ -308,7 +313,7 @@ export function parseMessageToFormattingList(message) {
             if (specifierMatches[3] !== undefined)
                 formatting.index = parseInt(specifierMatches[3], 10);
             else if (specifierMatches[4] !== undefined)
-                formatting.property = specifierMatches[4];
+                formatting.property = specifierMatches[4].split('.');
 
             if (specifierMatches[6] !== undefined) {
                 formatting.options = {};

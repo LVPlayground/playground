@@ -68,7 +68,7 @@ export class CheckpointManager {
     let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
 
-    resolver.reject();
+    resolver.resolve(false);
   }
 
   // Called when a player enters a checkpoint of |type_|. If we know about the checkpoint that is
@@ -84,7 +84,7 @@ export class CheckpointManager {
     let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
 
-    resolver.resolve();
+    resolver.resolve(true);
   }
 
   // Called when a player disconnects from the server. If a checkpoint is currently showing for them
@@ -97,7 +97,7 @@ export class CheckpointManager {
     let resolver = this.playerMap_.get(player);
     this.playerMap_.delete(player);
 
-    resolver.reject();
+    resolver.resolve(false);
   }
 
   dispose() {

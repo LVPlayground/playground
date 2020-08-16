@@ -5,6 +5,12 @@
 // The race checkpoint class encapsulates information about a checkpoint of the race type. Only a
 // single checkpoint can be displayed to a player at any given time.
 export class RaceCheckpoint {
+  static kTypeAirborneNormal = 3;
+  static kTypeAirborneFinish = 4;
+  static kTypeGroundedNormal = 0;
+  static kTypeGroundedFinish = 1;
+  static kTypeInvisible = 2;
+
   constructor(type, position, nextPosition, size) {
     this.type_ = type;
     this.position_ = position;
@@ -36,11 +42,3 @@ export class RaceCheckpoint {
     server.raceCheckpointManager.hideForPlayer(player, this);
   }
 };
-
-// The different kinds of race checkpoints. Both ground and airborne checkpoints have normal and
-// finish versions, whereas the "NO_MARKER" type will not create a marker on the map.
-RaceCheckpoint.GROUND_NORMAL = 0;
-RaceCheckpoint.GROUND_FINISH = 1;
-RaceCheckpoint.AIRBORNE_NORMAL = 3;
-RaceCheckpoint.AIRBORNE_FINISH = 4;
-RaceCheckpoint.NO_MARKER = 2;

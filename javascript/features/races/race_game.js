@@ -2,8 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { RaceCheckpoint } from 'components/checkpoints/race_checkpoint.js';
+import { RaceProgressionTracker } from 'features/races/race_progression_tracker.js';
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
+import { Vector } from 'base/vector.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
+import { VehicleModel } from 'entities/vehicle_model.js';
 import { Vehicle } from 'entities/vehicle.js';
 
 // Every how many milliseconds should infinite NOS be issued to vehicles? This roughly maps to the
@@ -26,6 +30,7 @@ export class RaceGame extends VehicleGame {
     static kNitrousInjectionTenShot = 10;
     static kNitrousInjectionInfinite = 100;
 
+    #airborne_ = null;
     #description_ = null;
 
     #infiniteHealth_ = null;
@@ -34,7 +39,9 @@ export class RaceGame extends VehicleGame {
     #nitrousInjection_ = RaceGame.kNitrousInjectionNone;
     #nitrousInjectionTime_ = null;
 
+    #playerCheckpoint_ = new WeakMap();
     #playerStartTime_ = new WeakMap();
+    #progression_ = new WeakMap();
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -44,13 +51,24 @@ export class RaceGame extends VehicleGame {
         if (!this.#description_)
             throw new Error(`Invalid race ID specified in ${this}.`);
 
-        // (2) Determine the level of nitrous injection that should be available to participants.
+        // (2) Determine whether this is a ground race or an air race.
+        if (!this.#description_.spawnPositions || !this.#description_.spawnPositions.length)
+            throw new Error(`Expected at least one spawn position to be defined for the race.`);
+
+        const vehicleModelId = this.#description_.spawnPositions[0].vehicleModelId;
+        const vehicleModel = VehicleModel.getById(vehicleModelId);
+        if (!vehicleModel)
+            throw new Error(`Invalid vehicle model supplied for a race: ${vehicleModelId}.`);
+
+        this.#airborne_ = vehicleModel.isAirborne();
+
+        // (3) Determine the level of nitrous injection that should be available to participants.
         if (this.#description_.settings.unlimitedNos)
             this.#nitrousInjection_ = RaceGame.kNitrousInjectionInfinite;
         else if ([ 1, 5, 10 ].includes(this.#description_.settings.nos))
             this.#nitrousInjection_ = this.#description_.settings.nos;
 
-        // (3) Determine if infinite health should be available to participants.
+        // (4) Determine if infinite health should be available to participants.
         this.#infiniteHealth_ = this.#description_.settings.disableVehicleDamage;
         this.#infiniteHealthTime_ = server.clock.monotonicallyIncreasingTime();
     }
@@ -91,6 +109,13 @@ export class RaceGame extends VehicleGame {
         // Disable their engine, so that they can't drive off while the countdown is active.
         vehicle.toggleEngine(/* engineRunning= */ false);
 
+        // Create the |player|'s progression tracker, and display the first checkpoint for them.
+        this.#progression_.set(player, new RaceProgressionTracker(
+            this.#description_.checkpoints, this.#description_.settings.laps));
+
+        this.updateCheckpoint(player);
+
+        // Display the start countdown for the |player|. They'll be getting ready...
         await StartCountdown.displayForPlayer(
             player, kStartCountdownSeconds, () => this.players.has(player));
 
@@ -106,6 +131,59 @@ export class RaceGame extends VehicleGame {
 
         // Store the time at which the |player| actually started to drive in the race.
         this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
+    }
+
+    // Updates and creates the checkpoint for the |player|. This tells them where to go, and also
+    // gives us the necessary metrics for determining where they are.
+    updateCheckpoint(player) {
+        const tracker = this.#progression_.get(player);
+        if (!tracker)
+            throw new Error(`There is no progression information for the |player|.`);
+
+        const checkpointInfo = tracker.getCurrentCheckpoint();
+        if (!checkpointInfo)
+            return;  // the |player| has finished the race
+
+        let checkpointType = null;
+
+        // Determine the type of checkpoint that should be shown. This depends on whether it's an
+        // airborne race, as well on whether the |checkpointInfo| is the final one.
+        if (this.#airborne_) {
+            checkpointType = checkpointInfo.final ? RaceCheckpoint.kTypeAirborneFinish
+                                                  : RaceCheckpoint.kTypeAirborneNormal;
+        } else {
+            checkpointType = checkpointInfo.final ? RaceCheckpoint.kTypeGroundedFinish
+                                                  : RaceCheckpoint.kTypeGroundedNormal;
+        }
+
+        // Create the checkpoint instance, and show it to the |player|. The checkpoint manager will
+        // already have deleted the previously showing checkpoint.
+        const checkpoint = new RaceCheckpoint(
+            checkpointType, checkpointInfo.position,
+            checkpointInfo.target ?? checkpointInfo.position, checkpointInfo.size);
+
+        checkpoint.displayForPlayer(player).then(entered => {
+            if (entered)
+                this.onPlayerEnterCheckpoint(player);
+        });
+
+        this.#playerCheckpoint_.set(player, checkpoint);
+    }
+
+    // Called when the |player| has entered a checkpoint that was created by this race. We split
+    // their progress, and determine whether there's a next checkpoint to show.
+    onPlayerEnterCheckpoint(player) {
+        const tracker = this.#progression_.get(player);
+        if (!tracker)
+            return;  // the may've just dropped out of the race
+
+        tracker.split();
+
+        // If the player hasn't finished, proceed to the next checkpoint and bail out.
+        if (tracker.progress < 1)
+            return this.updateCheckpoint(player);
+
+        // TODO: The |player| has finished the race.
     }
 
     async onTick() {
@@ -134,6 +212,15 @@ export class RaceGame extends VehicleGame {
             }
 
             this.#infiniteHealthTime_ = currentTime;
+        }
+    }
+
+    async onPlayerRemoved(player) {
+        await super.onPlayerRemoved(player);
+
+        if (this.#playerCheckpoint_.has(player)) {
+            this.#playerCheckpoint_.get(player).hideForPlayer(player);
+            this.#playerCheckpoint_.delete(player);
         }
     }
 }

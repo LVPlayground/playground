@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
+import { Vector } from 'base/vector.js';
 import { Vehicle } from 'entities/vehicle.js';
 
 import { getGameInstance, runGameLoop } from 'features/games/game_test_helpers.js';
@@ -38,7 +39,9 @@ describe('RaceGame', (it, beforeEach) => {
                 time: 'Afternoon',
                 weather: 'Sunny',
             },
-            settings: {},
+            settings: {
+                laps: 1,
+            },
             spawnPositions: [
                 {
                     position: new Vector(0, 0, 0),
@@ -50,6 +53,13 @@ describe('RaceGame', (it, beforeEach) => {
                     facingAngle: 90,
                     vehicleModelId: 411,
                 },
+            ],
+
+            checkpoints: [
+                { position: new Vector(20, 20, 20), size: 10 },
+                { position: new Vector(30, 30, 30), size: 10 },
+                { position: new Vector(40, 40, 40), size: 10 },
+                { position: new Vector(50, 50, 50), size: 10 },
             ],
 
             objects: [],

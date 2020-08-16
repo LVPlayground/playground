@@ -43,6 +43,7 @@ export class RaceGame extends VehicleGame {
 
     #checkpoint_ = new WeakMap();
     #progression_ = new WeakMap();
+    #start_ = null;
 
     async onInitialized(settings, registry) {
         await super.onInitialized(settings, registry);
@@ -131,7 +132,11 @@ export class RaceGame extends VehicleGame {
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
 
-        // Start the |player|'s progression tracker.
+        // Start the |player|'s progression tracker, and mark |this| race as having started if this
+        // is the first player who we'll be unlocking.
+        if (!this.#start_)
+            this.#start_ = server.clock.monotonicallyIncreasingTime();
+
         tracker.start();
     }
 
@@ -215,6 +220,46 @@ export class RaceGame extends VehicleGame {
             }
 
             this.#infiniteHealthTime_ = currentTime;
+        }
+
+        // (3) If the race has already started, and is past the allowed time limit for the race, we
+        // will have to drop out all the participants in order of progression.
+        if (this.#start_) {
+            const runtimeSeconds = (currentTime - this.#start_) / 1000;
+            if (runtimeSeconds >= this.#description_.settings.timeLimit) {
+                const progress = [];
+
+                // (a) Iterate over all participants, and get their progression into the race, as
+                // well as their distance from their previous checkpoint. The participants will be
+                // sorted on these values, to be able to drop them out in order.
+                for (const player of this.players) {
+                    const tracker = this.#progression_.get(player);
+                    if (!tracker) {
+                        progress.push([ player, /* progress= */ 0, /* distance= */ 0 ]);
+                    } else {
+                        const checkpointInfo = tracker.getCurrentCheckpoint();
+                        if (!checkpointInfo) {
+                            progress.push([ player, tracker.progress, /* distance= */ 0 ]);
+                        } else {
+                            progress.push([
+                                player, tracker.progress,
+                                checkpointInfo.position.distanceTo(player.position) ]);
+                        }
+                    }
+                }
+
+                // (b) Sort the participants based on the |progress| they've made.
+                progress.sort((lhs, rhs) => {
+                    if (lhs[1] === rhs[1])
+                        return lhs[2] > rhs[2] ? 1 : -1;
+
+                    return lhs[1] > rhs[1] ? -1 : 1;
+                });
+
+                // (c) Drop them out in order. The remaining statistics don't matter anymore.
+                for (const [ player ] of progress)
+                    this.playerLost(player);
+            }
         }
     }
 

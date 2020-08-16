@@ -41,6 +41,7 @@ describe('RaceGame', (it, beforeEach) => {
             },
             settings: {
                 laps: 1,
+                timeLimit: 600,
             },
             spawnPositions: [
                 {
@@ -225,6 +226,27 @@ describe('RaceGame', (it, beforeEach) => {
     });
 
     it('should kick people out when the time limit expires', async (assert) => {
+        installDescription({
+            settings: {
+                timeLimit: 300,  // five minutes
+            }
+        });
 
+        assert.isTrue(await gunther.issueCommand('/race 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.doesNotThrow(() => getGameInstance());
+
+        // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
+        await server.clock.advance(kInitialSpawnLoadDelayMs);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
+
+        // Simply wait for five minutes, after which we should've been kicked from the game.
+        await server.clock.advance(300 * 1000);
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
     });
 });

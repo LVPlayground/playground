@@ -39,8 +39,7 @@ export class RaceGame extends VehicleGame {
     #nitrousInjection_ = RaceGame.kNitrousInjectionNone;
     #nitrousInjectionTime_ = null;
 
-    #playerCheckpoint_ = new WeakMap();
-    #playerStartTime_ = new WeakMap();
+    #checkpoint_ = new WeakMap();
     #progression_ = new WeakMap();
 
     async onInitialized(settings, registry) {
@@ -110,10 +109,11 @@ export class RaceGame extends VehicleGame {
         vehicle.toggleEngine(/* engineRunning= */ false);
 
         // Create the |player|'s progression tracker, and display the first checkpoint for them.
-        this.#progression_.set(player, new RaceProgressionTracker(
-            this.#description_.checkpoints, this.#description_.settings.laps));
+        const tracker = new RaceProgressionTracker(
+            this.#description_.checkpoints, this.#description_.settings.laps);
 
-        this.updateCheckpoint(player);
+        this.updateCheckpoint(player, tracker);
+        this.#progression_.set(player, tracker);
 
         // Display the start countdown for the |player|. They'll be getting ready...
         await StartCountdown.displayForPlayer(
@@ -129,17 +129,13 @@ export class RaceGame extends VehicleGame {
 
         player.vehicle.toggleEngine(/* engineRunning= */ true);
 
-        // Store the time at which the |player| actually started to drive in the race.
-        this.#playerStartTime_.set(player, server.clock.monotonicallyIncreasingTime());
+        // Start the |player|'s progression tracker.
+        tracker.start();
     }
 
     // Updates and creates the checkpoint for the |player|. This tells them where to go, and also
     // gives us the necessary metrics for determining where they are.
-    updateCheckpoint(player) {
-        const tracker = this.#progression_.get(player);
-        if (!tracker)
-            throw new Error(`There is no progression information for the |player|.`);
-
+    updateCheckpoint(player, tracker) {
         const checkpointInfo = tracker.getCurrentCheckpoint();
         if (!checkpointInfo)
             return;  // the |player| has finished the race
@@ -167,7 +163,7 @@ export class RaceGame extends VehicleGame {
                 this.onPlayerEnterCheckpoint(player);
         });
 
-        this.#playerCheckpoint_.set(player, checkpoint);
+        this.#checkpoint_.set(player, checkpoint);
     }
 
     // Called when the |player| has entered a checkpoint that was created by this race. We split
@@ -181,9 +177,10 @@ export class RaceGame extends VehicleGame {
 
         // If the player hasn't finished, proceed to the next checkpoint and bail out.
         if (tracker.progress < 1)
-            return this.updateCheckpoint(player);
+            return this.updateCheckpoint(player, tracker);
 
         // TODO: The |player| has finished the race.
+        this.playerWon(player);
     }
 
     async onTick() {
@@ -218,9 +215,9 @@ export class RaceGame extends VehicleGame {
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
 
-        if (this.#playerCheckpoint_.has(player)) {
-            this.#playerCheckpoint_.get(player).hideForPlayer(player);
-            this.#playerCheckpoint_.delete(player);
+        if (this.#checkpoint_.has(player)) {
+            this.#checkpoint_.get(player).hideForPlayer(player);
+            this.#checkpoint_.delete(player);
         }
     }
 }

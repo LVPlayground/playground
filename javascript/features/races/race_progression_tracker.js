@@ -9,6 +9,7 @@ export class RaceProgressionTracker {
     #laps_ = null;
 
     #checkpointTimes_ = null;
+    #startTime_ = null;
 
     constructor(checkpoints, laps) {
         this.#checkpoints_ = checkpoints;
@@ -57,4 +58,7 @@ export class RaceProgressionTracker {
 
         this.#checkpointTimes_.push(server.clock.monotonicallyIncreasingTime());
     }
+
+    // Starts the tracker, i.e. records when the participant started racing.
+    start() { this.#startTime_ = server.clock.monotonicallyIncreasingTime(); }
 }

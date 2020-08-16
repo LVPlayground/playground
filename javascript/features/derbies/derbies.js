@@ -49,7 +49,7 @@ export default class Derbies extends Feature {
             commandFn: Derbies.prototype.generateDerbyCommand.bind(this),
             goal: 'Be the last person standing in a vehicle war.',
 
-            minimumPlayers: 1,
+            minimumPlayers: 2,
             maximumPlayers: 4,
             price: 0,
 

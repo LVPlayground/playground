@@ -261,6 +261,23 @@ export class RaceGame extends VehicleGame {
                     this.playerLost(player);
             }
         }
+
+        // (4) Participants who left their vehicle will be dropped out of the race, unless this has
+        // been allowed by the race. Only run this check when the race has started.
+        if (!this.#description_.settings.allowLeaveVehicle && this.#start_) {
+            for (const player of this.players) {
+                const vehicle = this.getVehicleForPlayer(player);
+                if (vehicle !== player.vehicle) {
+                    Banner.displayForPlayer(player, {
+                        title: 'dropped out!',
+                        message:
+                            format(`you're no longer in your vehicle`, this.#description_.name),
+                    });
+
+                    this.playerLost(player);
+                }
+            }
+        }
     }
 
     async onPlayerRemoved(player) {

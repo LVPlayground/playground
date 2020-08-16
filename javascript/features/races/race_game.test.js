@@ -249,4 +249,30 @@ describe('RaceGame', (it, beforeEach) => {
 
         assert.throws(() => getGameInstance());
     });
+
+    it('should kick people out when they leave their vehicles', async (assert) => {
+        installDescription({
+            settings: {
+                allowLeaveVehicle: false,
+            }
+        });
+
+        assert.isTrue(await gunther.issueCommand('/race 1'));
+
+        await server.clock.advance(settings.getValue('games/registration_expiration_sec') * 1000);
+        await runGameLoop();
+
+        assert.doesNotThrow(() => getGameInstance());
+
+        // Forward to the moment the countdown has ended, and |gunther| is able to start racing.
+        await server.clock.advance(kInitialSpawnLoadDelayMs);
+        await StartCountdown.advanceCountdownForTesting(kStartCountdownSeconds);
+
+        // Have |gunther| leave their vehicle, this should drop them out of the race.
+        gunther.vehicle = null;
+
+        await runGameLoop();
+
+        assert.throws(() => getGameInstance());
+    });
 });

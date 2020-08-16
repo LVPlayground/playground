@@ -194,8 +194,14 @@ export class DerbyGame extends VehicleGame {
         // If there's only a single player left in the derby, mark them as the winner. The |player|
         // who's currently being removed will still live in the players set, however.
         const remainingPlayers = difference(this.players, new Set([ player ]));
-        if (remainingPlayers.size === 1)
+        if (remainingPlayers.size === 1) {
+            Banner.displayForPlayer(player, {
+                title: 'congratulations!',
+                message: format('you have won the %s derby', this.#description_.name),
+            });
+
             this.playerWon([ ...remainingPlayers ][0]);
+        }
     }
 
     async onFinished() {

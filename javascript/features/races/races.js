@@ -53,6 +53,7 @@ export default class Races extends Feature {
             name: Races.prototype.generateRaceCommand.bind(this),
             commandFn: Races.prototype.generateRaceName.bind(this),
             goal: 'Complete the race track in the shortest possible time.',
+            scoreType: 'time',
 
             minimumPlayers: 1,
             maximumPlayers: 4,

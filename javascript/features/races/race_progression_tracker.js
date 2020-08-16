@@ -24,6 +24,19 @@ export class RaceProgressionTracker {
         return this.#checkpointTimes_.length / (this.#checkpoints_.length * this.#laps_);
     }
 
+    // Gets the time, in milliseconds, the participant has spent on the race so far. May be zero
+    // in case they haven't started just yet, or a fixed number when they've finished already.
+    get time() {
+        if (!this.#startTime_)
+            return 0;  // they haven't started yet
+
+        if (this.progress < 0)
+            return server.clock.monotonicallyIncreasingTime() - this.#startTime_;
+
+        const [ latestSplit ] = this.#checkpointTimes_.slice(-1);
+        return latestSplit - this.#startTime_;
+    }
+
     // Returns the { final, position, size and target } information for the current race checkpoint
     // that is to be displayed for a particular participant. Will be NULL after the last checkpoint.
     getCurrentCheckpoint() {

@@ -2,13 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Banner } from 'components/interface/banner.js';
 import { RaceCheckpoint } from 'components/checkpoints/race_checkpoint.js';
 import { RaceProgressionTracker } from 'features/races/race_progression_tracker.js';
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
-import { Vector } from 'base/vector.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 import { Vehicle } from 'entities/vehicle.js';
+
+import { format } from 'base/format.js';
 
 // Every how many milliseconds should infinite NOS be issued to vehicles? This roughly maps to the
 // time a single nitro injection will last, without needing to wait for it to recover.
@@ -179,8 +181,12 @@ export class RaceGame extends VehicleGame {
         if (tracker.progress < 1)
             return this.updateCheckpoint(player, tracker);
 
-        // TODO: The |player| has finished the race.
-        this.playerWon(player);
+        Banner.displayForPlayer(player, {
+            title: 'congratulations!',
+            message: format('you have finished the %s race', this.#description_.name),
+        });
+
+        this.playerWon(player, tracker.time / 1000);
     }
 
     async onTick() {

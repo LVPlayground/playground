@@ -50,7 +50,8 @@ export default class Races extends Feature {
     // point will continue to be the "/race" command.
     registerGame() {
         this.games_().registerGame(RaceGame, {
-            name: 'Race',  // TODO: have a name generator
+            name: Races.prototype.generateRaceCommand.bind(this),
+            commandFn: Races.prototype.generateRaceName.bind(this),
             goal: 'Complete the race track in the shortest possible time.',
 
             minimumPlayers: 1,
@@ -63,6 +64,22 @@ export default class Races extends Feature {
             ],
 
         }, this.registry_);
+    }
+
+    // Generates the command through which a particular race can be started, information which will
+    // be conveyed through the |settings| argument. NULL when absent.
+    generateRaceCommand(settings) {
+        const description = this.registry_.getDescription(settings.get('game/description_id'));
+        return description ? `race ${description.id}`
+                           : null;
+    }
+
+    // Generates the name for the derby described by the given |settings|. It depends on the game's
+    // ID that's contained within the |settings|, which should be known to the registry.
+    generateRaceName(settings) {
+        const description = this.registry_.getDescription(settings.get('game/description_id'));
+        return description ? description.name
+                           : 'Race';
     }
 
     // ---------------------------------------------------------------------------------------------

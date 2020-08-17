@@ -53,6 +53,9 @@ export class GameRuntime extends GameActivity {
     // Gets the spectate group that can be observed when watching this game.
     get spectateGroup() { return this.spectateGroup_; }
 
+    // Gets the settings with which this runtime was initialized.
+    get settings() { return this.settings_; }
+
     // Gets the state the game is in. Only exposed for testing purposes.
     get state() { return this.state_; }
 

@@ -9,6 +9,9 @@ export class GameActivity {
     static kStateRegistered = 0;
     static kStateEngaged = 1;
 
+    // Gets the settings with which the activity was initialized.
+    get settings() { throw new Error(`settings getter must be overridden`); }
+
     // Returns the state of activity that this instance describes.
     getActivityState() { throw new Error(`getActivityState() must be overridden`); }
 

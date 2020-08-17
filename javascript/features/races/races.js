@@ -50,8 +50,8 @@ export default class Races extends Feature {
     // point will continue to be the "/race" command.
     registerGame() {
         this.games_().registerGame(RaceGame, {
-            name: Races.prototype.generateRaceCommand.bind(this),
-            commandFn: Races.prototype.generateRaceName.bind(this),
+            name: Races.prototype.generateRaceName.bind(this),
+            commandFn: Races.prototype.generateRaceCommand.bind(this),
             goal: 'Complete the race track in the shortest possible time.',
             scoreType: 'time',
 

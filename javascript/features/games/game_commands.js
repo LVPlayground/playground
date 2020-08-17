@@ -212,7 +212,8 @@ export class GameCommands {
 
             // Announce the |player|'s participation in this game to all other players.
             this.announce_().announceGameParticipation(
-                player, pendingRegistration.getActivityName(), description.command);
+                player, pendingRegistration.getActivityName(),
+                description.commandFn(pendingRegistration.settings));
 
             // Actually register the |player| to participate, and we're done here.
             pendingRegistration.registerPlayer(player, description.price);
@@ -243,7 +244,8 @@ export class GameCommands {
 
             // Announce the |player|'s participation in this game to all other players.
             this.announce_().announceGameParticipation(
-                player, activeRuntime.getActivityName(), description.command);
+                player, activeRuntime.getActivityName(),
+                description.commandFn(activeRuntime.settings));
 
             // Actually have the |player| join the |activeRuntime|, and we're done here.
             await activeRuntime.addPlayer(player, description.price);

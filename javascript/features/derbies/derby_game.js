@@ -195,12 +195,15 @@ export class DerbyGame extends VehicleGame {
         // who's currently being removed will still live in the players set, however.
         const remainingPlayers = difference(this.players, new Set([ player ]));
         if (remainingPlayers.size === 1) {
-            Banner.displayForPlayer(player, {
+            const winner = [ ...remainingPlayers ][0];
+
+            // Let the |winner| know that they've won the game!
+            Banner.displayForPlayer(winner, {
                 title: 'congratulations!',
                 message: format('you have won the %s derby', this.#description_.name),
             });
 
-            this.playerWon([ ...remainingPlayers ][0]);
+            this.playerWon(winner);
         }
     }
 

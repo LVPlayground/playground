@@ -43,6 +43,13 @@ export class AccountCommands {
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
 
+        // /nearby [player]
+        server.commandManager.buildCommand('nearby')
+            .description(`Displays information about a player's neighbours.`)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
+            .build(AccountCommands.prototype.onNearbyCommand.bind(this));
+
         // /register
         server.commandManager.buildCommand('register')
             .description(`Displays information on how to register on LVP.`)
@@ -694,6 +701,48 @@ export class AccountCommands {
         });
 
         await display.displayForPlayer(currentPlayer);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| wants to know which other players live nearby the given |target|.
+    // The results will be bucketed in groups of ~50km distances, to avoid this being too intrusive.
+    // Only registered players who were in-game in the past year will be considered for this.
+    async onNearbyCommand(player, target) {
+        const results = await this.database_.nearby(target.ip);
+        if (!results || !results.length) {
+            return await alert(player, {
+                title: `Who's near ${target.name}?!`,
+                message: `No results were found for ${target.name}. We only consider sessions in ` +
+                         `the past year, which might explain this.`
+            });
+        }
+
+        const dialog = new Menu(`Who's near ${target.name}?!`, [
+            'Nickname',
+            'Distance',
+            'Last seen',
+        ]);
+
+        for (const { username, sessions, lastSeen, distance } of results) {
+            let sessionLabel = '';
+            let distanceLabel = '{90A4AE}<150km';
+            let activityLabel = fromNow({ date: lastSeen });
+
+            if (sessions > 1)
+                sessionLabel = ` {90A4AE}(${format('%d', sessions)}x)`;
+
+            if (distance < 10)
+                distanceLabel = '{B2FF59}<10km';
+            else if (distance <= 50)
+                distanceLabel = '{EEFF41}<50km';
+            else if (distance <= 100)
+                distanceLabel = '{CFD8DC}<100km';
+
+            dialog.addItem(username + sessionLabel, distanceLabel, activityLabel);
+        }
+
+        await dialog.displayForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------

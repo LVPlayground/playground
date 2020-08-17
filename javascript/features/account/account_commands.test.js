@@ -706,6 +706,32 @@ describe('AccountCommands', (it, beforeEach) => {
         ]);
     });
 
+    it('should be able to find out who is nearby a particular player', async (assert) => {
+        await russell.identify();
+
+        gunther.setIpForTesting('37.48.87.211');
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/nearby Gunther'));
+        assert.equal(russell.lastDialogTitle, `Who's near Gunther?!`);
+
+        const result = russell.getLastDialogAsTable();
+        assert.equal(result.rows.length, 2);
+        assert.deepEqual(result.rows, [
+            [
+                'Russell {90A4AE}(12x)',
+                '{B2FF59}<10km',
+                '1 day ago',
+            ],
+            [
+                'NotRussell',
+                '{EEFF41}<50km',
+                '1 month ago',
+            ]
+        ]);
+    });
+
     it('should be able to find out where a particular player is', async (assert) => {
         await russell.identify();
 

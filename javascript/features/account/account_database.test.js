@@ -365,5 +365,8 @@ describe('AccountDatabase', it => {
 
         const results = await instance.whois('37.48.87.211', 9001);
         assert.equal(results.length, 3);
+
+        const nearby = await instance.nearby('37.48.87.211');
+        assert.equal(nearby.length, 2);
     });
 });

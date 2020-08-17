@@ -242,6 +242,24 @@ export class MockAccountDatabase extends AccountDatabase {
     async setUserVip(userId, vip) {}
 
     // Overridden.
+    async _nearbyQuery(latitude, longitude) {
+        return [
+            {
+                username: 'Russell',
+                last_seen: (new Date(Date.now() - 1.35 * 86400 * 1000)).toString(),
+                session_count: 12,
+                distance: 0,
+            },
+            {
+                username: 'NotRussell',
+                last_seen: (new Date(Date.now() - 32.35 * 86400 * 1000)).toString(),
+                session_count: 1,
+                distance: 50,
+            }
+        ];
+    }
+
+    // Overridden.
     async _whereIsQueries(ip) {
         return [
             {
@@ -263,6 +281,8 @@ export class MockAccountDatabase extends AccountDatabase {
                 // ip2location_db11
                 rows: [
                     {
+                        longitude: 10,
+                        latitude: 15,
                         country_name: 'United Kingdom',
                         region_name: 'England',
                         city_name: 'London',

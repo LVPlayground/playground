@@ -4,6 +4,8 @@
 
 import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 
+import { messages } from 'features/communication_commands/communication_commands.messages.js';
+
 describe('CommunicationCommands', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
@@ -121,5 +123,81 @@ describe('CommunicationCommands', (it, beforeEach) => {
             server.clock.advance(kIntervalSec * 1000),
             guntherCyclePromise
         ]);
+    });
+
+    it('should be possible to slap (and slap back) other players', async (assert) => {
+        const finance = server.featureManager.loadFeature('finance');
+
+        muteManager.setCommunicationMuted(true);
+
+        // (1) You shouldn't be able to slap other people when the server is muted.
+        assert.isTrue(await gunther.issueCommand('/slap Russell'));
+
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], messages.communication_slap_muted);
+
+        muteManager.setCommunicationMuted(false);
+
+        // (2) You shouldn't be able to slap back when you haven't been slapped before.
+        assert.isTrue(await russell.issueCommand('/slapb'));
+
+        assert.equal(russell.messages.length, 1);
+        assert.equal(russell.messages[0], messages.communication_slap_no_history);
+
+        // (3) You need some amount of money to slap other players.
+        assert.isTrue(await gunther.issueCommand('/slap Russell'));
+
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1], messages.communication_slap_no_funds(null, { price: 5000 }));
+
+        finance.givePlayerCash(gunther, 1000000);
+        finance.givePlayerCash(russell, 1000000);
+
+        // (4) You *can* in fact successfully slap other players.
+        assert.isTrue(await gunther.issueCommand('/slap Russell'));
+
+        assert.equal(gunther.messages.length, 3);
+        assert.includes(gunther.messages[2], 'around a bit with');
+
+        assert.equal(russell.messages.length, 2);
+        assert.includes(russell.messages[1], 'around a bit with');
+
+        // (5) There's a rate limit in place when slapping players.
+        assert.isTrue(await gunther.issueCommand('/slap Russell'));
+
+        assert.equal(gunther.messages.length, 4);
+        assert.includes(gunther.messages[3], messages.communication_slap_wait(null, {
+            cooldown: '7 seconds',
+        }));
+
+        await server.clock.advance(7000);
+
+        assert.isTrue(await gunther.issueCommand('/slap Russell'));
+
+        assert.equal(gunther.messages.length, 5);
+        assert.includes(gunther.messages[4], 'around a bit with');
+
+        assert.equal(russell.messages.length, 3);
+        assert.includes(russell.messages[2], 'around a bit with');
+
+        // (6) The `/slapb` command should enable you to slap back quickly.
+        assert.isTrue(await russell.issueCommand('/slapb'));
+
+        assert.equal(gunther.messages.length, 6);
+        assert.includes(gunther.messages[5], 'around a bit with');
+
+        assert.equal(russell.messages.length, 4);
+        assert.includes(russell.messages[3], 'around a bit with');
+
+        // (7) That command stops working when they disconnect from the server.
+        russell.disconnectForTesting();
+
+        assert.isTrue(await gunther.issueCommand('/slapb'));
+
+        assert.equal(gunther.messages.length, 7);
+        assert.equal(gunther.messages[6], messages.communication_slap_no_target(null, {
+            target: russell.name,
+        }));
     });
 });

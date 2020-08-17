@@ -480,9 +480,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     lvp_command(lyse,           4, PlayerLevel);
     lvp_command(taxi,           4, PlayerLevel);
     lvp_command(tow,            3, PlayerLevel);
-    lvp_command(slap,           4, PlayerLevel);
-    lvp_command(slapb,          5, PlayerLevel);
-    lvp_command(slapback,       8, PlayerLevel);
     lvp_command(countdown,      9, PlayerLevel);
     lvp_command(interest,       8, PlayerLevel);
     lvp_command(stats,          5, PlayerLevel);

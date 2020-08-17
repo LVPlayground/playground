@@ -10,6 +10,10 @@ import { IgnoreCommands } from 'features/communication_commands/ignore_commands.
 import { MuteCommands } from 'features/communication_commands/mute_commands.js'
 import { NuwaniCommands } from 'features/communication_commands/nuwani_commands.js';
 
+import { messages } from 'features/communication_commands/communication_commands.messages.js';
+import { timeDifferenceToString } from 'base/time.js';
+import { random } from 'base/random.js';
+
 // Set of `/show` messages that Gunther will issue at a particular interval.
 const kGuntherMessages = [
     'beg', 'derby', 'discord', 'dm', 'donate', 'forum', 'irc', 'minigames', 'reg', 'report',
@@ -19,12 +23,16 @@ const kGuntherMessages = [
 // In which file are messages for the `/show` command stored?
 const kShowCommandDataFile = 'data/show.json';
 
+// In which file are the reasons for the `/slap` command stored?
+const kSlapCommandDataFile = 'data/slap_reasons.json';
+
 // Provides a series of commands associated with communication on Las Venturas Playground. These
 // commands directly serve the Communication feature, but require a dependency on the `announce`
 // feature which is prohibited given that Communication is a foundational feature.
 export default class CommunicationCommands extends Feature {
     announce_ = null;
     communication_ = null;
+    finance_ = null;
     nuwani_ = null;
     settings_ = null;
 
@@ -33,6 +41,10 @@ export default class CommunicationCommands extends Feature {
     nuwaniCommands_ = null;
 
     showMessages_ = null;
+
+    slapHistory_ = new Map();
+    slapReasons_ = null;
+    slapTiming_ = new Map();
 
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
@@ -46,16 +58,15 @@ export default class CommunicationCommands extends Feature {
         // This series of commands services the Communication feature.
         this.communication_ = this.defineDependency('communication');
 
+        // Certain commands cost a little bit of money.
+        this.finance_ = this.defineDependency('finance');
+
         // Used to send non-channel communication to people watching through Nuwani.
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeIrcCommands());
 
         // Used to make certain parts of communication configurable.
         this.settings_ = this.defineDependency('settings');
-
-        // TODO:
-        // - /slap
-        // - /slapb(ack)
 
         // Implementation of various commands have been grouped together to keep things organised,
         // which is reflected in the following array of command groups.
@@ -104,6 +115,17 @@ export default class CommunicationCommands extends Feature {
                 { name: 'message', type: CommandBuilder.kTypeText, optional: true },
                 { name: 'player', type: CommandBuilder.kTypePlayer, optional: true }])
             .build(CommunicationCommands.prototype.onShowCommand.bind(this));
+
+        // /slap [player]
+        server.commandManager.buildCommand('slap')
+            .description('Slap one of your fellow players across the face.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
+            .build(CommunicationCommands.prototype.onSlapCommand.bind(this));
+
+        // /slapb
+        server.commandManager.buildCommand('slapb')
+            .description('Slap back at the one who decided to just slap you.')
+            .build(CommunicationCommands.prototype.onSlapBackCommand.bind(this));
 
         // Unless we're in a test, start the GuntherCycle which will automatically use the /show
         // command with his credentials with a number of predefined commands.
@@ -259,6 +281,109 @@ export default class CommunicationCommands extends Feature {
             Message.ANNOUNCE_SHOW_ADMIN, player.name, player.id, message);
     }
 
+    // /slap [player]
+    //
+    // Called when the |player| wishes to slap the |target| across the... variety of reasons that
+    // we've got defined in our JSON configuration file, which will be lazily loaded.
+    onSlapCommand(player, target) {
+        if (this.communication_().isCommunicationMuted()) {
+            player.sendMessage(messages.communication_slap_muted);
+            return;
+        }
+
+        if (player === target) {
+            player.sendMessage(messages.communication_slap_self);
+            return;
+        }
+
+        if (target.isNonPlayerCharacter()) {
+            player.sendMessage(messages.communication_slap_npc);
+            return;
+        }
+
+        this.slap(player, target);
+    }
+
+    // /slapb
+    //
+    // The |player| wishes to slap back whomever slapped them last, for an equally silly reason.
+    // Requires the |player| to have been slapped just before this.
+    onSlapBackCommand(player) {
+        if (this.communication_().isCommunicationMuted()) {
+            player.sendMessage(messages.communication_slap_muted);
+            return;
+        }
+
+        if (!this.slapHistory_.has(player.name)) {
+            player.sendMessage(messages.communication_slap_no_history);
+            return;
+        }
+
+        const nickname = this.slapHistory_.get(player.name);
+        const target = server.playerManager.getByName(nickname, /* fuzzy= */ false);
+
+        if (!target) {
+            player.sendMessage(messages.communication_slap_no_target, { target: nickname });
+            return;
+        }
+
+        this.slap(player, target);
+    }
+
+    // Actually makes the |player| slap the |target|. Will lazily initialize the slap system on
+    // first use, by preparing state and loading the necessary configuration files.
+    slap(player, target) {
+        // Frequency limit applied to the `/slap` command, in milliseconds.
+        const kFrequencyLimitMs = 7000;
+
+        // Price to `/slap` someone across their face.
+        const kPrice = 5000;
+
+        // Sound ID that should be used when someone gets slapped across the face.
+        const kSoundID = 1190;
+
+        // Lazily initialize the slapping system.
+        if (!this.slapReasons_)
+            this.slapReasons_ = JSON.parse(readFile(kSlapCommandDataFile))
+
+        // Apply the rate limiting for the command, to not nag other players too often.
+        const currentTime = server.clock.monotonicallyIncreasingTime();
+        const previous = this.slapTiming_.get(player.name);
+
+        if (previous && (currentTime - previous) < kFrequencyLimitMs) {
+            player.sendMessage(messages.communication_slap_wait, {
+                cooldown: timeDifferenceToString(kFrequencyLimitMs / 1000),
+            });
+            return;
+        }
+
+        // Take their moneys, as making a sound in a virtual environment definitely is worth $5,000.
+        if (this.finance_().getPlayerCash(player) < kPrice) {
+            player.sendMessage(messages.communication_slap_no_funds, { price: kPrice });
+            return;
+        }
+
+        this.finance_().takePlayerCash(player, kPrice);
+
+        // Impose the frequency limit for the |player|. This will persist across sessions.
+        this.slapHistory_.set(target.name, player.name);
+        this.slapTiming_.set(player.name, currentTime);
+
+        // (1) Play the |kSoundID| for all connected human players.
+        for (const otherPlayer of server.playerManager) {
+            if (!otherPlayer.isNonPlayerCharacter())
+                otherPlayer.playSound(kSoundID);
+        }
+
+        // (2) Send the |target| the slap message. First we determine the reason.
+        const reason = this.slapReasons_[random(this.slapReasons_.length)];
+        const message = messages.communication_slapped(null, { player, target, reason });
+
+        // Note: it'd be great to only send this to local recipients, but given that we've played a
+        // slap sound for all players already it would be a bit weird to mess with that.
+        this.distributeMessageToPlayers(player, message, message);
+    }
+
     // Distributes the given |formattedMessage| to the players who are supposed to receive it per
     // the MessageVisibilityManager included in the Communication feature.
     distributeMessageToPlayers(player, localMessage, remoteMessage) {
@@ -289,6 +414,8 @@ export default class CommunicationCommands extends Feature {
         for (const commands of this.commands_)
             commands.dispose();
 
+        server.commandManager.removeCommand('slapb');
+        server.commandManager.removeCommand('slap');
         server.commandManager.removeCommand('show');
         server.commandManager.removeCommand('psay');
         server.commandManager.removeCommand('me');

@@ -20,6 +20,9 @@ export const messages = globalMessages.extend({
     player_settings_confirm_enable_category: 'Do you want to enable messages about %{label}s?',
     player_settings_confirm_updated: 'Your announcement preferences have been updated.',
 
+    player_settings_fyi:
+        '{33AA33}FYI{FFFFFF}: %{player.name}s (Id:%{player.id}) has changed your "%{label}s" announcement settings.',
+
     player_settings_no_account_other:
         '@error %{player.name}s needs to have an account in order for this command to be available.',
     player_settings_no_account_self:

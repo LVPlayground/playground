@@ -6,6 +6,7 @@
 // Will automatically substitute all missing information with sensible defaults.
 export class AnnounceCategory {
     #defaultEnabled_ = false;
+    #hidden_ = false;
     #identifier_ = null;
     #level_ = Player.LEVEL_PLAYER;
     #name_ = null;
@@ -16,6 +17,9 @@ export class AnnounceCategory {
 
     // Gets the identifier through which this category is known.
     get identifier() { return this.#identifier_; }
+
+    // Gets whether this category should be hidden in the configuration dialogs.
+    get hidden() { return this.#hidden_; }
 
     // Gets the name of this category.
     get name() { return this.#name_; }
@@ -59,5 +63,8 @@ export class AnnounceCategory {
 
         if (init.hasOwnProperty('nuwani') && init.nuwani)
             this.#nuwani_ = true;
+
+        if (init.hasOwnProperty('hidden') && init.hidden)
+            this.#hidden_ = true;
     }
 }

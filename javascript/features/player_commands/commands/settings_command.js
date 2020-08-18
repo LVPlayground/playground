@@ -71,8 +71,8 @@ export class SettingsCommand extends PlayerCommand {
 
             // Compose the label for the `Settings` column.
             const categorySettings = String(subCategories.size);
-            const categorySuffix = subCategories.size === 1 ? ' setting'
-                                                            : ' settings';
+            const categorySuffix = subCategories.size === 1 ? 'setting'
+                                                            : 'settings';
 
             // The listener depends on whether we should enter the category view, or the individual
             // setting view. Assume that there's no mixture of them in any category.
@@ -145,8 +145,13 @@ export class SettingsCommand extends PlayerCommand {
         else
             target.account.releaseAnnouncementOverride(identifier);
 
-        // TODO: If the |player| and |target| are not the same person, we need to inform the
-        // |target| of this change out of transparency.
+        // If |target| and |player| are not the same person, inform the |target| of this change.
+        if (target !== player) {
+            target.sendMessage(messages.player_settings_fyi, {
+                label: category.name,
+                player
+            });
+        }
 
         // Tell the |player| that the bit has successfully been flipped.
         await alert(player, {
@@ -172,8 +177,14 @@ export class SettingsCommand extends PlayerCommand {
 
         // TODO: Filter availability of messages & categories for the |player|.
 
-        for (const category of kAnnouncementCategories.keys()) {
-            const path = category.includes('/') ? category.split('/') : [ category ];
+        for (const [ identifier, category ] of kAnnouncementCategories) {
+            if (category.level > player.level)
+                continue;  // the |player| is not able to access these announcements
+
+            if (category.hidden)
+                continue;  // the |category| has been marked as not configurable
+
+            const path = identifier.includes('/') ? identifier.split('/') : [ identifier ];
             const last = path.pop();
 
             let base = categories;
@@ -186,7 +197,7 @@ export class SettingsCommand extends PlayerCommand {
 
             // Store the |category| last, as a string for the full identifier rather than a Map with
             // each of the sub-categories. This builds on our category composition assumptions.
-            base.set(last, category);
+            base.set(last, identifier);
         }
 
         return categories;

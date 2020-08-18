@@ -9,6 +9,7 @@ import { messages } from 'features/announce/announce.messages.js';
 // Shortcuts that can be used to indicate the default value of certain broadcasts.
 const defaultDisabled = true;
 const defaultEnabled = true;
+const hidden = true;
 const nuwani = true;
 
 // Map of all the announcement categories available on Las Venturas Playground. They can be grouped
@@ -172,6 +173,7 @@ export const kAnnouncementCategories = new Map([
         {
             name: 'Killtime',
             defaultEnabled,
+            hidden,  // the system kind of depends on this, I guess?
             nuwani,
         }
     ],
@@ -209,6 +211,7 @@ export const kAnnouncementCategories = new Map([
         {
             name: 'Changes to command access',
             defaultEnabled,
+            hidden,  // these are important announcements players should see
         },
     ],
     [
@@ -216,6 +219,7 @@ export const kAnnouncementCategories = new Map([
         {
             name: 'Vehicle decoration effects',
             defaultEnabled,
+            hidden,  // this is too trivial to be configurable
         }
     ],
 

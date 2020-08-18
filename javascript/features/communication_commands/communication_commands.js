@@ -219,7 +219,12 @@ export default class CommunicationCommands extends Feature {
             return;
         }
 
-        this.distributeMessageToPlayers(player, formattedMessage, formattedMessage);
+        this.distributeMessageToPlayers({
+            player,
+            localMessage: formattedMessage,
+            remoteMessage: formattedMessage,
+        });
+
         this.nuwani_().echo('status', player.id, player.name, message);
     }
 
@@ -275,7 +280,12 @@ export default class CommunicationCommands extends Feature {
 
         // Assume that the |player| is sending the message in context, so the recipients should be
         // in the same world as they are -- this automatically excludes minigames.
-        this.distributeMessageToPlayers(player, [ header, localMessage, header ], null);
+        this.distributeMessageToPlayers({
+            player,
+            category: 'communication/show',
+            localMessage: [ header, localMessage, header ],
+            remoteMessage: null,
+        });
 
         this.announce_().announceToAdministrators(
             Message.ANNOUNCE_SHOW_ADMIN, player.name, player.id, message);
@@ -381,16 +391,24 @@ export default class CommunicationCommands extends Feature {
 
         // Note: it'd be great to only send this to local recipients, but given that we've played a
         // slap sound for all players already it would be a bit weird to mess with that.
-        this.distributeMessageToPlayers(player, message, message);
+        this.distributeMessageToPlayers({
+            player,
+            category: 'communication/slap',
+            localMessage: message,
+            remoteMessage: message,
+        });
     }
 
     // Distributes the given |formattedMessage| to the players who are supposed to receive it per
     // the MessageVisibilityManager included in the Communication feature.
-    distributeMessageToPlayers(player, localMessage, remoteMessage) {
+    distributeMessageToPlayers({ player, category = null, localMessage, remoteMessage } = {}) {
         const playerVirtualWorld = player.virtualWorld;
 
         const visibilityManager = this.visibilityManager;
         for (const recipient of server.playerManager) {
+            if (category && !this.announce_().isCategoryEnabledForPlayer(recipient, category))
+                continue;  // the |recipient| has disabled these messages
+
             const recipientMessage =
                 visibilityManager.selectMessageForPlayer(player, playerVirtualWorld, recipient,
                                                          { localMessage, remoteMessage });

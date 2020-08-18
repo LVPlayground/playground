@@ -92,6 +92,20 @@ export default class Announce extends Feature {
     }
 
     // ---------------------------------------------------------------------------------------------
+    // Public API: Player visibility checks
+    // ---------------------------------------------------------------------------------------------
+
+    // Returns if the given |category| is enabled for the |player|. This is relevant for messages
+    // that are distributed as announcements, but not necesarilly through this feature.
+    isCategoryEnabledForPlayer(player, category) {
+        if (!kAnnouncementCategories.has(category))
+            throw new Error(`Invalid broadcast category given: ${category}.`);
+
+        // TODO: Hook this up.
+        return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // TODO: Clean up these things
     // ---------------------------------------------------------------------------------------------
 

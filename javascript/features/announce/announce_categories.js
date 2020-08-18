@@ -148,6 +148,23 @@ export const kAnnouncementCategories = new Map([
     // Section: players
     // ---------------------------------------------------------------------------------------------
 
+    // Communication -------------------------------------------------------------------------------
+
+    [
+        'communication/show',
+        {
+            name: 'Introductory player messages',
+            defaultEnabled,
+        }
+    ],
+    [
+        'communication/slap',
+        {
+            name: 'Players slapping each other (18+)',
+            defaultEnabled,
+        }
+    ],
+
     // Games ---------------------------------------------------------------------------------------
 
     [

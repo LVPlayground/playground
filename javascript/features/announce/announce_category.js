@@ -6,12 +6,16 @@
 // Will automatically substitute all missing information with sensible defaults.
 export class AnnounceCategory {
     #defaultEnabled_ = false;
+    #identifier_ = null;
     #level_ = Player.LEVEL_PLAYER;
     #name_ = null;
     #nuwani_ = false;
     #prefix_ = null;
 
     // ---------------------------------------------------------------------------------------------
+
+    // Gets the identifier through which this category is known.
+    get identifier() { return this.#identifier_; }
 
     // Gets the name of this category.
     get name() { return this.#name_; }
@@ -30,7 +34,9 @@ export class AnnounceCategory {
 
     // ---------------------------------------------------------------------------------------------
 
-    constructor(init) {
+    constructor(identifier, init) {
+        this.#identifier_ = identifier;
+
         if (init.hasOwnProperty('defaultEnabled') && init.defaultEnabled)
             this.#defaultEnabled_ = true;
         else if (init.hasOwnProperty('defaultDisabled') && init.defaultDisabled)

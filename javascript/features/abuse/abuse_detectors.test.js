@@ -74,7 +74,7 @@ describe('AbuseDetectors', (it, beforeEach, afterEach) => {
         }
         
         assert.equal(gunther.messages.length, 1);
-        assert.includes(gunther.messages[0], 'might be using');
+        assert.includes(gunther.messages[0], 'found to be using');
         assert.includes(gunther.messages[0], 'FakeDetector');
 
         detectors.detectorInfo_.delete(kFakeSetting);

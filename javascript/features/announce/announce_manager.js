@@ -7,10 +7,10 @@ import { format } from 'base/format.js';
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
 export class AnnounceManager {
-    nuwani_ = null;
+    #nuwani_ = null;
 
     constructor(nuwani) {
-        this.nuwani_ = nuwani;
+        this.#nuwani_ = nuwani;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -23,10 +23,10 @@ export class AnnounceManager {
                 continue;  // never send messages to non-player characters
 
             if (player.level < category.level)
-                continue;  // the player is not eligible to receive this message
+                continue;  // the |player| is not eligible to receive this message
 
-            // TODO: Check if the |player| has toggled visibility of the |message| themselves. Until
-            // we implement this, ignore the |defaultEnabled| property on |category| too.
+            if (!this.isCategoryEnabledForPlayer(player, category))
+                continue;  // the |player| has disabled this category of messages
 
             if (category.prefix) {
                 const prefix = category.prefix(null);
@@ -45,7 +45,7 @@ export class AnnounceManager {
             const formattedMessage = message(null, ...params);
             const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
 
-            this.nuwani_().echo('notice-admin', normalizedMessage);
+            this.#nuwani_().echo('notice-admin', normalizedMessage);
         }
 
         // If the |category| has been explicitly marked as making an announcement to Nuwani, forward
@@ -54,8 +54,20 @@ export class AnnounceManager {
             const formattedMessage = message(null, ...params);
             const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
 
-            this.nuwani_().echo('notice-announce', normalizedMessage);
+            this.#nuwani_().echo('notice-announce', normalizedMessage);
         }
+    }
+
+    // Returns whether the given |category| is enabled for the |player|. Unless the |player| has an
+    // override set on their profile, the |category|'s default value will be returned.
+    isCategoryEnabledForPlayer(player, category) {
+        if (player.account.isIdentified()) {
+            const override = player.account.getAnnouncementOverride(category.identifier);
+            if (override !== undefined)
+                return !!override;
+        }
+
+        return category.defaultEnabled;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -92,7 +104,7 @@ export class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('notice-admin', message.replace(/\{([a-f0-9]{6})\}/gi, ''));
+        this.#nuwani_().echo('notice-admin', message.replace(/\{([a-f0-9]{6})\}/gi, ''));
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
@@ -109,7 +121,7 @@ export class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo('notice-report', player.name, player.id, reportedPlayer.name,
-                            reportedPlayer.id, reason);
+        this.#nuwani_().echo('notice-report', player.name, player.id, reportedPlayer.name,
+                             reportedPlayer.id, reason);
     }
 }

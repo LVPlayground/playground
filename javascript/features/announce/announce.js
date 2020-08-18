@@ -25,6 +25,10 @@ export default class Announce extends Feature {
         // The ability to share announcements with players is deemed a low-level capability.
         this.markLowLevel();
 
+        // Depend on the `account_provider` feature, as that's where information lives about whether
+        // certain categories of announcements should be enabled for the player.
+        this.defineDependency('account_provider');
+
         // Depend on the Nuwani feature to be able to announce messages to IRC. Features wishing to
         // send their own IRC messages should depend on Nuwani individually.
         this.nuwani_ = this.defineDependency('nuwani');
@@ -101,8 +105,8 @@ export default class Announce extends Feature {
         if (!kAnnouncementCategories.has(category))
             throw new Error(`Invalid broadcast category given: ${category}.`);
 
-        // TODO: Hook this up.
-        return true;
+        return this.manager_.isCategoryEnabledForPlayer(
+            player, kAnnouncementCategories.get(category));
     }
 
     // ---------------------------------------------------------------------------------------------

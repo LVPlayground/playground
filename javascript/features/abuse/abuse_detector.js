@@ -31,7 +31,7 @@ export class AbuseDetector extends PlayerEventObserver {
 
     // To be called when abuse has been detected. All information regarding the report will be given
     // to the AbuseMonitor, who will take care of the rest.
-    report(player, certainty = AbuseDetector.kFunnyFeeling, evidence = null) {
+    report(player, certainty = AbuseDetector.kDetected, evidence = null) {
         this.monitor_.reportAbuse(player, this.name_, certainty, evidence);
     }
 

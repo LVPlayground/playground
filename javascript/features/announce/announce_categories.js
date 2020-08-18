@@ -219,4 +219,4 @@ export const kAnnouncementCategories = new Map([
         }
     ],
 
-].map(([ key, value ]) => [ key, new AnnounceCategory(value) ]));
+].map(([ identifier, init ]) => [ identifier, new AnnounceCategory(identifier, init) ]));

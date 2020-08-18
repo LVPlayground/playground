@@ -41,7 +41,8 @@ export class PlayerCommandRegistry {
 
         // (2) Initialize the builders through which the individual commands will be registered.
         const myBuilder = server.commandManager.buildCommand('my')
-            .description('Change your own settings on the server.')
+            .description('Change your own settings on the server.');
+
         const playerBuilder = server.commandManager.buildCommand('p')
             .description(`Change someone's settings on the server.`)
             .sub(CommandBuilder.kTypePlayer, 'target')

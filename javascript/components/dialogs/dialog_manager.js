@@ -36,7 +36,9 @@ export class DialogManager {
       if (!player.isConnected())
         throw new Error('Unable to show the dialog on the SA-MP server.');
 
-      player.showDialog(dialogId, style, caption, contents, leftButton, rightButton);
+      player.showDialog(
+        dialogId, style, String(caption), String(contents), String(leftButton),
+        String(rightButton));
 
       this.dialogs_[dialogId] = { resolve: resolve, reject: reject };
     });

@@ -8,8 +8,13 @@ import { InstrumentationDatabase } from 'features/instrumentation/instrumentatio
 // with the database mocked out, to enable testing of this sub-system at the lowest level.
 export class MockInstrumentationDatabase extends InstrumentationDatabase {
     commands = [];
+    signals = [];
 
     async recordCommand(player, commandName, commandSuccess) {
         this.commands.push({ player, commandName, commandSuccess });
+    }
+
+    async recordSignal(player, signal) {
+        this.signals.push({ player, signal });
     }
 }

@@ -33,7 +33,9 @@ export default class Instrumentation extends Feature {
     // Public API of the Instrumentation feature
     // ---------------------------------------------------------------------------------------------
 
-    // TODO: Define the API
+    // Records the given |signal|, which must have been imported from `instrumentation_signals.js`.
+    // Will not immediately issue a write to the database.
+    recordSignal(player, signal) { this.database_.recordSignal(player, signal); }
 
     // ---------------------------------------------------------------------------------------------
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlayerSetting } from 'entities/player_setting.js';
-
 import { format } from 'base/format.js';
 
 // Implementation of the functionality of the Announce feature. This is where input will be verified
@@ -32,7 +30,8 @@ export class AnnounceManager {
 
             if (category.prefix) {
                 const prefix = category.prefix(null);
-                const formattedMessage = message(null, ...params);
+                const formattedMessage = typeof message === 'string' ? message
+                                                                     : message(null, ...params);
 
                 player.sendMessage(`${prefix}${formattedMessage}`);
             } else {
@@ -47,6 +46,15 @@ export class AnnounceManager {
             const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
 
             this.nuwani_().echo('notice-admin', normalizedMessage);
+        }
+
+        // If the |category| has been explicitly marked as making an announcement to Nuwani, forward
+        // the message in English as well, but as a regular announcement.
+        else if (category.nuwani) {
+            const formattedMessage = message(null, ...params);
+            const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
+
+            this.nuwani_().echo('notice-announce', normalizedMessage);
         }
     }
 

@@ -14,7 +14,7 @@ describe('RandomStrategy', (it, beforeEach) => {
     beforeEach(() => {
         const driver = server.featureManager.loadFeature('reaction_tests');
 
-        announceFn = driver.__proto__.announceToPlayers.bind(driver);
+        announceFn = driver.__proto__.broadcastToPlayers.bind(driver);
         nuwani = server.featureManager.loadFeature('nuwani');
         settings = server.featureManager.loadFeature('settings');
     });

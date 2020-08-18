@@ -13,6 +13,7 @@ import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { format } from 'base/format.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
+import { messages } from 'features/playground/playground.messages.js';
 import { timeDifferenceToString } from 'base/time.js';
 
 // A series of general commands that don't fit in any particular
@@ -335,11 +336,19 @@ export class PlaygroundCommands {
             // (2) If the |command| was available to players, but is not anymore, tell them.
             // Conversely, if it's now available and previously wasn't, tell them too.
             if (restrictLevel === Player.LEVEL_PLAYER) {
-                this.announce_().announceToPlayers(
-                    Message.LVP_ACCESS_PLAYERS_REVOKED, player.name, command.command);
+                this.announce_().broadcast(
+                    'miscellaneous/commands', messages.playground_announce_command_revoked,
+                    {
+                        command: command.command,
+                        player,
+                    });
             } else if (level === Player.LEVEL_PLAYER) {
-                this.announce_().announceToPlayers(
-                    Message.LVP_ACCESS_PLAYERS_GRANTED, player.name, command.command);
+                this.announce_().broadcast(
+                    'miscellaneous/commands', messages.playground_announce_command_granted,
+                    {
+                        command: command.command,
+                        player,
+                    });
             }
 
             // (3) Tell all in-game administrators about the change in level having been made.

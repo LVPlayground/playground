@@ -60,7 +60,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/deathmatch'));
 
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 2);
         assert.includes(gunther.messages[0], 
             Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
     });
@@ -72,7 +72,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/deathmatch 0'));
 
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 2);
         assert.includes(gunther.messages[0], 
             Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
     });
@@ -98,7 +98,7 @@ describe('DeathMatchManager', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/deathmatch 1'));
 
-        assert.equal(gunther.messages.length, 3);
+        assert.equal(gunther.messages.length, 2);
         assert.includes(gunther.messages[0], 
             Message.format(Message.DEATH_MATCH_INSTRUCTION_LEAVE, 0));
     });

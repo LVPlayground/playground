@@ -121,7 +121,6 @@
   "DEATH_MATCH_NO_STATS": "@error Sorry, we don't have any stats for you.",
   "DEATH_MATCH_STATS": "Stats for your last session:",
   "DEATH_MATCH_TELEPORT_BLOCKED": "@error Sorry, you can't enter a DM zone now because %s.",
-  "DEATH_MATCH_TELEPORTED": "%s has joined /deathmatch %d",
   "DEATH_MATCH_TOTAL_DEATHS": "You've been killed %d times in this session.",
   "DEATH_MATCH_TOTAL_KILLED": "You've killed %d people in this session.",
 
@@ -345,15 +344,10 @@
   "IRC_SAY_MESSAGE": "{80CBC4}*** %s: %s",
   "IRC_VIP_MESSAGE": "{00E1E1}[VIP] [IRC] %s: %s",
 
-  "KILLTIME_ADMIN_STOPPED": "{DC143C}Killtime{FFFFFF}: An administrator has stopped the killtime. Luckily, the prize will still be handed.",
-  "KILLTIME_AUTO_STOPPED": "{DC143C}Killtime{FFFFFF}: Time is up! The prize will be given out shortly.",
   "KILLTIME_MAXIMUM_TEN_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a maximum of ten minutes.",
   "KILLTIME_MINIMUM_TWO_MINUTES": "{DC143C}Killtime{FFFFFF}: Sorry, there is a minimum of two minutes.",
-  "KILLTIME_STARTED": "{DC143C}Killtime{FFFFFF}: The following %d minutes is killing for a prize! Are you the one with the most kills?",
-  "KILLTIME_TOPKILLER": "{DC143C}Killtime{FFFFFF}: Leading: %s. Hurry up and get more to win the prize of $%d or more!",
   "KILLTIME_USAGE": "{DC143C}Killtime{FFFFFF}: '/killtime start 4 35' for 4 minutes killtime, none = 2 minutes. '/killtime stop' to end.",
   "KILLTIME_INVALID_WEAPON": "{DC143C}Killtime{FFFFFF}: Sorry, this is not a valid weapon.",
-  "KILLTIME_WINNER": "{DC143C}Killtime{FFFFFF}: The winner is: %s. %s",
   "KILLTIME_ENJOY_PRIZE": "Enjoy your prize of $%d!",
 
   "LIMITS_DEATHMATCH_DAMAGE_ISSUED": "you've recently issued damage",
@@ -371,8 +365,6 @@
   "LVP_ACCESS_ADMIN_TEMP_UNRESTRICTED": "%s (Id:%d) has made the \"%s\" command available to all administrators.",
   "LVP_ACCESS_EXCEPTION_ADDED_ADMIN": "%s (Id:%d) has allowed %s (Id:%d) to use the \"%s\" command.",
   "LVP_ACCESS_EXCEPTION_ADDED_FYI": "{ADFF2F}*** %s (Id:%d) has allowed you to use the \"%s\" command.",
-  "LVP_ACCESS_PLAYERS_GRANTED": "%s has made the command \"%s\" available to all players.",
-  "LVP_ACCESS_PLAYERS_REVOKED": "%s has revoked the \"%s\" command from players.",
   "LVP_ACCESS_EXCEPTION_REMOVED_ADMIN": "%s (Id:%d) has removed the \"%s\" command from %s (Id:%d)",
   "LVP_ACCESS_EXCEPTION_REMOVED_FYI": "{ADFF2F}*** %s (Id:%d) has revoked your ability to use the \"%s\" command.",
   "LVP_ACCESS_EXCEPTIONS_RESTORED": "{ADFF2F}*** Your %d command exceptions have been restored.",

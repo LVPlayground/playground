@@ -8,6 +8,7 @@ export class AnnounceCategory {
     #defaultEnabled_ = false;
     #level_ = Player.LEVEL_PLAYER;
     #name_ = null;
+    #nuwani_ = false;
     #prefix_ = null;
 
     // ---------------------------------------------------------------------------------------------
@@ -20,6 +21,9 @@ export class AnnounceCategory {
 
     // Gets the prefix that should be applied to this category.
     get prefix() { return this.#prefix_; }
+
+    // Gets whether the announcement should be distributed to Nuwani as well.
+    get nuwani() { return this.#nuwani_; }
 
     // Gets whether the category should be enabled by default.
     get defaultEnabled() { return this.#defaultEnabled_; }
@@ -46,5 +50,8 @@ export class AnnounceCategory {
 
             this.#prefix_ = init.prefix;
         }
+
+        if (init.hasOwnProperty('nuwani') && init.nuwani)
+            this.#nuwani_ = true;
     }
 }

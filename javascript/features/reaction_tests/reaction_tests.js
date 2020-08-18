@@ -8,10 +8,9 @@ import { RandomStrategy } from 'features/reaction_tests/strategies/random_strate
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscramble_strategy.js';
 
-import * as achievements from 'features/collectables/achievements.js';
-
-import { format } from 'base/format.js';
 import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
+import * as achievements from 'features/collectables/achievements.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
@@ -127,7 +126,7 @@ export default class ReactionTests extends Feature {
     }
 
     // Announces the given |message| with the |params| to all players eligible to participate.
-    announceToPlayers(message, ...params) {
+    broadcastToPlayers(message, ...params) {
         this.announce_().broadcast('games/reaction-tests', message, ...params);
     }
 
@@ -150,7 +149,7 @@ export default class ReactionTests extends Feature {
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
-            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_,
+            ReactionTests.prototype.broadcastToPlayers.bind(this), this.nuwani_,
             this.settings_().getValue('playground/reaction_test_prize'));
 
         this.activeTest_ = strategy;
@@ -193,7 +192,7 @@ export default class ReactionTests extends Feature {
                 message = messages.reaction_tests_announce_winner_second;
 
             // Announce the winner, with their timing, to all in-game players.
-            this.announceToPlayers(message, {
+            this.broadcastToPlayers(message, {
                 player,
                 time: difference,
                 wins: previousWins,

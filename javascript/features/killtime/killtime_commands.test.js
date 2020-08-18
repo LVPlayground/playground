@@ -5,6 +5,8 @@
 import Economy from 'features/economy/economy.js';
 import Killtime from 'features/killtime/killtime.js';
 
+import { messages } from 'features/killtime/killtime.messages.js';
+
 describe('Killtime', (it, beforeEach) => {
     let gunther = null;
 
@@ -42,23 +44,12 @@ describe('Killtime', (it, beforeEach) => {
     });
 
     it('should be able to be started for the standard 2 minutes by a registered administrator', async (assert) => {
-        const minutesToRun = 2;
-        const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
-
         assert.isTrue(await gunther.issueCommand('/killtime start'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
-    });
-
-    it('should be able to be started for 3 minutes by a registered administrator', async (assert) => {
-        const minutesToRun = 3;
-        const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
-
-        assert.isTrue(await gunther.issueCommand('/killtime start ' + minutesToRun));
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+        assert.includes(gunther.messages[0], messages.killtime_announce_started(null, {
+            duration: 2,
+        }));
     });
 
     it('should show that at a manual stop it is stopped by an administrator without a winner', async (assert) => {
@@ -67,9 +58,10 @@ describe('Killtime', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/killtime stop'));
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
-        assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'nobody', '')));
+        assert.includes(gunther.messages[0], messages.killtime_announce_stopped);
+        assert.includes(
+            gunther.messages[1],
+            messages.killtime_announce_winner(null, { winner: 'nobody', prize: '' }));
     });
 
     it('should show that at a manual stop it is stopped by an administrator with a winner', async(assert) => {
@@ -93,9 +85,13 @@ describe('Killtime', (it, beforeEach) => {
         const finance = server.featureManager.loadFeature('finance');
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_ADMIN_STOPPED));
-        assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, gunther.name + ' with 2 kills', prizeMessage)));
+        assert.includes(
+            gunther.messages[1],
+            messages.killtime_announce_winner(null, {
+                winner: 'Gunther with 2 kills',
+                prize: prizeMessage
+            }));
+
         assert.equal(finance.getPlayerCash(gunther), prizeMoney);
         assert.equal(finance.getPlayerCash(russell), 0);
         assert.equal(finance.getPlayerCash(luce), 0);
@@ -108,9 +104,9 @@ describe('Killtime', (it, beforeEach) => {
         await server.clock.advance(60 * 1000);
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
-        assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, 'nobody', '')));
+        assert.includes(
+            gunther.messages[1],
+            messages.killtime_announce_winner(null, { winner: 'nobody', prize: '' }));
     });
 
     it('should show that the time is over with a winner', async(assert) => {
@@ -141,9 +137,13 @@ describe('Killtime', (it, beforeEach) => {
         const finance = server.featureManager.loadFeature('finance');
 
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, Message.KILLTIME_AUTO_STOPPED));
-        assert.equal(gunther.messages[1],
-            Message.format(Message.ANNOUNCE_ALL, Message.format(Message.KILLTIME_WINNER, russell.name + ' with 3 kills', prizeMessage)));
+        assert.includes(
+            gunther.messages[1],
+            messages.killtime_announce_winner(null, {
+                winner: russell.name + ' with 3 kills',
+                prize: prizeMessage
+            }));
+
         assert.equal(finance.getPlayerCash(gunther), 0);
         assert.equal(finance.getPlayerCash(russell), prizeMoney);
         assert.equal(finance.getPlayerCash(luce), 0);
@@ -151,9 +151,6 @@ describe('Killtime', (it, beforeEach) => {
 
     it('should register a kill 1 second before the minutely announceTopKiller', async(assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
-        const amountOfKillsByGunther = 1;
-        const killtimeMessage = Message.format(
-            Message.KILLTIME_TOPKILLER, gunther.name + ' with ' + amountOfKillsByGunther + ' kills', 25000);
 
         assert.isTrue(await gunther.issueCommand('/killtime start'));
         russell.clearMessages();
@@ -163,21 +160,17 @@ describe('Killtime', (it, beforeEach) => {
         await server.clock.advance(1 * 1000);
 
         assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
+        assert.includes(
+            russell.messages[0],
+            messages.killtime_announce_leader(null, {
+                leader: gunther.name + ' with 1 kills',
+                prize: 25000,
+            }));
     });
 
     it('should give error upon using an invalid weapon', async assert => {
         assert.isTrue(await gunther.issueCommand('/killtime start 2 0'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(gunther.messages[0], Message.KILLTIME_INVALID_WEAPON);
-    });
-
-    it('should allow using a valid weapon', async assert => {
-        const minutesToRun = 2;
-        const killtimeMessage = Message.format(Message.KILLTIME_STARTED, minutesToRun);
-
-        assert.isTrue(await gunther.issueCommand('/killtime start 2 35'));
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, killtimeMessage));
     });
 });

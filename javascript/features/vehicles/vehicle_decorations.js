@@ -100,17 +100,17 @@ export class VehicleDecorations {
 
         // For the text draw only limit it to the first.
         const decoration = decorations[0];
-        if (decoration.enterMessage !== null && decoration.enterMessage !== undefined)
+        if (decoration.enterMessage)
             player.gameText(decoration.enterMessage, 3000, 4);
 
-        if (decoration.announceMessage !== null && decoration.announceMessage !== undefined)
-            this.announce_().announceToPlayers(decoration.announceMessage);
+        if (decoration.announceMessage)
+            this.announce_().broadcast('miscellaneous/decorations', decoration.announceMessage);
     }
 
     // Cleanup the objects upon leaving the vehicle.
     onPlayerLeaveVehicle(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || vehicleDecorations.length === 0)
+        if (!vehicleDecorations || !vehicleDecorations.length)
             return;
 
         for (const decoration of vehicleDecorations.decorations)
@@ -122,7 +122,7 @@ export class VehicleDecorations {
     // Cleanup the objects upon disconnecting.
     onPlayerDisconnect(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || vehicleDecorations.length === 0)
+        if (!vehicleDecorations || !vehicleDecorations.length)
             return;
 
         for (const decoration of vehicleDecorations.decorations)

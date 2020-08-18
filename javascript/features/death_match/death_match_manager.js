@@ -55,7 +55,9 @@ export class DeathMatchManger {
 
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_LEAVE);
         player.sendMessage(Message.DEATH_MATCH_INSTRUCTION_STATS);
-        this.announce_().announceToPlayers(Message.DEATH_MATCH_TELEPORTED, player.name, zone);
+
+        this.announce_().announceGameParticipation(
+            player, `Deathmatch ${zone}`, `/deathmatch ${zone}`);
 
         player.respawn(); // This will call onPlayerSpawn and spawn the player on the right spot.
     }

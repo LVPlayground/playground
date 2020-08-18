@@ -9,6 +9,7 @@ import { messages } from 'features/announce/announce.messages.js';
 // Shortcuts that can be used to indicate the default value of certain broadcasts.
 const defaultDisabled = true;
 const defaultEnabled = true;
+const nuwani = true;
 
 // Map of all the announcement categories available on Las Venturas Playground. They can be grouped
 // by category automatically through the "/my settings" command.
@@ -150,6 +151,14 @@ export const kAnnouncementCategories = new Map([
     // Games ---------------------------------------------------------------------------------------
 
     [
+        'games/killtime',
+        {
+            name: 'Killtime',
+            defaultEnabled,
+            nuwani,
+        }
+    ],
+    [
         'games/reaction-tests',
         {
             name: 'Reaction tests',
@@ -174,6 +183,23 @@ export const kAnnouncementCategories = new Map([
             prefix: messages.announce_prefix_gangs,
             defaultEnabled,
         }
-    ]
+    ],
+
+    // Miscellaneous -------------------------------------------------------------------------------
+
+    [
+        'miscellaneous/commands',
+        {
+            name: 'Changes to command access',
+            defaultEnabled,
+        },
+    ],
+    [
+        'miscellaneous/decorations',
+        {
+            name: 'Vehicle decoration effects',
+            defaultEnabled,
+        }
+    ],
 
 ].map(([ key, value ]) => [ key, new AnnounceCategory(value) ]));

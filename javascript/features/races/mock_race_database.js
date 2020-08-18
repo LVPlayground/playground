@@ -31,4 +31,6 @@ export class MockRaceDatabase extends RaceDatabase {
             }
         ];
     }
+
+    async storeResults(player, description, position, results) {}
 }

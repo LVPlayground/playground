@@ -64,7 +64,7 @@ export default class Races extends Feature {
                 new Setting('game', 'description_id', Setting.TYPE_NUMBER, -1, 'Description ID'),
             ],
 
-        }, this.registry_);
+        }, { database: this.database_, registry: this.registry_ });
     }
 
     // Generates the command through which a particular race can be started, information which will

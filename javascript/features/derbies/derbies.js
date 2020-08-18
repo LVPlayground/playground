@@ -58,7 +58,7 @@ export default class Derbies extends Feature {
                 new Setting('game', 'description_id', Setting.TYPE_NUMBER, -1, 'Description ID'),
             ],
 
-        }, this.registry_);
+        }, { registry: this.registry_ });
     }
 
     // Generates the command through which a particular derby can be started, information which will

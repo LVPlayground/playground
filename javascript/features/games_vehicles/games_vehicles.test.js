@@ -45,7 +45,7 @@ describe('GamesVehicles', (it, beforeEach) => {
                     'Description ID'),
             ],
 
-        }, registry);
+        }, { registry });
 
         registry.setDescriptionForTesting(kTestingDescriptionId, Object.assign({
             id: kTestingDescriptionId,

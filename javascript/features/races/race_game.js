@@ -37,6 +37,7 @@ export class RaceGame extends VehicleGame {
     static kNitrousInjectionInfinite = 100;
 
     #airborne_ = null;
+    #database_ = null;
     #description_ = null;
     #disposed_ = false;
 
@@ -47,15 +48,18 @@ export class RaceGame extends VehicleGame {
     #nitrousInjectionTime_ = null;
 
     #checkpoint_ = new WeakMap();
+    #finished_ = 0;
     #progression_ = new WeakMap();
     #scoreboard_ = new Map();
     #start_ = null;
 
-    async onInitialized(settings, registry) {
-        await super.onInitialized(settings, registry);
+    async onInitialized(settings, userData) {
+        await super.onInitialized(settings, userData);
+
+        this.#database_ = userData.database;
 
         // (1) Make sure that we understand which race |this| instance is being created for.
-        this.#description_ = registry.getDescription(settings.get('game/description_id'));
+        this.#description_ = userData.registry.getDescription(settings.get('game/description_id'));
         if (!this.#description_)
             throw new Error(`Invalid race ID specified in ${this}.`);
 
@@ -82,6 +86,10 @@ export class RaceGame extends VehicleGame {
 
         // (5) Start the quick timer that runs until the race has finished.
         this.quickTimer();
+    }
+
+    async onPlayerAdded(player) {
+        await super.onPlayerAdded(player);
     }
 
     async onPlayerSpawned(player, countdown) {
@@ -242,6 +250,13 @@ export class RaceGame extends VehicleGame {
             title: 'congratulations!',
             message: format('you have finished the %s race', this.#description_.name),
         });
+
+        // Store the |player|'s racing times in the database, for future reference. This will be
+        // done asynchronously, as the results don't have to be readily available.
+        if (player.account.isIdentified()) {
+            this.#database_.storeResults(
+                player, this.#description_, ++this.#finished_, tracker.results);
+        }
 
         this.playerWon(player, tracker.time / 1000);
     }

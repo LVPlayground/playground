@@ -24,6 +24,10 @@ export class RaceProgressionTracker {
         return this.#checkpointTimes_.length / (this.#checkpoints_.length * this.#laps_);
     }
 
+    // Gets the array of interim checkpoint times for the player on this race. The values will be
+    // corrected against the start time of the race, so be interim times.
+    get results() { return this.#checkpointTimes_.map(time => time - this.#startTime_); }
+
     // Gets the time, in milliseconds, the participant has spent on the race so far. May be zero
     // in case they haven't started just yet, or a fixed number when they've finished already.
     get time() {

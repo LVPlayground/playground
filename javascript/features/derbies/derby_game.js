@@ -26,11 +26,11 @@ export class DerbyGame extends VehicleGame {
     #description_ = null;
     #scoreboard_ = null;
 
-    async onInitialized(settings, registry) {
-        await super.onInitialized(settings, registry);
+    async onInitialized(settings, userData) {
+        await super.onInitialized(settings, userData);
 
         // (1) Make sure that we understand which derby |this| instance is being created for.
-        this.#description_ = registry.getDescription(settings.get('game/description_id'));
+        this.#description_ = userData.registry.getDescription(settings.get('game/description_id'));
         if (!this.#description_)
             throw new Error(`Invalid derby ID specified in ${this}.`);
     }

@@ -4,6 +4,8 @@
 
 import { Color } from 'base/color.js';
 
+import { substitute } from 'components/database/substitute.js';
+
 // Query to fetch the high scores across races, including the person who set it.
 const kQueryHighscores = `
     SELECT
@@ -44,6 +46,23 @@ const kQueryPlayerHighscores = `
         race_results.user_id = ?
     GROUP BY
         race_results.race_id`;
+
+// Query to store a player's race result in the database.
+const kQueryRaceResult = `
+    INSERT INTO
+        race_results
+        (user_id, race_id, race_date, result_rank, result_time)
+    VALUES
+        (?, ?, NOW(), ?, ?)`;
+
+// Query to record race checkpoint times into the database. These are in a separate table, and used
+// to provide interim results to the player while they are racing.
+const kQueryRaceCheckpointValue = `(?, ?, ?)`;
+const kQueryRaceCheckpointBase = `
+    INSERT INTO
+        race_checkpoint_results
+        (result_id, checkpoint_index, checkpoint_time)
+    VALUES `;
 
 // Provides the ability for the Races feature to interact with the database, for the purpose of
 // storing high-scores and checkpoint time information for the participants.
@@ -90,5 +109,26 @@ export class RaceDatabase {
     async getHighscoresForPlayerQuery(player) {
         const results = await server.database.query(kQueryPlayerHighscores, player.account.userId);
         return results && results.rows ? results.rows : [];
+    }
+
+    // Stores the |results|, an array of checkpoint times, in the database for the given |player|.
+    async storeResults(player, description, position, results) {
+        const [ totalTime ] = results.slice(-1);
+
+        // (1) Create the race result entry in the database, which gives us an auto-incrementing key
+        // used to store the individual checkpoint times for the |player|.
+        const result = await server.database.query(
+            kQueryRaceResult, player.account.userId, description.id, position, totalTime);
+
+        if (!result || !result.insertId)
+            return null;  // the query could not be executed, boo
+
+        // (2) Compose the query to execute for storing the interim checkpoint times.
+        const values = results.map((time, index) => {
+            return substitute(kQueryRaceCheckpointValue, result.insertId, index, time);
+        });
+
+        // (3) Execute the full query, and call it a day - all's been stored.
+        await server.database.query(kQueryRaceCheckpointBase + values.join(','));
     }
 }

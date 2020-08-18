@@ -25,11 +25,11 @@ export class VehicleGame extends GameBase {
     // Utility function to get the vehicle assigned to the |player|, if any.
     getVehicleForPlayer(player) { return this.#playerVehicle_.get(player); }
 
-    async onInitialized(settings, registry) {
-        await super.onInitialized(settings, registry);
+    async onInitialized(settings, userData) {
+        await super.onInitialized(settings, userData);
 
         // (1) Make sure that we understand which game |this| instance is being created for.
-        this.#description_ = registry.getDescription(settings.get('game/description_id'));
+        this.#description_ = userData.registry.getDescription(settings.get('game/description_id'));
         if (!this.#description_)
             throw new Error(`Invalid game ID specified in ${this}.`);
 

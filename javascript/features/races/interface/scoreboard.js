@@ -46,6 +46,12 @@ export class Scoreboard {
         this.#position_ = new PositionElement(player, participants.size);
     }
 
+    // Updates the time displayed on the position element of the scoreboard. Is expected to be
+    // called 5+ times per second, so should avoid doing processing unless required.
+    updateTime(time) {
+        this.#position_.updateTime(this.#player_, time);
+    }
+
     dispose() {
         this.#position_.dispose(this.#player_);
         this.#position_ = null;

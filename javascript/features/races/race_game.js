@@ -17,6 +17,9 @@ import { format } from 'base/format.js';
 // time a single nitro injection will last, without needing to wait for it to recover.
 export const kNitrousInjectionIssueTimeMs = 20000;
 
+// How frequently should the quick timer run during a race?
+export const kQuickTimerFrequencyMs = 173;
+
 // How many seconds should the race's countdown last for?
 export const kStartCountdownSeconds = 3;
 
@@ -35,6 +38,7 @@ export class RaceGame extends VehicleGame {
 
     #airborne_ = null;
     #description_ = null;
+    #disposed_ = false;
 
     #infiniteHealth_ = null;
     #infiniteHealthTime_ = null;
@@ -44,7 +48,7 @@ export class RaceGame extends VehicleGame {
 
     #checkpoint_ = new WeakMap();
     #progression_ = new WeakMap();
-    #scoreboard_ = new WeakMap();
+    #scoreboard_ = new Map();
     #start_ = null;
 
     async onInitialized(settings, registry) {
@@ -75,6 +79,9 @@ export class RaceGame extends VehicleGame {
         // (4) Determine if infinite health should be available to participants.
         this.#infiniteHealth_ = this.#description_.settings.disableVehicleDamage;
         this.#infiniteHealthTime_ = server.clock.monotonicallyIncreasingTime();
+
+        // (5) Start the quick timer that runs until the race has finished.
+        this.quickTimer();
     }
 
     async onPlayerSpawned(player, countdown) {
@@ -289,6 +296,20 @@ export class RaceGame extends VehicleGame {
         }
     }
 
+    async quickTimer() {
+        while (!this.#disposed_ && !this.#start_)
+            await wait(kQuickTimerFrequencyMs);
+
+        while (!this.#disposed_) {
+            const duration = server.clock.monotonicallyIncreasingTime() - this.#start_;
+
+            for (const scoreboard of this.#scoreboard_.values())
+                scoreboard.updateTime(duration);
+
+            await wait(kQuickTimerFrequencyMs);
+        }
+    }
+
     async onPlayerRemoved(player) {
         await super.onPlayerRemoved(player);
 
@@ -301,5 +322,11 @@ export class RaceGame extends VehicleGame {
             this.#scoreboard_.get(player).dispose();
             this.#scoreboard_.delete(player);
         }
+    }
+
+    async onFinished() {
+        await super.onFinished();
+
+        this.#disposed_ = true;
     }
 }

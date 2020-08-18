@@ -47,11 +47,14 @@ export class PositionElement {
         const elements = [
             this.#background_,
             this.#participantLabel_, this.#positionLabel_, this.#positionSuffix_,
+            this.#raceTime_,
         ];
 
         for (const element of elements)
             element.displayForPlayer(player);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Updates the player's |position| given the total number of |participants|.
     updatePosition(position, participants) {
@@ -74,6 +77,8 @@ export class PositionElement {
     updateTime(player, time) {
         this.#raceTime_.setTime(player, time);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose(player) {
         this.#background_.hideForPlayer(player);

@@ -186,4 +186,41 @@ export class MockLeaderboardDatabase extends LeaderboardDatabase {
             },
         ];
     }
+
+    async _getReactionTestLeaderboardQuery({ days, limit }) {
+        return [
+            {
+                user_id: 100278,
+                username: 'Ds]_CH1R4Q_[TM',
+                color: 944491178,
+                reaction_tests_total: 10736,
+                reaction_tests: 186,
+                duration: 180249,
+            },
+            {
+                user_id: 116903,
+                username: 'Sand',
+                color: 2049376255,
+                reaction_tests_total: 1411,
+                reaction_tests: 139,
+                duration: 217618,
+            },
+            {
+                user_id: 118048,
+                username: '[nDz]S0n1c',
+                color: 7538431,
+                reaction_tests_total: 3676,
+                reaction_tests: 106,
+                duration: 49118,
+            },
+            {
+                user_id: 103969,
+                username: 'Sinned',
+                color: 0,
+                reaction_tests_total: 10228,
+                reaction_tests: 51,
+                duration: 134391,
+            },
+        ]
+    }
 }

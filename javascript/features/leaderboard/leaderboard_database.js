@@ -138,6 +138,37 @@ const kKillLeaderboardQuery = `
     LIMIT
         ?`;
 
+// Query to compute the leaderboard entries for reaction tests.
+const kReactionTestLeaderboardQuery = `
+    SELECT
+        sessions.user_id,
+        users.username,
+        IF(users_gangs.user_use_gang_color = 1,
+            IFNULL(gangs.gang_color, users_mutable.custom_color),
+            users_mutable.custom_color) AS color,
+        users_mutable.stats_reaction AS reaction_tests_total,
+        SUM(session_reaction_tests) AS reaction_tests,
+        SUM(session_duration) AS duration,
+    FROM
+        sessions
+    LEFT JOIN
+        users ON users.user_id = sessions.user_id
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = sessions.user_id
+    LEFT JOIN
+        users_gangs ON users_gangs.user_id = sessions.user_id AND users_gangs.left_gang IS NULL
+    LEFT JOIN
+        gangs ON gangs.gang_id = users_gangs.gang_id AND gangs.gang_color IS NOT NULL
+    WHERE
+        session_date >= DATE_SUB(NOW(), INTERVAL ? DAY) AND
+        users.username IS NOT NULL
+    GROUP BY
+        sessions.user_id
+    ORDER BY
+        reaction_tests DESC
+    LIMIT
+        ?`;
+
 // Retrieves leaderboard information from the database and makes it available to JavaScript in an
 // intuitive and idiomatic manner. Not safe for testing, use MockLeaderboardDatabase instead.
 export class LeaderboardDatabase {
@@ -362,6 +393,48 @@ export class LeaderboardDatabase {
     // Actually executes the query for getting the kill-based leaderboard.
     async _getKillsLeaderboardQuery({ days, limit }) {
         const results = await server.database.query(kKillLeaderboardQuery, days, limit);
+        return results && results.rows ? results.rows : [];
+    }
+
+    // Gets the leaderboard data when sorting players by number of reaction test wins.
+    async getReactionTestsLeaderboard({ days, limit }) {
+        const results = await this._getReactionTestLeaderboardQuery({ days, limit });
+        const statistics = this.getOnlinePlayerStatistics();
+
+        const leaderboard = [];
+
+        for (const result of results) {
+            const sessionStatistics = statistics.get(result.user_id);
+
+            const sessionOnlineTime = sessionStatistics?.onlineTime ?? 0;
+            const sessionReactionTests = sessionStatistics?.reactionTests ?? 0;
+
+            leaderboard.push({
+                nickname: result.username,
+                color: result.color !== 0 ? Color.fromNumberRGBA(result.color) : null,
+
+                reactionTests: result.reaction_tests + sessionReactionTests,
+                reactionTestsTotal: result.reaction_tests_total + sessionReactionTests,
+
+                duration: result.duration + sessionOnlineTime,
+            });
+        }
+
+        // Re-sort the |leaderboard| now that live session statistics have been considered, which
+        // may influence the positioning of certain players.
+        leaderboard.sort((lhs, rhs) => {
+            if (lhs.reactionTests === rhs.reactionTests)
+                return 0;
+
+            return lhs.reactionTests > rhs.reactionTests ? -1 : 1;
+        });
+
+        return leaderboard;
+    }
+
+    // Actually executes the query for getting the reaction test-based leaderboard.
+    async _getReactionTestLeaderboardQuery({ days, limit }) {
+        const results = await server.database.query(kReactionTestLeaderboardQuery, days, limit);
         return results && results.rows ? results.rows : [];
     }
 

@@ -69,6 +69,10 @@ export default class Leaderboard extends Feature {
                 data = await this.getKillsLeaderboardData(settings);
                 break;
 
+            case 'reaction':
+                data = await this.getReactionTestsLeaderboardData(settings);
+                break;
+
             default:
                 return this.displayLeaderboardDialog(player);
         }
@@ -238,6 +242,38 @@ export default class Leaderboard extends Feature {
         };
     }
 
+    // Gets the `data` for displaying the leaderboard based on number of solved reaction tests. This
+    // does not discriminate between the different types of reaction tests that are being solved.
+    async getReactionTestsLeaderboardData(settings) {
+        const leaderboard = await this.database_.getReactionTestsLeaderboard(settings);
+        const headers = [ 'Player', 'Reaction tests', 'Reaction tests / hour' ];
+
+        return {
+            title: 'Reaction Tests Statistics',
+            headers,
+            leaderboard: leaderboard.map((result, index) => {
+                let player, tests, hourly;
+
+                // (1) Rank and player identifier
+                player = (index + 1) + '. ';
+
+                if (result.color)
+                    player += `{${result.color.toHexRGB()}}${result.nickname}`;
+                else
+                    player += result.nickname;
+
+                // (2) The number of wins, including their total number of wins.
+                tests = format('%d{9E9E9E} / %d', result.reactionTests, result.reactionTestsTotal);
+
+                // (3) Number of wins they've obtained per hour.
+                hourly = format(
+                    '%.2f{9E9E9E} / hour', result.reactionTests / (result.duration / 3600));
+
+                return [ player, tests, hourly ];
+            }),
+        };
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Displays the leaderboard dialog, which shows an overview of all the available lists, together
@@ -258,6 +294,7 @@ export default class Leaderboard extends Feature {
             this.database_.getDamageLeaderboard(settings),
             this.database_.getGangsLeaderboard(settings),
             this.database_.getKillsLeaderboard(settings),
+            this.database_.getReactionTestsLeaderboard(settings),
         ]);
 
         const dialog = new Menu('Las Venturas Playground', [
@@ -343,6 +380,27 @@ export default class Leaderboard extends Feature {
                     leader = topResult.nickname;
 
                 leader += format('{9E9E9E} (%d kills)', topResult.killCount);
+            }
+
+            dialog.addItem(label, leader, listener);
+        }
+
+        // (5) Reaction tests leaderboard
+        {
+            const label = 'Reaction tests{9E9E9E} (/top reaction)';
+            const listener =
+                Leaderboard.prototype.onLeaderboardCommand.bind(this, player, 'reaction');
+
+            let leader = '-';
+            if (results[4].length) {
+                const topResult = results[4][0];
+
+                if (topResult.color)
+                    leader = `{${topResult.color.toHexRGB()}}${topResult.nickname}`;
+                else
+                    leader = topResult.nickname;
+
+                leader += format('{9E9E9E} (%d reaction tests)', topResult.reactionTests);
             }
 
             dialog.addItem(label, leader, listener);

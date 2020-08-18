@@ -228,6 +228,48 @@ describe('Leaderboard', (it, beforeEach) => {
         });
     });
 
+    it('should be able to display the reaction tests leaderboard', async (assert) => {
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        // (1) Have Sand be online as Russell on their account, with session metrics.
+        await russell.identify({ userId: 116903 });
+
+        russell.stats.session.onlineTime = 8 * 60 * 60;  // 8 hours
+        russell.stats.session.reactionTests = 50;
+
+        // (2) Have |gunther| see the kills leaderboard dialog.
+        assert.isTrue(await gunther.issueCommand('/top reaction'));
+        assert.deepEqual(gunther.getLastDialogAsTable(), {
+            columns: [
+                'Player',
+                'Reaction tests',
+                'Reaction tests / hour',
+            ],
+            rows: [
+                [
+                    '1. {7A26FF}Sand',  // player is online, stats and position amended
+                    '189{9E9E9E} / 1,461',
+                    '2.76{9E9E9E} / hour',
+                ],
+                [
+                    '2. {384BCA}Ds]_CH1R4Q_[TM',
+                    '186{9E9E9E} / 10,736',
+                    '3.71{9E9E9E} / hour',
+                ],
+                [
+                    '3. {007306}[nDz]S0n1c',
+                    '106{9E9E9E} / 3,676',
+                    '7.77{9E9E9E} / hour',
+                ],
+                [
+                    '4. Sinned',
+                    '51{9E9E9E} / 10,228',
+                    '1.37{9E9E9E} / hour',
+                ],
+            ]
+        });
+    });
+
     it('is able to display an overview of the leaderboards', async (assert) => {
         gunther.respondToDialog({ response: 0 /* Dismiss */ });
 
@@ -253,6 +295,10 @@ describe('Leaderboard', (it, beforeEach) => {
                 [
                     'Kills{9E9E9E} (/top kills)',
                     '{FF8C13}[BB]Ricky92{9E9E9E} (891 kills)',
+                ],
+                [
+                    'Reaction tests{9E9E9E} (/top reaction)',
+                    '{384BCA}Ds]_CH1R4Q_[TM{9E9E9E} (186 reaction tests)',
                 ],
             ]
         });

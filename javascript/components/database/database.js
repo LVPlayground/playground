@@ -44,6 +44,8 @@ function substituteValue(prefix, value, index) {
     return prefix + value.map(entry => substituteValue('', entry, index)).join(', ');
 
   switch (typeof value) {
+    case 'boolean':
+      return prefix + (!!value ? 'TRUE' : 'FALSE');
     case 'number':
       return prefix + substituteNumber(value);
     case 'string':

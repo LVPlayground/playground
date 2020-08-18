@@ -37,11 +37,14 @@ import { PositionElement } from 'features/races/interface/position_element.js';
 // positive values will be displayed in red (they're doing worse than the other time).
 export class Scoreboard {
     #player_ = null;
+    #tracker_ = null;
 
     #position_ = null;
+    #results_ = null;
 
-    constructor(player, participants) {
+    constructor(player, tracker, participants) {
         this.#player_ = player;
+        this.#tracker_ = tracker;
 
         this.#position_ = new PositionElement(player, participants.size);
     }
@@ -52,6 +55,12 @@ export class Scoreboard {
         this.#position_.updatePosition(position, participants.length);
 
         // TODO: Update the ranking board when it has been created.
+    }
+
+    // Updates the interim results of the current player to |results|, which has one entry for each
+    // checkpoint in the race, including the final one.
+    updateResults(results) {
+
     }
 
     // Updates the time displayed on the position element of the scoreboard. Is expected to be

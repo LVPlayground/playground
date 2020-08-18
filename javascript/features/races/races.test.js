@@ -45,4 +45,16 @@ describe('Races', it => {
 
         assert.isAbove(iterations, 0);
     });
+
+    it('should be able to read both old-style and new-style results', async (assert) => {
+        const feature = server.featureManager.loadFeature('races');
+        const database = feature.database_;
+
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
+        assert.deepEqual(
+            await database.readResults(gunther, { id: 1 }),   // old-style
+            await database.readResults(russell, { id: 1 }));  // new-style
+    });
 });

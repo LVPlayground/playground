@@ -32,5 +32,31 @@ export class MockRaceDatabase extends RaceDatabase {
         ];
     }
 
+    async readResultsQuery(player, description) {
+        if (player.name === 'Gunther') {
+            // Old-style results, where the final checkpoint time is not recorded.
+            return [
+                { checkpoint_index: 0, checkpoint_time: 10, final_checkpoint_time: 60 },
+                { checkpoint_index: 1, checkpoint_time: 20, final_checkpoint_time: 60 },
+                { checkpoint_index: 2, checkpoint_time: 30, final_checkpoint_time: 60 },
+                { checkpoint_index: 3, checkpoint_time: 40, final_checkpoint_time: 60 },
+                { checkpoint_index: 4, checkpoint_time: 50, final_checkpoint_time: 60 },
+            ];
+        } else if (player.name === 'Russell') {
+            // New-style results, where the final checkpoint time *is* recorded.
+            return [
+
+                { checkpoint_index: 0, checkpoint_time: 10, final_checkpoint_time: 60 },
+                { checkpoint_index: 1, checkpoint_time: 20, final_checkpoint_time: 60 },
+                { checkpoint_index: 2, checkpoint_time: 30, final_checkpoint_time: 60 },
+                { checkpoint_index: 3, checkpoint_time: 40, final_checkpoint_time: 60 },
+                { checkpoint_index: 4, checkpoint_time: 50, final_checkpoint_time: 60 },
+                { checkpoint_index: 5, checkpoint_time: 60, final_checkpoint_time: 60 },  // <----
+            ];
+        } else {
+            return [];
+        }
+    }
+
     async storeResults(player, description, position, results) {}
 }

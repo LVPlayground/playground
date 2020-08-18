@@ -47,6 +47,30 @@ const kQueryPlayerHighscores = `
     GROUP BY
         race_results.race_id`;
 
+// Query to fetch the individual checkpoint times for a specific player from the database.
+const kQueryRaceCheckpointTimes = `
+    SELECT
+        race_checkpoint_results.checkpoint_index,
+        race_checkpoint_results.checkpoint_time,
+        race_top_result.result_time AS final_checkpoint_time
+    FROM
+        (
+            SELECT
+                race_results.result_id,
+                race_results.result_time
+            FROM
+                race_results
+            WHERE
+                race_results.user_id = ? AND
+                race_results.race_id = ?
+            ORDER BY
+                result_time ASC
+            LIMIT
+                1
+        ) AS race_top_result
+    LEFT JOIN
+        race_checkpoint_results ON race_checkpoint_results.result_id = race_top_result.result_id`;
+
 // Query to store a player's race result in the database.
 const kQueryRaceResult = `
     INSERT INTO
@@ -108,6 +132,37 @@ export class RaceDatabase {
     // who is assumed to be registered. Returns an array of rows.
     async getHighscoresForPlayerQuery(player) {
         const results = await server.database.query(kQueryPlayerHighscores, player.account.userId);
+        return results && results.rows ? results.rows : [];
+    }
+
+    // Reads the best results the |player| has obtained for the given |race| description.
+    async readResults(player, description) {
+        const results = await this.readResultsQuery(player, description);
+        const checkpoints = [];
+
+        if (results && results.length) {
+            let final = null;
+            let maximum = Number.MIN_SAFE_INTEGER;
+
+            for (const row of results) {
+                final = row.final_checkpoint_time;
+                maximum = Math.max(maximum, row.checkpoint_time);
+
+                checkpoints.push(row.checkpoint_time);
+            }
+
+            if (Math.abs(maximum - final) >= 0.1)
+                checkpoints.push(final);
+        }
+
+        return checkpoints;
+    }
+
+    // Actually reads the |player|'s best result times from the database.
+    async readResultsQuery(player, description) {
+        const results = await server.database.query(
+            kQueryRaceCheckpointTimes, player.account.userId, description.id);
+
         return results && results.rows ? results.rows : [];
     }
 

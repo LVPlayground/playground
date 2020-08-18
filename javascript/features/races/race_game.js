@@ -50,6 +50,7 @@ export class RaceGame extends VehicleGame {
     #checkpoint_ = new WeakMap();
     #finished_ = 0;
     #progression_ = new WeakMap();
+    #results_ = new WeakMap();
     #scoreboard_ = new Map();
     #start_ = null;
 
@@ -90,6 +91,20 @@ export class RaceGame extends VehicleGame {
 
     async onPlayerAdded(player) {
         await super.onPlayerAdded(player);
+
+        // If the |player| has an account and is identified, load their personal high scores for the
+        // race so that they can play against themselves if nobody else.
+        if (player.account.isIdentified()) {
+            this.#database_.readResults(player, this.#description_).then(results => {
+                if (!results.length)
+                    return;  // no results could be loaded for the |player|
+
+                if (this.#scoreboard_.has(player))
+                    this.#scoreboard_.get(player).updateResults(results);
+                else
+                    this.#results_.set(player, results);
+            });
+        }
     }
 
     async onPlayerSpawned(player, countdown) {
@@ -137,8 +152,9 @@ export class RaceGame extends VehicleGame {
 
         // Create the scoreboard for the |player|, and load their personal best times. If they are
         // not yet available, give up - we've already waited ~2 seconds.
-        const scoreboard = new Scoreboard(player, this.players);
-        // TODO: Set personal data.
+        const scoreboard = new Scoreboard(player, tracker, this.players);
+        if (this.#results_.has(player))
+            scoreboard.updateResults(this.#results_.get(player));
 
         this.#scoreboard_.set(player, scoreboard);
 
@@ -359,6 +375,8 @@ export class RaceGame extends VehicleGame {
             this.#scoreboard_.get(player).dispose();
             this.#scoreboard_.delete(player);
         }
+
+        this.#results_.delete(player);
     }
 
     async onFinished() {

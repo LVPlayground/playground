@@ -146,12 +146,23 @@ export class SettingsCommand extends PlayerCommand {
             target.account.releaseAnnouncementOverride(identifier);
 
         // If |target| and |player| are not the same person, inform the |target| of this change.
+        let message = messages.player_settings_admin_self;
+
         if (target !== player) {
+            message = messages.player_settings_admin_other;
+
             target.sendMessage(messages.player_settings_fyi, {
                 label: category.name,
                 player
             });
         }
+
+        // Announce the change to administrators. The message depends on whether the change is self
+        // inflicted, or whether the |player| is changing this for someone else.
+        this.announce().broadcast('admin/communication/visibility-change', message, {
+            visibility: enabled ? 'disabled' : 'enabled',
+            label, player, target,
+        });
 
         // Tell the |player| that the bit has successfully been flipped.
         await alert(player, {

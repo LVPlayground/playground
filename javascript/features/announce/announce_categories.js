@@ -58,6 +58,18 @@ export const kAnnouncementCategories = new Map([
         }
     ],
 
+    // Communication -------------------------------------------------------------------------------
+
+    [
+        'admin/communication/visibility-change',
+        {
+            name: 'Announcement visibility changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+
     // Gangs ---------------------------------------------------------------------------------------
 
     [

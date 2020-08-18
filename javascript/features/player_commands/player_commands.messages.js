@@ -5,6 +5,12 @@
 import { globalMessages } from 'components/i18n/messages.js';
 
 export const messages = globalMessages.extend({
+
+    player_settings_admin_other:
+        '%{player.name}s (Id:%{player.id}d) has %{visibility}s %{label}s announcements for %{target.name}s (Id:%{target.id}d).',
+    player_settings_admin_self:
+        '%{player.name}s (Id:%{player.id}d) has %{visibility}s %{label}s announcements.',
+
     player_settings_dialog_announcement_title: 'Announcement settings',
     player_settings_dialog_title: 'Player settings',
 

@@ -46,12 +46,12 @@ describe('CommandManager', it => {
 
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
-        assert.isTrue(await gunther.issueCommand('/test usage'));
+        assert.isFalse(await gunther.issueCommand('/test usage'));
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0], Message.format(Message.COMMAND_USAGE, '/test usage [param]'));
 
-        assert.isTrue(await gunther.issueCommand('/test hawkeye'));
+        assert.isFalse(await gunther.issueCommand('/test hawkeye'));
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[1], Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, 'hawkeye'));
@@ -82,7 +82,7 @@ describe('CommandManager', it => {
         assert.equal(events.length, 0);
 
         // (1) Failed execution: parsing failed
-        assert.isTrue(await gunther.issueCommand('/test usage'));
+        assert.isFalse(await gunther.issueCommand('/test usage'));
 
         assert.equal(executed, 0);
         assert.equal(events.length, 1);
@@ -92,7 +92,7 @@ describe('CommandManager', it => {
         assert.isFalse(events[0].result);
 
         // (2) Failed exeuction: unknown player
-        assert.isTrue(await gunther.issueCommand('/test hawkeye'));
+        assert.isFalse(await gunther.issueCommand('/test hawkeye'));
 
         assert.equal(executed, 0);
         assert.equal(events.length, 2);
@@ -121,6 +121,4 @@ describe('CommandManager', it => {
         assert.equal(events[3].command.command, '/test');
         assert.isTrue(events[3].result);
     });
-
-    it.fails();
 });

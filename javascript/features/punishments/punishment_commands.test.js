@@ -19,7 +19,7 @@ describe('PunishmentCommands', (it, beforeEach) => {
     });
 
     it('should be able to display the most recent bans on the server', async (assert) => {
-        assert.isTrue(await gunther.issueCommand('/lastbans'));
+        assert.isFalse(await gunther.issueCommand('/lastbans'));
         assert.equal(gunther.messages.length, 1);
         assert.includes(gunther.messages[0], 'Sorry, this command is only available');
 

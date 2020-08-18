@@ -15,7 +15,7 @@ describe('PlayerSettingsCommands', (it, beforeEach) => {
 
         gunther.level = Player.LEVEL_PLAYER
 
-        assert.isTrue(await gunther.issueCommand('/playersettings'));
+        assert.isFalse(await gunther.issueCommand('/playersettings'));
         assert.equal(gunther.messages.length, 1);
     });
 

@@ -516,16 +516,12 @@ export class MockPlayer extends Player {
     // Issues |commandText| as if it had been send by this player. Returns whether the event with
     // which the command had been issued was prevented.
     async issueCommand(commandText) {
-        let defaultPrevented = false;
-
-        await server.commandManager.onPlayerCommandText({
-            preventDefault: () => defaultPrevented = true,
+        return await server.commandManager.onPlayerCommandText({
+            preventDefault: () => undefined,
 
             playerid: this.id,
             cmdtext: commandText
         });
-
-        return defaultPrevented;
     }
 
     // Responds to an upcoming dialog with the given values. The dialog Id that has been shown

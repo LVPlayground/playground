@@ -5,6 +5,7 @@
 import { Banner } from 'components/interface/banner.js';
 import { RaceCheckpoint } from 'components/checkpoints/race_checkpoint.js';
 import { RaceProgressionTracker } from 'features/races/race_progression_tracker.js';
+import { Scoreboard } from 'features/races/interface/scoreboard.js';
 import { StartCountdown } from 'features/games_vehicles/interface/start_countdown.js';
 import { VehicleGame } from 'features/games_vehicles/vehicle_game.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
@@ -43,6 +44,7 @@ export class RaceGame extends VehicleGame {
 
     #checkpoint_ = new WeakMap();
     #progression_ = new WeakMap();
+    #scoreboard_ = new WeakMap();
     #start_ = null;
 
     async onInitialized(settings, registry) {
@@ -117,6 +119,13 @@ export class RaceGame extends VehicleGame {
 
         this.updateCheckpoint(player, tracker);
         this.#progression_.set(player, tracker);
+
+        // Create the scoreboard for the |player|, and load their personal best times. If they are
+        // not yet available, give up - we've already waited ~2 seconds.
+        const scoreboard = new Scoreboard(player, this.players);
+        // TODO: Set personal data.
+
+        this.#scoreboard_.set(player, scoreboard);
 
         // Display the start countdown for the |player|. They'll be getting ready...
         await StartCountdown.displayForPlayer(
@@ -286,6 +295,11 @@ export class RaceGame extends VehicleGame {
         if (this.#checkpoint_.has(player)) {
             this.#checkpoint_.get(player).hideForPlayer(player);
             this.#checkpoint_.delete(player);
+        }
+
+        if (this.#scoreboard_.has(player)) {
+            this.#scoreboard_.get(player).dispose();
+            this.#scoreboard_.delete(player);
         }
     }
 }

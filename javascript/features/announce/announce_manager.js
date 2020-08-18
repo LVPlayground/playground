@@ -106,14 +106,6 @@ export class AnnounceManager {
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {
-        this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, 
-            PlayerSetting.SUBCOMMAND.GENERAL, ...args);
-    }
-
-    // Announces |message| to the administrators that have the announcements for |announceSubcategory| 
-    // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
-    // which is common infrastructure for user-visible text.
-    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
         if (typeof message === 'function')
             message = message(null, ...args);
         else if (args.length)
@@ -124,14 +116,7 @@ export class AnnounceManager {
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
                 return;
-/**
-            var item = player.settings.getValue(generalIdentifier);
-            var subItem = player.settings.getValue(specificIdentifier);
 
-            if (item === false || subItem === false) {
-                return;
-            }
-*/
             player.sendMessage(formattedMessage);
         });
 

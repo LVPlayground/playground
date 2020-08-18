@@ -60,20 +60,6 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
             ]
         });
     });
-    
-    it('should not announce to administrators if it is not enabled', assert => {
-        return;  // disabled
-
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        gunther.level = Player.LEVEL_ADMINISTRATOR;
-
-        announceManager.announceToAdministratorsWithFilter('Hey guys.', 
-            PlayerSetting.ANNOUNCEMENT.HOUSES,  PlayerSetting.SUBCOMMAND.HOUSES_SELL);
-
-        assert.equal(gunther.messages.length, 0);
-        assert.equal(nuwani.messagesForTesting.length, 1);
-    });
 
     it('should distribute messages to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);

@@ -4,6 +4,8 @@
 
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 describe('RandomStrategy', (it, beforeEach) => {
     let announceFn = null;
     let nuwani = null;
@@ -51,7 +53,10 @@ describe('RandomStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_REPEAT, strategy.answer, 1234));
+            messages.reaction_tests_announce_repeat(null, {
+                sequence: strategy.answer,
+                prize: 1234,
+            }));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {

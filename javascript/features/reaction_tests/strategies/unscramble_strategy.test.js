@@ -4,6 +4,7 @@
 
 import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscramble_strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
 import { range } from 'base/range.js';
 import { shuffle } from 'base/shuffle.js';
 import { symmetricDifference } from 'base/set_extensions.js';
@@ -76,7 +77,10 @@ describe('UnscrambleStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_UNSCRAMBLE, strategy.scrambled, 1234));
+            messages.reaction_tests_announce_unscramble(null, {
+                scrambled: strategy.scrambled,
+                prize: 1234,
+            }));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {

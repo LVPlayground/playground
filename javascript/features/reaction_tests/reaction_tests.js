@@ -11,11 +11,13 @@ import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscrambl
 import * as achievements from 'features/collectables/achievements.js';
 
 import { format } from 'base/format.js';
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
 // and repeat words or phrases. It's all powered by this feature.
 export default class ReactionTests extends Feature {
+    announce_ = null;
     collectables_ = null;
     communication_ = null;
     nuwani_ = null;
@@ -32,6 +34,9 @@ export default class ReactionTests extends Feature {
 
     constructor() {
         super();
+
+        // Messages will be shared with all players through the Announce feature.
+        this.announce_ = this.defineDependency('announce');
 
         // Depending on Collectables, because reaction tests can award achievements.
         this.collectables_ = this.defineDependency('collectables');
@@ -123,10 +128,7 @@ export default class ReactionTests extends Feature {
 
     // Announces the given |message| with the |params| to all players eligible to participate.
     announceToPlayers(message, ...params) {
-        const assembledMessage = format(message, ...params);
-
-        for (const player of server.playerManager)
-            player.sendMessage(assembledMessage);
+        this.announce_().broadcast('games/reaction-tests', message, ...params);
     }
 
     // Starts the next reaction test. First the token is verified to make sure it's still the latest
@@ -172,25 +174,30 @@ export default class ReactionTests extends Feature {
         if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
             // Do nothing, the player's just repeating themselves. Cocky!
         } else if (this.activeTestWinnerName_) {
-            player.sendMessage(
-                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_,
-                (currentTime - this.activeTestWinnerTime_) / 1000);
-
+            player.sendMessage(messages.reaction_tests_too_late, {
+                difference: (currentTime - this.activeTestWinnerTime_) / 1000,
+                winner: this.activeTestWinnerName_,
+            });
         } else {
             const previousWins = player.account.reactionTests;
             const differenceOffset = this.activeTest_.answerOffsetTimeMs;
             const difference = (currentTime - this.activeTestStart_ - differenceOffset) / 1000;
 
+            // Let people watching through Nuwani know that the |player| has won.
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
-            if (previousWins <= 1) {
-                const message = previousWins === 0 ? Message.REACTION_TEST_ANNOUNCE_WINNER_FIRST
-                                                   : Message.REACTION_TEST_ANNOUNCE_WINNER_SECOND;
 
-                this.announceToPlayers(message, player.name, difference);
-            } else {
-                this.announceToPlayers(
-                    Message.REACTION_TEST_ANNOUNCE_WINNER, player.name, difference, previousWins);
-            }
+            let message = messages.reaction_tests_announce_winner;
+            if (previousWins === 0)
+                message = messages.reaction_tests_announce_winner_first;
+            else if (previousWins === 1)
+                message = messages.reaction_tests_announce_winner_second;
+
+            // Announce the winner, with their timing, to all in-game players.
+            this.announceToPlayers(message, {
+                player,
+                time: difference,
+                wins: previousWins,
+            });
 
             // Increment the number of wins in the player's statistics.
             player.stats.enduring.reactionTests++;
@@ -204,7 +211,7 @@ export default class ReactionTests extends Feature {
             this.finance_().givePlayerCash(player, prize);
 
             // Finally, let the |player| know about the prize they've won.
-            player.sendMessage(Message.REACTION_TEST_WON, prize);
+            player.sendMessage(messages.reaction_tests_won, { prize });
 
             this.activeTestWinnerName_ = player.name;
             this.activeTestWinnerTime_ = currentTime;

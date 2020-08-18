@@ -4,6 +4,8 @@
 
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 describe('RememberStrategy', (it, beforeEach) => {
     let announceFn = null;
     let nuwani = null;
@@ -46,7 +48,7 @@ describe('RememberStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_REMEMBER, strategy.answer));
+            messages.reaction_tests_announce_remember(null, { value: strategy.answer }));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {
@@ -67,7 +69,7 @@ describe('RememberStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.equal(
             gunther.messages[1],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_REMEMBER_2, 1234));
+            messages.reaction_tests_announce_remember_2(null, { prize: 1234 }));
 
         assert.equal(nuwani.messagesForTesting.length, 2);
         assert.deepEqual(nuwani.messagesForTesting[1], {

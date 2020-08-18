@@ -95,8 +95,11 @@ export default class Announce extends Feature {
     // TODO: Clean up these things
     // ---------------------------------------------------------------------------------------------
 
-    // Announces |message| to all in-game administrators, as well as administrators watching through
-    // Nuwani on either Discord or IRC. The |message| will be formatted with the |params|.
+    // DO NOT ADD NEW USAGES OF THIS FUNCTION.
+    //
+    // Instead, look into using the broadcast() method instead, which everything is expected to
+    // update to. This takes a mandatory category that will enable all sorts of admin messages to
+    // be configurable by administrators (and players!), as they see fit.
     announceToAdministrators(message, ...params) {
         this.manager_.announceToAdministrators(message, ...params);
     }

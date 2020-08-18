@@ -7,6 +7,8 @@ import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 import * as achievements from 'features/collectables/achievements.js';
 
 describe('ReactionTests', (it, beforeEach) => {
@@ -122,7 +124,7 @@ describe('ReactionTests', (it, beforeEach) => {
 
         assert.equal(gunther.messages.length, 4);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
-        assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
+        assert.equal(gunther.messages[2], messages.reaction_tests_won(null, { prize }));
         assert.includes(gunther.messages[3], driver.activeTest_.answer.toLowerCase());
 
         assert.equal(gunther.stats.enduring.reactionTests, 1);
@@ -140,7 +142,11 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(lucy.account.reactionTests, 0);
         assert.equal(lucy.messages.length, 4);
         assert.equal(
-            lucy.messages[3], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
+            lucy.messages[3],
+            messages.reaction_tests_too_late(null, {
+                difference: 1.23,
+                winner: gunther.name,
+            }));
     });
 
     it('should automatically schedule a new test after someone won', async (assert) => {

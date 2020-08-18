@@ -4,6 +4,8 @@
 
 import { Strategy } from 'features/reaction_tests/strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 // This strategy works by creating a reasonably simple calculation for the player to solve. It could
 // be simple addition/substraction, but it's also possible for them to include a multiplication.
 export class CalculationStrategy extends Strategy {
@@ -41,7 +43,10 @@ export class CalculationStrategy extends Strategy {
             this.composeSimpleCalculation();
 
         // Announce the test to all in-game participants.
-        announceFn(Message.REACTION_TEST_ANNOUNCE_CALCULATE, this.calculation_, prize);
+        announceFn(messages.reaction_tests_announce_calculate, {
+            calculation: this.calculation_,
+            prize
+        });
 
         // Announce the test to everyone reading along through Nuwani.
         nuwani().echo('reaction-calculate', this.calculation_, prize);

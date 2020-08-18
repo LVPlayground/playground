@@ -4,6 +4,7 @@
 
 import { Strategy } from 'features/reaction_tests/strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
 import { random } from 'base/random.js';
 import { shuffle } from 'base/shuffle.js';
 
@@ -65,7 +66,10 @@ export class UnscrambleStrategy extends Strategy {
         this.scrambled_ = this.scramble(this.answer_);
 
         // Announce the test to all in-game participants.
-        announceFn(Message.REACTION_TEST_ANNOUNCE_UNSCRAMBLE, this.scrambled_, prize);
+        announceFn(messages.reaction_tests_announce_unscramble, {
+            scrambled: this.scrambled_,
+            prize
+        });
 
         // Announce the test to everyone reading along through Nuwani.
         nuwani().echo('reaction-unscramble', this.scrambled_, prize);

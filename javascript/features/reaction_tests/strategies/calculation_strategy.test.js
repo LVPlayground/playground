@@ -4,6 +4,8 @@
 
 import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 describe('CalculationStrategy', (it, beforeEach) => {
     let announceFn = null;
     let nuwani = null;
@@ -47,7 +49,10 @@ describe('CalculationStrategy', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.REACTION_TEST_ANNOUNCE_CALCULATE, strategy.calculation, 1234));
+            messages.reaction_tests_announce_calculate(null, {
+                calculation: strategy.calculation,
+                prize: 1234,
+            }));
 
         assert.equal(nuwani.messagesForTesting.length, 1);
         assert.deepEqual(nuwani.messagesForTesting[0], {

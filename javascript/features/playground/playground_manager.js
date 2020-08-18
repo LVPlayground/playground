@@ -99,7 +99,9 @@ export class PlaygroundManager {
 
             // We actually do want to kill the server now. Excellent. Let's do it.
             this.#announce_().announceToAdministrators(Message.LVP_SERVER_AUTO_RESTART);
-            console.log('[Playground] Restarting the server...');
+
+            if (!server.isTest())
+                console.log('[Playground] Restarting the server...');
 
             wait(1500).then(() => killServer());
         });

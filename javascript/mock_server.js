@@ -52,6 +52,7 @@ import GamesVehicles from 'features/games_vehicles/games_vehicles.js';
 import Gangs from 'features/gangs/gangs.js';
 import Gunther from 'features/gunther/gunther.js';
 import Haystack from 'features/haystack/haystack.js';
+import Instrumentation from 'features/instrumentation/instrumentation.js';
 import Leaderboard from 'features/leaderboard/leaderboard.js';
 import Limits from 'features/limits/limits.js';
 import { MockNuwani } from 'features/nuwani/test/mock_nuwani.js';
@@ -127,6 +128,7 @@ class MockServer {
             gangs: Gangs,
             gunther: Gunther,
             haystack: Haystack,
+            instrumentation: Instrumentation,
             leaderboard: Leaderboard,
             limits: Limits,
             nuwani: MockNuwani,

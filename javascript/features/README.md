@@ -36,6 +36,7 @@ Feature                              | Code Health | Description
 [AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.prototype.account` supplement, loads and saves account data.
 [Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
 [Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
+[Instrumentation](instrumentation/)  | ✔ 2020     | Provides our ability to have analytics and instrumentation on the server.
 [Limits](limits/)                    | ✔ 2020     | Centrally decides on limitations for various features, e.g. teleportation.
 [Nuwani](nuwani/)                    | ✔ 2020     | Provides our ability to interact with IRC and Discord.
 [PlayerColors](player_colors/)       | ✔ 2020     | Provides the `Player.prototype.colors` supplement and color management.

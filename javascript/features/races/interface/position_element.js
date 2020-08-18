@@ -2,8 +2,10 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { AbsoluteTimeView } from 'features/races/interface/absolute_time_view.js';
 import { Color } from 'base/color.js';
 import { Rectangle } from 'components/text_draw/rectangle.js';
+import { RelativeTimeView } from 'features/races/interface/relative_time_view.js';
 import { TextDraw } from 'entities/text_draw.js';
 
 // Background color of the score board. Should be semi-transparent.
@@ -31,12 +33,16 @@ export class PositionElement {
     #positionLabel_ = null;
     #positionSuffix_ = null;
 
+    #raceTime_ = null;
+
     constructor(player, participants) {
         this.#background_ = new Rectangle(500, 140, 106, 36.8, kBackgroundColor);
 
         this.#participantLabel_ = createParticipantLabel(player, participants);
         this.#positionLabel_ = createPositionLabel(player);
         this.#positionSuffix_ = createPositionSuffix(player);
+
+        this.#raceTime_ = new AbsoluteTimeView(556.5, 145.5);
 
         const elements = [
             this.#background_,
@@ -64,8 +70,14 @@ export class PositionElement {
             this.#positionSuffix_.text = positionOrdinal;
     }
 
+    // Updates the player's race time to the given |time|, in milliseconds.
+    updateTime(player, time) {
+        this.#raceTime_.setTime(player, time);
+    }
+
     dispose(player) {
         this.#background_.hideForPlayer(player);
+        this.#raceTime_.hideForPlayer(player);
 
         const elements = [
             this.#participantLabel_, this.#positionLabel_, this.#positionSuffix_,

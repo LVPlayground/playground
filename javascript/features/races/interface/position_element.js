@@ -58,7 +58,7 @@ export class PositionElement {
 
     // Updates the player's |position| given the total number of |participants|.
     updatePosition(position, participants) {
-        const participantsText = String(participants);
+        const participantsText = `/${participants}`;
 
         const positionOrdinal = ['st','nd','rd'][((position + 90) % 100 - 10) % 10 - 1] || 'th';
         const positionText = String(position);
@@ -98,7 +98,7 @@ export class PositionElement {
 function createParticipantLabel(player, participants) {
     return server.textDrawManager.createTextDraw({
         position: [ 515.667, 151.634  ],
-        text: String(participants),
+        text: `/${participants}`,
         player,
 
         color: kPlayerCountColor,

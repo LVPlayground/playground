@@ -46,6 +46,14 @@ export class Scoreboard {
         this.#position_ = new PositionElement(player, participants.size);
     }
 
+    // Updates the positions of all the |participants| on the scoreboard. The local player is in the
+    // |position|th position in the current rate, which should also be reflected.
+    updatePositions(participants, position) {
+        this.#position_.updatePosition(position, participants.length);
+
+        // TODO: Update the ranking board when it has been created.
+    }
+
     // Updates the time displayed on the position element of the scoreboard. Is expected to be
     // called 5+ times per second, so should avoid doing processing unless required.
     updateTime(time) {

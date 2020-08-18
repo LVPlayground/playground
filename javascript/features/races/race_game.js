@@ -189,6 +189,42 @@ export class RaceGame extends VehicleGame {
         this.#checkpoint_.set(player, checkpoint);
     }
 
+    // Returns an array with all the participants, ordered by their position within the race. This
+    // is determined based on their
+    getRankedParticipants() {
+        const progress = [];
+
+        // (a) Iterate over all participants, and get their progression into the race, as
+        // well as their distance from their previous checkpoint. The participants will be
+        // sorted on these values, to be able to drop them out in order.
+        for (const player of this.players) {
+            const tracker = this.#progression_.get(player);
+            if (!tracker) {
+                progress.push([ player, /* progress= */ 0, /* distance= */ 0 ]);
+            } else {
+                const checkpointInfo = tracker.getCurrentCheckpoint();
+                if (!checkpointInfo) {
+                    progress.push([ player, tracker.progress, /* distance= */ 0 ]);
+                } else {
+                    progress.push([
+                        player, tracker.progress,
+                        checkpointInfo.position.distanceTo(player.position) ]);
+                }
+            }
+        }
+
+        // (b) Sort the participants based on the |progress| they've made.
+        progress.sort((lhs, rhs) => {
+            if (lhs[1] === rhs[1])
+                return lhs[2] > rhs[2] ? 1 : -1;
+
+            return lhs[1] > rhs[1] ? -1 : 1;
+        });
+
+        // (c) Return a new array with just the participants.
+        return progress.map(entry => entry[0]);
+    }
+
     // Called when the |player| has entered a checkpoint that was created by this race. We split
     // their progress, and determine whether there's a next checkpoint to show.
     onPlayerEnterCheckpoint(player) {
@@ -243,37 +279,7 @@ export class RaceGame extends VehicleGame {
         if (this.#start_) {
             const runtimeSeconds = (currentTime - this.#start_) / 1000;
             if (runtimeSeconds >= this.#description_.settings.timeLimit) {
-                const progress = [];
-
-                // (a) Iterate over all participants, and get their progression into the race, as
-                // well as their distance from their previous checkpoint. The participants will be
-                // sorted on these values, to be able to drop them out in order.
-                for (const player of this.players) {
-                    const tracker = this.#progression_.get(player);
-                    if (!tracker) {
-                        progress.push([ player, /* progress= */ 0, /* distance= */ 0 ]);
-                    } else {
-                        const checkpointInfo = tracker.getCurrentCheckpoint();
-                        if (!checkpointInfo) {
-                            progress.push([ player, tracker.progress, /* distance= */ 0 ]);
-                        } else {
-                            progress.push([
-                                player, tracker.progress,
-                                checkpointInfo.position.distanceTo(player.position) ]);
-                        }
-                    }
-                }
-
-                // (b) Sort the participants based on the |progress| they've made.
-                progress.sort((lhs, rhs) => {
-                    if (lhs[1] === rhs[1])
-                        return lhs[2] > rhs[2] ? 1 : -1;
-
-                    return lhs[1] > rhs[1] ? -1 : 1;
-                });
-
-                // (c) Drop them out in order. The remaining statistics don't matter anymore.
-                for (const [ player ] of progress)
+                for (const player of this.getRankedParticipants())
                     this.playerLost(player);
             }
         }
@@ -292,6 +298,17 @@ export class RaceGame extends VehicleGame {
 
                     this.playerLost(player);
                 }
+            }
+        }
+
+        // (5) Update the positions between the players on the scoreboards that are being displayed
+        // on their screens. This only has to be done once the race has started.
+        if (this.#start_) {
+            const participants = this.getRankedParticipants();
+            for (const [ index, player ] of participants.entries()) {
+                const scoreboard = this.#scoreboard_.get(player);
+                if (scoreboard)
+                    scoreboard.updatePositions(participants, index + 1);
             }
         }
     }

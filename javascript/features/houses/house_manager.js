@@ -14,6 +14,8 @@ import HouseVehicleController from 'features/houses/house_vehicle_controller.js'
 import MockHouseDatabase from 'features/houses/test/mock_house_database.js';
 import { ObjectGroup } from 'entities/object_group.js';
 
+import { messages } from 'features/houses/houses.messages.js';
+
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
@@ -374,9 +376,14 @@ class HouseManager {
                 await this.database_.updateHouseAccess(location, value);
 
                 const readableAccess = HouseSettings.getReadableAccess(value);
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_ACCESS_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, readableAccess);
-                
+
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_access, {
+                    access: readableAccess,
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
+
                 location.settings.access = value;
                 break;
 
@@ -387,8 +394,12 @@ class HouseManager {
                 await this.database_.updateHouseMarkerColor(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'color', value);
 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_MARKER_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_marker, {
+                    house: location.settings.id,
+                    marker: value,
+                    name: location.settings.name,
+                    player,
+                });
 
                 location.settings.markerColor = value;
                 break;
@@ -400,8 +411,11 @@ class HouseManager {
                 await this.database_.updateHouseName(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'label', value);
                 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_RENAMED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_rename, {
+                    house: location.settings.id,
+                    name: value,
+                    player,
+                });
 
                 location.settings.name = value;
                 break;
@@ -415,13 +429,17 @@ class HouseManager {
                 // Remove the spawn setting from all existing houses owned by the player.
                 this.getHousesForUser(location.settings.ownerId).forEach(ownedLocation =>
                     ownedLocation.settings.setSpawn(false));
-                
-                if(value){
-                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_CHANGED, 
-                        player.name, player.id, location.settings.name, location.settings.id);    
-                } else {
-                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_REMOVED, 
-                        player.name, player.id, location.settings.name, location.settings.id);                    
+
+                // Announce the spawning change to administrators
+                {
+                    const message = value ? messages.houses_admin_spawn_set
+                                          : messages.houses_admin_spawn_unset;
+
+                    this.announce_().broadcast('admin/houses/spawning', message, {
+                        house: location.settings.id,
+                        name: location.settings.name,
+                        player,
+                    });
                 }
 
                 location.settings.setSpawn(value);
@@ -433,8 +451,11 @@ class HouseManager {
 
                 await this.database_.updateHouseStreamUrl(location, value);
                 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_AUDIO_STREAM_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_audio, {
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
 
                 location.settings.streamUrl = value;
                 break;
@@ -445,8 +466,11 @@ class HouseManager {
 
                 await this.database_.updateHouseWelcomeMessage(location, value);
 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SET_WELCOME_MESSAGE, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_welcome, {
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
                 
                 location.settings.welcomeMessage = value;
                 break;

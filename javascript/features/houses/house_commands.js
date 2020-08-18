@@ -16,6 +16,7 @@ import { PlayerSetting } from 'entities/player_setting.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 import { alert } from 'components/dialogs/alert.js';
+import { messages } from 'features/houses/houses.messages.js';
 
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
@@ -139,10 +140,11 @@ class HouseCommands {
         // Actually claim the house within the HouseManager, which writes it to the database.
         await this.manager_.createHouse(player, location, interior.id);
 
-        this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_PURCHASED,
-            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_BUY,
-            player.name, player.id, interior.price, location.id);
+        this.announce_().broadcast('admin/houses/ownership', messages.houses_admin_purchased, {
+            location: location.id,
+            player,
+            price: interior.price,
+        });
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -209,10 +211,9 @@ class HouseCommands {
         await this.manager_.createLocation(player, { facingAngle, interiorId, position });
 
         // Announce creation of the location to other administrators.
-        this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_CREATED,
-            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_CREATED,
-            player.name, player.id);
+        this.announce_().broadcast('admin/houses/locations', messages.houses_admin_created, {
+            player
+        });
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -358,11 +359,14 @@ class HouseCommands {
 
                 this.limits_().reportTeleportation(player);
 
-                // Announce creation of the location to other administrators.
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_TELEPORTED,
-                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED,
-                    player.name, player.id, location.settings.name, location.settings.ownerName);
+                // Announce the teleportation action to administrators.
+                this.announce_().broadcast(
+                    'admin/houses/teleportation', messages.houses_admin_goto,
+                    {
+                        name: location.settings.name,
+                        owner: location.settings.ownerName,
+                        player,
+                    });
             });
         }
 
@@ -485,10 +489,13 @@ class HouseCommands {
                 await this.manager_.removeHouse(closestLocation);
 
                 // Announce eviction of the previous owner to other administrators.
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_EVICTED,
-                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_EVICTED,
-                    player.name, player.id, ownerName, closestLocation.id);
+                this.announce_().broadcast(
+                    'admin/houses/ownership', messages.houses_admin_evicted,
+                    {
+                        location: closestLocation.id,
+                        owner: ownerName,
+                        player,
+                    });
 
                 // Display a confirmation dialog to the player to inform them of their action.
                 await MessageBox.display(player, {
@@ -510,10 +517,10 @@ class HouseCommands {
             await this.manager_.removeLocation(closestLocation);
 
             // Announce creation of the location to other administrators.
-            this.announce_().announceToAdministratorsWithFilter(
-                Message.HOUSE_ANNOUNCE_DELETED,
-                PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_DELETED,
-                player.name, player.id, closestLocation.id);
+            this.announce_().broadcast('admin/houses/locations', messages.houses_admin_deleted, {
+                location: closestLocation.id,
+                player
+            });
 
             // Display a confirmation dialog to the player to inform them of their action.
             await MessageBox.display(player, {
@@ -627,9 +634,12 @@ class HouseCommands {
             if (!confirmation.response)
                 return;
 
-            this.announce_().announceToAdministratorsWithFilter(
-                Message.HOUSE_ANNOUNCE_SOLD, PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_SELL,
-                player.name, player.id, location.settings.name, location.settings.id, offer);
+            this.announce_().broadcast('admin/houses/ownership', messages.houses_admin_sold, {
+                location: location.id,
+                name: location.settings.name,
+                player,
+                price: offer,
+            });
 
             await this.manager_.removeHouse(location);
 

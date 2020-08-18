@@ -95,6 +95,54 @@ export const kAnnouncementCategories = new Map([
         }
     ],
 
+    // Houses --------------------------------------------------------------------------------------
+
+    [
+        'admin/houses/locations',
+        {
+            name: 'House location changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+    [
+        'admin/houses/ownership',
+        {
+            name: 'House ownership changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+    [
+        'admin/houses/settings',
+        {
+            name: 'House setting changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
+        'admin/houses/spawning',
+        {
+            name: 'House spawning changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
+        'admin/houses/teleportation',
+        {
+            name: 'House teleportation',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+
     // ---------------------------------------------------------------------------------------------
     // Section: players
     // ---------------------------------------------------------------------------------------------

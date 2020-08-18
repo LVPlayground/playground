@@ -10,6 +10,8 @@ import InteriorList from 'features/houses/utils/interior_list.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import { PlayerSetting } from 'entities/player_setting.js';
 
+import { messages } from 'features/houses/houses.messages.js';
+
 describe('HouseCommands', (it, beforeEach) => {
     let commands = null;
     let location = null;
@@ -44,9 +46,9 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/house create'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
+        assert.includes(
+            gunther.messages[0],
+            messages.houses_admin_created(null, { player: gunther }));
 
         assert.equal(manager.locationCount, locationCount + 1);
     });

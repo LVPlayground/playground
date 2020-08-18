@@ -17,50 +17,6 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         announceManager = new AnnounceManager(() => nuwani, () => settings);
     });
 
-    it('should announce new minigames to players', assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        const name = 'Hello Kitty Playground';
-        const command = '/hko';
-        const price = 25000;
-
-        announceManager.announceMinigame(gunther, name, command, price);
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0],
-                     Message.format(Message.ANNOUNCE_MINIGAME, name, command));
-    });
-
-    it('should announce minigame participation to players', async assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-
-        const name = 'Hello Kitty Playground';
-        const command = '/hko';
-
-        announceManager.announceMinigameParticipation(gunther, name, command);
-
-        // Verify that a call to Pawn will be issued as a microtask to avoid reentrancy issues.
-        {
-            assert.noPawnCall('OnDisplayNewsMessage');
-            await Promise.resolve();
-            assert.pawnCall('OnDisplayNewsMessage');
-        }
-
-        assert.equal(gunther.messages.length, 0);
-
-        // TODO(Russell): Test the message through the news controller when possible.
-
-        assert.equal(nuwani.messagesForTesting.length, 1);
-        assert.deepEqual(nuwani.messagesForTesting[0], {
-            tag: 'notice-minigame',
-            params: [
-                gunther.name,
-                gunther.id,
-                name,
-            ]
-        });
-    });
-
     it('should distribute messages to players', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);

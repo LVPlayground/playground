@@ -67,28 +67,6 @@ export class AnnounceManager {
         }
     }
 
-    // Announces that the |name| has started. Players can join by typing |command|.
-    announceMinigame(player, name, command) {
-        const formattedMessage = format(Message.ANNOUNCE_MINIGAME, name, command);
-
-        server.playerManager.forEach(onlinePlayer =>
-            onlinePlayer.sendMessage(formattedMessage));
-    }
-
-    // Announces that |player| has joined the minigame named |name|. Other players can type the
-    // |command| themselves to participate in the minigame as well.
-    announceMinigameParticipation(player, name, command) {
-        const formattedMessage =
-            format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
-
-        // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
-
-        // Announce it asynchronously when not running a test to avoid reentrancy problems.
-        Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
-
-        this.nuwani_().echo('notice-minigame', player.name, player.id, name);
-    }
-
     // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
     // is an instance of the Message class, which is common infrastructure for user-visible text.
     announceToPlayers(message, ...args) {

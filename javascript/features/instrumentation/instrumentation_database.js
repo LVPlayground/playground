@@ -85,6 +85,8 @@ export class InstrumentationDatabase {
         for (const parameters of this.#commandQueue_)
             values.push(substitute(kRecordCommandsQueryValue, ...parameters));
 
+        this.#commandQueue_ = [];
+
         if (values.length)
             return this.runQuery(kRecordCommandsQueryBase + values.join(','));
     }
@@ -96,6 +98,8 @@ export class InstrumentationDatabase {
 
         for (const parameters of this.#signalQueue_)
             values.push(substitute(kRecordSignalsQueryValue, ...parameters));
+
+        this.#signalQueue_ = [];
 
         if (values.length)
             return this.runQuery(kRecordSignalsQueryBase + values.join(','));

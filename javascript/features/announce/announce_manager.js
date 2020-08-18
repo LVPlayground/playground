@@ -75,20 +75,6 @@ export class AnnounceManager {
         }
     }
 
-    // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
-    // is an instance of the Message class, which is common infrastructure for user-visible text.
-    announceToPlayers(message, ...args) {
-        if (args.length)
-            message = format(message, ...args);
-
-        const formattedMessage = format(Message.ANNOUNCE_ALL, message);
-
-        server.playerManager.forEach(player =>
-            player.sendMessage(formattedMessage));
-
-        this.nuwani_().echo('notice-announce', message);
-    }
-
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {

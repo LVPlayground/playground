@@ -17,27 +17,6 @@ describe('AnnounceManager', (it, beforeEach, afterEach) => {
         announceManager = new AnnounceManager(() => nuwani, () => settings);
     });
 
-    it('should distribute messages to players', assert => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        announceManager.announceToPlayers('Hello, world!');
-
-        assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.format(Message.ANNOUNCE_ALL, 'Hello, world!'));
-
-        assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0], Message.format(Message.ANNOUNCE_ALL, 'Hello, world!'));
-
-        assert.equal(nuwani.messagesForTesting.length, 1);
-        assert.deepEqual(nuwani.messagesForTesting[0], {
-            tag: 'notice-announce',
-            params: [
-                'Hello, world!',
-            ]
-        });
-    });
-
     it('should distribute messages to administrators', assert => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const russell = server.playerManager.getById(1 /* Russell */);

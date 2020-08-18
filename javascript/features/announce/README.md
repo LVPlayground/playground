@@ -9,9 +9,6 @@ pay attention to them: starting a game for them to sign up to, and administrator
 
 Various APIs are available, where the appropriate one depends on the audience of your message.
 
-  * `announceToPlayers(message, ...params)`: announces the given `message` to all in-game players.
-    The `message` will be formatted according to the `params` when given.
-
   * `announceToAdministrators(message, ...params)`: announces the given `message` to all in-game
     administrators, as well as those watching on IRC and Discord. The `message` will be formatted
     according to the `params` when given.

@@ -27,7 +27,7 @@ describe('NewsManager', (it, beforeEach) => {
             assert.equal(manager.textDrawsForTesting[index].text, '_');
 
         // (2) When a message is shown, it should be added as the first message.
-        manager.announceNewsMessage('Hello, world!');
+        manager.broadcastNews('Hello, world!');
 
         assert.equal(manager.textDrawsForTesting[0].text, 'Hello, world!');
         for (let index = 1; index < kMessages; ++index)
@@ -36,7 +36,7 @@ describe('NewsManager', (it, beforeEach) => {
         await server.clock.advance(kShardedTimeMs);
 
         // (3) When another message is shown, it should be added as the second message.
-        manager.announceNewsMessage('Howdy mate!');
+        manager.broadcastNews('Howdy mate!');
 
         assert.equal(manager.textDrawsForTesting[1].text, 'Howdy mate!');
         assert.equal(manager.textDrawsForTesting[0].text, 'Hello, world!');
@@ -48,7 +48,7 @@ describe('NewsManager', (it, beforeEach) => {
 
         // (4) Display |kMessages-1| more messages. The oldest message should be removed.
         for (let message = 0; message < kMessages - 1; ++message)
-            manager.announceNewsMessage(`Gulp message ${message + 1}...`);
+            manager.broadcastNews(`Gulp message ${message + 1}...`);
 
         assert.equal(manager.textDrawsForTesting[1].text, 'Gulp message 1...');
         assert.equal(manager.textDrawsForTesting[0].text, 'Howdy mate!');

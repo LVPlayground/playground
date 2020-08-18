@@ -24,6 +24,6 @@ the ability to disable this view altogether if they're not interested.
 
 News messages can be posted through the following API:
 
-  * `announceNewsMessage(message, ...params)`: announcse the given `message` to all players who have
+  * `broadcastNews(message, ...params)`: announcse the given `message` to all players who have
     enabled news messages. The `message` will be formatted according to the `params` when given.
 

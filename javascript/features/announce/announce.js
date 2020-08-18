@@ -9,6 +9,8 @@ import { NewsManager } from 'features/announce/news_manager.js';
 
 import { format } from 'base/format.js';
 
+import { kAnnouncementCategories } from 'features/announce/announce_categories.js';
+
 // The announce feature offers a set of APIs that can be used to announce events to IRC, players
 // and administrators. This is solely meant for internal usage, and does not offer commands.
 export default class Announce extends Feature {
@@ -63,7 +65,7 @@ export default class Announce extends Feature {
     // Announces that the |player| has signed up for a game with the given |name|, which others can
     // join with the given |command|. Will be announced to all players, but subtly.
     announceGameParticipation(player, name, command) {
-        this.announceNewsMessage(
+        this.broadcastNews(
             Message.ANNOUNCE_GAME_PARTICIPATION_NEWS, player.name, name, command);
 
         this.nuwani_().echo('notice-minigame', player.name, player.id, name);
@@ -73,21 +75,31 @@ export default class Announce extends Feature {
     // Public API: Low-level announcements
     // ---------------------------------------------------------------------------------------------
 
-    // Announces |message| to all in-game administrators, as well as administrators watching through
-    // Nuwani on either Discord or IRC. The |message| will be formatted with the |params|.
-    announceToAdministrators(message, ...params) {
-        this.manager_.announceToAdministrators(message, ...params);
+    // Issues an announcement of the given |category| to all players who should receive it. The
+    // |category| must be listed in `announce_categories.js`, which defines the default set of
+    // recipients. The |message| will be formatted according to the |params| when available.
+    broadcast(category, message, ...params) {
+        if (!kAnnouncementCategories.has(category))
+            throw new Error(`Invalid broadcast category given: ${category}.`);
+
+        this.manager_.broadcast(kAnnouncementCategories.get(category), message, ...params);
     }
 
     // Announces the given |message| to all players who see news messages. The |message| will be
     // formatted according to the |params| when given. Must follow game text styling.
-    announceNewsMessage(message, ...params) {
-        this.newsManager_.announceNewsMessage(message, ...params);
+    broadcastNews(message, ...params) {
+        this.newsManager_.broadcastNews(message, ...params);
     }
 
     // ---------------------------------------------------------------------------------------------
     // TODO: Clean up these things
     // ---------------------------------------------------------------------------------------------
+
+    // Announces |message| to all in-game administrators, as well as administrators watching through
+    // Nuwani on either Discord or IRC. The |message| will be formatted with the |params|.
+    announceToAdministrators(message, ...params) {
+        this.manager_.announceToAdministrators(message, ...params);
+    }
 
     // Announces that the |name| has started by |player|. Players can join by typing |command|, and
     // will have to pay |price| in order to participate in the minigame.

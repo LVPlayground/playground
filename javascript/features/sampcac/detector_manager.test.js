@@ -6,6 +6,8 @@ import { Detector } from 'features/sampcac/detector.js';
 import { DetectorResults } from 'features/sampcac/detector_results.js';
 import { MockSAMPCACStatus } from 'features/sampcac/mock_sampcac_natives.js';
 
+import { messages } from 'features/sampcac/sampcac.messages.js';
+
 import { kAutomaticDetectionDelayMs, kMemoryReadTimeoutMs } from 'features/sampcac/detector_manager.js';
 
 describe('DetectorManager', (it, beforeEach) => {
@@ -118,7 +120,6 @@ describe('DetectorManager', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.SAMPCAC_ADMIN_DETECTOR_HIT, gunther.name, gunther.id,
-                           'lithirm.cs'));
+            messages.sampcac_admin_headsup(null, { player: gunther, detector: 'lithirm.cs' }));
     });
 });

@@ -9,6 +9,7 @@ import { MockAbuseDatabase } from 'features/abuse/mock_abuse_database.js';
 import { clone } from 'base/clone.js';
 import { format } from 'base/format.js';
 import { getComponentName } from 'entities/vehicle_components.js';
+import { messages } from 'features/abuse/abuse.messages.js';
 import { random } from 'base/random.js';
 
 // The abuse monitor keeps track of instances of abuse across the active players. A series of abuse
@@ -41,29 +42,34 @@ export class AbuseMonitor {
 
         // TODO: Implement auto-banning and kicking based on |certainty|.
 
+        let category = null;
         let message = null;
 
         switch (certainty) {
             case AbuseDetector.kFunnyFeeling:
-                message = Message.ABUSE_ADMIN_FUNNY_FEELING;
+                category = 'admin/abuse/monitor';
+                message = messages.abuse_admin_monitor;
                 break;
 
             case AbuseDetector.kSuspected:
-                message = Message.ABUSE_ADMIN_SUSPECTED;
+                category = 'admin/abuse/suspected';
+                message = messages.abuse_admin_suspected;
                 break;
 
             case AbuseDetector.kDetected:
-                message = Message.ABUSE_ADMIN_DETECTED;
+                category = 'admin/abuse/detected';
+                message = messages.abuse_admin_detected;
                 break;
 
             default:
                 throw new Error(`Invalid certainty provided: ${certainty}.`);
         }
 
-        // Make an announcement to all in-game administrators about this incident. It includes the
-        // unique report ID through which the evidence can be retrieved later.
-        this.#announce_().announceToAdministrators(
-            message, player.name, player.id, detectorName, rid);
+        // Broadcast the fact that the |player| has been detected to all in-game administrators.
+        this.#announce_().broadcast(category, message, {
+            detector: detectorName,
+            player, rid,
+        });
 
         // Store the |evidence| in the database, and add more contextual information that will make
         // it easier to look at the incident without being in-game.

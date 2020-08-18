@@ -17,7 +17,7 @@ export class AnnounceNatives {
     // native AnnounceNewsMessage(const message[]);
     announceNewsMessage(message) {
         if (typeof message === 'string' && message.length)
-            this.#feature_.announceNewsMessage(message);
+            this.#feature_.broadcastNews(message);
 
         return 1;
     }

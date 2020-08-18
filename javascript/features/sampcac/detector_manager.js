@@ -6,6 +6,7 @@ import { Detector } from 'features/sampcac/detector.js';
 import { DetectorResults } from 'features/sampcac/detector_results.js';
 
 import { equals } from 'base/equals.js';
+import { messages } from 'features/sampcac/sampcac.messages.js';
 
 // Address from which we obtain the player's uptime.
 const kAddressPlayerUptime = 0x42983D;
@@ -258,8 +259,12 @@ export class DetectorManager {
                     if (result !== DetectorResults.kResultDetected)
                         return;
 
-                    this.announce_().announceToAdministrators(
-                        Message.SAMPCAC_ADMIN_DETECTOR_HIT, player.name, player.id, detector.name);
+                    this.announce_().broadcast(
+                        'admin/abuse/heads-up', messages.sampcac_admin_headsup,
+                        {
+                            detector: detector.name,
+                            player
+                        });
                 });
             }
         });

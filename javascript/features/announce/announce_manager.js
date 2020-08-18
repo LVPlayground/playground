@@ -15,6 +15,45 @@ export class AnnounceManager {
         this.nuwani_ = nuwani;
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Issues an announcement of the given |category| to all players who should receive it. The
+    // |message| and |params| will be substituted individually for each of the recipients.
+    broadcast(category, message, ...params) {
+        for (const player of server.playerManager) {
+            if (player.isNonPlayerCharacter())
+                continue;  // never send messages to non-player characters
+
+            if (player.level < category.level)
+                continue;  // the player is not eligible to receive this message
+
+            // TODO: Check if the |player| has toggled visibility of the |message| themselves. Until
+            // we implement this, ignore the |defaultEnabled| property on |category| too.
+
+            if (category.prefix) {
+                const prefix = category.prefix(null);
+                const formattedMessage = message(null, ...params);
+
+                player.sendMessage(`${prefix}${formattedMessage}`);
+            } else {
+                player.sendMessage(message, ...params);
+            }
+        }
+
+        // Also broadcast the |message| to people watching through Nuwani if it's intended for
+        // administrators and/or above, as an admin notice. We format the message in English.
+        if (category.level > Player.LEVEL_PLAYER) {
+            const formattedMessage = message(null, ...params);
+            const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
+
+            this.nuwani_().echo('notice-admin', normalizedMessage);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // TODO: Clean up the rest
+    // ---------------------------------------------------------------------------------------------
+
     // Announces the given |message| to all players, optionally filtered by the given |predicate|.
     publishAnnouncement({ message, predicate = null } = {}) {
         for (const player of server.playerManager) {

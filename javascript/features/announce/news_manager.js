@@ -75,7 +75,7 @@ export class NewsManager {
 
     // Announces the given |message| to all players who see news messages. The |message| will be
     // formatted according to the |params| when given. https://wiki.sa-mp.com/wiki/GameTextStyle
-    announceNewsMessage(message, ...params) {
+    broadcastNews(message, ...params) {
         const formattedMessage = format(message, ...params);
         const sanitizedMessage = this.sanitizeMessage(formattedMessage);
 

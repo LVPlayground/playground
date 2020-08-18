@@ -51,8 +51,4 @@ describe('SettingsCommand', (it, beforeEach) => {
         assert.isTrue(await russell.issueCommand('/my settings'));
         assert.isTrue(announce.isCategoryEnabledForPlayer(russell, kFirstIdentifier));
     });
-
-    it('should enable players to change their language preferences', async (assert) => {
-
-    });
 });

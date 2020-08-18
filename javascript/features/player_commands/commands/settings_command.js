@@ -43,12 +43,7 @@ export class SettingsCommand extends PlayerCommand {
                 this, player, target, /* categories= */ null));
 
         // TODO: Key bindings for vehicle keys.
-
-        // (2) Enables configuration of the used language on the server.
-        dialog.addItem(
-            messages.player_settings_label_languages,
-            SettingsCommand.prototype.handleLanguages.bind(this, player, target));
-
+        // TODO: Language preferences.
         // TODO: Teleportation preferences for VIPs.
 
         await dialog.displayForPlayer(player);
@@ -169,14 +164,6 @@ export class SettingsCommand extends PlayerCommand {
             title: messages.player_settings_dialog_announcement_title,
             message: messages.player_settings_confirm_updated
         });
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Handles language configuration for the |target|, as done by the |player|, in case they would
-    // like to translate (parts of) Las Venturas Playground to other languages.
-    async handleLanguages(player, target) {
-
     }
 
     // ---------------------------------------------------------------------------------------------

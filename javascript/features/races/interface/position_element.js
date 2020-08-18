@@ -14,6 +14,9 @@ const kBackgroundColor = Color.fromRGBA(0, 0, 0, 100);
 // Color of the text indicating the number of players. Should be white-ish.
 const kPlayerCountColor = Color.fromRGBA(255, 255, 255, 100);
 
+// Color in which the player's personal record will be displayed.
+const kPlayerHighscoreColor = Color.fromRGBA(255, 255, 0, 255);
+
 // This class implements the position element for the racing scoreboard, which displays the player's
 // current position among the participants, the time they've taken so far, as well as their
 //
@@ -35,6 +38,10 @@ export class PositionElement {
 
     #raceTime_ = null;
 
+    #highscoreLabel_ = null;
+    #highscoreTime_ = null;
+    #intervalTime_ = null;
+
     constructor(player, participants) {
         this.#background_ = new Rectangle(500, 140, 106, 36.8, kBackgroundColor);
 
@@ -55,6 +62,19 @@ export class PositionElement {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Sets the |highscore| for the |player|, which is given in milliseconds.
+    setHighscore(player, highscore) {
+        if (this.#highscoreTime_ || this.#intervalTime_)
+            return;  // the space is already being occupied
+
+        this.#highscoreLabel_ = createHighscoreLabel(player);
+        this.#highscoreLabel_.displayForPlayer(player);
+
+        this.#highscoreTime_ = new AbsoluteTimeView(556.5, 154.726, kPlayerHighscoreColor);
+        this.#highscoreTime_.setTime(player, highscore);
+        this.#highscoreTime_.displayForPlayer(player);
+    }
 
     // Updates the player's |position| given the total number of |participants|.
     updatePosition(position, participants) {
@@ -84,13 +104,40 @@ export class PositionElement {
         this.#background_.hideForPlayer(player);
         this.#raceTime_.hideForPlayer(player);
 
+        if (this.#highscoreTime_)
+            this.#highscoreTime_.hideForPlayer(player);
+
+        if (this.#intervalTime_)
+            this.#intervalTime_.hideForPlayer(player);
+
+        // TODO: Move the other elements in here once they've been converted to the new TextDraw
+        // entities, rather than the old system.
         const elements = [
             this.#participantLabel_, this.#positionLabel_, this.#positionSuffix_,
+            this.#highscoreLabel_,
         ];
 
-        for (const element of elements)
-            element.dispose();
+        for (const element of elements) {
+            if (element)
+                element.dispose();
+        }
     }
+}
+
+// Creates a highscore label for the |player|. This displays nothing beyond "PR" (personal record)
+// next to the time view that will be created for the actual record.
+function createHighscoreLabel(player) {
+    return server.textDrawManager.createTextDraw({
+        position: [ 542.467, 154.841 ],
+        text: 'PR',
+        player,
+
+        color: kPlayerHighscoreColor,
+        font: TextDraw.kFontPricedown,
+        shadow: 0,
+
+        letterSize: [ 0.314, 0.969 ],
+    });
 }
 
 // Creates the text draw that will be used to convey the number of participants in the current race.

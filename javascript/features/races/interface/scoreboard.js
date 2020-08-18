@@ -60,7 +60,10 @@ export class Scoreboard {
     // Updates the interim results of the current player to |results|, which has one entry for each
     // checkpoint in the race, including the final one.
     updateResults(results) {
+        this.#results_ = results;
 
+        // Update the highscore in the PositionElement, which is shown until the first checkpoint.
+        this.#position_.setHighscore(this.#player_, ...results.slice(-1));
     }
 
     // Updates the time displayed on the position element of the scoreboard. Is expected to be

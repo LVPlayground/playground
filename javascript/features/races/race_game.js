@@ -279,8 +279,14 @@ export class RaceGame extends VehicleGame {
         if (this.#start_) {
             const runtimeSeconds = (currentTime - this.#start_) / 1000;
             if (runtimeSeconds >= this.#description_.settings.timeLimit) {
-                for (const player of this.getRankedParticipants())
+                for (const player of this.getRankedParticipants()) {
+                    Banner.displayForPlayer(player, {
+                        title: 'dropped out!',
+                        message: `you've exceeded the maximum time`,
+                    });
+
                     this.playerLost(player);
+                }
             }
         }
 
@@ -292,8 +298,7 @@ export class RaceGame extends VehicleGame {
                 if (vehicle !== player.vehicle) {
                     Banner.displayForPlayer(player, {
                         title: 'dropped out!',
-                        message:
-                            format(`you're no longer in your vehicle`, this.#description_.name),
+                        message: `you're no longer in your vehicle`,
                     });
 
                     this.playerLost(player);

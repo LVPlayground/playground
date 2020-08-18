@@ -92,6 +92,8 @@ export class PlaygroundManager {
                     continue;  // ignore NPCs
 
                 // Someone's in-game. Drop out, we don't want to kill the server anymore.
+                this.#restartToken_ = null;
+
                 return;
             }
 

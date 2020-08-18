@@ -17,6 +17,8 @@ export const kAnnouncementCategories = new Map([
     // Section: administrators
     // ---------------------------------------------------------------------------------------------
 
+    // Abuse ---------------------------------------------------------------------------------------
+
     [
         'admin/abuse/detected',
         {
@@ -51,6 +53,72 @@ export const kAnnouncementCategories = new Map([
             level: Player.LEVEL_ADMINISTRATOR,
             prefix: messages.announce_prefix_admin,
             defaultEnabled,
+        }
+    ],
+
+    // Gangs ---------------------------------------------------------------------------------------
+
+    [
+        'admin/gangs/color',
+        {
+            name: 'Gang color changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
+        'admin/gangs/goal',
+        {
+            name: 'Gang goal changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
+        'admin/gangs/invitation',
+        {
+            name: 'Gang invitations',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+    [
+        'admin/gangs/kicked',
+        {
+            name: 'Gang removals',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+    [
+        'admin/gangs/name',
+        {
+            name: 'Gang name changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultEnabled,
+        }
+    ],
+    [
+        'admin/gangs/skin',
+        {
+            name: 'Gang skin changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
+        'admin/gangs/tag',
+        {
+            name: 'Gang tag changes',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
         }
     ],
 

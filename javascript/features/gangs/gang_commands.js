@@ -16,6 +16,7 @@ import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { format } from 'base/format.js';
 import { formatDate, fromNow } from 'base/time.js';
+import { messages } from 'features/gangs/gangs.messages.js';
 
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
@@ -233,9 +234,11 @@ class GangCommands {
         this.manager_.announceToGang(gang, player, Message.GANG_INTERNAL_ANNOUNCE_INVITATION,
                                      player.name, invitee.name, invitee.id);
 
-        this.announce_().announceToAdministrators(
-            Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.id,
-            gang.name);
+        this.announce_().broadcast('admin/gangs/invitation', messages.gangs_admin_invitation, {
+            gang: gang.name,
+            player,
+            target: invitee,
+        });
     }
 
     // Called when the player uses the `/gang join` command to accept an earlier invitation. They
@@ -346,8 +349,11 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name, nickname);
 
-        this.announce_().announceToAdministrators(
-            Message.GANG_ANNOUNCE_KICKED, player.name, player.id, nickname, gang.name);
+        this.announce_().broadcast('admin/gangs/kicked', messages.gangs_admin_kicked, {
+            gang: gang.name,
+            player,
+            target: nickname,
+        });
     }
 
     // Called when the player uses the `/gang leave` command. It will show a confirmation dialog
@@ -511,9 +517,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
                     colorName);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
-                    colorName);
+                this.announce_().broadcast('admin/gangs/color', messages.gangs_admin_color, {
+                    color: colorName,
+                    gang: gang.name,
+                    player,
+                });
 
                 const formattedMessage =
                     Message.format(Message.GANG_SETTINGS_NEW_COLOR, colorName);
@@ -542,12 +550,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_SKIN, player.name,
                     skinId);
 
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.GANG_ANNOUNCE_NEW_SKIN,
-                    PlayerSetting.ANNOUNCEMENT.GANGS,
-                    PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN,
-                    player.name, player.id, gang.name,
-                    skinId);
+                this.announce_().broadcast('admin/gangs/skin', messages.gangs_admin_skin, {
+                    gang: gang.name,
+                    player,
+                    skin: skinId,
+                });
 
                 const formattedMessage =
                     Message.format(Message.GANG_SETTINGS_NEW_SKIN, skinId);
@@ -629,9 +636,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName,
-                    answer);
+                this.announce_().broadcast('admin/gangs/name', messages.gangs_admin_name, {
+                    gang: formerName,
+                    name: answer,
+                    player,
+                });
 
                 await alert(player, {
                     title: 'The name has been updated',
@@ -656,9 +665,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name,
-                    answer);
+                this.announce_().broadcast('admin/gangs/tag', messages.gangs_admin_tag, {
+                    gang: gang.name,
+                    player,
+                    tag: answer,
+                });
 
                 await alert(player, {
                     title: 'The tag has been updated',
@@ -677,9 +688,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name,
-                    answer);
+                this.announce_().broadcast('admin/gangs/goal', messages.gangs_admin_goal, {
+                    gang: gang.name,
+                    goal: answer,
+                    player,
+                });
 
                 await alert(player, {
                     title: 'The goal has been updated',
@@ -851,9 +864,11 @@ class GangCommands {
                 gang, null, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name,
                 member.nickname);
 
-            this.announce_().announceToAdministrators(
-                Message.GANG_ANNOUNCE_KICKED, player.name, player.id, member.nickname,
-                gang.name);
+            this.announce_().broadcast('admin/gangs/kicked', messages.gangs_admin_kicked, {
+                gang: gang.name,
+                player,
+                target: member.nickname,
+            });
 
             if (member.player && member.player.isConnected())
                 member.player.sendMessage(Message.GANG_KICKED, player.name, gang.name);

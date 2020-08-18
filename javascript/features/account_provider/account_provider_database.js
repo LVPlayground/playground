@@ -19,6 +19,7 @@ const ACCOUNT_LOAD_QUERY = `
         users_mutable.stats_shots_hit,
         users_mutable.stats_shots_missed,
         users_mutable.stats_shots_taken,
+        users_mutable.announcements_overrides,
         users_mutable.muted
     FROM
         users_mutable
@@ -43,6 +44,7 @@ const ACCOUNT_SAVE_QUERY = `
         users_mutable.stats_shots_hit = ?,
         users_mutable.stats_shots_missed = ?,
         users_mutable.stats_shots_taken = ?,
+        users_mutable.announcements_overrides = ?,
         users_mutable.muted = ?
     WHERE
         users_mutable.user_id = ?`;
@@ -67,7 +69,8 @@ export class AccountProviderDatabase {
             accountData.skin_decorations, accountData.stats_reaction,
             accountData.stats_damage_given,accountData.stats_damage_taken,
             accountData.stats_shots_hit, accountData.stats_shots_missed,
-            accountData.stats_shots_taken, accountData.muted, accountData.user_id);
+            accountData.stats_shots_taken, accountData.announcement_overrides,
+            accountData.muted, accountData.user_id);
 
         return true;
     }

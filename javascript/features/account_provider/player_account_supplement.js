@@ -14,6 +14,8 @@ export class PlayerAccountSupplement extends Supplement {
     hasRequestedUpdate_ = false;
 
     userId_ = null;
+
+    announcementOverrides_ = new Map();
     bankAccountBalance_ = 0;
     cashBalance_ = 0;
     reactionTests_ = 0;
@@ -22,6 +24,15 @@ export class PlayerAccountSupplement extends Supplement {
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
+
+    // Returns the announcement override for the given |category|, or undefined when none exists.
+    getAnnouncementOverride(category) { return this.announcementOverrides_.get(category); }
+
+    // Sets the announcement override for the given |category| to |enable|, a boolean.
+    setAnnouncementOverride(category, enable) { this.announcementOverrides_.set(category, enable); }
+
+    // Releases the announcement override the player has for the given |category|.
+    releaseAnnouncementOverride(category) { this.announcementOverrides_.delete(category); }
 
     // Gets or sets the balance this user has on their bank account. Writes will be processed as
     // high priority, because 
@@ -73,6 +84,18 @@ export class PlayerAccountSupplement extends Supplement {
         if (databaseRow.skin_decorations && databaseRow.skin_decorations.length > 0)
             this.skinDecorations_ = databaseRow.skin_decorations.split(',').map(id => parseInt(id));
 
+        // Restore the announcement overrides, if these are stored in the |player|'s account.
+        if (databaseRow.announcement_overrides && databaseRow.announcement_overrides.length > 0) {
+            try {
+                const overrides = JSON.parse(databaseRow.announcement_overrides);
+                for (const [ category, enabled ] of Object.entries(overrides))
+                    this.setAnnouncementOverride(category, !!enabled);
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         // |muted| is stored as the number of remaining seconds on their punishment.
         if (databaseRow.muted > 0)
             this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
@@ -101,6 +124,12 @@ export class PlayerAccountSupplement extends Supplement {
     prepareForDatabase(player) {
         const currentTime = server.clock.monotonicallyIncreasingTime();
 
+        // Serialize the announcement overrides, which are stored in a JavaScript Map.
+        const announcementOverrides = {};
+
+        for (const [ identifier, enabled ] of this.announcementOverrides_)
+            announcementOverrides[identifier] = !!enabled;
+
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
@@ -117,6 +146,7 @@ export class PlayerAccountSupplement extends Supplement {
             stats_shots_hit: player.stats.enduring.shotsHit,
             stats_shots_missed: player.stats.enduring.shotsMissed,
             stats_shots_taken: player.stats.enduring.shotsTaken,
+            announcement_overrides: JSON.stringify(announcementOverrides),
             muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
         };
     }

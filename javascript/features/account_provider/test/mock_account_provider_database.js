@@ -23,6 +23,7 @@ export class MockAccountProviderDatabase extends AccountProviderDatabase {
             stats_shots_hit: 0,
             stats_shots_missed: 0,
             stats_shots_taken: 0,
+            announcement_overrides: '',
             muted: 0,
         };
     }

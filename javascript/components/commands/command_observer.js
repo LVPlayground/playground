@@ -8,4 +8,7 @@ export class CommandObserver {
     // Called when the |player| has executed the |command|. The |result| is a boolean that indicates
     // whether execution of the command was successful, which could fail if parameter parsing fails.
     onCommandExecuted(player, command, result) {}
+
+    // Called when the |player| has executed the |commandName|, which does not exist on the server.
+    onUnknownCommandExecuted(player, commandName) {}
 }

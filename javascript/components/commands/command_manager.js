@@ -89,7 +89,7 @@ export class CommandManager {
     // sub-commands of a top-level command. Returns NULL when the |command| cannot be found.
     resolveCommand(command) {
         const result = this.findCommandDescription(command);
-        if (!result)
+        if (!result.success)
             return null;
 
         // Resolve the sub-commands for the |result| in case the |command| includes those. Will
@@ -115,8 +115,12 @@ export class CommandManager {
         // (1) Find the CommandDescription instance for the given |event|. When it can't be found,
         // immediately bail out as the command won't be serviceable by JavaScript.
         const result = this.findCommandDescription(event.cmdtext);
-        if (!result)
+        if (!result.success) {
+            for (const observer of this.#observers_)
+                observer.onUnknownCommandExecuted(player, `/${result.commandName}`);
+
             return null;
+        }
 
         // (2) Mark the |event| as having been handled; no need to call through to Pawn.
         event.preventDefault();
@@ -145,9 +149,9 @@ export class CommandManager {
         // Find the top-level CommandDescription that's associated with the given |command|.
         const description = this.#commands_.get(commandName);
         if (!description)
-            return null;  // the |commandName| does not exist
+            return { success: false, commandName };  // the |commandName| does not exist
 
-        return { description, commandText: (commandText || '').trim() };
+        return { success: true, description, commandText: (commandText || '').trim() };
     }
 
     // ---------------------------------------------------------------------------------------------

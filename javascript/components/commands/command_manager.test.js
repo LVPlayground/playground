@@ -60,6 +60,7 @@ describe('CommandManager', it => {
     it('should have the ability to inform command observers of what happens', async (assert) => {
         let events = [];
         let executed = 0;
+        let unknowns = [];
 
         const gunther = server.playerManager.getById(/* Gunther= */ 0);
 
@@ -75,6 +76,9 @@ describe('CommandManager', it => {
         server.commandManager.addObserver(new class extends CommandObserver {
             onCommandExecuted(player, command, result) {
                 events.push({ player, command, result });
+            }
+            onUnknownCommandExecuted(player, commandName) {
+                unknowns.push({ player, commandName });
             }
         });
 
@@ -120,5 +124,14 @@ describe('CommandManager', it => {
         assert.strictEqual(events[3].player, gunther);
         assert.equal(events[3].command.command, '/test');
         assert.isTrue(events[3].result);
+
+        // (5) Unknown commands
+        assert.isFalse(await gunther.issueCommand('/bananaboat'));
+
+        assert.equal(executed, 2);
+        assert.equal(unknowns.length, 1);
+
+        assert.strictEqual(unknowns[0].player, gunther);
+        assert.equal(unknowns[0].commandName, '/bananaboat');
     });
 });

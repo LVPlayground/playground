@@ -14,12 +14,15 @@ import { format } from 'base/format.js';
 import { messages } from 'features/account/account.messages.js';
 import { random } from 'base/random.js';
 
+import * as signals from 'features/instrumentation/instrumentation_signals.js';
+
 // File in which the registration message has been stored.
 const kRegistrationFile = 'data/commands/register.json';
 
 // Provides access to in-game commands related to account management.
 export class AccountCommands {
     announce_ = null;
+    instrumentation_ = null;
     settings_ = null;
 
     // Cache for the contents of the registration dialog, which are stored in //data.
@@ -28,10 +31,12 @@ export class AccountCommands {
     // The AccountDatabase instance which will execute operations.
     database_ = null;
 
-    constructor(announce, settings, database) {
+    constructor(announce, instrumentation, settings, database) {
         this.announce_ = announce;
-        this.database_ = database;
+        this.instrumentation_ = instrumentation;
         this.settings_ = settings;
+
+        this.database_ = database;
 
         // /account
         // /account [player]
@@ -223,6 +228,9 @@ export class AccountCommands {
         // Now execute the command to actually change the nickname in the database.
         await this.database_.changeName(player.name, newNickname, /* allowAlias= */ true);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountNameChange);
+
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
         this.announce_().announceToAdministrators(messages.account_admin_nickname_changed, {
@@ -308,6 +316,9 @@ export class AccountCommands {
 
         // Now execute the command to actually change the password in the database.
         await this.database_.changePassword(player.name, password);
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountPasswordChange);
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
@@ -450,6 +461,9 @@ export class AccountCommands {
 
         await this.database_.addAlias(player.name, newAlias, /* allowAlias= */ true);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasCreated);
+
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
         this.announce_().announceToAdministrators(messages.account_admin_alias_created, {
@@ -500,6 +514,9 @@ export class AccountCommands {
 
         // Actually delete the |alias|, and inform administrators of this change.
         await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasDeleted);
 
         this.announce_().announceToAdministrators(messages.account_admin_alias_deleted, {
             alias: alias.nickname,
@@ -552,6 +569,9 @@ export class AccountCommands {
 
         display.addItem('Sessions', information.sessions);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewInformation);
+
         await display.displayForPlayer(currentPlayer);
     }
 
@@ -583,6 +603,9 @@ export class AccountCommands {
 
             display.addItem(formatDate(entry.date), type, entry.issuedBy, entry.reason);
         }
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewRecord);
 
         await display.displayForPlayer(currentPlayer);
     }
@@ -616,6 +639,9 @@ export class AccountCommands {
 
             display.addItem(date, session.nickname, duration, session.ip);
         }
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewSessions);
 
         await display.displayForPlayer(currentPlayer);
     }

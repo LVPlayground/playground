@@ -18,6 +18,9 @@ export default class Account extends Feature {
         // Depends on the announce feature to make announcements to administrators.
         this.announce_ = this.defineDependency('announce');
 
+        // Depend on Instrumentation, to record how successful the account feature is.
+        const instrumentation = this.defineDependency('instrumentation');
+
         // Depend on the Nuwani feature to be able to announce messages to IRC.
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
@@ -31,7 +34,8 @@ export default class Account extends Feature {
                                          : new AccountDatabase();
 
         // The in-game commands will be made available using this object.
-        this.commands_ = new AccountCommands(this.announce_, settings, this.database_);
+        this.commands_ = new AccountCommands(
+            this.announce_, instrumentation, settings, this.database_);
 
         this.initializeNuwaniCommands();
     }

@@ -15,6 +15,8 @@ export class PlaygroundManager {
     #announce_ = null;
     #settings_ = null;
 
+    #restartToken_ = null;
+
     constructor(announce, settings) {
         this.#announce_ = announce;
         this.#settings_ = settings;
@@ -78,7 +80,13 @@ export class PlaygroundManager {
 
         // If we hit this place, however, then there are no further players in-game. Wait for a
         // period of time to allow players to re-connect if they intend to do this.
+        const restartToken = Symbol('Restarting the server?');
+        this.#restartToken_ = restartToken;
+
         wait(kAutoRestartReconnectionGraceSec * 1000).then(() => {
+            if (this.#restartToken_ !== restartToken)
+                return;  // our restart token has been revoked since
+
             for (const otherPlayer of server.playerManager) {
                 if (otherPlayer.isNonPlayerCharacter())
                     continue;  // ignore NPCs
@@ -97,6 +105,8 @@ export class PlaygroundManager {
 
     dispose() {
         server.playerManager.removeObserver(this);
+
+        this.#restartToken_ = null;
 
         this.#announce_ = null;
         this.#settings_ = null;

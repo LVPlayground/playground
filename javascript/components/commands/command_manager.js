@@ -4,6 +4,7 @@
 
 import { CommandBuilder } from 'components/commands/command_builder.js';
 import { CommandExecutor } from 'components/commands/command_executor.js';
+import { CommandObserver } from 'components/commands/command_observer.js';
 import { DefaultContextDelegate } from 'components/commands/default_context_delegate.js';
 import { DefaultPermissionDelegate } from 'components/commands/default_permission_delegate.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
@@ -16,6 +17,7 @@ export class CommandManager {
     #commands_ = new Map();
     #defaultPermissionDelegate_ = null;
     #executor_ = null;
+    #observers_ = new Set();
 
     constructor() {
         this.#callbacks_ = new ScopedCallbacks();
@@ -39,6 +41,21 @@ export class CommandManager {
     setPermissionDelegate(delegate) {
         this.#executor_.setPermissionDelegate(delegate ? delegate
                                                        : this.#defaultPermissionDelegate_);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Adds the given |observer| to the list of observers to be informed of command execution.
+    addObserver(observer) {
+        if (!(observer instanceof CommandObserver))
+            throw new Error(`Observers must be an instance of CommandObserver.`);
+
+        this.#observers_.add(observer);
+    }
+
+    // Removes the given |observer| from the list of observers.
+    removeObserver(observer) {
+        this.#observers_.delete(observer);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -105,8 +122,14 @@ export class CommandManager {
         event.preventDefault();
 
         // (3) Execute the actual command |description| for the invoking |player|.
-        return Promise.resolve().then(() =>
-            this.#executor_.executeCommand(player, result.description, result.commandText));
+        return Promise.resolve().then(() => {
+            return this.#executor_.executeCommand(player, result.description, result.commandText);
+        }).then(({ description, success }) => {
+            for (const observer of this.#observers_)
+                observer.onCommandExecuted(player, description, success);
+
+            return success;
+        });
     }
 
     // Returns the { description, commandText } of the given |command|, as it's about to be executed

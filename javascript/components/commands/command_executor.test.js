@@ -34,7 +34,7 @@ describe('CommandExecutor', (it, beforeEach) => {
 
         // Implementation of the permission delegate specifically written for this test.
         permissionDelegate = new class extends CommandPermissionDelegate {
-            canExecuteCommand(context, contextDelegate, command) {
+            canExecuteCommand(context, contextDelegate, command, verbose) {
                 return allowed;  // change |allowed| to block execution
             }
         };
@@ -62,13 +62,13 @@ describe('CommandExecutor', (it, beforeEach) => {
             .description('This is a test command')
             .build(() => counter++);
 
-        assert.isDefined(await executor.executeCommand(gunther, command, ''));
+        assert.isTrue((await executor.executeCommand(gunther, command, '')).success);
         assert.equal(counter, 1);
 
         // (2) Execute the command without permission being granted. This should fail.
         allowed = false;
 
-        assert.isFalse(await executor.executeCommand(gunther, command, ''));
+        assert.isFalse((await executor.executeCommand(gunther, command, '')).success);
         assert.equal(counter, 1);
     });
 

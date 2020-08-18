@@ -41,8 +41,8 @@ export class CommandExecutor {
     // *some* form of communication back to the |context|.
     async executeCommand(context, command, commandText) {
         const candidates = this.matchPossibleCommands(context, command, commandText);
-        if (!candidates)
-            return false;  // an access error will already have been shared
+        if (!candidates.length)
+            return { description: command, success: false };
 
         // TODO: It's possible that a candidate doesn't match, in which case we might want to move
         // on to the next candidate. I suspect that this will be important for commands like `/v`.
@@ -52,14 +52,14 @@ export class CommandExecutor {
             switch (result) {
                 case CommandExecutor.kMatchParameterResultSuccess:
                     await description.listener(context, ...parameters, ...params);
-                    return true;
+                    return { description, success: true };
 
                 case CommandExecutor.kMatchParameterResultUnknownPlayer:
-                    return false;  // an error message has already been issued
+                    return { description, success: false };
 
                 case CommandExecutor.kMatchParameterResultUnparseable:
                     this.#contextDelegate_.respondWithUsage(context, description);
-                    return false;
+                    return { description, success: false };
             }
         }
     }

@@ -15,11 +15,11 @@ const kRecordCommandsQueryBase = `
 
 // Query to record commands into the database. Split up in the value component, as well as the base
 // query component. Multiple values can be substituted into the same query.
-const kRecordSignalsQueryValue = `(?, ?)`;
+const kRecordSignalsQueryValue = `(?, ?, ?)`;
 const kRecordSignalsQueryBase = `
     INSERT INTO
-        instrumentation_commands
-        (instrumentation_user_id, signal_id)
+        instrumentation_signals
+        (instrumentation_user_id, signal_id, signal_values)
     VALUES `;
 
 // Delay before committing instrumentation data to the database, in milliseconds.
@@ -47,11 +47,12 @@ export class InstrumentationDatabase {
 
     // Records that the |player| has executed the given |signal|. Will not write to the database
     // immediately, but will rather buffer writes which will be committed once per X seconds.
-    async recordSignal(player, signal) {
+    async recordSignal(player, signal, ...values) {
+        const valueString = values.length ? JSON.stringify(values) : '';
         const userId = player.account.isIdentified() ? player.account.userId
                                                      : /* unregistered= */ 0;
 
-        this.#signalQueue_.push([ userId, signal.id ]);
+        this.#signalQueue_.push([ userId, signal.id, valueString ]);
         this.requestWrite();
     }
 

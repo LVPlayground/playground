@@ -35,7 +35,9 @@ export default class Instrumentation extends Feature {
 
     // Records the given |signal|, which must have been imported from `instrumentation_signals.js`.
     // Will not immediately issue a write to the database.
-    recordSignal(player, signal) { this.database_.recordSignal(player, signal); }
+    recordSignal(player, signal, ...values) {
+        this.database_.recordSignal(player, signal, ...values);
+    }
 
     // ---------------------------------------------------------------------------------------------
 

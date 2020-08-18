@@ -123,7 +123,7 @@ describe('Instrumentation', (it, beforeEach) => {
         latestQuery = null;
 
         // (2) Record two signals, and expect them to be batched together as well.
-        realDatabase.recordSignal(gunther, signals.kAccountNameChange);
+        realDatabase.recordSignal(gunther, signals.kAccountNameChange, 'Guntah');
         realDatabase.recordSignal(russell, signals.kAccountViewInformation);
 
         assert.isNull(latestQuery);
@@ -134,6 +134,7 @@ describe('Instrumentation', (it, beforeEach) => {
         assert.isNotNull(latestQuery);
 
         assert.includes(latestQuery, String(signals.kAccountNameChange.id));
+        assert.includes(latestQuery, 'Guntah');  // Value for the name change signal
         assert.includes(latestQuery, '13');  // Russell's user ID
     });
 });

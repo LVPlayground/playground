@@ -16,6 +16,10 @@ export const kAccountNameChange = {
     id: 1,
     name: '[Account] Nickname change',
     description: 'Recorded when a player changes their nickname using /account.',
+    values: [
+        { name: 'from' },
+        { name: 'to' },
+    ],
 };
 
 export const kAccountPasswordChange = {
@@ -28,12 +32,18 @@ export const kAccountAliasCreated = {
     id: 3,
     name: '[Account] Alias created',
     description: 'Recorded when a player creates an alias using /account.',
+    values: [
+        { name: 'alias' },
+    ],
 };
 
 export const kAccountAliasDeleted = {
     id: 4,
     name: '[Account] Alias deleted',
     description: 'Recorded when a player deletes an alias using /account.',
+    values: [
+        { name: 'alias' },
+    ],
 };
 
 export const kAccountViewInformation = {

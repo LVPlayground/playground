@@ -229,7 +229,8 @@ export class AccountCommands {
         await this.database_.changeName(player.name, newNickname, /* allowAlias= */ true);
 
         // Record this action in the database.
-        this.instrumentation_().recordSignal(player, signals.kAccountNameChange);
+        this.instrumentation_().recordSignal(
+            player, signals.kAccountNameChange, player.name, newNickname);
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
@@ -462,7 +463,7 @@ export class AccountCommands {
         await this.database_.addAlias(player.name, newAlias, /* allowAlias= */ true);
 
         // Record this action in the database.
-        this.instrumentation_().recordSignal(player, signals.kAccountAliasCreated);
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasCreated, newAlias);
 
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
@@ -516,7 +517,7 @@ export class AccountCommands {
         await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
 
         // Record this action in the database.
-        this.instrumentation_().recordSignal(player, signals.kAccountAliasDeleted);
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasDeleted, alias.nickname);
 
         this.announce_().announceToAdministrators(messages.account_admin_alias_deleted, {
             alias: alias.nickname,

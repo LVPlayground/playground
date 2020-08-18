@@ -18,6 +18,14 @@ export class RaceProgressionTracker {
         this.#checkpointTimes_ = [];
     }
 
+    // Gets the interval of the participant in the current race based on their latest checkpoint.
+    get interval() {
+        return {
+            checkpoint: this.#checkpointTimes_.length,
+            interval: this.#checkpointTimes_[this.#checkpointTimes_.length - 1] - this.#startTime_,
+        };
+    }
+
     // Gets the progress of the participant along the race. This is purely based on the number of
     // checkpoints they've collected so far, creating unfair ties.
     get progress() {

@@ -49,21 +49,36 @@ export class Scoreboard {
         this.#position_ = new PositionElement(player, participants.size);
     }
 
+    // Updates the interim results of the current player to |results|, which has one entry for each
+    // checkpoint in the race, including the final one.
+    updateHighscore(results) {
+        this.#results_ = results;
+
+        // Update the highscore in the PositionElement, which is shown until the first checkpoint.
+        this.#position_.setHighscore(this.#player_, ...results.slice(-1));
+    }
+
+    // Updates the interval time for the current player. We get their latest checkpoint index and
+    // interval from the progression tracker, and compare that against local results.
+    updateHighscoreInterval() {
+        const { checkpoint, interval } = this.#tracker_.interval;
+
+        if (!checkpoint || !this.#results_)
+            return;  // the are no interval times to update
+
+        if (this.#results_.length < checkpoint)
+            return;  // the |results| are invalid, did the race get modified?
+
+        this.#position_.setHighscoreInterval(
+            this.#player_, interval - this.#results_[checkpoint - 1]);
+    }
+
     // Updates the positions of all the |participants| on the scoreboard. The local player is in the
     // |position|th position in the current rate, which should also be reflected.
     updatePositions(participants, position) {
         this.#position_.updatePosition(position, participants.length);
 
         // TODO: Update the ranking board when it has been created.
-    }
-
-    // Updates the interim results of the current player to |results|, which has one entry for each
-    // checkpoint in the race, including the final one.
-    updateResults(results) {
-        this.#results_ = results;
-
-        // Update the highscore in the PositionElement, which is shown until the first checkpoint.
-        this.#position_.setHighscore(this.#player_, ...results.slice(-1));
     }
 
     // Updates the time displayed on the position element of the scoreboard. Is expected to be

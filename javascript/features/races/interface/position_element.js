@@ -76,6 +76,27 @@ export class PositionElement {
         this.#highscoreTime_.displayForPlayer(player);
     }
 
+    //  Sets the |interval| time for the |player|, which is given in milliseconds.
+    setHighscoreInterval(player, interval) {
+        if (this.#highscoreTime_) {
+            this.#highscoreLabel_.hideForPlayer(player);
+            this.#highscoreLabel_ = null;
+
+            this.#highscoreTime_.hideForPlayer(player);
+            this.#highscoreTime_ = null;
+        }
+
+        if (!this.#intervalTime_) {
+            this.#intervalTime_ = new RelativeTimeView(556.5, 154.726);
+
+            this.#intervalTime_.setTime(player, interval);
+            this.#intervalTime_.displayForPlayer(player);
+            return;
+        }
+
+        this.#intervalTime_.setTime(player, interval);
+    }
+
     // Updates the player's |position| given the total number of |participants|.
     updatePosition(position, participants) {
         const participantsText = `/${participants}`;

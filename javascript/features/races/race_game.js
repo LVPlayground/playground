@@ -100,7 +100,7 @@ export class RaceGame extends VehicleGame {
                     return;  // no results could be loaded for the |player|
 
                 if (this.#scoreboard_.has(player))
-                    this.#scoreboard_.get(player).updateResults(results);
+                    this.#scoreboard_.get(player).updateHighscore(results);
                 else
                     this.#results_.set(player, results);
             });
@@ -154,7 +154,7 @@ export class RaceGame extends VehicleGame {
         // not yet available, give up - we've already waited ~2 seconds.
         const scoreboard = new Scoreboard(player, tracker, this.players);
         if (this.#results_.has(player))
-            scoreboard.updateResults(this.#results_.get(player));
+            scoreboard.updateHighscore(this.#results_.get(player));
 
         this.#scoreboard_.set(player, scoreboard);
 
@@ -259,8 +259,13 @@ export class RaceGame extends VehicleGame {
         tracker.split();
 
         // If the player hasn't finished, proceed to the next checkpoint and bail out.
-        if (tracker.progress < 1)
+        if (tracker.progress < 1) {
+            const scoreboard = this.#scoreboard_.get(player);
+            if (scoreboard && player.account.isIdentified())
+                scoreboard.updateHighscoreInterval();
+
             return this.updateCheckpoint(player, tracker);
+        }
 
         Banner.displayForPlayer(player, {
             title: 'congratulations!',

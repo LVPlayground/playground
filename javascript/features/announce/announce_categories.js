@@ -59,24 +59,6 @@ export const kAnnouncementCategories = new Map([
     // Gangs ---------------------------------------------------------------------------------------
 
     [
-        'admin/gangs/color',
-        {
-            name: 'Gang color changes',
-            level: Player.LEVEL_ADMINISTRATOR,
-            prefix: messages.announce_prefix_admin,
-            defaultDisabled,
-        }
-    ],
-    [
-        'admin/gangs/goal',
-        {
-            name: 'Gang goal changes',
-            level: Player.LEVEL_ADMINISTRATOR,
-            prefix: messages.announce_prefix_admin,
-            defaultDisabled,
-        }
-    ],
-    [
         'admin/gangs/invitation',
         {
             name: 'Gang invitations',
@@ -104,22 +86,36 @@ export const kAnnouncementCategories = new Map([
         }
     ],
     [
-        'admin/gangs/skin',
+        'admin/gangs/settings',
         {
-            name: 'Gang skin changes',
+            name: 'Gang setting changes',
             level: Player.LEVEL_ADMINISTRATOR,
             prefix: messages.announce_prefix_admin,
             defaultDisabled,
+        }
+    ],
+
+    // ---------------------------------------------------------------------------------------------
+    // Section: players
+    // ---------------------------------------------------------------------------------------------
+
+    // Gangs ---------------------------------------------------------------------------------------
+
+    [
+        'gangs/created',
+        {
+            name: 'Creation of a new gang',
+            prefix: messages.announce_prefix_gangs,
+            defaultEnabled,
         }
     ],
     [
-        'admin/gangs/tag',
+        'gangs/mutations',
         {
-            name: 'Gang tag changes',
-            level: Player.LEVEL_ADMINISTRATOR,
-            prefix: messages.announce_prefix_admin,
-            defaultDisabled,
+            name: 'People joining or leaving a gang',
+            prefix: messages.announce_prefix_gangs,
+            defaultEnabled,
         }
-    ],
+    ]
 
 ].map(([ key, value ]) => [ key, new AnnounceCategory(value) ]));

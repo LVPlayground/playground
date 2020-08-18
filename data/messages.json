@@ -167,10 +167,7 @@
   "GAME_WATCH_NO_RUNTIME": "@error Sorry, this game is no longer available for you to watch.",
   "GAME_WATCH_REJECTED": "@error Sorry, you can't watch that game right now because %s.",
 
-  "GANG_ANNOUNCE_CREATED": "%s has just founded the %s gang!",
   "GANG_ANNOUNCE_INTERNAL": "{29B6F6}*** %s",
-  "GANG_ANNOUNCE_JOINED": "%s has joined the %s gang!",
-  "GANG_ANNOUNCE_LEFT": "%s has left the %s gang!",
   "GANG_CHAT": "{29B6F6}[%s] [%d] %s: %s",
   "GANG_CHAT_ENCRYPTED": "{64DD17}$ {29B6F6}[%s] [%d] %s: %s",
   "GANG_CHAT_NO_GANG": "{29B6F6}*** You need to be in a gang in order to use the gang chat.",

@@ -6,4 +6,5 @@ import { globalMessages } from 'components/i18n/messages.js';
 
 export const messages = globalMessages.extend({
     announce_prefix_admin: '{FFFF00}Admin notice{FFFFFF}: ',
+    announce_prefix_gangs: '{80CBC4}*** ',
 });

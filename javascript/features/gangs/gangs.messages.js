@@ -19,4 +19,8 @@ export const messages = globalMessages.extend({
         `%{player.name}s (Id:%{player.id}d) updated %{gang}s gang's skin to: %{skin}s`,
     gangs_admin_tag:
         `%{player.name}s (Id:%{player.id}d) updated %{gang}s gang's tag to: %{tag}s`,
+
+    gangs_announce_created: `%{player.name}s has founded the %{gang}s gang!`,
+    gangs_announce_joined: `%{player.name}s has joined the %{gang}s gang!`,
+    gangs_announce_left: `%{player.name}s has joined the %{gang}s gang!`,
 });

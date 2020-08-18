@@ -172,8 +172,10 @@ class GangCommands {
                 if (!result)
                     return;  // the player disconnected from the server
 
-                this.announce_().announceToPlayers(
-                    Message.GANG_ANNOUNCE_CREATED, player.name, name);
+                this.announce_().broadcast('gangs/created', messages.gangs_announce_created, {
+                    gang: name,
+                    player,
+                });
 
                 player.sendMessage(Message.GANG_DID_CREATE, result.name);
 
@@ -266,8 +268,10 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_JOINED, player.name, player.id);
 
-        this.announce_().announceToPlayers(
-            Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
+        this.announce_().broadcast('gangs/mutations', messages.gangs_announce_joined, {
+            gang: gang.name,
+            player,
+        });
 
         this.invitations_.delete(player);
     }
@@ -380,8 +384,10 @@ class GangCommands {
             this.manager_.announceToGang(
                 gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-            this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
-                player.name, gang.name);
+            this.announce_().broadcast('gangs/mutations', messages.gangs_announce_left, {
+                gang: gang.name,
+                player,
+            });
 
             return;
         }
@@ -412,8 +418,10 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-        this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
-            player.name, gang.name);
+        this.announce_().broadcast('gangs/mutations', messages.gangs_announce_left, {
+            gang: gang.name,
+            player,
+        });
     }
 
     // Called when the player uses the `/gang members` command. All members of their gang, whether
@@ -517,7 +525,7 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
                     colorName);
 
-                this.announce_().broadcast('admin/gangs/color', messages.gangs_admin_color, {
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_color, {
                     color: colorName,
                     gang: gang.name,
                     player,
@@ -550,7 +558,7 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_SKIN, player.name,
                     skinId);
 
-                this.announce_().broadcast('admin/gangs/skin', messages.gangs_admin_skin, {
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_skin, {
                     gang: gang.name,
                     player,
                     skin: skinId,
@@ -665,7 +673,7 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name,
                     answer);
 
-                this.announce_().broadcast('admin/gangs/tag', messages.gangs_admin_tag, {
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_tag, {
                     gang: gang.name,
                     player,
                     tag: answer,
@@ -688,7 +696,7 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name,
                     answer);
 
-                this.announce_().broadcast('admin/gangs/goal', messages.gangs_admin_goal, {
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_goal, {
                     gang: gang.name,
                     goal: answer,
                     player,

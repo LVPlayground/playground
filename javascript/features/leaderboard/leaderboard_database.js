@@ -148,7 +148,7 @@ const kReactionTestLeaderboardQuery = `
             users_mutable.custom_color) AS color,
         users_mutable.stats_reaction AS reaction_tests_total,
         SUM(session_reaction_tests) AS reaction_tests,
-        SUM(session_duration) AS duration,
+        SUM(session_duration) AS duration
     FROM
         sessions
     LEFT JOIN

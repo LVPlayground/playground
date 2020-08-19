@@ -61,7 +61,9 @@ export class SettingsCommand extends PlayerCommand {
             messages.player_settings_column_settings,
         ]);
 
-        for (const [ categoryName, subCategories ] of categories) {
+        const sortedCategories = [ ...categories ].sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
+
+        for (const [ categoryName, subCategories ] of sortedCategories) {
             const categoryLabel = categoryName[0].toUpperCase() + categoryName.substring(1);
 
             // Compose the label for the `Settings` column.
@@ -94,6 +96,8 @@ export class SettingsCommand extends PlayerCommand {
             messages.player_settings_column_settings,
         ]);
 
+        const entries = [];
+
         for (const identifier of categories.values()) {
             const category = kAnnouncementCategories.get(identifier);
 
@@ -106,12 +110,23 @@ export class SettingsCommand extends PlayerCommand {
             const status = playerValue ? messages.player_settings_label_enabled
                                        : messages.player_settings_label_disabled;
 
-            // Add the |category| with all computed information to the |dialog|.
-            dialog.addItem(
-                highlight + category.name, highlight + status,
-                SettingsCommand.prototype.handleAnnouncementCategory.bind(
-                    this, player, target, identifier));
+            // Push the data & arguments to |entries|, so that we can sort the dialog.
+            entries.push([
+                category.name,
+                [
+                    highlight + category.name,
+                    highlight + status,
+                    SettingsCommand.prototype.handleAnnouncementCategory.bind(
+                        this, player, target, identifier)
+                ]
+            ]);
         }
+
+        // Sort the |entries|, then add them straight on to the |dialog|.
+        entries.sort((lhs, rhs) => lhs[0].localeCompare(rhs[0]));
+
+        for (const [ label, params ] of entries)
+            dialog.addItem(...params);
 
         await dialog.displayForPlayer(player);
     }

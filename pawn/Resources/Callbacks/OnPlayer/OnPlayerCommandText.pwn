@@ -861,6 +861,7 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         for (new player = 0; player <= PlayerManager->highestPlayerId(); player++) {
             if (!Player(player)->isConnected()) continue;
             if (!Player(player)->isAdministrator()) continue;
+            if (IsPlayerAdmin(player)) continue;
 
             if (Player(player)->isAdministrator() && !Player(player)->isManagement())
                 format(playerLevel, sizeof(playerLevel), "Administrator");

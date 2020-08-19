@@ -78,12 +78,8 @@ lvp_tow(playerid, params[])
     new const price = GetEconomyValue(TeleportWithVehicle);
     new message[128];
 
-    // If the player is an administrator, the following checks do not matter. Using an empty if-statement
-    // because the following else-ifs are nicely structured.
-    if (Player(playerid)->isAdministrator() && IsPlayerInAnyVehicle(playerid)) {}
-
     // What if player is on foot?
-    else if (!IsPlayerInAnyVehicle(playerid))
+    if (!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, Color::Red, "Looks like you're on foot... Use /taxi instead!");
 
     // Does the player have enough money to start a tow?

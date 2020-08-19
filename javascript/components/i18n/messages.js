@@ -15,6 +15,7 @@ export class Messages {
         this.#messages_ = new Map();
         this.#placeholders_ = [
             [ '@error', '{DC143C}Error{FFFFFF}:' ],
+            [ '@fyi', '{33AA33}FYI{FFFFFF}:' ],
             [ '@success', '{33AA33}Success{FFFFFF}:' ],
             [ '@usage', '{FF9900}Usage{FFFFFF}:' ],
         ];

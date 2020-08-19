@@ -40,6 +40,15 @@ export const kAnnouncementCategories = new Map([
         }
     ],
     [
+        'admin/abuse/money-transfers',
+        {
+            name: 'Money transfers',
+            level: Player.LEVEL_ADMINISTRATOR,
+            prefix: messages.announce_prefix_admin,
+            defaultDisabled,
+        }
+    ],
+    [
         'admin/abuse/monitor',
         {
             name: 'Anticheat (oddities)',

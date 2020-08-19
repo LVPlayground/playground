@@ -43,7 +43,7 @@ enum InstrumentationType {
     // [REMOVED] CreatedVehicleActivity = 31,        // When an administrator creates a vehicle with /v create.
     // [REMOVED] DestroyedVehicleActivity = 32,      // When an administrator destroyes a vehicle with /v destroy.
     JumpZoneEnteredActivity = 33,                    // When a player has been teleported to a jumpzone.
-    CommandExecutedActivity = 34                     // When a player executes a command (data0: name).
+    // [REMOVED] CommandExecutedActivity = 34        // When a player executes a command (data0: name).
 };
 
 /**

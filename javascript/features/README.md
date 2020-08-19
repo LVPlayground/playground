@@ -34,6 +34,7 @@ other foundational features, without circular dependencies.
 Feature                              | Code Health | Description
 -------------------------------------|-------------|------------------------------------------------------------------
 [AccountProvider](account_provider/) | ✔ 2020     | Provides the `Player.prototype.account` supplement, loads and saves account data.
+[Announce](announce/)                | ❓ 2020     | Provides the ability to share announcements with players.
 [Communication](communication/)      | ✔ 2020     | Provides communication abilities, chat, spam and message filters.
 [Finance](finance/)                  | ✔ 2020     | Manages player's cash, bank account balances, tax and loans.
 [Instrumentation](instrumentation/)  | ✔ 2020     | Provides our ability to have analytics and instrumentation on the server.
@@ -50,7 +51,6 @@ various other features because of the functionality they provide.
 Feature                                   | Code Health | Description
 ------------------------------------------|-------------|------------------------------------------------------------------
 [Abuse](abuse/)                           | ❓ 2020     | Provides the ability to report and share player abuse instances.
-[Announce](announce/)                     | ❓ 2020     | Provides the ability to share announcements with players.
 [Collectables](collectables/)             | ✔ 2020     | Provides achievements, benefits thereof and the actual collectables.
 [Games](games/)                           | ✔ 2020     | Driver for all sorts of interactive games on the server.
 [GamesDeathmatch](games_deathmatch/)      | ✔ 2020     | Driver for deathmatch-based games on the server.

@@ -23,7 +23,7 @@ export default class Announce extends Feature {
         super();
 
         // The ability to share announcements with players is deemed a low-level capability.
-        this.markLowLevel();
+        this.markFoundational();
 
         // Depend on the `account_provider` feature, as that's where information lives about whether
         // certain categories of announcements should be enabled for the player.

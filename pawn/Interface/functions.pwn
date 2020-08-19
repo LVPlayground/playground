@@ -501,19 +501,6 @@ adler32(buf[]) {
     return ((s2 << 16) + s1);
 }
 
-GetPlayerId(name[]) {
-    new length = strlen(name);
-    if (length < 3)
-        return Player::InvalidId;
-
-    for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-        if (Player(playerId)->isConnected() == true && (strcmp(name, Player(playerId)->nicknameString(), true, length) == 0))
-            return playerId;
-    }
-
-    return Player::InvalidId;
-}
-
 IsNumeric(const string[]) {
     for (new i = 0, j = strlen(string); i < j; i++)
         if (string[i] > '9' || string[i] < '0')

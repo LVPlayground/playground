@@ -1011,61 +1011,6 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
         return 1;
     }
 
-    if (strcmp(cmd, "/givecash", true) == 0) {
-        new subject[MAX_PLAYER_NAME+1], subjectId, amount[128];
-        subject = strtok(cmdtext, idx);
-
-        if (!strlen(subject)) {
-            SendClientMessage(playerid, Color::Information, "Usage: /givecash [player] [amount]");
-            return 1;
-        }
-
-        if (IsNumeric(subject))
-            subjectId = strval(subject);
-        else
-            subjectId = GetPlayerId(subject);
-
-        if (subjectId == Player::InvalidId || !Player(subjectId)->isConnected()) {
-            SendClientMessage(playerid, Color::Error, "Error: This player is not connected.");
-            return 1;
-        }
-
-        amount = strtok(cmdtext, idx);
-        if (!strlen(amount)) {
-            SendClientMessage(playerid, Color::Information, "Usage: /givecash [player] [amount]");
-            return 1;
-        }
-
-        if (IsPlayerInMinigame(subjectId)) {
-            SendClientMessage(playerid, Color::Error, "Error: You can't transfer money to a player who is taking part in a minigame.");
-            return 1;
-        }
-
-        new const cashAmount = strval(amount);
-        if (cashAmount <= 0) {
-            SendClientMessage(playerid, Color::Error, "Error: A minimum of $1 is required.");
-            return 1;
-        }
-
-        if (GetPlayerMoney(playerid) < cashAmount) {
-            SendClientMessage(playerid, Color::Red, "Error: Insufficient funds to carry out this transaction.");
-            return 1;
-        }
-
-        GivePlayerMoney(playerid, -cashAmount);
-        GivePlayerMoney(subjectId, cashAmount);
-
-        format(string, sizeof(string), "Success: You have sent $%s to %s (Id:%d).", formatPrice(cashAmount), Player(subjectId)->nicknameString(), subjectId);
-        SendClientMessage(playerid, Color::Success, string);
-
-        if (!PlayerSyncedData(playerid)->isolated()) {
-            format(string, sizeof(string), "Success: You have received $%s from %s (Id:%d).", formatPrice(cashAmount), Player(playerid)->nicknameString(), playerid);
-            SendClientMessage(subjectId, Color::Success, string);
-        }
-
-        return 1;
-    }
-
     if (strcmp(cmd, "/back", true) == 0) {
         if (GetVehicleModel(GetPlayerVehicleID(playerid)) == 432) {
             SendClientMessage(playerid, Color::Error, "Error: You can't teleport a Rhino.");

@@ -90,7 +90,6 @@ const kIgnoredUnknownCommands = new Set([
     '/dm',
     '/donate',
     '/export',
-    '/givecash',
     '/islanddm',
     '/kill',
     '/knockout',

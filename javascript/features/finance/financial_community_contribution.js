@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { random } from 'base/random.js';
+
 // Initial delay before the community contribution collections will begin. This gives the full
 // gamemode some time to set everything up, before blasting players with tax.. uh.. gifts.
 export const kInitialCollectionDelayMs = 2 * 60 * 1000;  // two minutes
@@ -96,6 +98,10 @@ const kOrganisationNames = [
 
 // Implements people's involuntary community contributions.
 export class FinancialCommunityContribution {
+    // Returns the name of a randomly chosen organisation that money can be donated to. Used for a
+    // variety of reasons, including tax and `/givecash` usage to non-player characters.
+    static getRandomOrganisation() { return kOrganisationNames[random(kOrganisationNames.length)]; }
+
     regulator_ = null;
     settings_ = null;
 
@@ -160,7 +166,7 @@ export class FinancialCommunityContribution {
         if (contribution <= 0)
             return;
 
-        const reason = kOrganisationNames[Math.floor(Math.random() * kOrganisationNames.length)];
+        const reason = FinancialCommunityContribution.getRandomOrganisation();
 
         player.sendMessage(Message.FINANCE_CONTRIBUTION_PAID, contribution, reason);
         player.sendMessage(Message.FINANCE_CONTRIBUTION_WHY);

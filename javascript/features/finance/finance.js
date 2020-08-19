@@ -23,6 +23,9 @@ export default class Finance extends Feature {
 
         this.markFoundational();
 
+        // Certain transactions can lead to announcements visible to administrators.
+        const announce = this.defineDependency('announce');
+
         // Many parts about the in-game financial situation are configurable.
         const settings = this.defineDependency('settings');
 
@@ -48,7 +51,7 @@ export default class Finance extends Feature {
         this.natives_ = new FinancialNatives(this.regulator_);
 
         // Commands that enable players to interact with their in-game money.
-        this.commands_ = new FinancialCommands(this.regulator_);
+        this.commands_ = new FinancialCommands(announce, this.regulator_);
     }
 
     // ---------------------------------------------------------------------------------------------

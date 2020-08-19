@@ -7,7 +7,8 @@ import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 // Implementation of the actual gang chat feature. Will work with the gangs feature to get its data,
 // and listens to the Communiaction feature to be able to intercept messages.
 export class GangChatManager {
-    constructor(gangs, communication, nuwani) {
+    constructor(announce, gangs, communication, nuwani) {
+        this.announce_ = announce;
         this.gangs_ = gangs;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
@@ -119,8 +120,10 @@ export class GangChatManager {
             if (recipients.has(onlinePlayer))
                 return;  // they have already received the message
 
-            if (onlinePlayer.messageLevel < 2)
-                return;  // they do not wish to see gang chat
+            if (!this.announce_().isCategoryEnabledForPlayer(
+                    onlinePlayer, 'admin/communication/gang-chat')) {
+                return;  // they do not wish to receive gang chat
+            }
 
             onlinePlayer.sendMessage(message);
             recipients.add(onlinePlayer);

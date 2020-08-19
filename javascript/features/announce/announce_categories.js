@@ -80,6 +80,14 @@ export const kAnnouncementCategories = new Map([
         }
     ],
     [
+        'admin/communication/gang-chat',
+        {
+            name: 'Gang conversations',
+            level: Player.LEVEL_ADMINISTRATOR,
+            defaultEnabled,
+        }
+    ],
+    [
         'admin/communication/private-messages',
         {
             name: 'Private messages',

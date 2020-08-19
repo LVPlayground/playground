@@ -12,6 +12,9 @@ export default class GangChat extends Feature {
     constructor() {
         super();
 
+        // Used to allow administrators to toggle visibility of gang conversations.
+        const announce = this.defineDependency('announce');
+
         // The gangs feature contains the information necessary to distribute messages to the right
         // audience, i.e. the members of the gang they're part of.
         const gangs = this.defineDependency('gangs');
@@ -22,7 +25,7 @@ export default class GangChat extends Feature {
         // Gang chat will register with the communication feature as a delegate.
         const communication = this.defineDependency('communication');
 
-        this.manager_ = new GangChatManager(gangs, communication, nuwani);
+        this.manager_ = new GangChatManager(announce, gangs, communication, nuwani);
     }
 
     // ---------------------------------------------------------------------------------------------

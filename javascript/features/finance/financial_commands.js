@@ -98,6 +98,9 @@ export class FinancialCommands {
     //
     // Called when the |player| wishes to transfer |amount| dollars to the given |target|.
     async onGiveCashCommand(player, target, amount) {
+        if (player === target)
+            return player.sendMessage(messages.finance_give_cash_invalid_recipient);
+
         if (amount <= 0 || amount > FinancialRegulator.kMaximumCashAmount) {
             return player.sendMessage(messages.finance_give_cash_invalid_amount, {
                 maximum: FinancialRegulator.kMaximumCashAmount,

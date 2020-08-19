@@ -15,6 +15,8 @@ export const messages = globalMessages.extend({
         `@error %{target.name}$ already carries a lot of money, and can only accept up to %{limit}$ right now.`,
     finance_give_cash_invalid_amount:
         `@error The transfer's amount must be between $1 and %{maximum}$.`,
+    finance_give_cash_invalid_recipient:
+        `@error You can't send money to yourself, silly!`,
     finance_give_cash_npc_donation_amount:
         '{FFEB3B}They are very happy with your donation of {FF9800}%{amount}${FFEB3B}. It keeps them going.',
     finance_give_cash_npc_donation_target:

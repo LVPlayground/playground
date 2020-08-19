@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 import { AnnounceCategory } from 'features/announce/announce_category.js';
+import { Player } from 'entities/player.js';
 
 import { messages } from 'features/announce/announce.messages.js';
 
@@ -76,6 +77,14 @@ export const kAnnouncementCategories = new Map([
             level: Player.LEVEL_ADMINISTRATOR,
             prefix: messages.announce_prefix_admin,
             defaultDisabled,
+        }
+    ],
+    [
+        'admin/communication/private-messages',
+        {
+            name: 'Private messages',
+            level: Player.LEVEL_ADMINISTRATOR,
+            defaultEnabled,
         }
     ],
 

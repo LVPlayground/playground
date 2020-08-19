@@ -31,7 +31,8 @@ export class DirectCommunicationCommands {
     // Gets the MessageVisibilityManager from the Communication feature.
     get visibilityManager() { return this.communication_().visibilityManager_; }
 
-    constructor(communication, nuwani) {
+    constructor(announce, communication, nuwani) {
+        this.announce_ = announce;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
 
@@ -118,6 +119,11 @@ export class DirectCommunicationCommands {
             if (!otherPlayer.isAdministrator() || otherPlayer === player)
                 continue;
 
+            if (!this.announce_().isCategoryEnabledForPlayer(
+                    otherPlayer, 'admin/communication/private-messages')) {
+                continue;  // the |otherPlayer| does not wish to see private messages
+            }
+
             otherPlayer.sendMessage(adminMessage);
         }
 
@@ -203,8 +209,15 @@ export class DirectCommunicationCommands {
 
         // Inform in-game administrators about the message as well.
         for (const otherPlayer of server.playerManager) {
-            if (otherPlayer.isAdministrator() && otherPlayer !== player && otherPlayer !== target)
-                otherPlayer.sendMessage(adminMessage);
+            if (!otherPlayer.isAdministrator() || otherPlayer === player || otherPlayer === target)
+                continue;
+
+            if (!this.announce_().isCategoryEnabledForPlayer(
+                    otherPlayer, 'admin/communication/private-messages')) {
+                continue;  // the |otherPlayer| does not wish to see private messages
+            }
+
+            otherPlayer.sendMessage(adminMessage);
         }
 
         // Store the interaction to enable |target| to use the `/r` command. This could enable the

@@ -72,7 +72,7 @@ export default class CommunicationCommands extends Feature {
         // which is reflected in the following array of command groups.
         this.commands_ = [
             new CallCommands(this.communication_),
-            new DirectCommunicationCommands(this.communication_, this.nuwani_),
+            new DirectCommunicationCommands(this.announce_, this.communication_, this.nuwani_),
             new IgnoreCommands(this.communication_),
             new MuteCommands(this.announce_, this.communication_, this.nuwani_),
         ];

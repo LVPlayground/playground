@@ -17,8 +17,8 @@ export class SettingsCommand extends PlayerCommand {
     get name() { return 'settings'; }
     get description() { return `Configure your Las Venturas Playground experience.`; }
 
-    // This command is not available to all players yet, only to Management.
-    get playerLevel() { return Player.LEVEL_MANAGEMENT; }
+    // This command is not available to all players yet, only to administrators.
+    get playerLevel() { return Player.LEVEL_ADMINISTRATOR; }
 
     // ---------------------------------------------------------------------------------------------
 

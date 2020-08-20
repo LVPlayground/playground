@@ -17,6 +17,10 @@ export const kAutomaticDetectionDelayMs = 10000;
 // File (not checked in) in which detectors are located. Not required.
 const kDetectorConfiguration = 'detectors.json';
 
+// List of User IDs for whom detections will be ignored, because of known issues or testing
+// purposes. This applies to on-join detections only at this time.
+const kIgnoreList = new Set([ 58944 ]);
+
 // Time after which we consider a memory read to have timed out.
 export const kMemoryReadTimeoutMs = 3500;
 
@@ -251,6 +255,9 @@ export class DetectorManager {
         wait(kAutomaticDetectionDelayMs).then(() => {
             if (this.disposed_ || !player.isConnected())
                 return;  // cancel the scan
+
+            if (player.account.isIdentified() && kIgnoreList.has(player.account.userId))
+                return;  // ignore results for this |player|
 
             // (3) Run the actual detectors, and if any come back positive, immediately inform the
             // in-game administrators of the |player| using the given |detector|.

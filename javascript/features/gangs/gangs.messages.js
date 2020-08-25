@@ -22,5 +22,5 @@ export const messages = globalMessages.extend({
 
     gangs_announce_created: `%{player.name}s has founded the %{gang}s gang!`,
     gangs_announce_joined: `%{player.name}s has joined the %{gang}s gang!`,
-    gangs_announce_left: `%{player.name}s has joined the %{gang}s gang!`,
+    gangs_announce_left: `%{player.name}s has left the %{gang}s gang!`,
 });

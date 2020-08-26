@@ -63,7 +63,7 @@ class VeryImportantPlayersManager {
             SetPlayerWeather(playerId, -66);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else {
-            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/underwater/sandstorm/drugs/hot/cloudy/storm/foggy]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs/sandstorm,underwater,cloudy]");
             return 0;
         }
 

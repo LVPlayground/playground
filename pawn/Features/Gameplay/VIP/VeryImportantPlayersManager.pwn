@@ -40,9 +40,18 @@ class VeryImportantPlayersManager {
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else if (strcmp(weatherType, "evening", true) == 0) {
             SetPlayerWeather(playerId, 33);
+            TimeController->setPlayerOverrideTime(playerId, 12, 0);
+        } else if (strcmp(weatherType, "underwater", true) == 0) {
+            SetPlayerWeather(playerId, 20);
+            TimeController->setPlayerOverrideTime(playerId, 12, 0);
+        } else if (strcmp(weatherType, "sandstorm", true) == 0) {
+            SetPlayerWeather(playerId, 19);
             TimeController->setPlayerOverrideTime(playerId, 0, 0);
         } else if (strcmp(weatherType, "hot", true) == 0) {
             SetPlayerWeather(playerId, 11);
+            TimeController->setPlayerOverrideTime(playerId, 12, 0);
+        } else if (strcmp(weatherType, "cloudy", true) == 0) {
+            SetPlayerWeather(playerId, 12);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else if (strcmp(weatherType, "storm", true) == 0) {
             SetPlayerWeather(playerId, 8);
@@ -54,7 +63,7 @@ class VeryImportantPlayersManager {
             SetPlayerWeather(playerId, -66);
             TimeController->setPlayerOverrideTime(playerId, 12, 0);
         } else {
-            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs/sandstorm,underwater,cloudy]");
             return 0;
         }
 

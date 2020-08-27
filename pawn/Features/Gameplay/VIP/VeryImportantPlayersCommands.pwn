@@ -33,7 +33,7 @@ class VeryImportantPlayersCommands {
         }
 
         if (Command->parameterCount(params) != 1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs/sandstorm,underwater,cloudy]");
             return 1;
         }
 

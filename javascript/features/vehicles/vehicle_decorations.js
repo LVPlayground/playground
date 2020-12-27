@@ -80,14 +80,14 @@ export class VehicleDecorations {
 
     // If payer enters a vehicle that can be decorated decorate it. 
     onPlayerEnterVehicle(player, vehicle) {
-        if (this.playerVehicleDecorations_.has(player))
+        if (this.playerVehicleDecorations_.has(player)) 
             return;
 
         if (player.vehicleSeat !== Vehicle.kSeatDriver)
             return;
 
         const decorations = 
-            [...this.enabledSettings_.values()].filter(v => v.modelId === vehicle.model.id);
+            [...this.enabledSettings_.values()].filter(decoration => decoration.modelId === vehicle.model.id);
 
         if (decorations.length === 0)
             return;
@@ -110,7 +110,7 @@ export class VehicleDecorations {
     // Cleanup the objects upon leaving the vehicle.
     onPlayerLeaveVehicle(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || !vehicleDecorations.length)
+        if (!vehicleDecorations || !vehicleDecorations.decorations.length)
             return;
 
         for (const decoration of vehicleDecorations.decorations)
@@ -122,7 +122,7 @@ export class VehicleDecorations {
     // Cleanup the objects upon disconnecting.
     onPlayerDisconnect(player) {
         const vehicleDecorations = this.playerVehicleDecorations_.get(player);
-        if (!vehicleDecorations || !vehicleDecorations.length)
+        if (!vehicleDecorations || !vehicleDecorations.decorations.length)
             return;
 
         for (const decoration of vehicleDecorations.decorations)

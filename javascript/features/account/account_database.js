@@ -160,7 +160,7 @@ const PLAYER_ALIASES_QUERY = `
                 sessions.user_id = users_nickname.user_id AND
                 sessions.nickname COLLATE latin1_general_ci = users_nickname.nickname
         ) AS last_seen,
-        IF(users.username = users_nickname.nickname, 1, 0) AS is_primary
+        IF(BINARY users.username = users_nickname.nickname, 1, 0) AS is_primary
     FROM
         users_nickname
     LEFT JOIN
@@ -254,6 +254,34 @@ const CREATE_MUTABLE_ACCOUNT_QUERY = `
     VALUES
         (?)`;
 
+// Query to determine which players are geographically nearby a particular longitude/latitude pair.
+// This depends on the GCDistDeg function: http://mysql.rjweb.org/doc.php/find_nearest_in_mysql
+const NEARBY_QUERY = `
+    SELECT
+        users.username,
+        users_mutable.last_seen,
+        COUNT(sessions_geographical.session_id) AS session_count,
+        CEIL((GCDistDeg(ST_X(sessions_geographical.session_point),
+                        ST_Y(sessions_geographical.session_point),
+                        ?, ?) * 69.172) / 50) * 50 AS distance
+    FROM
+        sessions_geographical
+    LEFT JOIN
+        sessions ON sessions.session_id = sessions_geographical.session_id
+    LEFT JOIN
+        users ON users.user_id = sessions.user_id
+    LEFT JOIN
+        users_mutable ON users_mutable.user_id = sessions.user_id
+    WHERE
+        sessions.session_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND
+        sessions.user_id != 0
+    GROUP BY
+        sessions.user_id, distance
+    ORDER BY
+        distance ASC, session_count DESC
+    LIMIT
+        50`;
+
 // Query to change permanently the level of a particular player, keyed by user Id.
 const PLAYER_BETA_SET_LEVEL = `
     UPDATE
@@ -271,7 +299,69 @@ const PLAYER_BETA_SET_VIP = `
         users.is_vip = ?
     WHERE
         users.user_id = ?`;
-    
+
+// Query for identifying proxy information for a particular IP address.
+const WHEREIS_PROXY_QUERY = `
+    SELECT
+        ip2proxy.country_name,
+        ip2proxy.region_name,
+        ip2proxy.city_name,
+        ip2proxy.isp,
+        ip2proxy.domain,
+        ip2proxy.usage_type,
+        ip2proxy.as,
+        ip2proxy.asn
+    FROM
+        (
+            SELECT
+                ip2proxy_px8.ip_from,
+                ip2proxy_px8.country_name,
+                ip2proxy_px8.region_name,
+                ip2proxy_px8.city_name,
+                ip2proxy_px8.isp,
+                ip2proxy_px8.domain,
+                ip2proxy_px8.usage_type,
+                ip2proxy_px8.as,
+                ip2proxy_px8.asn
+            FROM
+                lvp_location.ip2proxy_px8
+            WHERE
+                ip2proxy_px8.ip_to >= INET_ATON(?)
+            LIMIT
+                1
+        ) AS ip2proxy
+    WHERE
+        ip2proxy.ip_from <= INET_ATON(?)`;
+
+// Query for identifying location information for a particular IP address.
+const WHEREIS_LOCATION_QUERY = `
+    SELECT
+        ip2location.longitude,
+        ip2location.latitude,
+        ip2location.country_name,
+        ip2location.region_name,
+        ip2location.city_name,
+        ip2location.time_zone
+    FROM
+        (
+            SELECT
+                ip2location_db11.ip_from,
+                ip2location_db11.longitude,
+                ip2location_db11.latitude,
+                ip2location_db11.country_name,
+                ip2location_db11.region_name,
+                ip2location_db11.city_name,
+                ip2location_db11.time_zone
+            FROM
+                lvp_location.ip2location_db11
+            WHERE
+                ip2location_db11.ip_to >= INET_ATON(?)
+            LIMIT
+                1
+        ) AS ip2location
+    WHERE
+        ip2location.ip_from <= INET_ATON(?)`;
+
 // Query to investigate which players are likely candidates for a given IP address and serial
 // number. Uses a ton of heuristics to get to a reasonable sorting of results.
 const WHOIS_QUERY = `
@@ -580,6 +670,7 @@ export class AccountDatabase {
             'money_cash',
             'money_debt',
             'money_spawn',
+            'muted',
             'skin_id',
             'validated',
         ];
@@ -606,6 +697,7 @@ export class AccountDatabase {
             money_spawn: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             online_time: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             preferred_radio_channel: { table: 'users_mutable', type: AccountDatabase.kTypeString },
+            require_sampcac: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             skin_id: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_carbombs: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_drivebys: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
@@ -616,6 +708,7 @@ export class AccountDatabase {
             stats_minigame: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_packages: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             stats_reaction: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
+            muted: { table: 'users_mutable', type: AccountDatabase.kTypeNumber },
             validated: { table: 'users', type: AccountDatabase.kTypeNumber },
         };
     }
@@ -886,7 +979,114 @@ export class AccountDatabase {
     async setUserVip(userId, vip) {
         await server.database.query(PLAYER_BETA_SET_VIP, (!!vip) ? 1 : 0, userId);
     }
-    
+
+    // Runs a query that finds a number of nearby players, grouped together in distance groups,
+    // based on the given |ip| address. A where-is query will be ran to locate that first.
+    async nearby(ip) {
+        const where = await this.whereIs(ip);
+        if (!where.location)
+            return null;
+
+        const results = await this._nearbyQuery(where.location.latitude, where.location.longitude);
+        const nearby = [];
+
+        if (results) {
+            for (const result of results) {
+                nearby.push({
+                    username: result.username,
+                    lastSeen: new Date(result.last_seen),
+                    sessions: result.session_count,
+                    distance: result.distance,
+                });
+            }
+        }
+
+        return nearby;
+    }
+
+    // Executes the actual MySQL query necessary for identifying nearby players.
+    async _nearbyQuery(latitude, longitude) {
+        const results = await server.database.query(NEARBY_QUERY, latitude, longitude);
+        return results && results.rows.length ? results.rows : null;
+    }
+
+    // Runs a query that figures out where the |ip| address is, and if it's a known proxy server of
+    // a particular type. Aids administrators in identifying who someone might be.
+    async whereIs(ip) {
+        const [ proxyResults, locationResults ] = await this._whereIsQueries(ip);
+        const results = {
+            proxy: null,
+            location: null,
+        };
+
+        // (1) Process results about the proxy lookup for the given |ip| address.
+        if (proxyResults && proxyResults.rows.length === 1) {
+            const row = proxyResults.rows[0];
+            results.proxy = {
+                country: row.country_name,
+                region: row.region_name,
+                city: row.city_name,
+
+                isp: row.isp,
+                domain: row.domain,
+                usage: this.parseUsageType(row.usage_type),
+
+                network: row.asn,
+                networkName: row.as,
+            };
+        }
+
+        // (2) Process results about the location lookup for the given |ip| address.
+        if (locationResults && locationResults.rows.length === 1) {
+            const row = locationResults.rows[0];
+            results.location = {
+                longitude: row.longitude,
+                latitude: row.latitude,
+
+                country: row.country_name,
+                region: row.region_name,
+                city: row.city_name,
+                timeZone: row.time_zone
+            };
+        }
+
+        // (3) Return the formatted results to the caller.
+        return results;
+    }
+
+    // Parses the given |usage|, which is a set of type acronyms divided by slashes.
+    parseUsageType(usage) {
+        const kMapping = {
+            COM: 'Commercial',
+            ORG: 'Organisation',
+            GOV: 'Government',
+            MIL: 'Military',
+            EDU: 'Education',
+            LIB: 'Library',
+            CDN: 'Content Delivery',
+            ISP: 'Internet Provider',
+            MOB: 'Mobile Carrier',
+            DCH: 'Network Infra',
+            SES: 'Search Engine',
+            RSV: 'Reserved',
+        };
+
+        const types = new Set();
+
+        for (const type of usage.split('/'))
+            types.add(kMapping[type] ?? 'Unknown');
+
+        return [ ...types ].sort();
+    }
+
+    // Actually executes the Where Is-related queries on the database.
+    async _whereIsQueries(ip) {
+        return await Promise.all([
+            server.database.query(WHEREIS_PROXY_QUERY, ip, ip),
+            server.database.query(WHEREIS_LOCATION_QUERY, ip, ip),
+        ]);
+    }
+
     // Query to find similar users based on a given IP address and serial number. Most of the logic
     // is contained within the query, but some post-processing is done in JavaScript.
     async whois(ip, serial) {

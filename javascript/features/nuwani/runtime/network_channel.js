@@ -50,10 +50,8 @@ export class NetworkChannel {
     // Called when the user having |nickname| has joined this channel. Optionally the |initialMode|
     // can be set when the user mode is known at time of join.
     onJoin(nickname, initialMode) {
-        if (this.users_.has(nickname))
-            throw new Error(`Invalid join: ${nickname} is not on channel ${this.name_}.`);
-
-        this.users_.set(nickname, initialMode || '');
+        if (!this.users_.has(nickname) || initialMode)
+            this.users_.set(nickname, initialMode || '');
     }
 
     // Called when the user identified as |nickname| has changed their name to |newNickname|.
@@ -67,11 +65,7 @@ export class NetworkChannel {
 
     // Called when a MODE command has set the |flag| on the given |nickname|.
     onModeSet(nickname, flag) {
-        let mode = this.users_.get(nickname);
-
-        if (mode === undefined)
-            throw new Error(`Invalid MODE update for ${nickname} on channel ${this.name_}.`);
-        
+        let mode = this.users_.get(nickname) ?? '';
         if (!mode.includes(flag))
             mode += flag;
 
@@ -80,11 +74,7 @@ export class NetworkChannel {
 
     // Called when a MODE command has removed the |flag| from the given |nickname|.
     onModeUnset(nickname, flag) {
-        let mode = this.users_.get(nickname);
-
-        if (mode === undefined)
-            throw new Error(`Invalid MODE update for ${nickname} on channel ${this.name_}.`);
-        
+        let mode = this.users_.get(nickname) ?? '';
         if (mode.includes(flag))
             mode = mode.replace(flag, '');
 

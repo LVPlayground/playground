@@ -85,6 +85,58 @@
             "price": 250000
         }
     ],
+    "Entertainment": [
+        {
+            "name": "Amplifier",
+            "model": 19613,
+            "price": 0
+        },
+        {
+            "name": "Barbeque",
+            "model": 19831,
+            "price": 0
+        },
+        {
+            "name": "Bar taps",
+            "model": 11686,
+            "price": 0
+        },
+        {
+            "name": "Burning logs",
+            "model": 19632,
+            "price": 0
+        },
+        {
+            "name": "Coffee machine",
+            "model": 11743,
+            "price": 0
+        },
+        {
+            "name": "Drum set",
+            "model": 19609,
+            "price": 0
+        },
+        {
+            "name": "Fireplace",
+            "model": 11725,
+            "price": 0
+        },
+        {
+            "name": "Game arcade",
+            "model": 19526,
+            "price": 0
+        },
+        {
+            "name": "LCD TV",
+            "model": 19786,
+            "price": 0
+        },
+        {
+            "name": "Stage",
+            "model": 19608,
+            "price": 0
+        }
+    ],
     "Nature": [
         {
             "name": "Cow",

@@ -3,7 +3,7 @@
 // be found in the LICENSE file.
 
 import HouseParkingLot from 'features/houses/house_parking_lot.js';
-import HouseVehicle from 'features/houses/house_vehicle.js';
+import { HouseVehicle } from 'features/houses/house_vehicle.js';
 import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 
 describe('HouseVehicleController', (it, beforeEach, afterEach) => {
@@ -41,7 +41,7 @@ describe('HouseVehicleController', (it, beforeEach, afterEach) => {
 
         return new HouseVehicle({
             id: between(0, 10000),
-            modelId: between(400, 610)
+            modelId: between(400, 500)
 
         }, parkingLot);
     }

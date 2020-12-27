@@ -48,7 +48,6 @@ export default class Haystack extends Feature {
                     'haystack', 'difficulty', ['easy', 'normal', 'hard', 'extreme'], 'normal',
                     'Game difficulty'),
                 new Setting('haystack', 'levels', Setting.TYPE_NUMBER, 30, 'Number of levels'),
-                new Setting('haystack', 'nighttime', Setting.TYPE_BOOLEAN, false, 'Nighttime'),
             ],
 
             scoreType: 'time',
@@ -68,8 +67,8 @@ export default class Haystack extends Feature {
         const levels = settings.get('haystack/levels');
         if (levels && levels !== 30)
             suffix = ` x${levels}`;
-        
-        return prefix + 'Haystack' + suffix;
+
+        return `${prefix}Haystack${suffix} Game`;
     }
 
     // Validates the given settings. Only applicable to non-fixed types, i.e. numbers and strings.

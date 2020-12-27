@@ -6,13 +6,13 @@ import { CollectableBase } from 'features/collectables/collectable_base.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
 
 // -------------------------------------------------------------------------------------------------
-// Next ID: 9
+// Next ID: 16
 // -------------------------------------------------------------------------------------------------
 
 // Spray Tag achievements: awarded when the player gathers { 10, 40, 90, 100 } spray tags.
 export const kAchievementSprayTagBronze = 1;  // kBenefitBasicSprayQuickVehicleAccess
-export const kAchievementSprayTagSilver = 2;
-export const kAchievementSprayTagGold = 3;  // kBenefitBombShop
+export const kAchievementSprayTagSilver = 2;  // kBenefitBombShop
+export const kAchievementSprayTagGold = 3;
 export const kAchievementSprayTagPlatinum = 4;  // kBenefitFullQuickVehicleAccess
 
 // Red Barrel achievements: awarded when the player gathers { 10, 40, 90, 100 } red barrels.
@@ -23,7 +23,7 @@ export const kAchievementRedBarrelPlatinum = 8;  // kBenefitVehicleKeysJump
 
 // Reaction Tests quantity achievements: awarded when hitting a certain number of reaction tests.
 export const kAchievementReactionTestBronze = 9;
-export const kAchievementReactionTestSilver = 10;
+export const kAchievementReactionTestSilver = 10;  // kBenefitVehicleKeysNitro
 export const kAchievementReactionTestGold = 11;
 
 // Reaction Test performance achievement: awarded when winning ten reaction tests in a row.
@@ -31,6 +31,10 @@ export const kAchievementReactionTestSequence = 12;
 
 // Reaction Test performance achievement: awarded when answering a reaction test super quickly.
 export const kAchievementReactionTestSpeed = 13;
+
+// Treasures achievements: awarded when the player gathers 10, or all, treasures.
+export const kAchievementTreasuresBronze = 14;
+export const kAchievementTreasuresPlatinium = 15;  // kBenefitVehicleKeysGravity
 
 // -------------------------------------------------------------------------------------------------
 
@@ -62,6 +66,10 @@ export const kAchievements = new Map([
       { name: 'The Streak', text: 'Won 10 reaction tests in a row' } ],
     [ kAchievementReactionTestSpeed,
       { name: 'keybind.cs', text: 'Won a reaction test in under two seconds' } ],
+    [ kAchievementTreasuresBronze,
+      { name: 'Blackbeard', text: 'Collect 10 Treasures' } ],
+    [ kAchievementTreasuresPlatinium,
+      { name: 'Jack Sparrow', text: 'Collect all the Treasures' } ],
 ]);
 
 // -------------------------------------------------------------------------------------------------
@@ -153,6 +161,14 @@ export class Achievements extends CollectableBase {
                     kAchievementRedBarrelPlatinum,
                     Message.ACHIEVEMENT_VEHICLE_JUMP
                 ],
+                [
+                    kAchievementReactionTestSilver,
+                    Message.ACHIEVEMENT_VEHICLE_NITRO,
+                ],
+                [
+                    kAchievementTreasuresPlatinium,
+                    Message.ACHIEVEMENT_VEHICLE_GRAVITY,
+                ]
             ]);
 
             const message = kUnlockMessages.get(achievement);
@@ -167,6 +183,14 @@ export class Achievements extends CollectableBase {
               
             case kAchievementRedBarrelPlatinum:
                 player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysJump;
+                break;
+              
+            case kAchievementReactionTestSilver:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysNos;
+                break;
+            
+            case kAchievementTreasuresPlatinium:
+                player.syncedData.vehicleKeys |= Vehicle.kVehicleKeysGravity;
                 break;
         }
     }

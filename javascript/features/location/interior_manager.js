@@ -23,8 +23,8 @@ const PORTAL_COLOR_MODELS = {
 // may have to be prevented because they recently were in a fight, and means that we can send them
 // to their private virtual worlds avoiding needless interior fighting restrictions.
 class InteriorManager {
-    constructor(abuse) {
-        this.abuse_ = abuse;
+    constructor(limits) {
+        this.limits_ = limits;
 
         this.portalEntities_ = new ScopedEntities();
         this.portalLoader_ = new PortalLoader();
@@ -215,15 +215,13 @@ class InteriorManager {
 
     // Determines if the |player| is allowed to enter the |portal|. Players can always exit a portal
     // that they previously entered- otherwise they would be locked inside.
-    async canPlayerTeleport(player, portal) {
+    async canPlayerEnterInterior(player, portal) {
         if (portal.accessCheckFn !== null && !await portal.accessCheckFn(player))
             return false;  // the |portal|-specific check failed
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: false });
-
-        // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.LOCATION_NO_TELEPORT, teleportStatus.reason);
+        const decision = this.limits_().canEnterInterior(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.LOCATION_NO_TELEPORT, decision);
             return false;
         }
 
@@ -246,7 +244,7 @@ class InteriorManager {
 
         // Apply the permission check if the |player| is attempting to enter the portal.
         if (marker.type === 'entrance') {
-            if (!await this.canPlayerTeleport(player, portal))
+            if (!await this.canPlayerEnterInterior(player, portal))
                 return;  // the player is not allowed to teleport right now
         }
 

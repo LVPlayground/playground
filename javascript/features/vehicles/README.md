@@ -36,7 +36,7 @@ Furthermore, administrators are able to use the following commands:
   * **/v [player]? health [0-1000]?**: Displays or updates the health of either your own vehicle, or
     that of `player`.
   * **/v [player]? respawn**: Respawns either your own vehicle, or that of `player`.
-  * **/v [player]? save**: Saves either your own vehicle, or that of `player`, in the database.
+  * **/v [player]? save**: Saves the vehicle that you're currently driving in the database.
 
 _Note that temporary administrators are not allowed to use either `/v save` or `/v delete`._
 

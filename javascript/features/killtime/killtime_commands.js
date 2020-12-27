@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // It needs to be possible for admins to start up and end the killtime. By this command we provide this functionality
 // including being able to define the length.
@@ -11,12 +11,15 @@ class KilltimeCommands {
         this.manager_ = manager;
 
         server.commandManager.buildCommand('killtime')
+            .description('Manages the kill time feature on the server.')
             .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('start')
-                .parameters([{ name: 'minutes', type: CommandBuilder.NUMBER_PARAMETER, optional: true },
-                            { name: 'weapon', type: CommandBuilder.NUMBER_PARAMETER, optional: true}])
+                .description('Starts a new kill time with a given weapon.')
+                .parameters([{ name: 'minutes', type: CommandBuilder.kTypeNumber, optional: true },
+                            { name: 'weapon', type: CommandBuilder.kTypeNumber, optional: true}])
                 .build(KilltimeCommands.prototype.onKilltimeStartCommand.bind(this))
             .sub('stop')
+                .description('Stops the active kill time.')
                 .build(KilltimeCommands.prototype.onKilltimeStopCommand.bind(this))
             .build(KilltimeCommands.prototype.onKilltimeCommand.bind(this));
     }

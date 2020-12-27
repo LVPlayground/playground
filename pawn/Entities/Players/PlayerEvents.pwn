@@ -10,9 +10,6 @@
  * @author Russell Krupke <russell@sa-mp.nl>
  */
 class PlayerEvents <playerId (MAX_PLAYERS)> {
-    // Maximum number of connections allowed from a single IP address.
-    const MaxConnectionsPerIp = 3;
-
     // Time in milliseconds between two timestamps of connections originating from the same IP address.
     const DefaultDelayConnection = 500;
 
@@ -52,7 +49,7 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         }
 
         // Check if the maximum number of players ingame from the same IP has been reached.
-        if (matchedPlayers >= MaxConnectionsPerIp) {
+        if (matchedPlayers >= GetMaximumConnectionsPerIP()) {
             printf("Player [%d] shares IP with %d ingame players.", playerId, matchedPlayers);
             Kick(playerId); // deny player entry
         }
@@ -61,7 +58,8 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
         // between both connections. When the two IPs connect in rapid order, temporary block the IP.
         // This will result in closed connections for ingame players using the same IP address.
         if (!strcmp(ipAddress, m_lastConnectionAddress, true)
-            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection) {
+            && (Time->currentHighResolutionTime() - m_lastConnectionTimestamp) < DefaultDelayConnection
+            && GetServerUptimeMs() > 60 * 1000 /* Ignore the first minute after start **/ ) {
             printf("Blocking [%s] for 30 minutes due to flooding.", ipAddress);
             BlockIpAddress(ipAddress, BlockageDuration); // block the IP address
         }
@@ -165,25 +163,6 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
 
         return 1;
     }
-
-    /**
-     * Invoked when the player clicks a selectable textdraw.
-     *
-     * @param clickedId Id of the textdraw which the player clicked on.
-     */
-    public onPlayerClickTextDraw(Text: clickedId) {
-        if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-            return 0;
-
-        // A fix for the CancelSelectTextDraw loop which calls this function with INVALID_TEXT_DRAW.
-        if (clickedId == Text: INVALID_TEXT_DRAW)
-            return 1;
-
-        // Forward the OnPlayerClickTextDraw callback to those who are interested in it.
-        Annotation::ExpandList<OnPlayerClickTextDraw>(playerId, clickedId);
-
-        return 1;
-    }
 };
 
 /**
@@ -192,4 +171,3 @@ class PlayerEvents <playerId (MAX_PLAYERS)> {
  */
 public OnIncomingConnection(playerid, ip_address[], port) { PlayerEvents(playerid)->onIncomingConnection(ip_address, port); return 1; }
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ) { PlayerEvents(playerid)->onPlayerClickMap(fX, fY, fZ); return 1; }
-public OnPlayerClickTextDraw(playerid, Text:clickedid) { return PlayerEvents(playerid)->onPlayerClickTextDraw(clickedid); }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
+import { Command } from 'features/playground/command.js';
 import { Menu } from 'components/menu/menu.js';
 import { MessageBox } from 'components/dialogs/message_box.js';
 
@@ -11,6 +11,7 @@ import { MessageBox } from 'components/dialogs/message_box.js';
 export default class PlayerSettingsCommands extends Command {
     get name() { return 'playersettings'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Amend your own player settings.`; }
 
     constructor() {
         super();
@@ -99,5 +100,4 @@ export default class PlayerSettingsCommands extends Command {
 
         await menu.displayForPlayer(player);
     }
-
 }

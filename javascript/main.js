@@ -39,8 +39,12 @@ testRunner.run('.*\.test\.js').then(time => {
         'account_provider',
         'communication',
         'finance',
+        'instrumentation',
+        'limits',
         'nuwani',
+        'player_colors',
         'player_stats',
+        'sampcac',
         'settings',
 
         // -----------------------------------------------------------------------------------------
@@ -50,15 +54,22 @@ testRunner.run('.*\.test\.js').then(time => {
         // on by various other features because of the functionality they provide.
         // -----------------------------------------------------------------------------------------
 
+        'abuse',
+        'announce',
         'collectables',
+        'games',
+        'games_deathmatch',
+        'games_vehicles',
+        'player_decorations',
+        'spectate',
+        'streamer',
 
         // -----------------------------------------------------------------------------------------
         // Regular features
         // -----------------------------------------------------------------------------------------
 
         // Low level features, which may only depend on each other and foundational features.
-        'abuse', 'announce', 'economy', 'location', 'minigames',
-        'streamer', 'games',
+        'economy', 'location',
 
         // Gang-related features
         'gang_chat', 'gang_zones', 'gangs',
@@ -71,21 +82,37 @@ testRunner.run('.*\.test\.js').then(time => {
         'punishments', 'radio', 'report', 'vehicles',
 
         // Player-related features
-        'account', 'player_favours', 'player_settings',
-
-        // Communication features
-        'communication_commands', 'reaction_tests',
+        'account', 'animations', 'player_commands', 'player_favours', 'player_settings', 
+        'leaderboard', 'teleportation',
 
         // -----------------------------------------------------------------------------------------
-        // Games and minigames
+        // Regular features: Communication
         // -----------------------------------------------------------------------------------------
 
+        'communication_commands',
+        'gunther',
+        'nuwani_discord',
+        'reaction_tests',
+
+        // -----------------------------------------------------------------------------------------
+        // Regular features: Gameplay
+        // -----------------------------------------------------------------------------------------
+
+        'pirate_ship',
+
+        // -----------------------------------------------------------------------------------------
+        // Regular features: Games and minigames
+        // -----------------------------------------------------------------------------------------
+
+        'derbies',
+        'fights',
         'haystack',
+        'races',
 
         // -----------------------------------------------------------------------------------------
 
         // v1 features - these need to be cleaned up
-        'activity_log', 'commands', 'death_feed', 'debug', 'races'
+        'activity_log', 'commands', 'death_feed', 'debug',
     ]);
 
 }, failures => {

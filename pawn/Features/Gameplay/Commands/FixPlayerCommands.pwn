@@ -134,17 +134,9 @@ class FixPlayerCommands {
         SetPlayerMapZone(playerId, -1);
         RemovePlayerFromVehicle(playerId);
         TogglePlayerSpectating(playerId, false);
-        ColorManager->setPlayerMarkerHidden(playerId, false);
 
-        for (new subjectId = 0; subjectId <= PlayerManager->highestPlayerId(); ++subjectId) {
-            if (Player(subjectId)->isConnected() == false)
-                continue;
-
-            ShowPlayerNameTagForPlayer(subjectId, playerId, true);
-            ShowPlayerNameTagForPlayer(playerId, subjectId, true);
-        }
-        ColorManager->releasePlayerMinigameColor(playerId);
-        ColorManager->releasePlayerOverrideColor(playerId);
+        ReleasePlayerGameColor(playerId);
+        SetPlayerVisibility(playerId, true);
 
         SetPlayerWantedLevel(playerId, 0);
         RemovePlayerFromAnyGame(playerId);

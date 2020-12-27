@@ -1,9 +1,9 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
 // The file that acts as the data source for the residential value map.
-const DataFile = 'data/economy/residential_value.json';
+const kDataFile = 'data/economy/residential_value.json';
 
 // Tests the directionality between the three points. Returns >0 if the |inputPoint| is to the left
 // of the line between |currentPoint| and |nextPoint|, 0 if |inputPoint| exists on that line and
@@ -20,13 +20,16 @@ const testPointDirection = (currentPoint, nextPoint, inputPoint) => {
 //   https://sa-mp.nl/tools/visualize-map/
 //
 // The page will automatically be updated when a new data file has been committed to GitHub.
-class ResidentialValueMap {
-    constructor() {
+export class ResidentialValueMap {
+    entries_ = null;
+
+    // Lazily initializes the residential value map. Will be done the first time a query is ran,
+    // determined by the fact that |entries_| will still be set to NULL.
+    lazyInitialize() {
         this.entries_ = [];
 
-        const entries = JSON.parse(readFile(DataFile));
-        entries.forEach(entry =>
-            this.loadEntry(entry));
+        const entries = JSON.parse(readFile(kDataFile));
+        entries.forEach(entry => this.loadEntry(entry));
 
         // Sort the loaded areas in descending order by value.
         this.entries_.sort((lhs, rhs) => {
@@ -41,6 +44,9 @@ class ResidentialValueMap {
     // between 5 and 1 indicating the value of the land at that point. The search determines whether
     // the point is located within the polygon on a 2D plane, using the Winding Number algorithm.
     query(position) {
+        if (!this.entries_)
+            this.lazyInitialize();
+
         const point = [ position.x, position.y ];
         for (const entry of this.entries_) {
             if (entry.boundingBox[0] > point[0] || entry.boundingBox[2] < point[0])
@@ -104,5 +110,3 @@ class ResidentialValueMap {
         });
     }
 }
-
-export default ResidentialValueMap;

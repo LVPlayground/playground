@@ -2,17 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /engine [player]
 export default class EngineCommand extends Command {
     get name() { return 'engine'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Toggle the engine of someone's vehicle.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([{ name: 'target', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'target', type: CommandBuilder.kTypePlayer }])
             .build(EngineCommand.prototype.onEngineCommand.bind(this));
     }
 
@@ -40,5 +41,4 @@ export default class EngineCommand extends Command {
             vehicleParams[2], vehicleParams[3], vehicleParams[4], vehicleParams[5], 
             vehicleParams[6]);
     }
-
 }

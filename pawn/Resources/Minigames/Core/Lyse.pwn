@@ -218,7 +218,7 @@ CLyse__StorePlayerData(iPlayerID)
 // position and stuff needs re-loading.
 CLyse__LoadPlayerData(iPlayerID)
 {
-    ColorManager->releasePlayerMinigameColor(iPlayerID);
+    ReleasePlayerGameColor(iPlayerID);
 
     CShell__LoadGuns(iPlayerID);
 
@@ -485,10 +485,10 @@ CLyse__SignPlayerOut(playerid)
             if(iTeam == TEAM_BLUE)
             {
                 format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~g~~h~Green Team~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
             }else{
                 format(notice, sizeof(notice), "~y~Local Yocal Sports Edition~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
             }
             CLyse__End();
         }
@@ -627,7 +627,7 @@ CLyse__SpawnPlayer(iPlayerID)
         GameTextForPlayer(iPlayerID, "~n~~n~Capture the ~b~blue teams~y~ vehicle~w~~n~Defend ~g~your teams ~y~vehicle~w~!",7000, 3);
         SendClientMessage(iPlayerID, COLOR_YELLOW, "* Capture the blue teams vehicle whilst defending your own!");
 
-        ColorManager->setPlayerMinigameColor(iPlayerID, Color::Green);
+        SetPlayerGameColor(iPlayerID, Color::Green);
     }
 
 
@@ -640,7 +640,7 @@ CLyse__SpawnPlayer(iPlayerID)
         SetPlayerSkinEx(iPlayerID, 44);
         SetPlayerTeam(iPlayerID, TEAM_BLUE);
 
-        ColorManager->setPlayerMinigameColor(iPlayerID, COLOR_BLUE);
+        SetPlayerGameColor(iPlayerID, COLOR_BLUE);
 
         GameTextForPlayer(iPlayerID, "~n~~n~Capture the ~g~green teams~y~ vehicle~w~~n~Defend ~b~your teams ~y~vehicle~w~!",5000,5);
         SendClientMessage(iPlayerID, COLOR_PINK, "* Capture the green teams vehicle whilst defending your own!");
@@ -973,7 +973,7 @@ CLyse__Checkpoint(playerid)
         if(iTeamCaptures[TEAM_GREEN] == LYSE_CAPS_TO_WIN)
         {
             format(str, sizeof(str), "~y~Local Yocal Sports Edition~w~ has finished: ~g~~h~Green Team~w~ have won!");
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CLyse__End();
             return;
         }
@@ -998,7 +998,7 @@ CLyse__Checkpoint(playerid)
         if(iTeamCaptures[TEAM_BLUE] == LYSE_CAPS_TO_WIN)
         {
             format(str, sizeof(str), "~y~Local Yocal Sports Edition~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CLyse__End();
             return;
         }
@@ -1157,7 +1157,7 @@ CLyse__OnCommand(playerid){
     new str[128];
     Responses->respondMinigameSignedUp(playerid, LocalYocalSportsEditionMinigame, "Local Yocal Sports Edition", 20);
     format(str, sizeof(str), "~r~~h~%s~w~ has signed up for ~y~Local Yocal Sports Edition~w~ (~p~/lyse~w~)", Player(playerid)->nicknameString());
-    NewsController->show(str);
+    AnnounceNewsMessage(str);
 
     format(str, 128, "%s (Id:%d) has signed up for /lyse.",PlayerName(playerid), playerid);
     Admin(playerid, str);

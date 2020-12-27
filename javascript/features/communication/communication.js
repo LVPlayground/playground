@@ -32,6 +32,9 @@ export default class Communication extends Feature {
         // features, as communication is a cricial part of the server.
         this.markFoundational();
 
+        // Depend on the PlayerColors feature, which provides a supplement we style text with.
+        this.defineDependency('player_colors');
+
         // Depend on Nuwani for being able to distribute communication to non-game destinations.
         const nuwani = this.defineDependency('nuwani');
 

@@ -1,0 +1,23 @@
+{
+    "name": "San Fierro Harbour",
+    "shortName": "Harbour",
+
+    "spawnPositions": {
+        "areaZ": 32,
+        "area": {
+            "minimumX": -1480,
+            "maximumX": -1380,
+            "minimumY": 340,
+            "maximumY": 420
+        }
+    },
+
+    "environment": {
+        "boundaries": {
+            "minimumX": -1485.9154,
+            "maximumX": -1343.2637,
+            "minimumY": 334.7642,
+            "maximumY": 447.1273
+        }
+    }
+}

@@ -130,7 +130,7 @@ class PlayerTracker {
 
                 format(playerInsertionBuffer, sizeof(playerInsertionBuffer), "(%d,%d,%d,%.2f,%.2f,%.2f,%.0f,%.0f,%d),",
                     playerId, Account(playerId)->userId(), GetPlayerScore(playerId), playerPosition[0],
-                    playerPosition[1], playerPosition[2], playerHealth, playerArmor, ColorManager->playerColor(playerId));
+                    playerPosition[1], playerPosition[2], playerHealth, playerArmor, GetPlayerColor(playerId));
 
                 strcat(m_queryBuffer, playerInsertionBuffer, sizeof(m_queryBuffer));
 

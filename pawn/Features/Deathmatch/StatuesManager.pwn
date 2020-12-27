@@ -183,7 +183,7 @@ class StatuesManager {
                 m_currentStatue[playerId] == m_statueInfo[1][sModelId] ? "Armour" :
                 m_currentStatue[playerId] == m_statueInfo[2][sModelId] ? "Health" : "Money"));
 
-            NewsController->show(message);
+            AnnounceNewsMessage(message);
             this->dropPlayerStatue(playerId, m_currentStatue[playerId], true);
         }
 
@@ -210,7 +210,7 @@ class StatuesManager {
             Player(playerId)->nicknameString(), (pickupId == m_statueInfo[0][statueId] ? "Ammo" :
             pickupId == m_statueInfo[1][statueId] ? "Armour" :
             pickupId == m_statueInfo[2][statueId] ? "Health" : "Money"));
-        NewsController->show(message);
+        AnnounceNewsMessage(message);
 
         format(message, sizeof(message), "~y~%s Statue~n~~n~~w~You will receive ~b~%s~w~ for every player you kill!",
             (pickupId == m_statueInfo[0][statueId] ? "Ammo" : pickupId == m_statueInfo[1][statueId] ? "Armour" :
@@ -258,7 +258,7 @@ class StatuesManager {
                     m_currentStatue[playerId] == m_statueInfo[2][sModelId] ? "Health" : "Money"));
                 this->dropPlayerStatue(playerId, m_currentStatue[playerId], false);
             }
-            NewsController->show(message);
+            AnnounceNewsMessage(message);
             ShowBoxForPlayer(playerId, "~w~You lost your ~y~statue~w~!");
         }
 

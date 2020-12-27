@@ -107,7 +107,7 @@ MiniGamesSignup(playerId, minigame) {
 
             format(notice, sizeof(notice), "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
                 Player(playerId)->nicknameString(), ReturnMinigameName(minigame), ReturnMinigameCmd(minigame));
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
 
             Announcements->announceMinigameSignup(DeathmatchMinigame, ReturnMinigameName(minigame),
                 ReturnMinigameCmd(minigame), price, playerId);
@@ -135,7 +135,7 @@ MiniGamesSignup(playerId, minigame) {
 
                 format(notice, sizeof(notice), "~r~~h~%s~w~ has signed up for ~y~%s~w~ (~p~%s~w~)",
                     Player(playerId)->nicknameString(), ReturnMinigameName(minigame), ReturnMinigameCmd(minigame));
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
             }
 
             if (MinigameTypeInfo[Players] == minigameMaxPlayers) {
@@ -227,7 +227,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
     PlayerInfo[playerId][PlayerStatus] = STATUS_NONE;
     MinigameTypeInfo[Players]--;
 
-    ColorManager->releasePlayerMinigameColor(playerId);
+    ReleasePlayerGameColor(playerId);
 
     // We won't have to spawn a non-existing player, a killed player (spawned already) or someone who
     // hasn't been prepared for the minigame. If we spawn a player, be sure to load theri saved guns.
@@ -258,11 +258,11 @@ PlayerLigtUitMiniGame(playerId, reason) {
 
                     if (ShipTDM_GetTeam(contestant) == 0 && !iHasSendMsg) {
                         format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Da Nang Boys~w~ have won!");
-                        NewsController->show(message);
+                        AnnounceNewsMessage(message);
                         iHasSendMsg = 1;
                     } else if (iHasSendMsg == 0){
                         format(message, sizeof(message), "~y~Ship Team Deathmatch~w~ has finished: ~r~~h~Maffia~w~ have won!");
-                        NewsController->show(message);
+                        AnnounceNewsMessage(message);
                         iHasSendMsg = 1;
                     }
 
@@ -274,7 +274,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                     WonMinigame[contestant]++;
 
                     SpawnPlayer(contestant);
-                    ColorManager->releasePlayerMinigameColor(contestant);
+                    ReleasePlayerGameColor(contestant);
                     LoadPlayerGuns(contestant);
 
                     BonusTime__CheckPlayer(contestant, 0);
@@ -295,7 +295,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
                     if (MinigameTypeInfo[Progress] > 1) {
                         format(notice, sizeof(notice), "~y~%s~w~ has finished: ~r~~h~%s~w~ has won!",
                             ReturnMinigameName(minigame), Player(contestant)->nicknameString());
-                        NewsController->show(notice);
+                        AnnounceNewsMessage(notice);
 
                         GiveRegulatedMoney(contestant, MinigameVictory, MinigameTypeInfo[Players]);
 
@@ -304,7 +304,7 @@ PlayerLigtUitMiniGame(playerId, reason) {
 
                         WonMinigame[contestant]++;
 
-                        ColorManager->releasePlayerMinigameColor(contestant);
+                        ReleasePlayerGameColor(contestant);
                         ResetWorldBounds(playerId);
                         SpawnPlayer(contestant);
                         LoadPlayerGuns(contestant);
@@ -347,9 +347,6 @@ IsPlayerMinigameFree(playerId) {
     if (isPlayerBrief[playerId])
         return 0;
 
-    if (CDerby__GetPlayerState(playerId) >= 2)
-        return 0;
-
     if (CLyse__GetPlayerState(playerId) >= 1)
         return 0;
 
@@ -369,6 +366,9 @@ IsPlayerInMinigame(playerId) {
     if (PlayerActivity(playerId)->isJavaScriptActivity())
         return 1;
 
+    if (PlayerSyncedData(playerId)->hasMinigameName())
+        return 1;
+
     if (IsPlayerStatusMinigame(playerId) && MinigameTypeInfo[Progress] > 1)
         return 1;
 
@@ -385,9 +385,6 @@ IsPlayerInMinigame(playerId) {
         return 1;
 
     if (CHideGame__GetPlayerState(playerId) == 2)
-        return 1;
-
-    if (CDerby__GetPlayerState(playerId) > 2)
         return 1;
 
     if (isPlayerBrief[playerId] && briefStatus == 2)
@@ -414,16 +411,10 @@ ReturnMinigameName(minigame) {
     new minigameName[256];
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   minigameName = "Bat Fight";
         case STATUS_CHAINSAW:   minigameName = "Hidden Massacre";
         case STATUS_DILDO:      minigameName = "Dildo Spanking";
         case STATUS_KNOCKOUT:   minigameName = "Knockout";
-        case STATUS_GRENADE:    minigameName = "Grenade Party";
-        case STATUS_ROCKET:     minigameName = "Rocket Party";
-        case STATUS_SNIPER:     minigameName = "Sniper Madness";
-        case STATUS_MINIGUN:    minigameName = "Minigun Madness";
         case STATUS_SHIPTDM:    minigameName = "Ship Team Deathmatch";
-        case STATUS_SAWNOFF:    minigameName = "Sawnoff Fights";
         case STATUS_WALKWEAPON: minigameName = "Walkweapon War";
         case STATUS_RANDOMDM:   minigameName = "Random Deathmatch";
         case STATUS_ISLANDDM:   minigameName = "Island Deathmatch";
@@ -436,16 +427,10 @@ ReturnMinigameCmd(minigame) {
     new command[256];
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   command = "/batfight";
         case STATUS_CHAINSAW:   command = "/massacre";
         case STATUS_DILDO:      command = "/spankme";
         case STATUS_KNOCKOUT:   command = "/knockout";
-        case STATUS_GRENADE:    command = "/grenade";
-        case STATUS_ROCKET:     command = "/rocket";
-        case STATUS_SNIPER:     command = "/sniper";
-        case STATUS_MINIGUN:    command = "/minigun";
         case STATUS_SHIPTDM:    command = "/shiptdm";
-        case STATUS_SAWNOFF:    command = "/sawnoff";
         case STATUS_WALKWEAPON: command = "/ww";
         case STATUS_RANDOMDM:   command = "/random";
         case STATUS_ISLANDDM:   command = "/islanddm";
@@ -458,16 +443,10 @@ ReturnMinigameMaxPlayers(minigame) {
     new maxPlayers;
 
     switch (minigame) {
-        case STATUS_BATFIGHT:   maxPlayers = 100;
         case STATUS_CHAINSAW:   maxPlayers = 100;
         case STATUS_DILDO:      maxPlayers = 10;
         case STATUS_KNOCKOUT:   maxPlayers = 2;
-        case STATUS_GRENADE:    maxPlayers = 100;
-        case STATUS_ROCKET:     maxPlayers = 100;
-        case STATUS_SNIPER:     maxPlayers = 20;
-        case STATUS_MINIGUN:    maxPlayers = 50;
         case STATUS_SHIPTDM:    maxPlayers = 100;
-        case STATUS_SAWNOFF:    maxPlayers = 50;
         case STATUS_WALKWEAPON: maxPlayers = 100;
         case STATUS_RANDOMDM:   maxPlayers = 20;
         case STATUS_ISLANDDM:   maxPlayers = 100;

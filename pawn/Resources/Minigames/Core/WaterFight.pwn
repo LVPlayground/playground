@@ -350,7 +350,7 @@ waterFightProcess()
 
                 new szEndMsg[128];
                 format(szEndMsg, sizeof(szEndMsg), "~y~WaterFight~w~ has finished: ~r~~h~%s~w~ has won!", Player(i)->nicknameString());
-                NewsController->show(szEndMsg);
+                AnnounceNewsMessage(szEndMsg);
                 ShowBoxForPlayer(i, "You have won the WaterFight minigame!");
                 waterFightRemovePlayer(i);
                 WonMinigame[ i ]++;
@@ -502,12 +502,6 @@ OnWaterFightCmdText(playerid)
         return 1;
     }
 
-    if (ShipManager->isPlayerWalkingOnShip(playerid))
-    {
-        ShowBoxForPlayer(playerid, "You should get off the ship to use this command!");
-        return 1;
-    }
-
     if(waterFightGetState() > WATER_FIGHT_STATE_SIGNUP)
     {
         ShowBoxForPlayer(playerid, "Water fight is currently in progress! Try again later!.");
@@ -533,7 +527,7 @@ OnWaterFightCmdText(playerid)
     }
     Responses->respondMinigameSignedUp(playerid, WaterFightMinigame, "WaterFight", 20);
     format(szAdminMsg, sizeof(szAdminMsg), "~r~~h~%s~w~ has signed up for ~y~WaterFight~w~ (~p~/waterfight~w~)", Player(playerid)->nicknameString());
-    NewsController->show(szAdminMsg);
+    AnnounceNewsMessage(szAdminMsg);
 
     format(szAdminMsg, 128, "%s (Id:%d) has signed up for /waterfight.", PlayerName(playerid), playerid);
     Admin(playerid, szAdminMsg);

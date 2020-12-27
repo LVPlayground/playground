@@ -126,7 +126,7 @@ export class CleoDmageDetector extends AbuseDetector {
         this.sampleRate_ = this.getSettingValue('abuse/detector_cleo_dmage_sample_rate');
     }
 
-    onPlayerTakeDamage(player, issuer, weaponId, amount, bodyPart) {
+    onPlayerTakeDamage(player, issuer, amount, weaponId, bodyPart) {
         if (!issuer)
             return;  // the damage was self inflicted
         

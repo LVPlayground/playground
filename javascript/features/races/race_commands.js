@@ -1,93 +1,135 @@
-// Copyright 2015 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
+import { GameCommandParams } from 'features/games/game_command_params.js';
+import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { Menu } from 'components/menu/menu.js';
+import { RaceGame } from 'features/races/race_game.js';
 
-// Title of the dialog that displays the available races.
-const DIALOG_TITLE = 'Racing on Las Venturas Playground';
+import { formatTime } from 'base/time.js';
 
-// The race commands class provides the interface between players' ability to execute commands, and
-// the ability to start or control races. It uses the command manager to do so.
-class RaceCommands {
-    constructor(manager) {
-        this.manager_ = manager;
+// Provides the "/race" command for players to interact with, which allows them to start a race or
+// spectate one of the in-progress races. Builds on top of the Games API.
+export class RaceCommands {
+    #database_ = null;
+    #games_ = null;
+    #registry_ = null;
 
+    constructor(database, games, registry) {
+        this.#database_ = database;
+        this.#games_ = games;
+        this.#registry_ = registry;
+
+        // /race [watch/[id]]?
         server.commandManager.buildCommand('race')
-            .sub(CommandBuilder.NUMBER_PARAMETER)
-                .build(RaceCommands.prototype.raceStart.bind(this))
-            .build(RaceCommands.prototype.raceOverview.bind(this));
+            .description(`Compete in one of Las Venturas Playground's races.`)
+            .sub(CommandBuilder.kTypeNumber, 'id')
+                .description(`Compete in a specific race, identified by ID.`)
+                .build(RaceCommands.prototype.onRaceStartCommand.bind(this))
+            .sub('watch')
+                .description(`Spectate one of the on-going races.`)
+                .build(RaceCommands.prototype.onRaceWatchCommand.bind(this))
+            .build(RaceCommands.prototype.onRaceCommand.bind(this));
     }
 
-    // Either starts or joins the race with |id|, depending on whether an instance of the race is
-    // currently accepting sign-ups. If not, a new sign-up round will be started.
-    raceStart(player, id) {
-        if (player.activity != Player.PLAYER_ACTIVITY_NONE)
-            return player.sendMessage(Message.RACE_ERROR_ALREADY_ENGAGED);
+    // ---------------------------------------------------------------------------------------------
 
-        if (!this.manager_.isValid(id))
-            return player.sendMessage(Message.RACE_ERROR_INVALID_RACE_ID);
+    // Called when the `/race` command is executed without specifying a particular race. Will fetch
+    // the race's high scores
+    async onRaceCommand(player) {
+        const columns = ['Race', 'Best time' ];
+        const [ highscores, personalHighscores ] = await Promise.all([
+            this.#database_.getHighscores(),
+            this.#database_.getHighscoresForPlayer(player),
+        ]);
 
-        if (player.interiorId !== 0 || player.virtualWorld !== 0)
-            return player.sendMessage(Message.RACE_ERROR_NOT_OUTSIDE);
+        // Append the "Personal best" column if personal highscores are available.
+        if (personalHighscores !== null)
+            columns.push('Personal best');
 
-        // TODO: Withdraw the price of playing a race from the player's account.
+        const dialog = new Menu('Races', columns);
+        const descriptions = [ ...this.#registry_.descriptions() ];
 
-        this.manager_.startRace(player, id);
+        // Sort the |descriptions| alphabetically by name.
+        descriptions.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+
+        // Populate the |dialog| with each of the available races from the registry.
+        for (const description of descriptions) {
+            const name = description.name;
+            const listener =
+                RaceCommands.prototype.onRaceStartCommand.bind(this, player, description.id);
+
+            let highscore = '{9E9E9E}-';
+            if (highscores.has(description.id)) {
+                const { color, username, time } = highscores.get(description.id);
+                const seconds = time / 1000;
+
+                if (!username)
+                    ;  // edge-case where the |username| has been removed sine
+                else if (color)
+                    highscore = `${formatTime(seconds)} ({${color.toHexRGB()}}${username}{FFFFFF})`;
+                else
+                    highscore = `${formatTime(seconds)} (${username})`;
+            }
+
+            // If |personalHighscores| are available, consider those, otherwise just add the race's
+            // name and best time to the |dialog|.
+            if (personalHighscores !== null) {
+                let personalHighscore = '{9E9E9E}-';
+                if (personalHighscores.has(description.id))
+                    personalHighscore = formatTime(personalHighscores.get(description.id) / 1000);
+
+                dialog.addItem(name, highscore, personalHighscore, listener);
+            } else {
+                dialog.addItem(name, highscore, listener);
+            }
+        }
+
+        // Display the |dialog| to the |player|, and we're done.
+        await dialog.displayForPlayer(player);
     }
 
-    // Creates a dialog that provides an overview of the available races, together with their all-
-    // time best times, and personalized best times if the player has logged in to their account.
-    raceOverview(player) {
-        if (player.interiorId !== 0 || player.virtualWorld !== 0)
-            return player.sendMessage(Message.RACE_ERROR_NOT_OUTSIDE);
+    // ---------------------------------------------------------------------------------------------
 
-        this.manager_.loadRecordTimesForPlayer(player).then(races => {
-            // Bail out if there are no races, since there won't be anything to display.
-            if (!races.length)
-                return player.sendMessage(Message.RACE_ERROR_NO_RACES_AVAILABLE);
+    // Called when the |player| wants to start the race identified by |raceId|. Will defer to the
+    // Games API, where limits checks and player availability will be executed.
+    async onRaceStartCommand(player, raceId) {
+        const description = this.#registry_.getDescription(raceId);
+        if (!description) {
+            player.sendMessage(Message.RACES_ERROR_INVALID_ID);
+            return;
+        }
 
-            // A player's personal best time will be displayed if they're registered.
-            let displayPersonalBest = player.account.isRegistered();
+        const params = new GameCommandParams();
+        params.settings.set('game/description_id', description.id);
+        params.type = GameCommandParams.kTypeStart;
 
-            let columns = ['Race', 'Best time'];
-            if (displayPersonalBest)
-                columns.push('Your best time');
+        // Apply the game's environment settings as defaults for this race.
+        EnvironmentSettings.applyDescriptionSettings(params.settings, description);
 
-            let menu = new Menu(DIALOG_TITLE, columns);
-            races.forEach(race => {
-                let columnValues = [race.name];
-
-                // Append the best time on Las Venturas Playground to the values.
-                if (race.bestRace !== null) {
-                    columnValues.push(
-                        Message.format('%t', race.bestRace.time) + ' (' + race.bestRace.name + ')');
-                } else {
-                    columnValues.push('---');
-                }
-
-                // If the user has logged in, append their personal best to the values.
-                if (displayPersonalBest) {
-                    if (race.personalBestTime !== null)
-                        columnValues.push(Message.format('%t', race.personalBestTime));
-                    else
-                        columnValues.push('---');
-                }
-
-                // Append the item, with a per-row listener to start the selected race.
-                menu.addItem(
-                    ...columnValues, RaceCommands.prototype.raceStart.bind(this, player, race.id));
-            });
-
-            // Display the created menu to the player. Listeners will start a race when selected.
-            menu.displayForPlayer(player);
-        });
+        return this.#games_().executeGameCommand(RaceGame, player, params);
     }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| wants to spectate one of the in-progress races, if any. Will defer
+    // to the generic spectating functionality provided by the Games API.
+    async onRaceWatchCommand(player) {
+        const params = new GameCommandParams();
+        params.type = GameCommandParams.kTypeWatch;
+
+        return this.#games_().executeGameCommand(RaceGame, player, params);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('race');
+
+        this.#registry_ = null;
+        this.#games_ = null;
+        this.#database_ = null;
     }
 }
-
-export default RaceCommands;

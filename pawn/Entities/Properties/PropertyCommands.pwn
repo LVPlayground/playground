@@ -776,7 +776,7 @@ class PropertyCommands {
 
         format(message, sizeof(message), "~r~~h~%s~w~ has invested in the property: ~y~%s",
             Player(playerId)->nicknameString(), Property(propertyId)->nameString());
-        NewsController->show(message);
+        AnnounceNewsMessage(message);
 
         format(message, sizeof(message), "%s %d %d %s", Player(playerId)->nicknameString(), playerId,
             Property(propertyId)->price(), Property(propertyId)->nameString());

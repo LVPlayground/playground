@@ -493,7 +493,7 @@ ShowMapZoneCheckpointForPlayer(playerid, iMapID)
             new szNews[128];
             format(szNews, sizeof(szNews), "~y~%s jump race~w~ has finished: ~r~~h~%s~w~ has won!",
                 Map_Zone[iMapID][Map_Name], Player(playerid)->nicknameString());
-            NewsController->show(szNews);
+            AnnounceNewsMessage(szNews);
         }
 
         // Increase the number of players that have finished this race so we can calculate the position of other players accordingly
@@ -1000,7 +1000,7 @@ MapZoneCheckpointUpdate(playerid)
     new str[256];
     format(str, sizeof(str), "~r~~h~%s~w~ has completed map ~y~%s~w~ in ~p~%d seconds~w~!",
         Player(playerid)->nicknameString(), Map_Zone[g_MapZone[playerid]][Map_Name], timetaken);
-    NewsController->show(str);
+    AnnounceNewsMessage(str);
 
     // Format the gametext
     format(str,256,"~w~%s:~n~~y~Speed Bonus: $%d~n~~b~Time Taken: %d seconds~n~~g~Reward: $%d",
@@ -1143,7 +1143,7 @@ lvp_jump(playerid, params[]) {
     if (VehicleModel(GetVehicleModel(GetPlayerVehicleID(playerid)))->isNitroInjectionAvailable() == false)
         return ShowBoxForPlayer(playerid, "You cannot teleport to a jumpzone in this type of vehicle!");
 
-    if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED)
+    if (!CanPlayerTeleport(playerid))
         return ShowBoxForPlayer(playerid,
             "You can't teleport to a jumpzone because you've recently been in a gunfight! Try again in a few seconds.");
 
@@ -1164,12 +1164,12 @@ lvp_jump(playerid, params[]) {
         return ShowBoxForPlayer(playerid, "This jumpzone is full! Try again later.");
     }
 
-    ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+    ReportPlayerTeleport(playerid);
     SetPlayerMapZone(playerid, jumpId);
 
     format(notice, sizeof(notice), "~r~~h~%s~w~ went to ~y~%s~w~ (~p~/jump %d~w~)", Player(playerid)->nicknameString(),
         Map_Zone[jumpId][Map_Name], jumpId);
-    NewsController->show(notice);
+    AnnounceNewsMessage(notice);
 
     if (Map_Zone[jumpId][Map_cpX] != 0.0 && Map_Zone[jumpId][Map_cpY] != 0.0 && Map_Zone[jumpId][Map_cpZ] != 0.0)
         ShowPlayerBox(playerid, "Welcome to the %s jump!~n~Reach the ~r~Corona~w~ for a bonus!", Map_Zone[jumpId][Map_Name]);

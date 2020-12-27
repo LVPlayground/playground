@@ -4,7 +4,7 @@
     "derby": "Have you tried our derbies yet? Use /derby to sign up!",
     "discord": "Join us on the official LVP Discord Server at discord.sa-mp.nl",
     "dm": "Love fighting? Train your skills and explore our deathmatch arenas using /deathmatch!",
-    "donate": "VIP access is given with donations! donate.sa-mp.nl for more info!",
+    "donate": "VIP access is given with donations! Just open https://sa-mp.nl/donate in your browser for more info!",
     "forum": "Be part of our community and stay updated with the latest news at forum.sa-mp.nl!",
     "interior": "Running in to interiors or houses, pausing and teleporting away while being attacked or fighting are NOT allowed!",
     "irc": "Join us on GTANet IRC! Just open https://sa-mp.nl/chat in your browser.",
@@ -18,5 +18,6 @@
     "spraytag": "Spray all 100 tags found around Las Venturas, and get the ability to spawn your own vehicles!",
     "swear": "No excessive swearing, flaming, or racism! Watch your language! Read /rules",
     "stunt": "Love stunting? Use /jump to explore our stunt zones!",
-    "weapons": "Weapons can be bought at Ammu-Nation: /taxi 4"
+    "top": "See which players and gangs rule Las Venturas Playground: /top",
+    "weapons": "Weapons can be bought at Ammu-Nation: /taxi 4 or using /my spawnweapons command!"
 }

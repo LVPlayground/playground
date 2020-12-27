@@ -4,7 +4,6 @@
 
 import { DecorationSet } from 'features/decorations/decoration_set.js';
 import { Feature } from 'components/feature_manager/feature.js';
-import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Directory in which all the decorations have been written.
 const kDecorationDirectory = 'data/decorations/';
@@ -14,9 +13,15 @@ export const kDecorations = new Set([
     { filename: 'christmas_decorations.json', setting: 'decorations/christmas_decorations' },
     { filename: 'fantasy_island.json', setting: 'decorations/fantasy_island' },
     { filename: 'gunther.json', setting: 'decorations/gunther' },
+    { filename: 'las_venturas_scrapyard.json', setting: 'decorations/las_venturas_scrapyard' },
+    { filename: 'las_venturas_taxi_rank.json', setting: 'decorations/las_venturas_taxi_rank' },
     { filename: 'los_santos_winter.json', setting: 'decorations/los_santos_winter' },
     { filename: 'pilots.json', setting: 'decorations/pilots' },
+    { filename: 'pirate_ship_party.json', setting: 'decorations/pirate_ship_party' },
     { filename: 'san_ferro_road_works.json', setting: 'decorations/san_ferro_road_works' },
+    { filename: 'stunts_lv_airport.json', setting: 'decorations/stunts_lv_airport' },
+    { filename: 'stunts_lv_south.json', setting: 'decorations/stunts_lv_south' },
+    { filename: 'stunts_sf_airport.json', setting: 'decorations/stunts_sf_airport' },
     { filename: 'vip_room.json', setting: 'decorations/vip_room' },
 ]);
 

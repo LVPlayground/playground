@@ -82,4 +82,33 @@ describe('Color', it => {
         assert.equal(transparentBlueish.b, 255);
         assert.equal(transparentBlueish.a, 250);
     });
+
+    it('should be able to deal with HSV colours', assert => {
+        const mappings = [
+            {
+                hex: '83FA0F',
+                hsv: [ 0.25106, 0.94, 0.98039 ],
+            },
+            {
+                hex: 'A3ACD1',
+                hsv: [ 0.63405, 0.2201, 0.8196 ]
+            },
+            {
+                hex: '7A2E1F',
+                hsv: [ 0.02747, 0.7459, 0.4784 ],
+            }
+        ];
+
+        for (const { hex, hsv } of mappings) {
+            const colorFromHex = Color.fromHex(hex);
+            const hsvFromHex = colorFromHex.toHsv();
+
+            assert.closeTo(hsvFromHex[0], hsv[0], 0.1);
+            assert.closeTo(hsvFromHex[1], hsv[1], 0.1);
+            assert.closeTo(hsvFromHex[2], hsv[2], 0.1);
+
+            const colorFromHsv = Color.fromHsv(...hsv);
+            assert.equal(colorFromHsv.toHexRGB(), hex);
+        }
+    });
 });

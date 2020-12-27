@@ -2,23 +2,17 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#include Resources/Minigames/Deathmatch/batfight.pwn
 #include Resources/Minigames/Deathmatch/chainsaw_massacre.pwn
 #include Resources/Minigames/Deathmatch/dildo_spanking.pwn
 #include Resources/Minigames/Deathmatch/knockout.pwn
-#include Resources/Minigames/Deathmatch/grenade.pwn
-#include Resources/Minigames/Deathmatch/rocket.pwn
-#include Resources/Minigames/Deathmatch/sniper.pwn
-#include Resources/Minigames/Deathmatch/minigun.pwn
 #include Resources/Minigames/Deathmatch/ShipTDM.pwn
-#include Resources/Minigames/Deathmatch/sawnoff.pwn
 #include Resources/Minigames/Deathmatch/walkweapon.pwn
 #include Resources/Minigames/Deathmatch/RandomDeathmatch.pwn
 #include Resources/Minigames/Deathmatch/IslandDM.pwn
 
 ShowDeathmatchDialog(playerId) {
     ShowPlayerDialog(playerId, DIALOG_MINIGAME_DM, DIALOG_STYLE_LIST, "Deathmatch Minigames",
-        "Bat Fight\nHidden Massacre\nDildo Spanking\nFist Fight Knockout\nGrenade Wars\nRocket Wars\nSniper Madness\nMinigun Madness\nShip TDM\nSawnoff Fights\nWalkweapon Fights\nRandom DM\nIsland DM",
+        "Hidden Massacre\nDildo Spanking\nFist Fight Knockout\nShip TDM\nWalkweapon Fights\nRandom DM\nIsland DM",
         "Select", "Cancel");
 }
 
@@ -74,16 +68,10 @@ public DeathmatchStartFunc() {
 
                     // Let's call the specific minigame handler here.
                     switch(MinigameTypeInfo[CurrentMinigame]) {
-                        case STATUS_BATFIGHT:   SetPlayerUpForBatfight(contestant);
                         case STATUS_CHAINSAW:   SetPlayerUpForChainsawMassacre(contestant);
                         case STATUS_DILDO:      SetPlayerUpForDildoSpanking(contestant);
                         case STATUS_KNOCKOUT:   SetPlayerUpForKnockout(contestant);
-                        case STATUS_GRENADE:    SetPlayerUpForGrenadeParty(contestant);
-                        case STATUS_ROCKET:     SetPlayerUpForRocket(contestant);
-                        case STATUS_SNIPER:     SetPlayerUpForSniper(contestant);
-                        case STATUS_MINIGUN:    SetPlayerUpForMinigun(contestant);
                         case STATUS_SHIPTDM:    SetupPlayerForShipTDM(contestant);
-                        case STATUS_SAWNOFF:    SetPlayerUpForSawnoff(contestant);
                         case STATUS_WALKWEAPON: SetPlayerUpForWalkWeapon(contestant);
                         case STATUS_RANDOMDM:   SetPlayerUpForRandomDeathmatch(contestant);
                         case STATUS_ISLANDDM:   SetupPlayerForIslandDM(contestant);

@@ -127,10 +127,11 @@ export class CommunicationManager {
         }
 
         // The |player| might be muted themselves. The message will be dropped, and we'll show them
-        // an informative message about when the mute is due to expire.
+        // an informative message about when the mute is due to expire. Muted players may continue
+        // to chat with administrators and their gang.
         {
             const remainingSeconds = this.muteManager_.getPlayerRemainingMuteTime(player);
-            if (remainingSeconds > 0 && unprocessedMessage[0] != '@') {
+            if (remainingSeconds > 0 && ![ '@', '!' ].includes(unprocessedMessage[0])) {
                 const expiration = new Date(Date.now() + remainingSeconds * 1000);
                 const formattedExpiration = relativeTime({ date1: new Date(), date2: expiration });
 
@@ -140,7 +141,7 @@ export class CommunicationManager {
         }
 
         // Pass the |unprocessedMessage| through the spam filter, which ensures that the |player| is
-        // not trying to make everyone else on the server go crazy by... overcommunicating.
+        // not trying to overwhelm everyone on the server by... overcommunicating.
         if (this.spamTracker_.isSpamming(player, unprocessedMessage))
             return;
 

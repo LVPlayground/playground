@@ -3,7 +3,6 @@
 // be found in the LICENSE file.
 
 import { CleoDmageDetector } from 'features/abuse/detectors/cleo_dmage_detector.js';
-import { CleoProAimDetector } from 'features/abuse/detectors/cleo_proaim_detector.js';
 
 // Maintains the list of abuse detectors relevant to the server. The `/lvp settings` command can be
 // used to enable or disable detectors at runtime, and not all are enabled by default.
@@ -19,7 +18,6 @@ export class AbuseDetectors {
         this.detectorInfo_ = new Map([
             // Setting                                Constructor
             [ 'abuse/detector_cleo_dmage',            CleoDmageDetector ],
-            [ 'abuse/detector_cleo_proaim',           CleoProAimDetector ],
         ]);
 
         this.settings_ = settings;
@@ -65,6 +63,9 @@ export class AbuseDetectors {
     }
 
     dispose() {
+        for (const detector of this.detectors_.values())
+            detector.dispose();
+
         this.detectors_.clear();
 
         this.settings_.removeReloadObserver();

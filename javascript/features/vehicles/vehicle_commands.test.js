@@ -2,38 +2,33 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import { StreamableVehicleInfo } from 'features/streamer/streamable_vehicle_info.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
 describe('VehicleCommands', (it, beforeEach) => {
-    let abuse = null;
     let commands = null;
     let gunther = null;
-    let playground = null;
     let manager = null;
     let streamer = null;
 
     beforeEach(async(assert) => {
         const feature = server.featureManager.loadFeature('vehicles');
 
-        abuse = server.featureManager.loadFeature('abuse');
         commands = feature.commands_;
         gunther = server.playerManager.getById(0 /* Gunther */);
-        playground = server.featureManager.loadFeature('playground');
         manager = feature.manager_;
         streamer = server.featureManager.loadFeature('streamer');
 
         // Identify |gunther| to their account, and allow them to use the `/v` command.
         await gunther.identify({ userId: 42 });
-        
-        playground.access.addException('v', gunther);
+
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         // Wait until the Manager has loaded all vehicles from the database.
         await manager.loadVehicles();
     });
 
-    // Creates a vehicle for |player| having the |modelId| and has him enter the vehicle.
+    // Creates a vehicle for |player| having the |modelId| and has them enter the vehicle.
     function createVehicleForPlayer(player, { modelId = 411 /* Infernus */ } = {}) {
         const streamableVehicle = manager.createVehicle(player, modelId);
         if (!streamableVehicle || !streamableVehicle.live)
@@ -48,9 +43,9 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         const toggleCommand = enabled => {
             if (enabled)
-                playground.access.addException('v', gunther);
+                gunther.level = Player.LEVEL_ADMINISTRATOR;
             else
-                playground.access.removeException('v', gunther);
+                gunther.level = Player.LEVEL_PLAYER;
         };
 
         const toggleSprayTags = enabled =>
@@ -93,13 +88,17 @@ describe('VehicleCommands', (it, beforeEach) => {
             gunther.leaveVehicle();
         }
 
-        // (3) Players are only allowed to spawn such vehicles once per three minutes.
+        // (3) Rate limits are applied - only allow spawning such vehicles once per minute.
         {
+            const settings = server.featureManager.loadFeature('settings');
+
+            settings.setValue('limits/throttle_spawn_vehicle_admin_sec', 60);
+
             assert.isTrue(await gunther.issueCommand('/nrg'));
             assert.equal(gunther.messages.length, 1);
             assert.equal(
                 gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
-                                                    'can only do so once per 3 minutes'));
+                                                    'you can only do this once per minute'));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -144,7 +143,9 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_MAIN_WORLD);
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_SPAWN_REJECTED, `you're not outside`));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -159,8 +160,10 @@ describe('VehicleCommands', (it, beforeEach) => {
 
             assert.isTrue(await gunther.issueCommand('/inf'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.format(Message.VEHICLE_SPAWN_REJECTED,
-                                                             AbuseConstants.REASON_FIRED_WEAPON));
+            assert.equal(
+                gunther.messages[0],
+                Message.format(Message.VEHICLE_SPAWN_REJECTED,
+                               `you've recently fired your weapon`));
             assert.isNull(gunther.vehicle);
 
             gunther.clearMessages();
@@ -168,6 +171,11 @@ describe('VehicleCommands', (it, beforeEach) => {
     });
 
     it('should enable players to use the quick vehicle commands', async(assert) => {
+        const settings = server.featureManager.loadFeature('settings');
+
+        // Limit the maximum number of live vehicles to a single one, for administrators.
+        settings.setValue('vehicles/vehicle_limit_administrator', 1);
+
         const commands = ['pre', 'sul', 'ele', 'tur', 'inf', 'nrg'];
         let previousVehicle = null;
 
@@ -193,18 +201,6 @@ describe('VehicleCommands', (it, beforeEach) => {
             // Forward the clock so that the player is allowed to use spawn vehicles again.
             await server.clock.advance(180 * 1000);
         }
-    });
-
-    // TODO: We'll actually want to make this available to all the players.
-    // See the following issue: https://github.com/LVPlayground/playground/issues/330
-    it('should limit /v to administrators only', async(assert) => {
-        const russell = server.playerManager.getById(1 /* Russell */);
-        assert.equal(russell.level, Player.LEVEL_PLAYER);
-
-        assert.isTrue(await russell.issueCommand('/v'));
-        assert.equal(russell.messages.length, 1);
-        assert.equal(russell.messages[0],
-                     Message.format(Message.COMMAND_ERROR_INSUFFICIENT_RIGHTS, 'specific people'));
     });
 
     it('should support spawning vehicles by their model Id', async(assert) => {
@@ -304,8 +300,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNull(server.playerManager.getById(123));
             assert.isTrue(await gunther.issueCommand('/v 123 delete'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0],
-                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, '123'));
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
 
             assert.isNotNull(gunther.vehicle);
             assert.isTrue(vehicle.isConnected());
@@ -318,8 +313,7 @@ describe('VehicleCommands', (it, beforeEach) => {
             assert.isNull(server.playerManager.getByName('Darkfire'));
             assert.isTrue(await gunther.issueCommand('/v Darkfire delete'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0],
-                         Message.format(Message.COMMAND_ERROR_UNKNOWN_PLAYER, 'Darkfire'));
+            assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
 
             assert.isNotNull(gunther.vehicle);
             assert.isTrue(vehicle.isConnected());
@@ -446,15 +440,6 @@ describe('VehicleCommands', (it, beforeEach) => {
         assert.equal(gunther.vehicle.secondaryColor, oldVehicle.secondaryColor);
     });
 
-    it('should clean up the commands when being disposed of', async(assert) => {
-        const originalCommandCount = server.commandManager.size;
-
-        commands.dispose();
-        commands.dispose = () => true;
-
-        assert.equal(server.commandManager.size, originalCommandCount - 8);
-    });
-
     it('should pretend that the delete and save commands do not exist for temps', async(assert) => {
         // Only administrators can manipulate vehicle color(s) on the server, but certain commands
         // have been restricted from temporary administrators.
@@ -466,11 +451,11 @@ describe('VehicleCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/v save'));
         assert.equal(gunther.messages.length, 1);
-        assert.equal(gunther.messages[0], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+        assert.equal(gunther.messages[0], Message.VEHICLE_SAVE_HELP);
 
         assert.isTrue(await gunther.issueCommand('/v delete'));
         assert.equal(gunther.messages.length, 2);
-        assert.equal(gunther.messages[1], Message.VEHICLE_QUICK_ALREADY_DRIVING);
+        assert.equal(gunther.messages[1], Message.VEHICLE_DELETE_HELP);
     });
 
     it('should have comprehensive output when requesting help', async(assert) => {
@@ -478,7 +463,8 @@ describe('VehicleCommands', (it, beforeEach) => {
         {
             assert.isTrue(await gunther.issueCommand('/v help'));
             assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.VEHICLE_HELP_SPAWN);
+            assert.equal(
+                gunther.messages[0], Message.format(Message.VEHICLE_HELP_GLOBAL, 'delete/save'));
 
             gunther.clearMessages();
         }

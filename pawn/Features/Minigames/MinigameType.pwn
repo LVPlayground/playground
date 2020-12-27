@@ -78,8 +78,6 @@ MinigameTypeToString(MinigameType: type, buffer[], bufferSize = sizeof(buffer)) 
             strncpy(buffer, "jump", bufferSize);
         case DeathmatchMinigame:
             strncpy(buffer, "fight", bufferSize);
-        case DerbyMinigame:
-            strncpy(buffer, "derby", bufferSize);
         default:
             strncpy(buffer, "minigame", bufferSize);
     }

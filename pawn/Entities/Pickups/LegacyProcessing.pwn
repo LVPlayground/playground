@@ -6,12 +6,6 @@ new playerVipRoomEntryTime[MAX_PLAYERS];
 
 LegacyOnPlayerPickUpPickup(playerid, pickupid)
 {
-    // First of all check for derby pickups
-    if(CDerby__CheckPlayerPickupPickup(playerid, pickupid) == 1)
-    {
-        return 1;   // done \o
-    }
-
     // Capture the briefcase
     if(CBrief__CheckPickup(playerid, pickupid))
     {
@@ -95,7 +89,7 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
         playerVipRoomEntryTime[playerid] = 0;
 
-        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerid)) {
             SendClientMessage(playerid, Color::Red, "You cannot use this command because you have recently been in a fight.");
             return 1;
         }
@@ -142,13 +136,15 @@ LegacyOnPlayerPickUpPickup(playerid, pickupid)
 
     // Airports:
     // Quite simple how it works. When a player picks up the pickup, simply show the menu!
-    if(!g_PlayerMenu[playerid] && !IsPlayerInMinigame(playerid))
+    if(!g_PlayerMenu[playerid] && !IsPlayerInMinigame(playerid)) 
     {
-        if(Time->currentTime() - AirTime[playerid] < 60)
-        {
-            SendClientMessage(playerid,Color::Red,"There are no flights departing right now! Try again later.");
-            return 1;
-        }
+        if (Time->currentTime() - AirTime[playerid] < 60) {
+    if (pickupid == g_AirportPickup[0] || pickupid == g_AirportPickup[1] ||
+            pickupid == g_AirportPickup[2] || pickupid == g_AirportPickup[3]) {
+        SendClientMessage(playerid,Color::Red,"There are no flights departing right now! Try again later.");
+        return 1;
+    }
+}
         g_PlayerMenu[ playerid ] = 1;
 
         if (pickupid == g_AirportPickup[0])

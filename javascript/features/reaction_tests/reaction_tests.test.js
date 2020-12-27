@@ -2,9 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { CalculationStrategy } from 'features/reaction_tests/strategies/calculation_strategy.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
 import Settings from 'features/settings/settings.js';
+
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
 
 import * as achievements from 'features/collectables/achievements.js';
 
@@ -109,19 +112,23 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance((delay + jitter) * 1000);
 
         assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.stats.enduring.reactionTests, 0);
+        assert.equal(gunther.stats.session.reactionTests, 0);
         assert.equal(gunther.account.reactionTests, 0);
         assert.equal(finance.getPlayerCash(gunther), 0);
         
         // (1) The first player to give the right answer will be awarded the money.
         await server.clock.advance(2560);
 
-        await gunther.issueMessage(driver.activeTest_.answer);
+        await gunther.issueMessage(driver.activeTest_.answer.toLowerCase());
 
         assert.equal(gunther.messages.length, 4);
         assert.includes(gunther.messages[1], 'in 2.56 seconds');
-        assert.equal(gunther.messages[2], Message.format(Message.REACTION_TEST_WON, prize));
-        assert.includes(gunther.messages[3], driver.activeTest_.answer);
+        assert.equal(gunther.messages[2], messages.reaction_tests_won(null, { prize }));
+        assert.includes(gunther.messages[3], driver.activeTest_.answer.toLowerCase());
 
+        assert.equal(gunther.stats.enduring.reactionTests, 1);
+        assert.equal(gunther.stats.session.reactionTests, 1);
         assert.equal(gunther.account.reactionTests, 1);
         assert.equal(finance.getPlayerCash(gunther), prize);
 
@@ -135,7 +142,11 @@ describe('ReactionTests', (it, beforeEach) => {
         assert.equal(lucy.account.reactionTests, 0);
         assert.equal(lucy.messages.length, 4);
         assert.equal(
-            lucy.messages[3], Message.format(Message.REACTION_TEST_TOO_LATE, gunther.name, 1.23));
+            lucy.messages[3],
+            messages.reaction_tests_too_late(null, {
+                difference: 1.23,
+                winner: gunther.name,
+            }));
     });
 
     it('should automatically schedule a new test after someone won', async (assert) => {
@@ -177,12 +188,12 @@ describe('ReactionTests', (it, beforeEach) => {
         await server.clock.advance(timeout * 1000);
 
         await gunther.issueMessage(answer);  // goes to main chat
-        assert.equal(gunther.messages.length, 2);
+        assert.isAboveOrEqual(gunther.messages.length, 2);
 
         // Wait until we're certain that the next reaction test has started.
         await server.clock.advance((delay + jitter) * 1000);
 
-        assert.equal(gunther.messages.length, 3);
+        assert.isAboveOrEqual(gunther.messages.length, 3);
     });
 
     it('should award achievements at certain milestones', async (assert) => {
@@ -235,5 +246,28 @@ describe('ReactionTests', (it, beforeEach) => {
         
         assert.isTrue(
             collectables.hasAchievement(gunther, achievements.kAchievementReactionTestSequence));
+    });
+
+    it('should automatically answer through Gunther when certain tests timeout', async (assert) => {
+        // Only enable calculation strategies, which we know to enable this capability.
+        driver.strategies_ = [ CalculationStrategy ];
+
+        const delay = settings.getValue('playground/reaction_test_delay_sec');
+        const jitter = settings.getValue('playground/reaction_test_jitter_sec');
+        const timeout = settings.getValue('playground/reaction_test_expire_sec');
+
+        assert.equal(lucy.messages.length, 0);
+
+        // Wait until we're certain that the first reaction test has started.
+        await server.clock.advance((delay + jitter) * 1000);
+
+        assert.equal(lucy.messages.length, 1);
+
+        // Wait for the timeout. Gunther will automatically share the right answer.
+        await server.clock.advance(timeout * 1000);
+
+        assert.equal(lucy.messages.length, 3);
+        assert.includes(lucy.messages[1], 'has won the reaction test');
+        assert.includes(lucy.messages[2], gunther.name);
     });
 });

@@ -16,7 +16,8 @@ const LOAD_VEHICLES_QUERY = `
         vehicles.paintjob,
         vehicles.primary_color,
         vehicles.secondary_color,
-        vehicles.number_plate
+        vehicles.number_plate,
+        vehicles.components
     FROM
         vehicles
     WHERE
@@ -44,8 +45,7 @@ const UPDATE_VEHICLE_QUERY = `
         paintjob = ?,
         primary_color = ?,
         secondary_color = ?,
-        number_plate = ?,
-        interior_id = ?
+        number_plate = ?
     WHERE
         vehicle_id = ?`;
 
@@ -88,6 +88,8 @@ class VehicleDatabase {
                 primaryColor: info.primary_color,
                 secondaryColor: info.secondary_color,
                 numberPlate: info.number_plate,
+                components: info.components.length ? info.components.split(',')
+                                                   : [],
             });
 
             vehicles.push(vehicleInfo);
@@ -103,7 +105,7 @@ class VehicleDatabase {
             vehicleSettings.rotation, vehicleSettings.paintjob, vehicleSettings.primaryColor,
             vehicleSettings.secondaryColor, vehicleSettings.numberPlate);
         
-        return new PersistentVehicleInfo(settings, {
+        return new PersistentVehicleInfo(vehicleSettings, {
             vehicleId: data.insertId
         });
     }
@@ -126,8 +128,8 @@ class VehicleDatabase {
     }
 
     // Asynchronously deletes the |databaseVehicle| from the database.
-    async deleteVehicle(databaseVehicle) {
-        await server.database.query(DELETE_VEHICLE_QUERY, databaseVehicle.databaseId);
+    async deleteVehicle(vehicleId) {
+        await server.database.query(DELETE_VEHICLE_QUERY, vehicleId);
     }
 }
 

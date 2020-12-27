@@ -96,7 +96,7 @@ const INTERIOR_LIST = [
         value: 5,
 
         interior: 3,
-        exits: [ { position: [ 2495.96, -1692.80, 1014.74 ], rotation: 90 } ],
+        exits: [ { position: [ 2495.96, -1692.80, 1014.74 ], rotation: 180 } ],
 
         features: {
             health: [ 2493.79, -1694.42, 1014.74 ],

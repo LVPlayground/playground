@@ -2,46 +2,22 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
-import PlaygroundCommands from 'features/playground/playground_commands.js';
 import { Setting } from 'entities/setting.js';
 
-describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
-    let access = null;
-    let commands = null;
+describe('PlaygroundCommands', (it, beforeEach) => {
     let communication = null;
     let gunther = null;
 
     beforeEach(async() => {
-        const announce = server.featureManager.loadFeature('announce');
-        const nuwani = server.featureManager.loadFeature('nuwani');
-        const settings = server.featureManager.loadFeature('settings');
+        server.featureManager.loadFeature('playground');
 
         communication = server.featureManager.loadFeature('communication');
-
-        access = new PlaygroundAccessTracker();
-        commands = new PlaygroundCommands(
-            access, () => announce, () => communication, () => nuwani, () => settings);
-
         gunther = server.playerManager.getById(0 /* Gunther */);
+
         await gunther.identify();
     });
 
-    afterEach(() => {
-        if (commands)
-            commands.dispose();
-    });
-
-    it('should not leave any stray commands on the server', assert => {
-        assert.isAbove(server.commandManager.size, 0);
-
-        commands.dispose();
-        commands = null;
-
-        assert.equal(server.commandManager.size, 0);
-    });
-
-    it('should send a different usage message to administrators and management', async(assert) => {
+    it('should send a different usage message to administrators and management', async (assert) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
         assert.isTrue(await gunther.issueCommand('/lvp'));
@@ -55,126 +31,125 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.notEqual(gunther.messages[1], gunther.messages[3]);
     });
 
-    it('should be able to deal with remote commands', async(assert) => {
-        const COMMAND_NAME = 'aaaaaaa';
+    it('should be able to create a list of all commands for access controls', async (assert) => {
+        const feature = server.featureManager.loadFeature('playground');
 
-        const russell = server.playerManager.getById(1 /* Russell */);
+        const delegate = feature.permissionDelegate_;
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
         await russell.identify();
 
         gunther.level = Player.LEVEL_MANAGEMENT;
 
-        // We're going to assume that this command comes first in the list.
-        access.registerCommand(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
-
-        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-
-        // Lower the level requirement of the |COMMAND_NAME| to all Players.
-        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Change required level */ })).then(
-            () => gunther.respondToDialog({ listitem: 0 /* Player.LEVEL_PLAYER */ })).then(
-            () => gunther.respondToDialog({ response: 0 /* Yeah I get it */ }));
+        // Note that only commands from the "Playground" feature will be listed here.
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.equal(gunther.getLastDialogAsTable().rows.length, 5);
 
-        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.isFalse(access.hasException(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_PLAYER);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        // (1) Players with an exception cannot modify commands above their pay grade.
+        let command = server.commandManager.resolveCommand('/lvp access');
 
-        // Revoke the access level of the |COMMAND_NAME| back to administrators.
-        access.setCommandLevel(COMMAND_NAME, Player.LEVEL_ADMINISTRATOR);
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
 
-        assert.isFalse(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        delegate.addException(russell, server.commandManager.resolveCommand('/lvp'));
+        delegate.addException(russell, command);
 
-        // Now grant an exception for Russell allowing him to use the command.
-        gunther.respondToDialog({ listitem: 0 /* Assumed COMMAND_NAME */ }).then(
-            () => gunther.respondToDialog({ listitem: 1 /* Grant exception */ })).then(
-            () => gunther.respondToDialog({ response: 1, inputtext: russell.name })).then(
-            () => gunther.respondToDialog({ response: 1 /* Yeah I get it */ }));
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+
+        russell.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => russell.respondToDialog({ listitem: 1 /* /lvp access */ })).then(
+            () => russell.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await russell.issueCommand('/lvp access'));
+        assert.includes(russell.lastDialog, `is normally restricted to a level above yours`);
+
+        delegate.removeException(russell, server.commandManager.resolveCommand('/lvp'));
+        delegate.removeException(russell, command);
+
+        // (2) Gunther should be able to amend the access level of the "/lvp" command.
+        command = server.commandManager.resolveCommand('/lvp');
+
+        assert.equal(delegate.getCommandLevel(command).restrictLevel, Player.LEVEL_ADMINISTRATOR);
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* change level */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Management */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
 
         assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `rights have been updated`);
 
-        assert.isTrue(access.canAccessCommand(COMMAND_NAME, russell));
-        assert.isTrue(access.hasException(COMMAND_NAME, russell));
-        assert.equal(access.getCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
-        assert.equal(access.getDefaultCommandLevel(COMMAND_NAME), Player.LEVEL_ADMINISTRATOR);
+        assert.equal(gunther.messages.length, 1);
+        assert.includes(
+            gunther.messages[0],
+            Message.format(Message.LVP_ACCESS_ADMIN_NOTICE, gunther.name, gunther.id,
+                           command.command, 'Management'));
+
+        assert.equal(delegate.getCommandLevel(command).restrictLevel, Player.LEVEL_MANAGEMENT);
+
+        // (3) Gunther should be able to add an exception to the "/lvp" command.
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* add exception */ })).then(
+            () => gunther.respondToDialog({ inputtext: 'Russ' })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `has been added for Russell`);
+
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isTrue(delegate.hasException(russell, command));
+
+        // (4) Gunther should be able to remove an exception from the "/lvp" command.
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 3 /* Russell's exception */ })).then(
+            () => gunther.respondToDialog({ response: 1 /* confirm */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `has been removed for Russell`);
+
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
+
+        // (5) Gunther should be able to restrict the "/lvp" command to administrators, but only to
+        // ones who have the rights permanently.
+        russell.level = Player.LEVEL_ADMINISTRATOR;
+        russell.levelIsTemporary = true;
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* change level */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* Administrators */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `access rights have been updated`);
+
+        assert.isTrue(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
+
+        gunther.respondToDialog({ listitem: 0 /* /lvp */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* /lvp */ })).then(
+            () => gunther.respondToDialog({ listitem: 1 /* change temp admin restrict */ })).then(
+            () => gunther.respondToDialog({ listitem: 0 /* restricted from temp admins */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/lvp access'));
+        assert.includes(gunther.lastDialog, `restrictions have been updated`);
+
+        assert.isFalse(delegate.canExecuteCommand(russell, null, command, false));
+        assert.isFalse(delegate.hasException(russell, command));
     });
 
-    it('should be able to capture profiles with a given duration', async(assert) => {
-        gunther.level = Player.LEVEL_MANAGEMENT;
-
-        let captureMilliseconds = null;
-        let captureFilename = null;
-
-        commands.captureProfileFn_ = (milliseconds, filename) => {
-            captureMilliseconds = milliseconds;
-            captureFilename = filename;
-        };
-
-        // (1) It should validate the valid range of the profile duration.
-        {
-            assert.isTrue(await gunther.issueCommand('/lvp profile 42'));
-            assert.isTrue(await gunther.issueCommand('/lvp profile 240000'));
-
-            const expected = Message.format(Message.LVP_PROFILE_INVALID_RANGE, 100, 180000);
-
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[0], expected);
-            assert.equal(gunther.messages[1], expected);
-
-            gunther.clearMessages();
-        }
-
-        let filename = null;
-
-        // (2) It should be able to start a profile.
-        {
-            assert.isTrue(await gunther.issueCommand('/lvp profile 30000'));
-
-            assert.equal(gunther.messages.length, 2);
-            assert.equal(gunther.messages[1], Message.format(Message.LVP_PROFILE_STARTED, 30000));
-            assert.isTrue(gunther.messages[0].includes(
-                              Message.format(Message.LVP_ANNOUNCE_PROFILE_START, gunther.name,
-                                             gunther.id, 30000)));
-
-            assert.isNotNull(captureMilliseconds);
-            assert.equal(captureMilliseconds, 30000);
-
-            assert.isNotNull(captureFilename);
-
-            [, filename] = captureFilename.split('/');  // basename(captureFilename)
-
-            gunther.clearMessages();
-        }
-
-        // (3) It should not allow multiple profiles to run in parallel.
-        {
-            assert.isTrue(await gunther.issueCommand('/lvp profile 30000'));
-            assert.equal(gunther.messages.length, 1);
-            assert.equal(gunther.messages[0], Message.LVP_PROFILE_ONGOING);
-
-            gunther.clearMessages();
-        }
-
-        await server.clock.advance(30000);  // time of the profile
-
-        // (4) It should inform the issuer and administrators when the profile has finished.
-        {
-            assert.equal(gunther.messages.length, 2);
-            assert.isTrue(gunther.messages[0].includes(
-                              Message.format(Message.LVP_ANNOUNCE_PROFILE_FINISHED, gunther.name,
-                                             filename)));
-
-            assert.equal(
-                gunther.messages[1], Message.format(Message.LVP_PROFILE_FINISHED, filename));
-        }
-    });
-
-    it('should be able to change boolean settings', async(assert) => {
+    it('should be able to change boolean settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -216,7 +191,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.messages[0].includes('enabled'));
     });
 
-    it('should be able to change numeric settings', async(assert) => {
+    it('should be able to change numeric settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -258,7 +233,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isTrue(gunther.messages[0].includes('10'));
     });
 
-    it('should be able to change textual settings', async(assert) => {
+    it('should be able to change textual settings', async (assert) => {
         const settings = server.featureManager.loadFeature('settings');
         settings.createSettingForTesting({
             category: 'aaa_category',
@@ -497,7 +472,7 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.isFalse(hasSubstitution('lucy'));
     });
 
-    it('should be able to live reload the message formatting file', async(assert) => {
+    it('should be able to live reload the message formatting file', async (assert) => {
         gunther.level = Player.LEVEL_MANAGEMENT;
 
         assert.isTrue(await gunther.issueCommand('/lvp reload messages'));
@@ -505,5 +480,42 @@ describe('PlaygroundCommands', (it, beforeEach, afterEach) => {
         assert.equal(gunther.messages.length, 2);
         assert.includes(gunther.messages[0], 'is reloading all in-game messages');  // admin notice
         assert.includes(gunther.messages[1], 'messages have been reloaded');  // acknowledgement
+    });
+
+    it('should be able to capture a trace', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // Override the global `startTrace()` and `stopTrace()` functions, provided by PlaygroundJS,
+        // to avoid capturing an actual trace while this command is running.
+        const originalStartTrace = global.startTrace;
+        const originalStopTrace = global.stopTrace;
+
+        let filename = null;
+        let running = false;
+
+        global.startTrace = () => running = true;
+        global.stopTrace = (inFilename) => {
+            filename = inFilename;
+            running = false;
+        };
+
+        // Start the command. We can't wait on it because that takes ages.
+        const commandPromise = gunther.issueCommand('/lvp trace 180');
+        await Promise.resolve();
+
+        assert.isTrue(running);
+        assert.equal(gunther.messages.length, 2);
+
+        // Wait for the 180 seconds the trace is meant to last. In reality we fast-forward.
+        await server.clock.advance(180 * 1000);
+
+        assert.isTrue(await commandPromise);
+        assert.isFalse(running);
+
+        assert.equal(gunther.messages.length, 4);
+
+        // Restore the original tracing functions on the global scope.
+        global.startTrace = originalStartTrace;
+        global.stopTrace = originalStopTrace;
     });
 });

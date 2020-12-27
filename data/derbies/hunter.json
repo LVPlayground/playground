@@ -1,0 +1,12 @@
+{
+    "name": "Hunter",
+    "id": 6,
+
+    "spawnPositions": [
+        { "position": [ -74.0677, 2490.2827, 16.2115 ], "facingAngle": 271.0882, "vehicleModelId": 425 },
+        { "position": [ 153.8008, 2549.7651, 16.1754 ], "facingAngle": 187.7806, "vehicleModelId": 425 },
+        { "position": [ 255.8212, 2454.8008, 16.2116 ], "facingAngle":  13.3615, "vehicleModelId": 425 },
+        { "position": [ 428.6800, 2506.9080, 16.2114 ], "facingAngle":  83.3587, "vehicleModelId": 425 },
+        { "position": [ 351.7470, 2622.3374, 16.1083 ], "facingAngle": 180.1356, "vehicleModelId": 425 }
+    ]
+}

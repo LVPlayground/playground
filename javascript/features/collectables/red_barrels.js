@@ -100,8 +100,6 @@ export class RedBarrels extends CollectableBase {
                 modelId: kBarrelObjectId,
                 position, rotation,
 
-                interiorId: 0,  // main world
-                virtualWorld: 0,  // main world
                 playerId: player.id,
             });
 

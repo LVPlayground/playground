@@ -2,11 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import FriendsCommands from 'features/friends/friends_commands.js';
-import FriendsManager from 'features/friends/friends_manager.js';
-import MockFriendsDatabase from 'features/friends/test/mock_friends_database.js';
-
-describe('FriendsCommands', (it, beforeEach, afterEach) => {
+describe('FriendsCommands', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
 
@@ -18,15 +14,10 @@ describe('FriendsCommands', (it, beforeEach, afterEach) => {
         gunther = server.playerManager.getById(0 /* Gunther */);
         russell = server.playerManager.getById(1 /* Russell */);
 
-        friendsManager = new FriendsManager();
-        friendsManager.database_ = new MockFriendsDatabase();
+        const feature = server.featureManager.loadFeature('friends');
 
-        friendsCommands = new FriendsCommands(friendsManager);
-    });
-
-    afterEach(() => {
-        friendsCommands.dispose();
-        friendsManager.dispose();
+        friendsManager = feature.manager_;
+        friendsCommands = feature.commands_;
     });
 
     it('should show an error when adding a friend as an unregistered player', async(assert) => {

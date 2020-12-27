@@ -9,6 +9,9 @@ import { kGameEnvironment,
          kGamePickups,
          kGameSpawnPositions } from 'components/games/structured_game_description_templates.js';
 
+// The default time limit that will apply to derbies.
+export const kDefaultLimitSec = 600;
+
 // Describes the settings of an individual derby game, as loaded from its JSON configuration file.
 // Validation of data is strict, to make sure problems are discovered at launch time, not run time.
 export class DerbyDescription extends StructuredGameDescription {
@@ -24,17 +27,14 @@ export class DerbyDescription extends StructuredGameDescription {
             },
 
             kGameEnvironment,
+            kGameObjects,
+            kGamePickups,
             kGameSpawnPositions,
 
             {
                 name: 'settings',
                 type: StructuredGameDescription.kTypeObject,
                 structure: [
-                    {
-                        name: 'cannon',
-                        type: StructuredGameDescription.kTypeBoolean,
-                        defaultValue: false,
-                    },
                     {
                         name: 'invisible',
                         type: StructuredGameDescription.kTypeBoolean,
@@ -43,18 +43,15 @@ export class DerbyDescription extends StructuredGameDescription {
                     {
                         name: 'lowerAltitudeLimit',
                         type: StructuredGameDescription.kTypeNumber,
-                        defaultValue: 0,  // no limit
+                        defaultValue: -100,  // no limit
                     },
                     {
                         name: 'timeLimit',
                         type: StructuredGameDescription.kTypeNumber,
-                        defaultValue: 0,  // no limit
+                        defaultValue: kDefaultLimitSec,
                     }
                 ],
             },
-
-            kGameObjects,
-            kGamePickups,
         ]);
     }
 }

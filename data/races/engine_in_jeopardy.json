@@ -2,49 +2,38 @@
     "name": "Engine in Jeopardy",
     "id": 9,
 
-    "time_limit": 900,
-    "laps": 1,
-
     "environment": {
-        "weather": 18,
-        "time": [20, 0],
-        "interior": 0
+        "weather": "Heatwave",
+        "time": "Evening"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -1717.0920, 2729.6956, 60.6684 ],
-            "rotation": 94.7970,
-            "vehicle": {
-                "model": 506,
-                "nos": 5
-            }
+            "facingAngle": 94.7970,
+            "vehicleModelId": 506
         },
         {
             "position": [ -1716.8855, 2735.6892, 60.6534 ],
-            "rotation": 92.8246,
-            "vehicle": {
-                "model": 506,
-                "nos": 5
-            }
+            "facingAngle": 92.8246,
+            "vehicleModelId": 506
         },
         {
             "position": [ -1727.5999, 2734.7563, 60.3241 ],
-            "rotation": 99.3993,
-            "vehicle": {
-                "model": 506,
-                "nos": 5
-            }
+            "facingAngle": 99.3993,
+            "vehicleModelId": 506
         },
         {
             "position": [ -1726.3347, 2729.1487, 60.4328 ],
-            "rotation": 99.7658,
-            "vehicle": {
-                "model": 506,
-                "nos": 5
-            }
+            "facingAngle": 99.7658,
+            "vehicleModelId": 506
         }
     ],
+
+    "settings": {
+        "nos": 5,
+        "timeLimit": 900
+    },
 
     "checkpoints": [
         { "position": [ -1824.6049, 2687.7178, 55.2326 ], "size": 15 },

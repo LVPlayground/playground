@@ -35,6 +35,7 @@ export class StreamableVehicle {
     get secondaryColor() { return this.info_.secondaryColor; }
     get numberPlate() { return this.info_.numberPlate; }
     get siren() { return this.info_.siren; }
+    get components() { return this.info_.components; }
 
     get respawnDelay() { return this.info_.respawnDelay; }
 

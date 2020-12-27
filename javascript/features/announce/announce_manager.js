@@ -2,107 +2,115 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { PlayerSetting } from 'entities/player_setting.js';
-
-// Tag to be used for regular player-visible announcements.
-const AnnounceTag = 'notice-announce';
-
-// Tag to be used when announcing participation in a minigame.
-const AnnounceMinigameTag = 'notice-minigame';
-
-// Tag to be used for private administrator-visible announcements.
-const AdminTag = 'notice-admin';
-
-// Tag to be used for sending reports to admins on IRC.
-const ReportTag = 'notice-report';
+import { format } from 'base/format.js';
 
 // Implementation of the functionality of the Announce feature. This is where input will be verified
 // and the messages will be dispatched to the appropriate audience.
-class AnnounceManager {
-    nuwani_ = null;
+export class AnnounceManager {
+    #nuwani_ = null;
 
     constructor(nuwani) {
-        this.nuwani_ = nuwani;
+        this.#nuwani_ = nuwani;
     }
 
-    // Announces that the |name| has started. Players can join by typing |command|.
-    announceMinigame(player, name, command) {
-        const formattedMessage = Message.format(Message.ANNOUNCE_MINIGAME, name, command);
+    // ---------------------------------------------------------------------------------------------
 
-        server.playerManager.forEach(onlinePlayer =>
-            onlinePlayer.sendMessage(formattedMessage));
+    // Issues an announcement of the given |category| to all players who should receive it. The
+    // |message| and |params| will be substituted individually for each of the recipients.
+    broadcast(category, message, ...params) {
+        for (const player of server.playerManager) {
+            if (player.isNonPlayerCharacter())
+                continue;  // never send messages to non-player characters
+
+            if (player.level < category.level)
+                continue;  // the |player| is not eligible to receive this message
+
+            if (!this.isCategoryEnabledForPlayer(player, category))
+                continue;  // the |player| has disabled this category of messages
+
+            if (category.prefix) {
+                const prefix = category.prefix(null);
+                const formattedMessage = typeof message === 'string' ? message
+                                                                     : message(null, ...params);
+
+                player.sendMessage(`${prefix}${formattedMessage}`);
+            } else {
+                player.sendMessage(message, ...params);
+            }
+        }
+
+        // Also broadcast the |message| to people watching through Nuwani if it's intended for
+        // administrators and/or above, as an admin notice. We format the message in English.
+        if (category.level > Player.LEVEL_PLAYER) {
+            const formattedMessage = message(null, ...params);
+            const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
+
+            this.#nuwani_().echo('notice-admin', normalizedMessage);
+        }
+
+        // If the |category| has been explicitly marked as making an announcement to Nuwani, forward
+        // the message in English as well, but as a regular announcement.
+        else if (category.nuwani) {
+            const formattedMessage = message(null, ...params);
+            const normalizedMessage = formattedMessage.replace(/\{([a-f0-9]{6})\}/gi, '');
+
+            this.#nuwani_().echo('notice-announce', normalizedMessage);
+        }
     }
 
-    // Announces that |player| has joined the minigame named |name|. Other players can type the
-    // |command| themselves to participate in the minigame as well.
-    announceMinigameParticipation(player, name, command) {
-        const formattedMessage =
-            Message.format(Message.ANNOUNCE_NEWS_MINIGAME_JOINED, player.name, name, command);
+    // Returns whether the given |category| is enabled for the |player|. Unless the |player| has an
+    // override set on their profile, the |category|'s default value will be returned.
+    isCategoryEnabledForPlayer(player, category) {
+        if (player.account.isIdentified()) {
+            const override = player.account.getAnnouncementOverride(category.identifier);
+            if (override !== undefined)
+                return !!override;
+        }
 
-        // TODO(Russell): Validate that |formattedMessage| is safe for game text usage.
-
-        // Announce it asynchronously when not running a test to avoid reentrancy problems.
-        Promise.resolve().then(() => pawnInvoke('OnDisplayNewsMessage', 's', formattedMessage));
-
-        this.nuwani_().echo(AnnounceMinigameTag, player.name, player.id, name);
+        return category.defaultEnabled;
     }
 
-    // Announces |message| to all in-game players. Optionally |args| may be passed if the |message|
-    // is an instance of the Message class, which is common infrastructure for user-visible text.
-    announceToPlayers(message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+    // ---------------------------------------------------------------------------------------------
+    // TODO: Clean up the rest
+    // ---------------------------------------------------------------------------------------------
 
-        const formattedMessage = Message.format(Message.ANNOUNCE_ALL, message);
+    // Announces the given |message| to all players, optionally filtered by the given |predicate|.
+    publishAnnouncement({ message, predicate = null } = {}) {
+        for (const player of server.playerManager) {
+            if (player.isNonPlayerCharacter())
+                continue;  // never send messages to non-player characters
 
-        server.playerManager.forEach(player =>
-            player.sendMessage(formattedMessage));
+            if (predicate && !predicate(player))
+                continue;  // the |predicate| decided to not distribute this message
 
-        this.nuwani_().echo(AnnounceTag, message);
+            player.sendMessage(message);
+        }
     }
 
     // Announces |message| to all in-game administrators. Optionally |args| may be passed if
     // |message| is an instance of Message, which is common infrastructure for user-visible text.
     announceToAdministrators(message, ...args) {
-        this.announceToAdministratorsWithFilter(message, PlayerSetting.ANNOUNCEMENT.UNCATEGORIZED, 
-            PlayerSetting.SUBCOMMAND.GENERAL, ...args);
-    }
+        if (typeof message === 'function')
+            message = message(null, ...args);
+        else if (args.length)
+            message = format(message, ...args);
 
-    // Announces |message| to the administrators that have the announcements for |announceSubcategory| 
-    // and |subCommand| enabled. Optionally |args| may be passed if |message| is an instance of Message, 
-    // which is common infrastructure for user-visible text.
-    announceToAdministratorsWithFilter(message, announceSubcategory, subCommand, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
-
-        const formattedMessage = Message.format(Message.ANNOUNCE_ADMINISTRATORS, message);
-
-        const generalIdentifier = 
-            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${PlayerSetting.SUBCOMMAND.GENERAL}`;
-        const specificIdentifier = 
-            `${PlayerSetting.CATEGORY.ANNOUNCEMENT}/${announceSubcategory}/${subCommand}`;
+        const formattedMessage = format(Message.ANNOUNCE_ADMINISTRATORS, message);
 
         server.playerManager.forEach(player => {
             if (!player.isAdministrator())
                 return;
-                
-            var item = player.settings.getValue(generalIdentifier);
-            var subItem = player.settings.getValue(specificIdentifier);
-
-            if (item === false || subItem === false) {
-                return;
-            }
 
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo(AdminTag, message);
+        this.#nuwani_().echo('notice-admin', message.replace(/\{([a-f0-9]{6})\}/gi, ''));
     }
 
     // Announces that a |player| did a report of |reportedPlayer| because of |reason| to all in-game
     // administrators. It uses the ReportTag for the IRC-message.
     announceReportToAdministrators(player, reportedPlayer, reason) {
-        const formattedMessage = Message.format(
+        const formattedMessage = format(
             Message.ANNOUNCE_REPORT, player.name, player.id, reportedPlayer.name, 
             reportedPlayer.id, reason);
 
@@ -113,11 +121,7 @@ class AnnounceManager {
             player.sendMessage(formattedMessage);
         });
 
-        this.nuwani_().echo(ReportTag, player.name, player.id, reportedPlayer.name,
-                            reportedPlayer.id, reason);
+        this.#nuwani_().echo('notice-report', player.name, player.id, reportedPlayer.name,
+                             reportedPlayer.id, reason);
     }
-
-    dispose() { }
 }
-
-export default AnnounceManager;

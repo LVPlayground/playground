@@ -3,14 +3,21 @@
 // be found in the LICENSE file.
 
 import { Feature } from 'components/feature_manager/feature.js';
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
-import PlaygroundCommands from 'features/playground/playground_commands.js';
-import PlaygroundManager from 'features/playground/playground_manager.js';
+import { PlaygroundCommands } from 'features/playground/playground_commands.js';
+import { PlaygroundManager } from 'features/playground/playground_manager.js';
 import { PlaygroundNuwaniCommands } from 'features/playground/playground_nuwani_commands.js';
+import { PlaygroundPermissionDelegate } from 'features/playground/playground_permission_delegate.js';
 
 // Implementation of the feature that contains a number of options and features giving Las Venturas
 // Playground its unique identity.
-class Playground extends Feature {
+export default class Playground extends Feature {
+    announce_ = null;
+    commands_ = null;
+    manager_ = null;
+    nuwani_ = null;
+    nuwaniCommands_ = null;
+    permissionDelegate_ = null;
+
     constructor() {
         super();
 
@@ -20,23 +27,31 @@ class Playground extends Feature {
         // Used for controlling the message filter, as well as server-wide communication.
         const communication = this.defineDependency('communication');
 
-        // Used for distributing messages to Nuwani, where applicable.
+        // Used for distributing messages to Nuwani, where applicable, as well as providing the
+        // !lvp command to people on IRC and Discord.
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeNuwaniCommands());
 
-        // The Playground feature provides an interface in the mutable settings.
+        // The Playground feature provides an interface that allows Managers to amend the server's
+        // statistics. We closely integrate with that feature.
         const settings = this.defineDependency('settings');
 
-        this.access_ = new PlaygroundAccessTracker();
-        this.manager_ = new PlaygroundManager(settings);
-        this.commands_ =
-            new PlaygroundCommands(this.access_, this.announce_, communication, this.nuwani_,
-                                   settings);
+        // Responsible for driving persistent effects, such as the Free VIP feature.
+        this.manager_ = new PlaygroundManager(this.announce_, settings);
 
-        this.commands_.loadCommands();
+        // The Permission Delegate provides specialized behaviour for the command system's access
+        // system, which allows this feature to create overrides and exceptions.
+        this.permissionDelegate_ = new PlaygroundPermissionDelegate();
 
-        // Activate the features that should be activated by default.
-        this.manager_.initialize();
+        // Provides the "/lvp" command to Management members for managing the server.
+        this.commands_ = new PlaygroundCommands(
+            this.announce_, communication, this.nuwani_, this.permissionDelegate_, settings);
+
+        // The PlaygroundCommands infrastructure requires additional initialization that will be
+        // done lazily by the tests that need it, in order to avoid slowing down all tests.
+        if (!server.isTest())
+            this.commands_.loadCommands();
+
         this.initializeNuwaniCommands();
     }
 
@@ -49,33 +64,37 @@ class Playground extends Feature {
 
     // ---------------------------------------------------------------------------------------------
     // Public API of the Playground feature.
+    // ---------------------------------------------------------------------------------------------
 
-    // Registers the |command| as one access for which can be controlled with `/lvp access`.
-    registerCommand(command, defaultLevel) {
-        this.access_.registerCommand(command, defaultLevel);
-    }
+    // Returns whether the |player| is able to use |commandName|. This considers the command's
+    // default level, as well as any overrides that might have been created.
+    canAccessCommand(player, commandName) {
+        const command = server.commandManager.resolveCommand(commandName);
+        if (!command)
+            return false;  // the |command| is not known to the server
 
-    // Returns whether the |player| is able to use |command|. The |command| must have been
-    // registered with the Playground feature in the past.
-    canAccessCommand(player, command) {
-        return this.access_.canAccessCommand(command, player);
-    }
-
-    // Unregisters the |command| from the access tracker.
-    unregisterCommand(command) {
-        this.access_.unregisterCommand(command);
+        return this.permissionDelegate_.canExecuteCommand(
+            player, /* contextDelegate= */ null, command, /* verbose= */ false);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         this.nuwaniCommands_.dispose();
+        this.nuwaniCommands_ = null;
 
         this.commands_.dispose();
-        this.manager_.dispose();
+        this.commands_ = null;
 
-        this.access_.dispose();
+        this.manager_.dispose();
+        this.manager_ = null;
+
+        this.announce_ = null;
+
+        this.permissionDelegate_.dispose();
+        this.permissionDelegate_ = null;
+
+        this.nuwani_.removeReloadObserver(this);
+        this.nuwani_ = null;
     }
 }
-
-export default Playground;

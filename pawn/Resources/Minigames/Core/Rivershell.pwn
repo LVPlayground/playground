@@ -91,7 +91,7 @@ CShell__SignPlayerUp(playerid)
     Responses->respondMinigameSignedUp(playerid, RivershellMinigame, "Rivershell", 20);
 
     format(message, sizeof(message), "~r~~h~%s~w~ has signed up for ~y~Rivershell~w~ (~p~/rivershell~w~)", Player(playerid)->nicknameString());
-    NewsController->show(message);
+    AnnounceNewsMessage(message);
 
     format(message,sizeof(message),"%s (Id:%d) has signed up for /rivershell.",PlayerName(playerid),playerid);
     Admin(playerid, message);
@@ -141,7 +141,7 @@ CShell__SignPlayerOut(playerid)
 
         SetPlayerTeam(playerid, NO_TEAM);
 
-        ColorManager->releasePlayerMinigameColor(playerid);
+        ReleasePlayerGameColor(playerid);
         TimeController->releasePlayerOverrideTime(playerid);
 
         SetPlayerVirtualWorld(playerid,false);
@@ -173,11 +173,11 @@ CShell__SignPlayerOut(playerid)
             new notice[128];
             if (iTeam == TEAM_BLUE) {
                 format(notice, sizeof(notice), "~y~Rivershell~w~ has finished: ~g~~h~Green Team~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
                 CShell__End();
             } else {
                 format(notice, sizeof(notice), "~y~Rivershell~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-                NewsController->show(notice);
+                AnnounceNewsMessage(notice);
                 CShell__End();
             }
         }
@@ -235,7 +235,7 @@ CShell__End(winningTeam = -1)
             RemovePlayerFromVehicle(i);
             RemovePlayerFromVehicle(i);
             DisablePlayerCheckpoint(i);
-            ColorManager->releasePlayerMinigameColor(i);
+            ReleasePlayerGameColor(i);
             TimeController->releasePlayerOverrideTime(i);
             SetPlayerTeam(i,NO_TEAM);
             RemovePlayerMapIcon(i,12);
@@ -499,7 +499,7 @@ CShell__Spawn(playerid)
             SetVehicleParamsForPlayer(rivershellGreenTeamVehicleId,playerid,1,0);
             SetVehicleParamsForPlayer(rivershellBlueTeamVehicleId,playerid,1,1);
             SetPlayerSkinEx(playerid,154);
-            ColorManager->setPlayerMinigameColor(playerid, COLOR_BLUE);
+            SetPlayerGameColor(playerid, COLOR_BLUE);
         }
     case TEAM_GREEN:
         {
@@ -511,7 +511,7 @@ CShell__Spawn(playerid)
             SetVehicleParamsForPlayer(rivershellGreenTeamVehicleId,playerid,1,1);
             SetVehicleParamsForPlayer(rivershellBlueTeamVehicleId,playerid,1,0);
             SetPlayerSkinEx(playerid,162);
-            ColorManager->setPlayerMinigameColor(playerid, Color::Green);
+            SetPlayerGameColor(playerid, Color::Green);
         }
 
     }
@@ -547,7 +547,7 @@ CShell__Checkpoint(playerid)
         SetVehicleToRespawn(playervehicleid);
         if(gGreenTimesCapped == CAPS_TO_WIN) {
             format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~g~~h~Green Team~w~ have won!");
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CShell__End(TEAM_GREEN);
         }
     }
@@ -563,7 +563,7 @@ CShell__Checkpoint(playerid)
         SetVehicleToRespawn(playervehicleid);
         if (gBlueTimesCapped == CAPS_TO_WIN) {
             format(str, sizeof(str), "~y~Rivershell~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CShell__End(TEAM_BLUE);
         }
     }

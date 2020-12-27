@@ -2,18 +2,15 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
 // How many frames per second should be checked for directionality updates?
-const FramesPerSecond = 20;
-
-// Animation index of the PARACHUTE/FALL_SkyDive_Accel animation.
-const MovingAnimationIndex = 959;
+const kFramesPerSecond = 20;
 
 // Command: /fly [player]?
-class FlyCommand extends Command {
+export default class FlyCommand extends Command {
     constructor(...args) {
         super(...args);
 
@@ -31,11 +28,12 @@ class FlyCommand extends Command {
 
     get name() { return 'fly'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Fly around in the world of San Andreas.`; }
 
     build(commandBuilder) {
         commandBuilder
             .parameters([
-                { name: 'target', type: CommandBuilder.PLAYER_PARAMETER, optional: true }
+                { name: 'target', type: CommandBuilder.kTypePlayer, optional: true }
             ])
             .build(FlyCommand.prototype.onFlyCommand.bind(this));
     }
@@ -138,7 +136,7 @@ class FlyCommand extends Command {
             // Update the animation with whatever is most recent for the player.
             this.applyFlightAnimation(subject, moving);
 
-            await wait(1000 / FramesPerSecond);
+            await wait(1000 / kFramesPerSecond);
         }
 
         this.flying_.delete(subject);
@@ -206,5 +204,3 @@ class FlyCommand extends Command {
         this.callbacks_ = null;
     }
 }
-
-export default FlyCommand;

@@ -26,7 +26,7 @@ export class PublicChannel extends Channel {
 
     // Distributes the |message| as sent by |player| to the appropriate set of recipients.
     distribute(player, message, nuwani) {
-        const playerColor = player.color.toHexRGB();
+        const playerColor = player.colors.currentColor.toHexRGB();
         const playerVirtualWorld = player.virtualWorld;
 
         const mentioned = new Set();
@@ -40,7 +40,7 @@ export class PublicChannel extends Channel {
 
             mentioned.add(mentionedPlayer);
 
-            return `{${mentionedPlayer.color.toHexRGB()}}${mention}{FFFFFF}`;
+            return `{${mentionedPlayer.colors.currentColor.toHexRGB()}}${mention}{FFFFFF}`;
         });
 
         // Message to send to players in another virtual world.

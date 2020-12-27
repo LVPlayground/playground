@@ -16,23 +16,21 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             if (response) {
 #if Feature::DisableFights == 1
                 switch (listitem) {
-                    case 0: CDerby__ShowMainDialog(playerid);
+                    case 0: CRobbery__MenuActivate(playerid);
+                    case 1: CBrief__MenuActivate(playerid);
+                    case 2: CShell__MenuActivate(playerid);
+                    case 3: CLyse__MenuActivate(playerid);
+                }
+#else
+                switch (listitem) {
+                    case 0: ShowDeathmatchDialog(playerid);
                     case 1: CRobbery__MenuActivate(playerid);
                     case 2: CBrief__MenuActivate(playerid);
                     case 3: CShell__MenuActivate(playerid);
                     case 4: CLyse__MenuActivate(playerid);
-                }
-#else
-                switch (listitem) {
-                    case 0: CDerby__ShowMainDialog(playerid);
-                    case 1: ShowDeathmatchDialog(playerid);
-                    case 3: CRobbery__MenuActivate(playerid);
-                    case 4: CBrief__MenuActivate(playerid);
-                    case 5: CShell__MenuActivate(playerid);
-                    case 6: CLyse__MenuActivate(playerid);
-                    case 7: CWWTW__MenuActivate(playerid);
-                    case 8: rwMenuActivate(playerid);
-                    case 9: OnWaterFightCmdText(playerid);
+                    case 5: CWWTW__MenuActivate(playerid);
+                    case 6: rwMenuActivate(playerid);
+                    case 7: OnWaterFightCmdText(playerid);
                 }
 #endif
             }
@@ -298,11 +296,11 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
             switch(listitem) {
 
-                case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/account\r\n/help\r\n/stats\r\n/nos\r\n/getstats\r\n/showmessage\r\n/world\r\n/my\r\n/collectables\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
+                case 0: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MAIN, DIALOG_STYLE_MSGBOX, "Main commands", "/account\r\n/help\r\n/stats\r\n/nos\r\n/getstats\r\n/top\r\n/world\r\n/my\r\n/collectables\r\n/minigames\r\n/jump\r\n/cd", "Back", "Exit");
 
                 case 1: ShowPlayerDialog(playerid, DIALOG_COMMANDS_COMMUNICATION, DIALOG_STYLE_MSGBOX, "Communication commands", "@ (contact crew)\r\n# (VIP-chat)\r\n! (Gang-chat)\r\n/me\r\n/pm\r\n/r(eply)\r\n/ircpm\r\n/call\r\n/answer\r\n/hangup\r\n/ignore\r\n/unignore\r\n/ignored", "Continue", "Exit");
 			    case 2: ShowPlayerDialog(playerid, DIALOG_COMMANDS_TELEPORTATION, DIALOG_STYLE_MSGBOX, "Teleportation commands", "/locations\r\n/taxi\r\n/tow\r\n/tp\r\n/ctp\r\n/dive\r\n/cardive\r\n/locate\r\n/tune\r\n/world", "Continue", "Exit");
-                case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs\r\n/deathmatch", "Continue", "Exit");
+                case 3: ShowPlayerDialog(playerid, DIALOG_COMMANDS_FIGHTING, DIALOG_STYLE_MSGBOX, "Fighting commands", "/bounties\r\n/hitman\r\n/fight\r\n/gangs\r\n/deathmatch\r\n/weapons", "Continue", "Exit");
                 case 4: ShowPlayerDialog(playerid, DIALOG_COMMANDS_MONEY, DIALOG_STYLE_MSGBOX, "Money commands", "/properties\r\n/buy\r\n/sell\r\n/export\r\n/bank\r\n/withdraw\r\n/balance\r\n/borrow", "Continue", "Exit");
             }
             return 1;
@@ -344,15 +342,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             return 1;
         }
 
-        case DIALOG_DERBY_MAIN: {
-            if (response) {
-                new params[6];
-                format(params, sizeof(params), "%d", listitem);
-                CDerby__OnCommand(playerid, params);
-            }
-            return 1;
-        }
-
         case DIALOG_JUMP_RACES: {
             if (response)
                 OnMapZoneJumpDialogResponse(playerid, listitem);
@@ -382,11 +371,6 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 return 1;
             }
 
-            if (listitem == 4) {
-                CDerby__ShowMainDialog(playerid);
-                return 1;
-            }
-
 #if Feature::DisableFights == 0
             if (listitem == 5) {
                 ShowDeathmatchDialog(playerid);
@@ -395,7 +379,7 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 #endif
 
             if (listitem == 6) {
-                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
+                ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Deathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
                 return 1;
             }
         }
@@ -431,19 +415,13 @@ deprecated_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
             }
 
             switch (listitem) {
-                case 0: MiniGamesSignup(playerid, STATUS_BATFIGHT);
-                case 1: MiniGamesSignup(playerid, STATUS_CHAINSAW);
-                case 2: MiniGamesSignup(playerid, STATUS_DILDO);
-                case 3: MiniGamesSignup(playerid, STATUS_KNOCKOUT);
-                case 4: MiniGamesSignup(playerid, STATUS_GRENADE);
-                case 5: MiniGamesSignup(playerid, STATUS_ROCKET);
-                case 6: MiniGamesSignup(playerid, STATUS_SNIPER);
-                case 7: MiniGamesSignup(playerid, STATUS_MINIGUN);
-                case 8: MiniGamesSignup(playerid, STATUS_SHIPTDM);
-                case 9: MiniGamesSignup(playerid, STATUS_SAWNOFF);
-                case 10: MiniGamesSignup(playerid, STATUS_WALKWEAPON);
-                case 11: MiniGamesSignup(playerid, STATUS_RANDOMDM);
-                case 12: MiniGamesSignup(playerid, STATUS_ISLANDDM);
+                case 0: MiniGamesSignup(playerid, STATUS_CHAINSAW);
+                case 1: MiniGamesSignup(playerid, STATUS_DILDO);
+                case 2: MiniGamesSignup(playerid, STATUS_KNOCKOUT);
+                case 3: MiniGamesSignup(playerid, STATUS_SHIPTDM);
+                case 4: MiniGamesSignup(playerid, STATUS_WALKWEAPON);
+                case 5: MiniGamesSignup(playerid, STATUS_RANDOMDM);
+                case 6: MiniGamesSignup(playerid, STATUS_ISLANDDM);
             }
 
             return 1;

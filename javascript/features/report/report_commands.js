@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Here we introduce the manager for the /report-command to give users the ability to send the
 // message to the (IRC-)admins.
@@ -14,8 +14,9 @@ class ReportCommands {
         this.reportedPlayersWeakMap_ = new WeakMap();
 
         server.commandManager.buildCommand('report')
-            .parameters([{ name: 'name/id', type: CommandBuilder.PLAYER_PARAMETER },
-                         { name: 'reason', type: CommandBuilder.SENTENCE_PARAMETER }])
+            .description('Report a particular player for something.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer },
+                         { name: 'reason', type: CommandBuilder.kTypeText }])
             .build(ReportCommands.prototype.onReportPlayerCommand.bind(this));
     }
 
@@ -37,7 +38,7 @@ class ReportCommands {
         this.announce_().announceReportToAdministrators(player, reportedPlayer, reason);
         this.nuwani_().echo(
             'report', player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);
-        
+
         // Admins already get the notice themselves due to above announce and thus know it already
         if (player.isAdministrator())
             return;

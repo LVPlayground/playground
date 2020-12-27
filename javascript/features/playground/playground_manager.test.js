@@ -1,70 +1,68 @@
-// Copyright 2017 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import PlaygroundManager from 'features/playground/playground_manager.js';
+import { kAutoRestartReconnectionGraceSec } from 'features/playground/playground_manager.js';
 
-describe('PlaygroundManager', (it, beforeEach, afterEach) => {
-    let manager = null;
-    let settings = null;
+describe('PlaygroundManager', it => {
+    it('should be able to grant VIP rights to all players', async (assert) => {
+        server.featureManager.loadFeature('playground');
 
-    beforeEach(() => {
-        settings = server.featureManager.loadFeature('settings');
-        manager = new PlaygroundManager(() => settings);
+        // (1) Enable the free VIP feature.
+        const settings = server.featureManager.loadFeature('settings');
+        settings.setValue('playground/enable_free_vip', true);
+
+        // (2) Gunther should not have VIP rights by default.
+        const gunther = server.playerManager.getById(/* Gunther= */ 0);
+        assert.isFalse(gunther.isVip());
+
+        await gunther.identify();
+
+        assert.isFalse(gunther.isVip());
+
+        // (3) After the predefined delay, Gunther should have been granted VIP rights.
+        await server.clock.advance(5000);
+
+        assert.isTrue(gunther.isVip());
+        assert.equal(gunther.messages.length, 3);
     });
 
-    afterEach(() => {
-        if (manager)
-            manager.dispose();
-    });
+    it('should be able to automatically start the server', async (assert) => {
+        server.featureManager.loadFeature('playground');
 
-    it('should automatically initialize default-enabled settings', assert => {
-        assert.isFalse(settings.getValue('decorations/objects_pirate_party'));
-        settings.setValue('decorations/objects_pirate_party', true /* enabled */);
+        const originalKillServer = global.killServer;
+        const killServerPromise = new Promise(resolve => global.killServer = resolve);
 
-        const initialObjectCount = server.objectManager.count;
+        // (1) Enable the automatic restart feature.
+        const settings = server.featureManager.loadFeature('settings');
+        settings.setValue('server/auto_restart_enabled', true);
+        settings.setValue('server/auto_restart_interval_hours', 24);
 
-        // Initialize the manager. This should immediately load the setting.
-        manager.initialize();
-        assert.isAbove(server.objectManager.count, initialObjectCount);
-    });
+        // (2) Disconnecting all players before the interval is over should do nothing.
+        for (const player of server.playerManager)
+            player.disconnectForTesting();
 
-    it('should be able to toggle object-focused settings', assert => {
-        manager.initialize();
+        dispatchEvent('playerconnect', { playerid: 0 });
+        dispatchEvent('playerconnect', { playerid: 1 });
+        dispatchEvent('playerconnect', { playerid: 2, npc: true });
 
-        // List of settings that are expected to alter the server's object count.
-        const object_focused_settings = [
-            'decorations/objects_pirate_party'
-        ];
+        // (3) Wait for 24 hours to pass. This should mean that the server's ready to restart.
+        await server.clock.advance(24 * 60 * 60 * 1000);
 
-        object_focused_settings.forEach(setting => {
-            const initialObjectCount = server.objectManager.count;
+        // (4) Disconnect the player with ID 0. Player with ID 1 remains online.
+        server.playerManager.getById(0).disconnectForTesting();
 
-            // Enable the feature. There should be more objects afterwards.
-            if (!settings.getValue(setting)) {
-                settings.setValue(setting, true /* enabled */);
-                assert.isAbove(server.objectManager.count, initialObjectCount);
-            }
+        // (5) Disconnect the player with ID 1. No more humans, the timer should now start.
+        server.playerManager.getById(1).disconnectForTesting();
 
-            // Disable the feature. Initial object count should be restored.
-            settings.setValue(setting, false /* enabled */);
-            assert.isBelowOrEqual(server.objectManager.count, initialObjectCount);
-        });
-    });
+        await server.clock.advance(kAutoRestartReconnectionGraceSec * 1000);
 
-    it('should automatically disable features on disposal', assert => {
-        manager.initialize();
+        // (6) No more players, we should be ded.
+        await Promise.all([
+            server.clock.advance(1500),
+            killServerPromise,
+        ]);
 
-        const initialObjectCount = server.objectManager.count;
-
-        // Enable some features. There should be more objects afterwards.
-        settings.setValue('decorations/objects_pirate_party', true /* enabled */);
-        assert.isAbove(server.objectManager.count, initialObjectCount);
-
-        // Dispose of the manager. Initial object could should be restored.
-        manager.dispose();
-        manager = null;
-
-        assert.isBelowOrEqual(server.objectManager.count, initialObjectCount);
+        global.killServer = originalKillServer;
     });
 });

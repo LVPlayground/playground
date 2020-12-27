@@ -12,7 +12,7 @@ class VeryImportantPlayersCommands {
     /**
      * This command can be used by VIPs to list all their features and extras, allowing them to quickly
      * see what they have earned for donating.
-    
+
      * Having a little influence on your own environment can really help out in some situations. Hence
      * Las Venturas Playground offers its VIPs to change their own weather at free will. We've also
      * added a funny weathertype called 'drugs'.
@@ -33,7 +33,7 @@ class VeryImportantPlayersCommands {
         }
 
         if (Command->parameterCount(params) != 1) {
-            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs]");
+            SendClientMessage(playerId, Color::Information, "Usage: /my weather [day/evening/hot/storm/foggy/drugs/sandstorm,underwater,cloudy]");
             return 1;
         }
 
@@ -90,53 +90,6 @@ class VeryImportantPlayersCommands {
     }
 
     /**
-     * Ingame player colours can be persistently changed by VIPs. Alias for /my colour.
-     * 
-     * @param playerId Id of the player who is changing their colour.
-     * @param subjectId Id of the player who this command should be applied to.
-     * @param params Any further text that the player passed to the command. Unused.
-     * @command /my color [reset]?
-     */
-    @switch(PlayerCommand, "color")
-    public onPlayerColorCommand(playerId, subjectId, params[]) {
-        this->onPlayerColourCommand(playerId, subjectId, params);
-
-        return 1;
-    }
-
-    /**
-     * Ingame player colours can be persistently changed by VIPs.
-     * 
-     * @param playerId Id of the player who is changing their colour.
-     * @param params Any further text that the player passed to the command. Unused.
-     * @command /my colour
-     */
-    @switch(PlayerCommand, "colour")
-    public onPlayerColourCommand(playerId, subjectId, params[]) {
-        if (playerId != subjectId)
-            return 0; /* VIPs don't need admins to change their color for them */
-
-        if (!Player(playerId)->isVip() && !Player(playerId)->isAdministrator()) {
-            SendClientMessage(playerId, Color::Error, "This is a VIP only command. For more information, check out \"/donate\"!");
-            return 1;
-        }
-
-        // Handle the case where the player typed "/my color reset" to be subject to randomness again.
-        if (Command->parameterCount(params) == 1 && !strcmp(params, "reset", true, 5)) {
-            ColorManager->releasePlayerCustomColor(playerId);
-
-            SendClientMessage(playerId, Color::Success, "Your custom color has been reset!");
-            return 1;
-        }
-
-        // The color changing itself is done within the ColorPicker class.
-        ColorPicker->showColorPicker(playerId, PlayerColor);
-
-        return 1;
-        #pragma unused params
-    }
-
-    /**
      * VIPs can apply a few looks to themselves which will make them look more funny. Every look
      * comes with its own weapon, which will give the look an extra touch. The look is lost on respawn.
      * 
@@ -166,13 +119,8 @@ class VeryImportantPlayersCommands {
             return 1;
         }
 
-        if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change your look while fighting.");
-            return 1;
-        }
-
-        if (ShipManager->isPlayerWalkingOnShip(playerId)) {
-            SendClientMessage(playerId, Color::Error, "You can't change your look while on the ship.");
             return 1;
         }
 

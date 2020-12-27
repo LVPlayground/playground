@@ -18,7 +18,7 @@ derby and racing games.
 
 ## Options when registering a game
 When registering a game with the `Games.registerGame()` function, you pass in a class that extends
-the [Game class](game.js) and an options dictionary.
+the [GameBase class](game_base.js) ([interface](game.js)) and an options dictionary.
 
 ### Required configuration
 
@@ -38,6 +38,34 @@ Option              | Description
 `countdownCamera`   | Position of the camera during the countdown, array of two Vector objects.
 `countdownView`     | Target of the camera during the countdown, array of two Vector objects.
 
+### Optional configuration: environment
+
+_Settings are able to set the default environment that should be applied for this game, through_
+_the `environment` object. A default customisation option is available for players to change this._
+
+Option              | Description
+--------------------|--------------
+`environment`       | The environment that should be applied to the game.
+
+```javascript
+environment: {
+    time: 'Afternoon',  // one of { Morning, Afternoon, Evening, Night }
+    weather: 'Rainy',  // see table below
+    gravity: 'Normal',  // one of { Low, Normal, High }
+}
+```
+
+The available weather IDs are as follows:
+
+Name         | [Weather ID](https://wiki.sa-mp.com/wiki/WeatherID)
+-------------|----------------
+Cloudy       | 7
+Foggy        | 9
+Heatwave     | 11
+Rainy        | 8
+Sandstorm    | 19
+Sunny        | 10
+
 ### Optional configuration: settings
 
 _Settings may be used to allow players to configure the game to their liking, either through the_
@@ -47,15 +75,19 @@ Option              | Description
 --------------------|--------------
 `settings`          | Array of [Setting](../../entities/setting.js) instances for this game.
 `settingsValidator` | Function to be called when one of the non-fixed-value settings is changed.
+`settingsFrozen`    | Array of setting identifiers that cannot be modified by players.
 
 ### Optional configuration: misc
 
 Option              | Description
 --------------------|--------------
 `command`           | Name of the command through which the game can be started. Optional.
+`commandFn`         | Function that can be called to determine what the public command should be.
+`continuous`        | Whether this is a continuous game rather than one requiring sign-up. (Default is `false`.)
 `minimumPlayers`    | The minimum amount of players that should join the game. (Default is 2.)
 `maximumPlayers`    | The maximum amount of players that should join the game. (Default is 4.)
-`price`             | The price players have to pay in order to participate. (Default is $250.)
+`preferCustom`      | Whether customised games are preferred when there are no active sign-ups. (Default is `false`.)
+`price`             | The price players have to pay in order to participate. (Default is $250.) May be set to `0`.
 `scoreType`         | Type of data the score contains. ({`number`, `time`})
 `tick`              | Frequency at which the `onTick()` event should be called. (Default is 1000ms.)
 

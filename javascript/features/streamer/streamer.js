@@ -24,6 +24,9 @@ export default class Streamer extends Feature {
     constructor() {
         super();
 
+        // The ability to stream vehicles is considered low-level, as we don't strictly need it.
+        this.markLowLevel();
+
         // Depends on settings to configure the properties of vehicle streaming on the server.
         const settings = this.defineDependency('settings');
 

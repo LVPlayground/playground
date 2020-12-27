@@ -24,7 +24,6 @@ describe('HaystackGame', (it, beforeEach) => {
     const kDefaultSettings = new Map([
         [ 'haystack/difficulty', 'normal' ],
         [ 'haystack/levels', 30 ],
-        [ 'haystack/nighttime', false ],
     ]);
 
     it('should have registered the game with the server', assert => {
@@ -34,19 +33,19 @@ describe('HaystackGame', (it, beforeEach) => {
     it('is able to generate different names based on settings', async (assert) => {
         const feature = server.featureManager.loadFeature('haystack');
 
-        assert.equal(feature.generateName(new Map()), 'Haystack');
+        assert.equal(feature.generateName(new Map()), 'Haystack Game');
         assert.equal(
             feature.generateName(new Map([ ['haystack/difficulty', 'extreme' ]])),
-            'Extreme Haystack');
-        
+            'Extreme Haystack Game');
+
         assert.equal(
             feature.generateName(new Map([ ['haystack/levels', 25 ]])),
-            'Haystack x25');
-        
+            'Haystack x25 Game');
+
         assert.equal(
             feature.generateName(new Map([ ['haystack/difficulty', 'easy' ],
                                            [ 'haystack/levels', 55 ] ])),
-            'Easy Haystack x55');
+            'Easy Haystack x55 Game');
     });
 
     it('should pick appropriate configuration based on difficulty level', async (assert) => {
@@ -57,7 +56,6 @@ describe('HaystackGame', (it, beforeEach) => {
         await extremeGame.onInitialized(new Map([
             [ 'haystack/difficulty', 'extreme' ],
             [ 'haystack/levels', 40 ],
-            [ 'haystack/nighttime', true ],
         ]));
 
         assert.isBelow(extremeGame.settings_.hayDensity, normalGame.settings_.hayDensity);
@@ -66,7 +64,6 @@ describe('HaystackGame', (it, beforeEach) => {
         assert.isBelow(extremeGame.settings_.tickSkip, normalGame.settings_.tickSkip);
 
         assert.equal(extremeGame.settings_.levels, 40);
-        assert.deepEqual(extremeGame.settings_.time, [ 1, 30 ]);
     });
 
     it('should populate the matrix at the configured density', async (assert) => {
@@ -83,15 +80,15 @@ describe('HaystackGame', (it, beforeEach) => {
                     switch (game.matrix_[x][y][z].type) {
                         case HaystackGame.kPositionEmpty:
                             break;
-                        
+
                         case HaystackGame.kPositionHaystack:
                             haystackCount++;
                             break;
-                        
+
                         case HaystackGame.kPositionRock:
                             rockCount++;
                             break;
-                        
+
                         default:
                             throw new Error('Invalid type found in haystack matrix');
                     }
@@ -117,7 +114,7 @@ describe('HaystackGame', (it, beforeEach) => {
 
         let matrixHash = 0;
         let updateHash = 0;
-        
+
         // Calculate a "hash" for the matrix's set up as it currently is.
         for (let x = 0; x < kEdge; ++x)
             for (let y = 0; y < kEdge; ++y)
@@ -133,7 +130,7 @@ describe('HaystackGame', (it, beforeEach) => {
             for (let y = 0; y < kEdge; ++y)
                 for (let z = 0; z < game.settings_.levels; ++z)
                     updateHash += (x + 1) * (y + 100) * (z + 100) * (game.matrix_[x][y][z].type + 1)
-        
+
         assert.notEqual(matrixHash, updateHash);
     });
 
@@ -146,7 +143,7 @@ describe('HaystackGame', (it, beforeEach) => {
 
             for (let level = 1; level < game.settings_.levels; ++level) {
                 const current = game.determineMovementSpeed(level, direction);
-                
+
                 assert.setContext(`${level}/${direction}`);
                 assert.isAbove(current, previous);
 
@@ -173,19 +170,19 @@ describe('HaystackGame', (it, beforeEach) => {
         // Tick. |gunther|'s position is well below the game's ceiling.
         for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
             await game.onTick();
-        
+
         gunther.position = new Vector(100, 100, (game.settings_.levels + 1) * 3);
 
         // Tick. |gunther|'s up high enough, but not standing on the haystacks.
         for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
             await game.onTick();
-    
+
         gunther.position = new Vector(-12, -12, (game.settings_.levels + 2) * 3);
 
         // Tick. |gunther| has won for reals this time.
         for (let tick = 0; tick < kPlayerProgressInterval; ++tick)
             await game.onTick();
-        
+
         assert.isNotNull(victor);
     });
 });

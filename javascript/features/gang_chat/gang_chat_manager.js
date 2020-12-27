@@ -4,9 +4,11 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
-// Implementation of the actual gang chat feature. Will work with the gangs feature to get its data.
-class GangChatManager {
-    constructor(gangs, communication, nuwani) {
+// Implementation of the actual gang chat feature. Will work with the gangs feature to get its data,
+// and listens to the Communiaction feature to be able to intercept messages.
+export class GangChatManager {
+    constructor(announce, gangs, communication, nuwani) {
+        this.announce_ = announce;
         this.gangs_ = gangs;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
@@ -110,16 +112,22 @@ class GangChatManager {
             recipients.add(member);
         }
 
-        // Distribute the message to administrators who have not received the message yet.
+        // Distribute the message to (1) administrators who aren't in a gang themselves, and (2)
+        // Mangement members - in both cases subject to the person's own visibility choices.
         server.playerManager.forEach(onlinePlayer => {
-            if (!onlinePlayer.isAdministrator())
-                return;  // they are not a member of the crew
-
             if (recipients.has(onlinePlayer))
                 return;  // they have already received the message
 
-            if (onlinePlayer.messageLevel < 2)
-                return;  // they do not wish to see gang chat
+            if (!onlinePlayer.isAdministrator())
+                return;  // they're not a member of our crew
+
+            if (!onlinePlayer.isManagement() && onlinePlayer.gangId)
+                return;  // they're an administrator who's part of a gang themselves
+
+            if (!this.announce_().isCategoryEnabledForPlayer(
+                    onlinePlayer, 'admin/communication/gang-chat')) {
+                return;  // they do not wish to receive gang chat
+            }
 
             onlinePlayer.sendMessage(message);
             recipients.add(onlinePlayer);
@@ -207,5 +215,3 @@ class GangChatManager {
         this.callbacks_.dispose();
     }
 }
-
-export default GangChatManager;

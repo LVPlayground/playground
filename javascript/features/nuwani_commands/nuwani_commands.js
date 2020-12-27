@@ -13,8 +13,8 @@ export class NuwaniCommands extends Feature {
     announce_ = null;
     nuwani_ = null;
 
-    commands_ = null;
     nuwaniCommand_ = null;
+    playerCommands_ = null;
 
     constructor() {
         super();
@@ -26,11 +26,8 @@ export class NuwaniCommands extends Feature {
         this.nuwani_ = this.defineDependency('nuwani');
         this.nuwani_.addReloadObserver(this, () => this.initializeIrcCommands());
 
-        // The Playground feature provides access control to the in-game command.
-        const playground = this.defineDependency('playground');
-
         // Provides the in-game `/nuwani` command.
-        this.nuwaniCommand_ = new NuwaniCommand(this.announce_, this.nuwani_, playground);
+        this.nuwaniCommand_ = new NuwaniCommand(this.announce_, this.nuwani_);
 
         this.initializeIrcCommands();
     }
@@ -38,18 +35,15 @@ export class NuwaniCommands extends Feature {
     // Initializes the IRC commands that are provided as part of the NuwaniCommands feature. This
     // will be called on initial server load, as well as in response to `nuwani` feature reloads.
     initializeIrcCommands() {
-        const commandManager = this.nuwani_().commandManager;
-
-        this.commands_ = [
-            new PlayerCommands(commandManager),
-        ];
+        this.playerCommands_ = new PlayerCommands(this.nuwani_().commandManager);
     }
 
     dispose() {
-        for (const instance of this.commands_)
-            instance.dispose();
-        
-        this.commands_ = null;
+        this.playerCommands_.dispose();
+        this.playerCommands_ = null;
+
+        this.nuwaniCommand_.dispose();
+        this.nuwaniCommand_ = null;
 
         this.nuwani_.removeReloadObserver(this);
         this.nuwani_ = null;

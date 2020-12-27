@@ -352,13 +352,21 @@ describe('AccountDatabase', it => {
             assert.isTrue(fieldName in fields);
     });
 
-    it('should be able to look up accounts similar to a player', async (assert) => {
+    it('should be able to look up who and where a player actually is', async (assert) => {
         const instance = new MockAccountDatabase();
+
+        const where = await instance.whereIs('37.48.87.211');
+        assert.isNotNull(where.proxy);
+        assert.isArray(where.proxy.usage);
+        assert.isNotNull(where.location);
 
         const noResults = await instance.whois('37.48.87.211', 1337);
         assert.equal(noResults.length, 0);
 
         const results = await instance.whois('37.48.87.211', 9001);
         assert.equal(results.length, 3);
+
+        const nearby = await instance.nearby('37.48.87.211');
+        assert.equal(nearby.length, 2);
     });
 });

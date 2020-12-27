@@ -4,8 +4,8 @@
 
 import { GameActivity } from 'features/games/game_activity.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
+import { SpectateGroup } from 'features/spectate/spectate_group.js';
 
-import { format } from 'base/string_formatter.js';
 import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 
 // Provides the runtime for hosting a Game instance, i.e. takes care of forwarding the appropriate
@@ -13,7 +13,7 @@ import { showCountdownForPlayer } from 'features/games/game_countdown.js';
 export class GameRuntime extends GameActivity {
     // The states in lifetime progression the game runtime supports.
     static kStateUninitialized = 0;
-    static kStateInitialized= 1;
+    static kStateInitialized = 1;
     static kStateRunning = 2;
     static kStateFinished = 3;
     static kStateFinalized = 4;
@@ -23,6 +23,7 @@ export class GameRuntime extends GameActivity {
     manager_ = null;
     nuwani_ = null;
     settings_ = null;
+    spectate_ = null;
     state_ = null;
     virtualWorld_ = null;
 
@@ -30,10 +31,12 @@ export class GameRuntime extends GameActivity {
     playerCount_ = 0;
     winnerCount_ = 0;
 
+    leaving_ = null;
     players_ = null;
     prizeMoney_ = 0;
     scopedEntities_ = null;
     spawned_ = new WeakSet();
+    spectateGroup_ = null;
 
     // The actual game instance that contains the logic.
     game_ = null;
@@ -44,20 +47,31 @@ export class GameRuntime extends GameActivity {
     // Gets the set of players who are currently in the game. Exposed to the Game.
     get players() { return this.players_; }
 
-    // Getst the state the game is in. Only exposed for testing purposes.
-    get stateForTesting() { return this.state_; }
+    // Gets the settings map that defines how this game should be ran.
+    get settingsForTesting() { return this.settings_; }
+
+    // Gets the spectate group that can be observed when watching this game.
+    get spectateGroup() { return this.spectateGroup_; }
+
+    // Gets the settings with which this runtime was initialized.
+    get settings() { return this.settings_; }
+
+    // Gets the state the game is in. Only exposed for testing purposes.
+    get state() { return this.state_; }
 
     // Gets the virtual world that has bene allocated to this game.
     get virtualWorld() { return this.virtualWorld_; }
 
-    constructor(manager, description, settings, finance, nuwani, virtualWorld = 0) {
+    constructor(manager, description, settings, finance, nuwani, spectate, virtualWorld = 0) {
         super();
 
         this.description_ = description;
         this.finance_ = finance;
+        this.leaving_ = new Set();
         this.manager_ = manager;
         this.nuwani_ = nuwani;
         this.settings_ = settings;
+        this.spectate_ = spectate;
         this.state_ = GameRuntime.kStateUninitialized;
         this.virtualWorld_ = virtualWorld;
     }
@@ -70,15 +84,24 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateUninitialized)
             throw new Error(`Initialization must only happen immediately following construction.`);
         
+        // (1) Set to maintain all the participants who are part of this game.
         this.players_ = new Set();
+
+        // (2) A ScopedEntities object on which all of the game's entities should be created.
         this.scopedEntities_ = new ScopedEntities({
             interiorId: -1,  // all interiors
             virtualWorld: this.virtualWorld_,
         });
 
+        // (3) A spectate group, in case people or participants want to watch the game. Players
+        // watch a game rather than a particular participant, so if a participant leaves, watchers
+        // should move to the next participant in the game.
+        this.spectateGroup_ = this.spectate_().createGroup(SpectateGroup.kSwitchAbandonBehaviour);
+
+        // (4) The Game instance itself, initialized through its constructor.
         this.game_ = new this.description_.gameConstructor(this, this.scopedEntities_);
 
-        await this.game_.onInitialized(this.settings_);
+        await this.game_.onInitialized(this.settings_, this.description_.userData);
 
         this.state_ = GameRuntime.kStateInitialized;
     }
@@ -89,6 +112,7 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateInitialized)
             throw new Error(`The runtime is only able to run after initialization.`);
 
+        this.playerCount_ = this.players_.size;
         this.state_ = GameRuntime.kStateRunning;
 
         const spawnPromises = [];
@@ -96,8 +120,6 @@ export class GameRuntime extends GameActivity {
             spawnPromises.push(this.onPlayerSpawn(player));
 
         await Promise.all(spawnPromises);
-
-        this.playerCount_ = this.players_.size;
 
         while (this.players_.size) {
             await this.game_.onTick();
@@ -116,6 +138,9 @@ export class GameRuntime extends GameActivity {
 
         this.game_ = null;
 
+        this.spectate_().deleteGroup(this.spectateGroup_);
+        this.spectateGroup_ = null;
+
         this.scopedEntities_.dispose();
         this.scopedEntities_ = null;
 
@@ -133,13 +158,31 @@ export class GameRuntime extends GameActivity {
 
         // Serialize the |player|'s state so that we can take them back after the game.
         player.serializeState(/* restoreOnSpawn= */ false);
-        
+
         // Tell the manager about the player now being engaged in this game.
         this.manager_.setPlayerActivity(player, this);
         this.players_.add(player);
 
         // Formally introduce the |player| to the game.
         await this.game_.onPlayerAdded(player);
+
+        // Add the |player| to the list of folks who can be watched.
+        this.spectateGroup_.addPlayer(player);
+
+        // If the game had already started, we need to immediately spawn the |player| as well and
+        // tell the other players that they have joined the game.
+        if (this.state_ === GameRuntime.kStateRunning) {
+            const gameName = this.description_.nameFn(this.settings_);
+
+            for (const target of this.players_) {
+                if (target === player)
+                    continue;  // no need to inform the |player| about their participation
+
+                target.sendMessage(Message.GAME_CONTINUOUS_JOINED, player.name, gameName);
+            }
+
+            await this.onPlayerSpawn(player);
+        }
     }
 
     // Called when the |player| has to be removed from the game, either because they disconnected,
@@ -148,15 +191,62 @@ export class GameRuntime extends GameActivity {
         if (this.state_ != GameRuntime.kStateRunning)
             throw new Error('Players may only be removed from the game while it is running.');
 
-        // First remove the |player| from the game.
-        await this.game_.onPlayerRemoved(player);
+        // If the |player| already has been marked as someone leaving, ignore the call.
+        if (this.leaving_.has(player) || !this.players_.has(player))
+            return false;
 
-        // Restore the |player|'s state -- back as if nothing ever happened.
-        if (!disconnecting)
-            player.restoreState();
+        this.leaving_.add(player);
 
-        this.manager_.setPlayerActivity(player, null);
-        this.players_.delete(player);
+        // If there are multiple players in the leaving queue, we add the |player| to it in order to
+        // make sure that removals happen in the intended order, irrespective of |disconnecting|.
+        if (this.leaving_.size >= 2)
+            return false;
+
+        const removedPlayers = [];
+
+        // Iterate over the players who are leaving the game. We want to execute those in-order,
+        // so reentrancy to removePlayer() will be handled as expected.
+        while (this.leaving_.size) {
+            const target = [ ...this.leaving_ ].shift();
+
+            // (a) Remove the |target| from the spectate groups.
+            this.spectateGroup_.removePlayer(target);
+
+            // (b) Remove the |target| from the actual Game instance. Run this in a try/catch block
+            // to avoid Game issues from bugging the player.
+            try {
+                await this.game_.onPlayerRemoved(target);
+            } catch (exception) {
+                console.log(`Unable to remove ${target.name} from ${this}:`, exception);
+            }
+
+            // (c) Clear up their internal state, which also enables them to sign up for another
+            // game or activity if they please to do so.
+            this.manager_.setPlayerActivity(target, null);
+            this.players_.delete(target);
+
+            // (d) Unless the |target| has disconnected since, restore their state in the game.
+            if (target.isConnected())
+                target.restoreState();
+
+            // (e) Clear the |target| from the queue of players who are leaving the game, and add
+            // them to the |removedPlayers| for our messaging to be consistent.
+            this.leaving_.delete(target);
+            removedPlayers.push(target);
+        }
+
+        // If the game is continuous, inform the remaining participants (if any) about the list of
+        // |removedPlayers| having left. This might influence their decision to stick around.
+        if (this.description_.continuous && this.players_.size) {
+            const gameName = this.description_.nameFn(this.settings_);
+
+            for (const participant of this.players_) {
+                for (const target of removedPlayers)
+                    participant.sendMessage(Message.GAME_CONTINUOUS_LEFT, target.name, gameName);
+            }
+        }
+
+        return true;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -173,6 +263,9 @@ export class GameRuntime extends GameActivity {
 
     // Called when the |player| is spawning in the world, while playing in this game.
     async onPlayerSpawn(player) {
+        if (this.leaving_.has(player) || !this.players_.has(player))
+            return;
+
         let countdown = undefined;
 
         // Make sure that the |player| is in the right virtual world.
@@ -194,6 +287,9 @@ export class GameRuntime extends GameActivity {
 
     // Signals that the |player| has lost. They will be removed from the game.
     async playerLost(player, score = null) {
+        if (this.leaving_.has(player))
+            return;  // they're already in the progress of leaving
+
         const position = this.playerCount_ - this.loserCount_++;
 
         // TODO: Store the |player|'s |score|, and the fact that they lost. (w/ rank)
@@ -206,6 +302,9 @@ export class GameRuntime extends GameActivity {
 
     // Signals that the |player| has won. They will be removed from the game.
     async playerWon(player, score = null) {
+        if (this.leaving_.has(player))
+            return;  // they're already in the progress of leaving
+
         const position = ++this.winnerCount_;
 
         // TODO: Store the |player|'s |score|, and the fact that they won. (w/ rank)

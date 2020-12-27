@@ -38,7 +38,7 @@ describe('Killtime', (it, beforeEach) => {
         assert.equal(mockInvoke.calls.length, 5);
         assert.equal(mockInvoke.calls[4].fn, 'OnGiveWeapon');
         assert.equal(mockInvoke.calls[4].args[1], 35);
-        assert.equal(mockInvoke.calls[4 ].args[2], 9999);
+        assert.equal(mockInvoke.calls[4].args[2], 9999);
     });
 
     it('should not give players weapon if no weapon defined', async assert => {

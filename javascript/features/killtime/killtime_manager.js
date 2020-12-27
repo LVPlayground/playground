@@ -4,6 +4,8 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+import { messages } from 'features/killtime/killtime.messages.js';
+
 // Managing killtime, that magic happens here. We need to keep track of who is on top, how many minutes do we still
 // have and when we have to stop. At the end we of course want to give out the correct prize to the correct person.
 class KilltimeManager {
@@ -16,7 +18,6 @@ class KilltimeManager {
         this.scoreMap_ = new Map();
         this.callbacks_ = new ScopedCallbacks();
         this.weapon_ = null;
-
     
         this.callbacks_.addEventListener(
             'playerdeath', KilltimeManager.prototype.onPlayerDeath.bind(this));
@@ -33,7 +34,10 @@ class KilltimeManager {
         this.isRunning_ = true;
         this.scoreMap_ = new Map();
 
-        this.announce_().announceToPlayers(Message.KILLTIME_STARTED, minutes);
+        this.announce_().broadcast('games/killtime', messages.killtime_announce_started, {
+            duration: minutes,
+        });
+
         this.weapon_ = weapon;
         this.run(minutes);
     }
@@ -66,7 +70,7 @@ class KilltimeManager {
         server.playerManager.forEach(player => this.givePlayerWeapon(player));
     }
 
-    // Give player entity a weapon if he's supposed to.
+    // Give player entity a weapon if they're supposed to.
     givePlayerWeapon(player) {
         if (player.isNonPlayerCharacter())
             return;
@@ -102,7 +106,10 @@ class KilltimeManager {
             playerWithKillsText = 'nobody yet';
         }
 
-        this.announce_().announceToPlayers(Message.KILLTIME_TOPKILLER, playerWithKillsText, prizeMoney);
+        this.announce_().broadcast('games/killtime', messages.killtime_announce_leader, {
+            leader: playerWithKillsText,
+            prize: prizeMoney,
+        });
     }
 
     // Ends the killtime and announces this to the player. In case this is done by an admin it announces that or because
@@ -112,13 +119,10 @@ class KilltimeManager {
             return;
 
         this.isRunning_ = false;
-        let stopMessage = Message.KILLTIME_AUTO_STOPPED;
 
-        if (player != null)
-            stopMessage = Message.KILLTIME_ADMIN_STOPPED;
+        this.announce_().broadcast('games/killtime', messages.killtime_announce_stopped);
 
         this.removePlayerKillTimeWeapons();
-        this.announce_().announceToPlayers(stopMessage);
         this.announceWinner_();
 
         this.scoreMap_.clear();
@@ -153,7 +157,11 @@ class KilltimeManager {
             playerWithKillsText = 'nobody';
 
         const prizeMessage = playerName != null ? Message.format(Message.KILLTIME_ENJOY_PRIZE, prizeMoney) : '';
-        this.announce_().announceToPlayers(Message.KILLTIME_WINNER, playerWithKillsText, prizeMessage);
+
+        this.announce_().broadcast('games/killtime', messages.killtime_announce_winner, {
+            winner: playerWithKillsText,
+            prize: prizeMessage,
+        });
 
         if (playerName == null)
             return;

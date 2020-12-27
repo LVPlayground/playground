@@ -86,7 +86,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
 
         gunther.position = new Vector(1, 2, 3);
 
-        assert.isTrue(await gunther.issueCommand('/up 5'));
+        assert.isFalse(await gunther.issueCommand('/up 5'));
 
         assert.equal(gunther.position.z, 3);
     });
@@ -108,7 +108,7 @@ describe('PositioningCommands', (it, beforeEach, afterEach) => {
     
         gunther.position = new Vector(11, 12, 13);
     
-        assert.isTrue(await gunther.issueCommand('/forward 3'));
+        assert.isFalse(await gunther.issueCommand('/forward 3'));
     
         assert.equal(gunther.position.x, 11);
         assert.equal(gunther.position.y, 12);

@@ -50,7 +50,7 @@ class CruiseCommands {
                 new cruiseLeaderId = CruiseController->getCruiseLeaderId();
                 format(message, sizeof(message),
                     "A cruise is running! {%06x}%s {FFFFFF}is leading, use {33AA33}\"/ctp %d\" {FFFFFF}to join the cruise.",
-                    ColorManager->playerColor(cruiseLeaderId) >>> 8, Player(cruiseLeaderId)->nicknameString(),
+                    GetPlayerColor(cruiseLeaderId) >>> 8, Player(cruiseLeaderId)->nicknameString(),
                     cruiseLeaderId);
                 SendClientMessage(playerId, Color::Information, message);
                 if (Player(playerId)->isVip() == true)
@@ -90,6 +90,11 @@ class CruiseCommands {
         new cruiseLeaderId = Command->playerParameter(params, 0, playerId);
         if (cruiseLeaderId == Player::InvalidId)
             return 1;
+
+        if (Player(cruiseLeaderId)->isNonPlayerCharacter()) { 
+            SendClientMessage(playerId, Color::Error, "You can't assign NPC's as Cruise Leader");
+            return 1;
+        }
 
         CruiseController->setCruiseLeader(cruiseLeaderId);
 

@@ -2,6 +2,9 @@
 # Use of this source code is governed by the MIT license, a copy of which can
 # be found in the LICENSE file.
 
+# native AnnounceNewsMessage(const message[]);
+AnnounceNewsMessage
+
 # native EchoMessage(tag[], format[], message[]);
 EchoMessage
 
@@ -26,10 +29,9 @@ MarkVehicleMoved
 # native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 UpdatePlayerSyncedData
 
-# native GetPlayerTeleportStatus(playerId, timeLimited);
-GetPlayerTeleportStatus
-
-# native ReportPlayerTeleport(playerId, timeLimited);
+# native CanPlayerTeleport(playerId);
+# native ReportPlayerTeleport(playerId);
+CanPlayerTeleport
 ReportPlayerTeleport
 
 # native IsCommunicationMuted();
@@ -52,6 +54,13 @@ GivePlayerMoneyJS
 ResetPlayerMoneyJS
 GetAccountBalanceJS
 DepositToAccountJS
+
+# native SetPlayerVisibility(playerid, visible);
+# native SetPlayerGameColor(playerid, color);
+# native ReleasePlayerGameColor(playerid);
+SetPlayerVisibility
+SetPlayerGameColor
+ReleasePlayerGameColor
 
 # Required for testing.
 TestFunction

@@ -4,8 +4,15 @@
     <DiskObject>\config.pwn</DiskObject>
     <DiskObject>\Driver\</DiskObject>
     <DiskObject>\Driver\Abuse\</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDamageDecider.pwn</DiskObject>
+    <DiskObject>\Driver\Abuse\WeaponDistanceBlocker.pwn</DiskObject>
     <DiskObject>\Driver\Abuse\WeaponShotDetection.pwn</DiskObject>
+    <DiskObject>\Driver\Drift\</DiskObject>
+    <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
+    <DiskObject>\Driver\Drift\DriftUi.pwn</DiskObject>
     <DiskObject>\Driver\Driver.pwn</DiskObject>
+    <DiskObject>\Driver\Forwards.pwn</DiskObject>
+    <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
     <DiskObject>\Driver\ThirdParty\</DiskObject>
     <DiskObject>\Driver\ThirdParty\sky.inc</DiskObject>
     <DiskObject>\Driver\ThirdParty\weapon-config.inc</DiskObject>
@@ -76,7 +83,6 @@
     <DiskObject>\Entities\Properties\PropertyStorageManager.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\</DiskObject>
-    <DiskObject>\Entities\Vehicles\LegalModifications.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\Vehicle.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleEvents.pwn</DiskObject>
     <DiskObject>\Entities\Vehicles\VehicleManager.pwn</DiskObject>
@@ -103,6 +109,7 @@
     <DiskObject>\Features\Account\LegacyAccountBridge.pwn</DiskObject>
     <DiskObject>\Features\Account\MultipleSessionDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\NicknameGenerator.pwn</DiskObject>
+    <DiskObject>\Features\Account\RequireSampcacDialog.pwn</DiskObject>
     <DiskObject>\Features\Account\UndercoverAdministrator.pwn</DiskObject>
     <DiskObject>\Features\Christmas.pwn</DiskObject>
     <DiskObject>\Features\Christmas\</DiskObject>
@@ -142,9 +149,6 @@
     <DiskObject>\Features\Gameplay.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\</DiskObject>
     <DiskObject>\Features\Gameplay\ClassManager.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\ColorManager.pwn</DiskObject>
-    <DiskObject>\Features\Gameplay\Colors\ColorPicker.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\FixPlayerCommands.pwn</DiskObject>
     <DiskObject>\Features\Gameplay\Commands\PlayerInfoHandler.pwn</DiskObject>
@@ -178,9 +182,6 @@
     <DiskObject>\Features\Visual\Countdown.pwn</DiskObject>
     <DiskObject>\Features\Visual\Interface.pwn</DiskObject>
     <DiskObject>\Features\Visual\NeedToIdentifyForSpawnMessage.pwn</DiskObject>
-    <DiskObject>\Features\Visual\News\</DiskObject>
-    <DiskObject>\Features\Visual\News\NewsController.pwn</DiskObject>
-    <DiskObject>\Features\Visual\News\NewsMessage.pwn</DiskObject>
     <DiskObject>\Features\Visual\PlayerStatisticsInterface.pwn</DiskObject>
     <DiskObject>\Framework\</DiskObject>
     <DiskObject>\Framework\Annotations.pwn</DiskObject>
@@ -246,7 +247,6 @@
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerSelectedMenuRow.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerSpawn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStateChange.pwn</DiskObject>
-    <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamIn.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\OnPlayer\OnPlayerStreamOut.pwn</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\</DiskObject>
     <DiskObject>\Resources\Callbacks\Others\OnDialogResponse.pwn</DiskObject>
@@ -289,14 +289,11 @@
     <DiskObject>\Resources\Maps\MapZones\Jumps\Spinner.pwn</DiskObject>
     <DiskObject>\Resources\Maps\MapZones\Jumps\TwinChimneys.pwn</DiskObject>
     <DiskObject>\Resources\Maps\MapZones\Jumps\Vinewood.pwn</DiskObject>
-    <DiskObject>\Resources\Maps\ScrapYard.pwn</DiskObject>
-    <DiskObject>\Resources\Maps\TaxiRank.pwn</DiskObject>
     <DiskObject>\Resources\Maps\VIPRoom.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\</DiskObject>
     <DiskObject>\Resources\Minigames\Core\</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Brief.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\DeathmatchHandler.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Core\Derby.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\HideGame.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\Lyse.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\main.pwn</DiskObject>
@@ -307,42 +304,15 @@
     <DiskObject>\Resources\Minigames\Core\WaterFight.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Core\WWTW.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\batfight.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\chainsaw_massacre.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\dildo_spanking.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\grenade.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\IslandDM.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\knockout.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\minigun.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\RandomDeathmatch.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\rocket.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\sawnoff.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\ShipTDM.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Deathmatch\sniper.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deathmatch\walkweapon.pwn</DiskObject>
     <DiskObject>\Resources\Minigames\Deliver\</DiskObject>
     <DiskObject>\Resources\Minigames\Deliver\Deliver.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby0.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby1.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby10.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby11.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby12.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby13.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby14.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby15.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby16.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\derby2.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby3.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby4.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby5.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby6.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby7.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby8.pwn</DiskObject>
-    <DiskObject>\Resources\Minigames\Derby\Derby9.pwn</DiskObject>
-    <DiskObject>\Driver\Drift\</DiskObject>
-    <DiskObject>\Driver\Drift\DriftHelpers.pwn</DiskObject>
-    <DiskObject>\Driver\PawnConfig.pwn</DiskObject>
   </FileList>
   <Settings>
     <Setting name="name">Las Venturas Playground</Setting>

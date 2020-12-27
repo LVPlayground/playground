@@ -465,7 +465,7 @@ rwRemovePlayerFromMinigame(playerid)
     if(rwGetState() == RW_STATE_SIGNUP)
         GiveRegulatedMoney(playerid, MinigameParticipation);
 
-    ColorManager->releasePlayerMinigameColor(playerid);
+    ReleasePlayerGameColor(playerid);
     TimeController->releasePlayerOverrideTime(playerid);
 
     if(rwGetState() == RW_STATE_COUNTDOWN)
@@ -517,7 +517,7 @@ rwSignPlayerUp(playerid)
 
     Responses->respondMinigameSignedUp(playerid, RunWeaponsTeamWarMinigame, "Run Weapons Team War", 20);
     format(szAdminMsg, sizeof(szAdminMsg), "~r~~h~%s~w~ has signed up for ~y~Run Weapons Team War~w~ (~p~/rwtw~w~)", Player(playerid)->nicknameString());
-    NewsController->show(szAdminMsg);
+    AnnounceNewsMessage(szAdminMsg);
 
     rwData[rwSignupCount]++;
 }
@@ -633,13 +633,13 @@ rwOnPlayerDeath(playerid, killerid)
         {
             rwEnd();
             format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~b~~h~Blue Team~w~ have won!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
         }
         else
         {
             rwEnd();
             format(notice, sizeof(notice), "~y~Run Weapons Team War~w~ has finished: ~r~~h~Red Team~w~ have won!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
         }
     }
 }
@@ -666,15 +666,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
 
     SetPlayerInterior(playerid, 0);
 
-    // Tec9 / Uzi support (/my minigame)
-    if(iPlayerSawnoffWeapon[playerid] == 1)
-    {
-        GiveWeapon( playerid, 32, 4000);
-    }
-    else
-    {
-        GiveWeapon(playerid, 28, 4000);
-    }
+    GiveWeapon(playerid, 28, 4000);
 
     SetPlayerHealth(playerid, 100);
     SetPlayerArmour(playerid, 0);
@@ -691,7 +683,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
         SetPlayerTeam(playerid, RW_TEAM_RED);
         SetPlayerSkinEx(playerid, RW_RED_SKIN);
 
-        ColorManager->setPlayerMinigameColor(playerid, RW_RED_COLOUR);
+        SetPlayerGameColor(playerid, RW_RED_COLOUR);
 
         Streamer_UpdateEx(playerid, -1352.9841 + rwGetPlayerSignupID(playerid)* 3, 964.3445, 1088.7744);
         if(n_MapFix == true)
@@ -724,7 +716,7 @@ rwSpawnPlayer(playerid, bool:n_MapFix = true)
         SetPlayerTeam(playerid, RW_TEAM_BLUE);
         SetPlayerSkinEx(playerid, RW_BLUE_SKIN);
 
-        ColorManager->setPlayerMinigameColor(playerid, RW_BLUE_COLOUR);
+        SetPlayerGameColor(playerid, RW_BLUE_COLOUR);
     }
 
     SetCameraBehindPlayer(playerid);

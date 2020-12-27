@@ -31,7 +31,7 @@ OnPlayerWorldCommand(playerId, params[]) {
     }
 
     if (worldId != -1 && World->isWorldValid(worldId) == true) {
-        if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerId)) {
             SendClientMessage(playerId, Color::Error, "You can't change worlds while you are fighting.");
             return 1;
         }
@@ -185,7 +185,7 @@ OnPlayerWorldCommand(playerId, params[]) {
 l_GotoWorld(playerId, worldId) {
     new message[128], vehicleId, trailerId;
 
-    ReportPlayerTeleport(playerId, 0 /* timeLimited */);
+    ReportPlayerTeleport(playerId);
 
     ClearPlayerMenus(playerId);
 

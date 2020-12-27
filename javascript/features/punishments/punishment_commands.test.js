@@ -19,7 +19,7 @@ describe('PunishmentCommands', (it, beforeEach) => {
     });
 
     it('should be able to display the most recent bans on the server', async (assert) => {
-        assert.isTrue(await gunther.issueCommand('/lastbans'));
+        assert.isFalse(await gunther.issueCommand('/lastbans'));
         assert.equal(gunther.messages.length, 1);
         assert.includes(gunther.messages[0], 'Sorry, this command is only available');
 
@@ -98,5 +98,61 @@ describe('PunishmentCommands', (it, beforeEach) => {
         assert.includes(gunther.messages[0], 
             Message.format(Message.PUNISHMENT_ADMIN_UNBAN, gunther.name, gunther.id,
                            '[BB]Joe', 'reason'));
+    });
+
+    it('should be able to run memory scans against a particular player', async (assert) => {
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+        russell.setIsNonPlayerCharacterForTesting(true);
+
+        // (1) It's not possible to start scans for non-player characters.
+        assert.isTrue(await gunther.issueCommand('/scan Russell'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(gunther.messages[0], Message.PUNISHMENT_SCAN_ERROR_NPC);
+
+        // (2) Scans should return after a sensible amount of time, and explain that to the player.
+        gunther.respondToDialog({ response: 0 /* dismiss */ });
+
+        const [ commandResult, advanceResult ] = await Promise.all([
+            gunther.issueCommand('/scan Gunther'),
+            Promise.resolve().then(() =>
+                server.clock.advance(30 * 1000 /* some excessively long amount of time*/)),
+        ]);
+
+        assert.isTrue(commandResult);
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.PUNISHMENT_SCAN_STARTING, gunther.name, gunther.id));
+
+        assert.includes(gunther.lastDialog, 'SAMPCAC Version');
+        assert.includes(gunther.lastDialog, gunther.version);
+
+        // (3) Reload the SAMPCAC configuration to make sure there's no errors.
+        assert.isTrue(await gunther.issueCommand('/scan reload'));
+        assert.equal(gunther.messages.pop(), Message.PUNISHMENT_SCAN_RELOADED);
+    });
+
+    it('should be able to run memory scans on all players', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // (2) Scans should return after a sensible amount of time, and explain that to the player.
+        gunther.respondToDialog({ response: 0 /* dismiss */ });
+
+        const [ commandResult, advanceResult ] = await Promise.all([
+            gunther.issueCommand('/scanall'),
+            Promise.resolve().then(() =>
+                server.clock.advance(30 * 1000 /* some excessively long amount of time*/)),
+        ]);
+
+        assert.isTrue(commandResult);
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.PUNISHMENT_SCAN_ALL_STARTING, server.playerManager.count));
+
+        assert.includes(gunther.lastDialog, '0.3.7-R4-mock');
+        assert.includes(gunther.lastDialog, 'Lucy');
     });
 });

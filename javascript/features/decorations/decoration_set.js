@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { DecorationActor } from 'features/decorations/decoration_actor.js';
 import { DecorationNpc } from 'features/decorations/decoration_npc.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 
@@ -11,11 +12,15 @@ import { ScopedEntities } from 'entities/scoped_entities.js';
 export class DecorationSet {
     entities_ = null;
 
+    actors_ = new Set();
     npcs_ = new Set();
     objects_ = new Set();
 
     constructor(filename) {
         const structure = JSON.parse(readFile(filename));
+        if (structure.hasOwnProperty('actors') && Array.isArray(structure.actors))
+            this.loadActors(structure.actors);
+
         if (structure.hasOwnProperty('npcs') && Array.isArray(structure.npcs))
             this.loadNonPlayerCharacters(structure.npcs);
 
@@ -24,6 +29,22 @@ export class DecorationSet {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Loads all the actors from |actors| into the |actors_| set.
+    loadActors(actors) {
+        for (const actor of actors) {
+            if (!actor.hasOwnProperty('modelId') || typeof actor.modelId !== 'number')
+                throw new Error('');
+
+            if (!actor.hasOwnProperty('position') || !Array.isArray(actor.position))
+                throw new Error('');
+
+            if (!actor.hasOwnProperty('rotation') || typeof actor.rotation !== 'number')
+                actor.rotation = 0;
+
+            this.actors_.add(new DecorationActor(actor));
+        }
+    }
 
     // Loads all the non-player characters from the |npc| arrays into the |npcs_| set.
     loadNonPlayerCharacters(npcs) {
@@ -72,6 +93,9 @@ export class DecorationSet {
             return;  // the set has already been enabled
         
         this.entities_ = new ScopedEntities({ interiorId: 0, virtualWorld: 0 });
+
+        for (const actor of this.actors_)
+            actor.enable(this.entities_);
 
         for (const npc of this.npcs_)
             npc.enable(this.entities_);

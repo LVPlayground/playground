@@ -1,76 +1,120 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import FreeVip from 'features/playground/traits/free_vip.js';
-import PirateShipParty from 'features/playground/traits/pirate_ship_party.js';
+// Allow players up to give minutes to reconnect to the server.
+export const kAutoRestartReconnectionGraceSec = 300;
 
-// The playground manager provides back-end logic for the features provided as part of this module.
-// It controls all settings, as well as the default values for the settings.
-class PlaygroundManager {
-    constructor(settings) {
-        this.settings_ = settings;
+// Time at which the server started. Does not account for time taken to run tests. This function
+// call yields the same result as server.clock.monotonicallyIncreasingTime().
+const kServerStartTime = highResolutionTime();
 
-        this.freeVip_ = null;
-        this.pirateParty_ = null;
+// Implements lasting behaviour supported by the Playground feature, such as the ability to enable
+// free VIP for all players during selective festive seasons.
+export class PlaygroundManager {
+    #announce_ = null;
+    #settings_ = null;
 
-        // Settings that should be observed for changes. This manager implements the behaviour
-        // necessary for servicing them.
-        this.observable_settings_ = [
-            'decorations/holidays_free_vip',
-            'decorations/objects_pirate_party',
-        ];
+    #restartToken_ = null;
+
+    constructor(announce, settings) {
+        this.#announce_ = announce;
+        this.#settings_ = settings;
+
+        server.playerManager.addObserver(this);
     }
 
-    // Called when the |enable| state of the given |setting| changes.
-    toggle(setting, enable) {
-        const disable = !enable;
+    // ---------------------------------------------------------------------------------------------
 
-        switch (setting) {
-            case 'decorations/holidays_free_vip':
-                if (enable && !this.freeVip_) {
-                    this.freeVip_ = new FreeVip();
-                } else if (disable && this.freeVip_) {
-                    this.freeVip_.dispose();
-                    this.freeVip_ = null;
-                }
-                break;
+    // Called when the given |player| has logged in to Las Venturas Playground. If the free VIP
+    // setting is enabled, and they aren't a VIP already, they will be granted VIPness.
+    onPlayerLogin(player) {
+        if (!this.#settings_().getValue('playground/enable_free_vip'))
+            return;  // the free VIP feature has not been enabled
 
-            case 'decorations/objects_pirate_party':
-                if (enable && !this.pirateParty_) {
-                    this.pirateParty_ = new PirateShipParty();
-                } else if (disable && this.pirateParty_) {
-                    this.pirateParty_.dispose();
-                    this.pirateParty_ = null;
-                }
-                break;
+        if (player.isVip())
+            return;  // the player already has VIP rights
 
-            default:
-                throw new Error('Invalid setting: ' + setting);
+        // Wait for some amount of time after they've connected to share the good news with them.
+        wait(5000).then(() => {
+            if (!player.isConnected())
+                return;  // the player disconnected while awaiting the delay
+
+            player.sendMessage(
+                `Surprise! You've been granted you VIP rights to celebrate the festive`);
+            player.sendMessage(
+                `season. It won\'t last for long, so please enjoy your new abilities!`);
+            player.sendMessage(
+                `Consider donating on https://sa-mp.nl/donate if you like it!`);
+
+            player.setVip(true);
+
+            // Make sure that the Pawn code is aware of their VIP rights as well.
+            pawnInvoke('OnGrantVipToPlayer', 'i', player.id);
+        });
+    }
+
+    // Called when the |player| has disconnected from the server. If auto-restarts are enabled and
+    // there are no more players in-game, we might kill the server after a little while.
+    onPlayerDisconnect(player) {
+        if (!this.#settings_().getValue('server/auto_restart_enabled'))
+            return;  // automatic restarts are disabled
+
+        const uptimeMilliseconds = server.clock.monotonicallyIncreasingTime() - kServerStartTime;
+        const uptimeHours = uptimeMilliseconds / /* to seconds */ 1000 / /* to hours */ 3600;
+
+        if (uptimeHours < this.#settings_().getValue('server/auto_restart_interval_hours'))
+            return;  // the server hasn't been online long enough yet
+
+        for (const otherPlayer of server.playerManager) {
+            if (otherPlayer.isNonPlayerCharacter())
+                continue;  // ignore NPCs
+
+            if (otherPlayer === player)
+                continue;  // the |player| is disconnecting
+
+            // If we hit this place, then there's at least one more player online on the server. The
+            // auto-restart mechanism will thus be disabled.
+            return;
         }
+
+        // If we hit this place, however, then there are no further players in-game. Wait for a
+        // period of time to allow players to re-connect if they intend to do this.
+        const restartToken = Symbol('Restarting the server?');
+        this.#restartToken_ = restartToken;
+
+        wait(kAutoRestartReconnectionGraceSec * 1000).then(() => {
+            if (this.#restartToken_ !== restartToken)
+                return;  // our restart token has been revoked since
+
+            for (const otherPlayer of server.playerManager) {
+                if (otherPlayer.isNonPlayerCharacter())
+                    continue;  // ignore NPCs
+
+                // Someone's in-game. Drop out, we don't want to kill the server anymore.
+                this.#restartToken_ = null;
+
+                return;
+            }
+
+            // We actually do want to kill the server now. Excellent. Let's do it.
+            this.#announce_().announceToAdministrators(Message.LVP_SERVER_AUTO_RESTART);
+
+            if (!server.isTest())
+                console.log('[Playground] Restarting the server...');
+
+            wait(1500).then(() => killServer());
+        });
     }
 
-    // Initializes the manager with the default values for all the settings. The enabled-by-default
-    // ones will be automatically enabled.
-    initialize() {
-        for (let setting of this.observable_settings_) {
-            if (this.settings_().getValue(setting))
-                this.toggle(setting, true /* enabled */);
+    // ---------------------------------------------------------------------------------------------
 
-            this.settings_().addSettingObserver(
-                setting, this, PlaygroundManager.prototype.toggle);
-        }
-    }
-
-    // Cleans up the manager. Enabled settings will automatically be disabled.
     dispose() {
-        for (let setting of this.observable_settings_) {
-            if (this.settings_().getValue(setting))
-                this.toggle(setting, false /* enabled */);
+        server.playerManager.removeObserver(this);
 
-            this.settings_().removeSettingObserver(setting, this);
-        }
+        this.#restartToken_ = null;
+
+        this.#announce_ = null;
+        this.#settings_ = null;
     }
 }
-
-export default PlaygroundManager;

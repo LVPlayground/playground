@@ -115,10 +115,9 @@ export class TextDraw {
     this.text_ = value;
   }
 
-  // Updates the text of the text draw to |value|. If the text draw is being displayed to |player|,
-  // the visible state on their screen will be updated as well.
+  // Updates the text of the text draw to |value|. 
   updateTextForPlayer(player, text) {
-    let textDrawId = server.textDrawManager.getForPlayer(player, this);
+    let textDrawId = server.deprecatedTextDrawManager.getForPlayer(player, this);
     if (textDrawId !== null)
       pawnInvoke('PlayerTextDrawSetString', 'iis', player.id, textDrawId, text);
   }
@@ -257,7 +256,7 @@ export class TextDraw {
   // Builds and displays the text draw to |player|. This method is a no-op if the text draw is
   // already being shown for the player.
   displayForPlayer(player) {
-    let textDrawId = server.textDrawManager.createForPlayer(player, this);
+    let textDrawId = server.deprecatedTextDrawManager.createForPlayer(player, this);
     if (textDrawId === null)
       return true;  // |this| is already being displayed.
 
@@ -325,7 +324,7 @@ export class TextDraw {
 
   // Hides the text draw from |player| their screen if it's currently being shown.
   hideForPlayer(player) {
-    return server.textDrawManager.hideForPlayer(player, this);
+    return server.deprecatedTextDrawManager.hideForPlayer(player, this);
   }
 };
 

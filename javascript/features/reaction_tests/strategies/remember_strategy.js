@@ -4,6 +4,8 @@
 
 import { Strategy } from 'features/reaction_tests/strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 // This strategy works by asking players to remember a sequence of digits for a minute or two, after
 // which they'll be asked to repeat it. Another good way to train players' memories.
 export class RememberStrategy extends Strategy {
@@ -44,7 +46,7 @@ export class RememberStrategy extends Strategy {
             this.randomInteger(RememberStrategy.kMinimumNumber, RememberStrategy.kMaximumNumber);
 
         // Announce the test to all in-game participants.
-        announceFn(Message.REACTION_TEST_ANNOUNCE_REMEMBER, this.answer_);
+        announceFn(messages.reaction_tests_announce_remember, { value: this.answer_ });
 
         // Announce the test to everyone reading along through Nuwani.
         nuwani().echo('reaction-remember', prize);
@@ -59,7 +61,7 @@ export class RememberStrategy extends Strategy {
                 return;  // the test has been stopped
             
             // Announce the test to all in-game participants.
-            announceFn(Message.REACTION_TEST_ANNOUNCE_REMEMBER_2, prize);
+            announceFn(messages.reaction_tests_announce_remember_2, { prize });
 
             // Announce the test to everyone reading along through Nuwani.
             nuwani().echo('reaction-remember-2', prize);

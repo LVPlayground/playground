@@ -4,26 +4,25 @@
 
 import { Setting } from 'entities/setting.js';
 
-// Boolean indicating whether we're currently in the month December. Months are
-// zero-based in JavaScript for some reason.
-const isDecember = (new Date()).getMonth() == 11;
-
-export default [
+export const kSettingList = [
     /** Abuse related settings */
-    new Setting('abuse', 'blocker_damage_issued_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after issuing damage.'),
-    new Setting('abuse', 'blocker_damage_taken_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after having taken damage.'),
-    new Setting('abuse', 'blocker_weapon_fire_time', Setting.TYPE_NUMBER, 10, 'Number of seconds to block actions after firing your weapon.'),
+    new Setting('abuse', 'announce_admin_animation', Setting.TYPE_BOOLEAN, true, 'Announce when admins force animations on other players.'),
     new Setting('abuse', 'detector_cleo_dmage', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Dmage detector be enabled?'),
     new Setting('abuse', 'detector_cleo_dmage_sample_rate', Setting.TYPE_NUMBER, 5, 'Sample rate for the CLEO Dmage detector'),
-    new Setting('abuse', 'detector_cleo_proaim', Setting.TYPE_BOOLEAN, false, 'Should the CLEO Pro-Aim detector be enabled?'),
     new Setting('abuse', 'detector_illegal_vehicle_entry', Setting.TYPE_BOOLEAN, true, 'Should the illegal vehicle entry detector be enabled?'),
+    new Setting('abuse', 'disable_out_of_range_damage', Setting.TYPE_BOOLEAN, true, 'Disable weapon damage issued whilst being out of range?'),
+    new Setting('abuse', 'fake_car_entry_prevention_enter_ms', Setting.TYPE_NUMBER, 3000, 'Number of milliseconds to disable damage after entering a car?'),
+    new Setting('abuse', 'fake_car_entry_prevention_exit_ms', Setting.TYPE_NUMBER, 1750, 'Number of milliseconds to disable damage after exiting a car?'),
+    new Setting('abuse', 'highfps_damage_ignored_sec', Setting.TYPE_NUMBER, 10, 'Number of seconds to ignore damage when using High FPS?'),
+    new Setting('abuse', 'highfps_damage_sample_sec', Setting.TYPE_NUMBER, 3, 'Number of High FPS samples required before imposing damage ignore.'),
+    new Setting('abuse', 'highfps_damage_threshold', Setting.TYPE_NUMBER, 105, 'FPS above which a player is considered to be a High FPS player.'),
     new Setting('abuse', 'ignore_sole_passenger_damage', Setting.TYPE_BOOLEAN, true, 'Ignore damage done by sole vehicle passengers?'),
     new Setting('abuse', 'kick_reason_public', Setting.TYPE_BOOLEAN, true, 'Whether kick reasons should be shared publicly.'),
+    new Setting('abuse', 'kill_attribution_time_sec', Setting.TYPE_NUMBER, 10, 'Time after last hit when deaths should be attributed for.'),
+    new Setting('abuse', 'knife_desync_fix', Setting.TYPE_BOOLEAN, true, 'Whether desyncs caused by knife kills should be fixed.'),
+    new Setting('abuse', 'manual_sawnoff_damage', Setting.TYPE_BOOLEAN, false, 'Whether we want to manually calculate sawn-off damage.'),
+    new Setting('abuse', 'maximum_connections_per_ip', Setting.TYPE_NUMBER, 3, 'Maximum number of connections allowed per IP address.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
-    new Setting('abuse', 'spawn_vehicle_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override vehicle spawning restrictions?'),
-    new Setting('abuse', 'spawn_vehicle_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between spawning two vehicles.'),
-    new Setting('abuse', 'teleportation_admin_override', Setting.TYPE_BOOLEAN, true, 'Should administrators override teleportation restrictions?'),
-    new Setting('abuse', 'teleportation_throttle_time', Setting.TYPE_NUMBER, 180, 'Minimum number of seconds between teleporting twice.'),
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */
@@ -43,14 +42,18 @@ export default [
     new Setting('account', 'vip_alias_limit_days', Setting.TYPE_NUMBER, 7, 'Minimum number of days between alias additions.'),
 
     /** Decoration related settings */
-    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, isDecember, 'Should The Strip be in a Christmas-y mood?'),
+    new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, false, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
-    new Setting('decorations', 'holidays_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
+    new Setting('decorations', 'las_venturas_scrapyard', Setting.TYPE_BOOLEAN, true, 'Should the scrapyard in Las Venturas be enabled?'),
+    new Setting('decorations', 'las_venturas_taxi_rank', Setting.TYPE_BOOLEAN, true, 'Should the taxi rank at Las Venturas Airport be enabled?'),
     new Setting('decorations', 'los_santos_winter', Setting.TYPE_BOOLEAN, false, 'Should Los Santos be covered in snow?'),
-    new Setting('decorations', 'objects_pirate_party', Setting.TYPE_BOOLEAN, false, 'Should the Pirate Ship Party decorations be enabled?'),
     new Setting('decorations', 'pilots', Setting.TYPE_BOOLEAN, false, 'Should the pilots by flying around San Andreas?'),
+    new Setting('decorations', 'pirate_ship_party', Setting.TYPE_BOOLEAN, true, 'Should there be a party on the Pirate Ship?'),
     new Setting('decorations', 'san_ferro_road_works', Setting.TYPE_BOOLEAN, false, 'Enable road works near the San Fierro bridge?'),
+    new Setting('decorations', 'stunts_lv_airport', Setting.TYPE_BOOLEAN, false, 'Enable stunts in Las Venturas airport?'),
+    new Setting('decorations', 'stunts_lv_south', Setting.TYPE_BOOLEAN, false, 'Enable stunts in the south of Las Venturas?'),
+    new Setting('decorations', 'stunts_sf_airport', Setting.TYPE_BOOLEAN, false, 'Enable stunts in San Fierro airport?'),
     new Setting('decorations', 'vip_room', Setting.TYPE_BOOLEAN, true, 'Should the VIP room be stocked with objects?'),
     new Setting('decorations', 'dft_400', Setting.TYPE_BOOLEAN, true, 'Should the DFT be a party car?'),
     new Setting('decorations', 'horny_infernus', Setting.TYPE_BOOLEAN, true, 'The infernus will become horny!'),
@@ -67,6 +70,13 @@ export default [
     new Setting('financial', 'spawn_money', Setting.TYPE_NUMBER, 10000, 'How much money should a player get when they spawn?'),
 
     /** Game-related settings */
+    new Setting('games', 'deathmatch_lag_compensation_default', Setting.TYPE_BOOLEAN, true, 'Whether deathmatch games should default to lag compensation.'),
+    new Setting('games', 'deathmatch_objective_default', Setting.TYPE_STRING, 'Number of lives...', 'The default objective for deathmatch games.'),
+    new Setting('games', 'deathmatch_objective_value_default', Setting.TYPE_NUMBER, 1, 'Default value for an objective\'s value. Not always applicable.'),
+    new Setting('games', 'deathmatch_spawn_armour_default', Setting.TYPE_BOOLEAN, true, 'Whether participants should get spawn armour by default.'),
+    new Setting('games', 'deathmatch_team_damage_default', Setting.TYPE_BOOLEAN, true, 'Whether participants in the same team can issue each other damage.'),
+    new Setting('games', 'fight_default_location', Setting.TYPE_STRING, 'Counter Strike 1.6: Inferno', 'Default location for fights.'),
+    new Setting('games', 'fight_minimum_players', Setting.TYPE_NUMBER, 2, 'Minimum players needed to start a fight.'),
     new Setting('games', 'registration_expiration_sec', Setting.TYPE_NUMBER, 20, 'After how many seconds does a game registration expire?'),
 
     /** Gang-related settings */
@@ -86,14 +96,30 @@ export default [
     new Setting('gangs', 'zones_area_viable_shape_threshold', Setting.TYPE_NUMBER, 50, 'Ratio threshold (*100) for maintaining an area shape.'),
     new Setting('gangs', 'zones_area_viable_shape_adjust', Setting.TYPE_NUMBER, 22, 'Percentage of area to shift w/h to maintain area shape.'),
 
+    /** Limits-related settings */
+    new Setting('limits', 'deathmatch_damage_issued_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after issuing damage.'),
+    new Setting('limits', 'deathmatch_damage_taken_cooldown', Setting.TYPE_NUMBER, 25, 'Number of seconds to block actions after having taken damage.'),
+    new Setting('limits', 'deathmatch_weapon_fired_cooldown', Setting.TYPE_NUMBER, 20, 'Number of seconds to block actions after firing your weapon.'),
+    new Setting('limits', 'throttle_spawn_vehicle_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_spawn_vehicle_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds players have to wait between spawning vehicles.'),
+    new Setting('limits', 'throttle_teleportation_admin_sec', Setting.TYPE_NUMBER, 0, 'Number of seconds admins have to wait between teleportations.'),
+    new Setting('limits', 'throttle_teleportation_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds players have to wait between teleportations.'),
+
     /** Playground related settings */
-    new Setting('playground', 'enable_beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
+    new Setting('playground', 'enable_free_vip', Setting.TYPE_BOOLEAN, false, 'Should players receive VIP rights upon logging in?'),
     new Setting('playground', 'collectable_hint_price_min', Setting.TYPE_NUMBER, 25000, 'Minimum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_hint_price_max', Setting.TYPE_NUMBER, 5000000, 'Maximum price for a hint towards the closest collectable'),
     new Setting('playground', 'collectable_map_icons_display', Setting.TYPE_BOOLEAN, false, 'Should collectables be displayed on the map?'),
     new Setting('playground', 'collectable_map_icons_distance', Setting.TYPE_NUMBER, 500, 'Distance from which collectable map icons will be visible.'),
     new Setting('playground', 'collectable_reset_require_complete', Setting.TYPE_BOOLEAN, true, 'Only allow resetting collectables when you collected all?'),
+    new Setting('playground', 'collectable_treasure_award_base', Setting.TYPE_NUMBER, 225000, 'What is the prize someone gets for finding a treasure?'),
+    new Setting('playground', 'collectable_treasure_award_variance', Setting.TYPE_NUMBER, 50, 'Variance, in percentage, that will be applied to the prize.'),
     new Setting('playground', 'gunther_help_interval_sec', Setting.TYPE_NUMBER, 300, 'At which interval should Gunther issue helpful /show commands?'),
+    new Setting('playground', 'leaderboard_default_view', Setting.TYPE_STRING, 'none', 'Default view to show when someone uses the /top command.'),
+    new Setting('playground', 'leaderboard_limit_days', Setting.TYPE_NUMBER, 4, 'Number of days of history the leaderboards should consider.'),
+    new Setting('playground', 'leaderboard_limit_entries', Setting.TYPE_NUMBER, 25, 'Number of entries that should be shown on the leaderboard.'),
+    new Setting('playground', 'leaderboard_page_count', Setting.TYPE_NUMBER, 25, 'Number of entries to show per page on the leaderboard.'),
+    new Setting('playground', 'news_message_onscreen_sec', Setting.TYPE_NUMBER, 20, 'Number of seconds a news message should be on-screen.'),
     new Setting('playground', 'notification_display_time_sec', Setting.TYPE_NUMBER, 5, 'Number of seconds for which a notification should be displayed.'),
     new Setting('playground', 'reaction_test_multiplication_pct', Setting.TYPE_NUMBER, 25, 'What percentage of calculation tests should be multiplication?'),
     new Setting('playground', 'reaction_test_delay_sec', Setting.TYPE_NUMBER, 270, 'Average time between reaction tests.'),
@@ -104,17 +130,27 @@ export default [
     new Setting('playground', 'reaction_test_random_length_min', Setting.TYPE_NUMBER, 7, 'Minimum length of random-string reaction tests.'),
     new Setting('playground', 'reaction_test_remember_delay_sec', Setting.TYPE_NUMBER, 150, 'How much delay should the remember tests wait for?'),
     new Setting('playground', 'reaction_test_remember_jitter_sec', Setting.TYPE_NUMBER, 90, 'How much jitter should be applied to the remember tests?'),
+    new Setting('playground', 'reaction_test_unscramble_fixed', Setting.TYPE_NUMBER, 20, 'Percentage of letters that will not be moved [0-100].'),
+    new Setting('playground', 'spectator_monitor_frequency_ms', Setting.TYPE_NUMBER, 750, 'Frequency at which the spectator monitor operates.'),
 
     /** Radio related settings */
     new Setting('radio', 'default_channel', Setting.TYPE_STRING, 'LVP Radio', 'Name of the default radio channel.'),
     new Setting('radio', 'enabled', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be enabled?'),
     new Setting('radio', 'restricted_to_vehicles', Setting.TYPE_BOOLEAN, true, 'Should the radio feature be restricted to players in vehicles?'),
 
+    /** Server-level commands */
+    new Setting('server', 'auto_restart_enabled', Setting.TYPE_BOOLEAN, false, 'Whether the server should automatically restart itself.'),
+    new Setting('server', 'auto_restart_interval_hours', Setting.TYPE_NUMBER, 24, 'Minimum interval between automatic restarts of the server.'),
+    new Setting('server', 'beta_features', Setting.TYPE_BOOLEAN, false, 'Enables beta server functionality.'),
+
     /** Vehicle related settings */
     new Setting('vehicles', 'drifting_enabled', Setting.TYPE_BOOLEAN, false, 'Enables experimental drifting features on the server.'),
     new Setting('vehicles', 'drifting_max_angle', Setting.TYPE_NUMBER, 82.5, 'Maximum drifting angle to award points for, to ignore spins.'),
+    new Setting('vehicles', 'drifting_max_distance', Setting.TYPE_NUMBER, 23, 'Maximum single-tick distance after which a drift will be aborted.'),
     new Setting('vehicles', 'drifting_min_angle', Setting.TYPE_NUMBER, 14, 'Minimum drifting angle to award points for.'),
     new Setting('vehicles', 'drifting_min_speed', Setting.TYPE_NUMBER, 50, 'Minimum speed in km/h before awarding points for a drift.'),
+    new Setting('vehicles', 'drifting_point_divider', Setting.TYPE_NUMBER, 2, 'Divider for displaying drifting points to players.'),
+    new Setting('vehicles', 'keys_blocked_in_las_venturas', Setting.TYPE_BOOLEAN, true, 'Whether vehicle keys are blocked in Las Venturas.'),
     new Setting('vehicles', 'respawn_death_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds a vehicle should respawn after its death.'),
     new Setting('vehicles', 'respawn_ephemeral_delay_sec', Setting.TYPE_NUMBER, 60, 'Number of seconds after which ephemeral vehicles should respawn.'),
     new Setting('vehicles', 'respawn_persistent_delay_sec', Setting.TYPE_NUMBER, 180, 'Number of seconds after last usage for vehicles to respawn.'),

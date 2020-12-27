@@ -2,49 +2,37 @@
     "name": "Los Santos Blown Bikes",
     "id": 2,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
-        "weather": 18,
-        "time": [21, 0],
-        "interior": 0
+        "weather": "Heatwave",
+        "time": "Evening"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ 1164.2050, -1134.6285, 23.2254 ],
-            "rotation": 358.5,
-            "vehicle": {
-                "model": 522
-            }
+            "facingAngle": 358.5,
+            "vehicleModelId": 522
         },
         {
             "position": [ 1162.5023, -1134.1244, 23.2352 ],
-            "rotation": 358.5,
-            "vehicle": {
-                "model": 522
-            }
+            "facingAngle": 358.5,
+            "vehicleModelId": 522
         },
         {
             "position": [ 1160.8435, -1134.5485, 23.2356 ],
-            "rotation": 358.5,
-            "vehicle": {
-                "model": 522
-            }
+            "facingAngle": 358.5,
+            "vehicleModelId": 522
         },
         {
             "position": [ 1159.3264, -1134.6077, 23.2293 ],
-            "rotation": 358.5,
-            "vehicle": {
-                "model": 522
-            }
+            "facingAngle": 358.5,
+            "vehicleModelId": 522
         }
     ],
 
     "settings": {
-        "allow_leave_vehicle": true,
-        "unlimited_nos": true
+        "allowLeaveVehicle": true,
+        "unlimitedNos": true
     },
 
     "checkpoints": [

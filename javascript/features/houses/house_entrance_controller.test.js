@@ -12,12 +12,11 @@ describe('HouseEntranceController', (it, beforeEach) => {
     let friendsFeature = null;  // MockFriends
     let locationFeature = null;  // MockLocation
 
-    let abuse = null;  // Abuse
     let manager = null;  // HouseManager
     let controller = null;  // HouseEntranceController
 
     beforeEach(async(assert) => {
-        ({ abuse, manager } = await createTestEnvironment());
+        ({ manager } = await createTestEnvironment());
 
         friendsFeature = server.featureManager.getFeatureForTests('friends');
         locationFeature = server.featureManager.getFeatureForTests('location');
@@ -147,9 +146,9 @@ describe('HouseEntranceController', (it, beforeEach) => {
             location.settings.access = HouseSettings.ACCESS_FRIENDS;
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
-            friendsFeature.addFriend(russell, gunther);
+            await friendsFeature.addFriendForTesting(russell, gunther);
             assert.isTrue(await controller.hasAccessToHouse(location, gunther));
-            friendsFeature.removeFriend(russell, gunther);
+            await friendsFeature.removeFriendForTesting(russell, gunther);
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
         }
 
@@ -160,7 +159,7 @@ describe('HouseEntranceController', (it, beforeEach) => {
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
 
             // Being friends with the owner does not matter.
-            friendsFeature.addFriend(russell, gunther);
+            await friendsFeature.addFriendForTesting(russell, gunther);
 
             assert.isFalse(await controller.hasAccessToHouse(location, gunther));
 

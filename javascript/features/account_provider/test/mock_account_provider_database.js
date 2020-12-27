@@ -11,16 +11,19 @@ export class MockAccountProviderDatabase extends AccountProviderDatabase {
     async loadAccountData(userId) {
         return {
             user_id: userId,
+            online_time: 0,
             kill_count: 0,
             death_count: 0,
             money_bank: 0,
             money_cash: 0,
+            skin_decorations: '',
             stats_reaction: 0,
             stats_damage_given: 0,
             stats_damage_taken: 0,
             stats_shots_hit: 0,
             stats_shots_missed: 0,
             stats_shots_taken: 0,
+            announcement_overrides: '',
             muted: 0,
         };
     }

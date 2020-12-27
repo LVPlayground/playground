@@ -106,35 +106,32 @@ OnPlayerPressRampKey(playerid)
 
     // We also have to check for anti ramp abuse...
 
-    if(Player(playerid)->isAdministrator() == false)
+    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
     {
-        for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        {
-            if(!Player(i)->isConnected())
-                continue;
+        if(!Player(i)->isConnected())
+            continue;
 
-            if(IsPlayerNPC(i))
-                continue;
+        if(IsPlayerNPC(i))
+            continue;
 
-            if(!IsPlayerStreamedIn(i, playerid))
-                continue;
+        if(!IsPlayerStreamedIn(i, playerid))
+            continue;
 
-            if(GetPlayerVirtualWorld(i) != GetPlayerVirtualWorld(playerid))
-                continue;
+        if(GetPlayerVirtualWorld(i) != GetPlayerVirtualWorld(playerid))
+            continue;
 
-            if(IsPlayerInVehicle(i,GetPlayerVehicleID(playerid)))
-                continue;
+        if(IsPlayerInVehicle(i,GetPlayerVehicleID(playerid)))
+            continue;
 
-            if(!IsPlayerInRangeOfPoint(i, 20.0, fPosX, fPosY, fPosZ))
-                continue;
+        if(!IsPlayerInRangeOfPoint(i, 20.0, fPosX, fPosY, fPosZ))
+            continue;
 
-            new
-                szRampMsg[75];
+        new
+            szRampMsg[75];
 
-            format(szRampMsg, 75, "* You cannot spawn a ramp because %s is in the way!", PlayerName(i));
-            SendClientMessage(playerid, Color::Red, szRampMsg);
-            return;
-        }
+        format(szRampMsg, 75, "* You cannot spawn a ramp because %s is in the way!", PlayerName(i));
+        SendClientMessage(playerid, Color::Red, szRampMsg);
+        return;
     }
 
     // Well, let's define a range of blocking ramps in front of the ship

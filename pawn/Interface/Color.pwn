@@ -49,9 +49,6 @@ class Color {
     // The highlight blue color which we use to put emphasis on certain words.
     public const HighlightBlue = 0x40CCFFFF;
 
-    // Color for paused players.
-    public const InactivePlayerColor = 0x333333FF;
-
     // General colors, slightly adjusted to look better in Grand Theft Auto.
     public const Red = 0xDC143CFF;
     public const White = 0xFFFFFFFF;

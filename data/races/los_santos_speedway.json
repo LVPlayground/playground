@@ -2,48 +2,32 @@
     "name": "Los Santos Speedway",
     "id": 40,
 
-    "laps": 1,
-
-    "environment": {
-        "weather": 1,
-        "time": [12, 0],
-        "interior": 0
-    },
-
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ 2829.3877, -1763.1876, 10.6021 ],
-            "rotation": 349.6214,
-            "vehicle": {
-                "model": 411,
-                "nos": 1
-            }
+            "facingAngle": 349.6214,
+            "vehicleModelId": 411
         },
         {
             "position": [ 2835.3401, -1766.7943, 10.6021 ],
-            "rotation": 350.7262,
-            "vehicle": {
-                "model": 411,
-                "nos": 1
-            }
+            "facingAngle": 350.7262,
+            "vehicleModelId": 411
         },
         {
             "position": [ 2849.1968, -1769.5392, 10.6021 ],
-            "rotation": 349.5689,
-            "vehicle": {
-                "model": 411,
-                "nos": 1
-            }
+            "facingAngle": 349.5689,
+            "vehicleModelId": 411
         },
         {
             "position": [ 2854.3381, -1770.6357, 10.6021 ],
-            "rotation": 352.7409,
-            "vehicle": {
-                "model": 411,
-                "nos": 1
-            }
+            "facingAngle": 352.7409,
+            "vehicleModelId": 411
         }
     ],
+
+    "settings": {
+        "nos": 1
+    },
 
     "checkpoints": [
         { "position": [ 2841.2725, -1137.6586, 12.5571 ], "size": 30.0 },

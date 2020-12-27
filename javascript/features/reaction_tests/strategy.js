@@ -17,6 +17,9 @@ export class Strategy {
     // Time, in milliseconds, to offset the player's actual answer time with.
     get answerOffsetTimeMs() { return 0; }
 
+    // Whether an answer should be given through Gunther when the test is about to time out.
+    get answerThroughGunter() { return false; }
+
     // Verifies whether the |message| is, or contains, the answer to this reaction test.
     verify(message) {
         throw new Error('This method must be overridden by the strategy.');

@@ -19,6 +19,13 @@ describe('GameDescription', it => {
         assert.throws(() => new GameDescription(GameDescription));
         assert.throws(() => new GameDescription(GameDescription, {}));
         assert.throws(() => new GameDescription(3.14));
+        assert.throws(() => new GameDescription(Game, {
+            name: 'My game',
+            goal: 'Verify continuous and minimumPlayers alignment',
+
+            continuous: true,
+            minimumPlayers: 2,  // <-- this throws
+        }));
     });
 
     it('is able to reflect the bare minimum game with default options', assert => {
@@ -35,13 +42,20 @@ describe('GameDescription', it => {
         assert.isNull(description.countdownCamera);
         assert.isNull(description.countdownView);
 
+        const environment = description.settings.get('game/environment').value;
+
+        assert.equal(environment.time, 'Afternoon');
+        assert.equal(environment.weather, 'Sunny');
+        assert.equal(environment.gravity, 'Normal');
+
         assert.instanceOf(description.settings, Map);
-        assert.equal(description.settings.size, 0);
+        assert.equal(description.settings.size, GameDescription.kDefaultSettings.length);
         assert.isNull(description.settingsValidator);
 
         assert.isNull(description.command);
         assert.equal(description.maximumPlayers, kDefaultMaximumPlayers);
         assert.equal(description.minimumPlayers, kDefaultMinimumPlayers);
+        assert.isFalse(description.preferCustom);
         assert.equal(description.price, kDefaultPrice);
         assert.equal(description.tick, kDefaultTickIntervalMs);
     });
@@ -56,10 +70,12 @@ describe('GameDescription', it => {
         assert.equal(description.name, 'My name');
     });
 
-    it('is able to initialize countdown settings', assert => {
+    it('is able to initialize different sorts of settings', assert => {
         const description = new GameDescription(Game, {
             name: 'My game',
             goal: 'Have a countdown screen',
+
+            preferCustom: true,
 
             countdown: 5,
             countdownCamera: [
@@ -70,11 +86,25 @@ describe('GameDescription', it => {
                 new Vector(15, 25, 35),
                 new Vector(35, 45, 55),
             ],
+
+            environment: {
+                time: 'Night',
+                weather: 'Foggy',
+                gravity: 'Low',
+            }
         });
 
         assert.equal(description.countdown, 5);
         assert.equal(description.countdownCamera.length, 2);
         assert.equal(description.countdownView.length, 2);
+
+        const environment = description.settings.get('game/environment').value;
+
+        assert.equal(environment.time, 'Night');
+        assert.equal(environment.weather, 'Foggy');
+        assert.equal(environment.gravity, 'Low');
+
+        assert.isTrue(description.preferCustom);
     });
 
     it('is able to provide a series of configurable settings', assert => {
@@ -89,7 +119,7 @@ describe('GameDescription', it => {
             ]
         });
 
-        assert.equal(description.settings.size, 2);
+        assert.equal(description.settings.size, 2 + GameDescription.kDefaultSettings.length);
         assert.isTrue(description.settings.has('game/bonus'));
         assert.isTrue(description.settings.has('game/night'));
         assert.isFalse(description.settings.get('game/night').defaultValue);

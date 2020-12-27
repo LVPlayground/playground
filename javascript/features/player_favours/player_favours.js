@@ -7,7 +7,7 @@ import { ObjectGroup } from 'entities/object_group.js';
 import ObjectRemover from 'features/player_favours/object_remover.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Implementation of a collection of features that have been implemented specifically by request of
 // a particular player. The actual features and their owners are documented in the README.md file.
@@ -33,8 +33,19 @@ class PlayerFavours extends Feature {
 	    // -----------------------------------------------------------------------------------------
         // Jasmine (https://forum.sa-mp.nl/thread-33720.html)
 
-        this.objectRemover_.load('data/favours/jasmine_house_tower.json');
         this.objectGroups_.push(ObjectGroup.create('data/favours/jasmine_house_tower.json', 0, 0));
+
+	    // -----------------------------------------------------------------------------------------
+        // Kibo (https://sa-mp.nl/players/122282/cb-kibo.html)
+        // Gangbase for the [cB] - Camin Bulevar gang.
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/caminbulevar_gang_zone.json', 0, 0));
+
+        // ---
+        // Holsje (https://forum.sa-mp.nl/user-2779.html)
+        // Objects for the [CP] - Cheap People gang.
+
+        this.objectGroups_.push(ObjectGroup.create('data/favours/cp_gang_objects.json', 0, 0));
 
         // -----------------------------------------------------------------------------------------
         // Joe (https://sa-mp.nl/players/30/joe.html)
@@ -87,6 +98,34 @@ class PlayerFavours extends Feature {
         });
 
         // -----------------------------------------------------------------------------------------
+        // PigBenis (https://forum.sa-mp.nl/user-7697.html)
+
+        this.PigBenisActors_ = new ScopedEntities();
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1708.6381, -2102.4609, 13.5469),
+            rotation: 178.9437
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1714.1179, -2102.8254, 13.5469),
+            rotation: 186.9586
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 120,
+            position: new Vector(1710.8010, -2100.5366, 19.1346),
+            rotation: 182.8069
+        });
+
+        this.PigBenisActors_.createActor({
+            modelId: 71,
+            position: new Vector(1696.9012, 1453.5201, 10.7615),
+            rotation: 270
+        });
+
+        // -----------------------------------------------------------------------------------------
         // TheMightyQ (https://forum.sa-mp.nl/user-16597.html)
 
         this.objectGroups_.push(ObjectGroup.create('data/favours/tmq_house_objects.json', 0, 0));
@@ -103,9 +142,11 @@ class PlayerFavours extends Feature {
         this.showXanlandObject_();
 
         server.commandManager.buildCommand('eaglecash')
+            .description(`Gives a small amount of money to Eagle_Force_One.`)
             .build(PlayerFavours.prototype.onEagleCashCommand.bind(this));
 
         server.commandManager.buildCommand('xanlandobject')
+            .description(`Toggles visibility of Xanland's objects.`)
             .restrict(Player.LEVEL_MANAGEMENT)
             .build(PlayerFavours.prototype.onXanlandObjectCommand.bind(this));
         // -----------------------------------------------------------------------------------------
@@ -164,6 +205,9 @@ class PlayerFavours extends Feature {
 
         this.lukaAndToxicccokieActors_.dispose();
         this.lukaAndToxicccokieActors_ = null;
+
+        this.PigBenisActors_.dispose();
+        this.PigBenisActors_ = null;
 
         for (const objectGroup of this.objectGroups_)
             objectGroup.dispose();

@@ -9,6 +9,9 @@ export class Game {
     // Accessors
     // ---------------------------------------------------------------------------------------------
 
+    // Gets whether the game is continuous, which may influence behaviour.
+    get continuous() { return this.#runtime_.description.continuous; }
+
     // Gets the set of Players who are currently in the game.
     get players() { return this.#runtime_.players; }
 
@@ -20,10 +23,10 @@ export class Game {
     // ---------------------------------------------------------------------------------------------
 
     // Signals that the |player| has lost. They will be removed from the game.
-    playerLost(player, score) { this.#runtime_.playerLost(player, score); }
+    async playerLost(player, score) { await this.#runtime_.playerLost(player, score); }
 
     // Signals that the |player| has won. They will be removed from the game.
-    playerWon(player, score) { this.#runtime_.playerWon(player, score); }
+    async playerWon(player, score) { await this.#runtime_.playerWon(player, score); }
 
     // Immediately stops the game, and removes all players.
     stop() { this.#runtime_.stop(); }
@@ -34,7 +37,7 @@ export class Game {
 
     // Called when the Game has just been created. Enables data to be loaded from disk / the
     // database, as well as objects to be initialized. Use the `scopedEntities` please.
-    async onInitialized(settings) {}
+    async onInitialized(settings, userData) {}
 
     // Called at a periodic interval if the game requested a tick in its options.
     async onTick() {}
@@ -70,5 +73,9 @@ export class Game {
     constructor(runtime, scopedEntities) {
         this.#runtime_ = runtime;
         this.#scopedEntities_ = scopedEntities;
+    }
+
+    toString() {
+        return `[object ${this.constructor.name}("${this.#runtime_.getActivityName()}")]`;
     }
 }

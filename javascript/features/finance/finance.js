@@ -23,6 +23,9 @@ export default class Finance extends Feature {
 
         this.markFoundational();
 
+        // Certain transactions can lead to announcements visible to administrators.
+        const announce = this.defineDependency('announce');
+
         // Many parts about the in-game financial situation are configurable.
         const settings = this.defineDependency('settings');
 
@@ -48,7 +51,7 @@ export default class Finance extends Feature {
         this.natives_ = new FinancialNatives(this.regulator_);
 
         // Commands that enable players to interact with their in-game money.
-        this.commands_ = new FinancialCommands(this.regulator_);
+        this.commands_ = new FinancialCommands(announce, this.regulator_);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -78,6 +81,8 @@ export default class Finance extends Feature {
     // Gives the |player| the given |amount|. Returns whether the money has been given to them,
     // which only fails when limits would be exceeded.
     givePlayerCash(player, amount) {
+        amount = Math.floor(amount);
+
         if (amount < 0)
             throw new Error('This method may only be used to issue money to a player.');
 
@@ -92,6 +97,8 @@ export default class Finance extends Feature {
     // Takes the given |amount| from the |player|. This is able to put them in debt. Returns whether
     // the money was taken from them, which only fails when limits would be exceeded.
     takePlayerCash(player, amount) {
+        amount = Math.floor(amount);
+
         if (amount < 0)
             throw new Error('This method may only be used to take money from a player.');
 

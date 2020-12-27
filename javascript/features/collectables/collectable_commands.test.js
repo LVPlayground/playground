@@ -30,7 +30,7 @@ describe('CollectableCommands', (it, beforeEach) => {
             rows: [
                 [
                     'Achievements',
-                    '2 / 13',
+                    '2 / 15',
                 ],
                 [
                     '{FF5252}Red Barrels',
@@ -40,6 +40,10 @@ describe('CollectableCommands', (it, beforeEach) => {
                     '{B2FF59}Spray Tags',
                     '2 / 100 {80ff00}(round 2)',
                 ],
+                [
+                    '{64FFDA}Treasures',
+                    '1 / 50 {B2DFDB}(+2 books)',
+                ]
             ]
         });
     });
@@ -59,6 +63,13 @@ describe('CollectableCommands', (it, beforeEach) => {
         assert.deepEqual(gunther.getLastDialogAsTable(), directResult);
     });
 
+    it('should be able to display the available benefits', async (assert) => {
+        gunther.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await gunther.issueCommand('/benefits'));
+        assert.doesNotThrow(() => gunther.getLastDialogAsTable());
+    });
+
     it('should enable players to read the instructions for a series', async (assert) => {
         gunther.respondToDialog({ listitem: 1 /* Red Barrels */ }).then(
             () => gunther.respondToDialog({ listitem: 0 /* Instructions */ })).then(
@@ -73,6 +84,31 @@ describe('CollectableCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/collectables'));
         assert.includes(gunther.lastDialog, 'Spray Tags');
+
+        gunther.respondToDialog({ listitem: 3 /* Treasures */ }).then(
+            () => gunther.respondToDialog({ listitem: 0 /* Instructions */ })).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+        assert.includes(gunther.lastDialog, 'Treasure');
+    });
+
+    it('should list the unsolved hints for the Treasures series', async (assert) => {
+        gunther.respondToDialog({ listitem: 3 /* Treasures */ }).then(
+            () => gunther.respondToDialog({ response: 0 /* Dismiss */ }));
+        
+        assert.isTrue(await gunther.issueCommand('/collectables'));
+
+        const table = gunther.getLastDialogAsTable(/* hasColumns= */ false);
+        assert.equal(table.length, 5);  // Instructions, Purchase hint, divider, +2 books
+
+        // If any of these strings change, then something is off with the deterministic random
+        // algorithm and player's progress could end up significantly off. "Call Russell" scenario.
+        assert.deepEqual(table.slice(2), [
+            '-----',
+            'Treasure hint: Shady viewing his cabin',
+            'Treasure hint: Along the road between Junkyard and Foster Valley',
+        ]);
     });
 
     it('should enable players to purchase a hint for the closest collectable', async (assert) => {

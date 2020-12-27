@@ -2,49 +2,36 @@
     "name": "Dirty Race",
     "id": 6,
 
-    "time_limit": 600,
-    "laps": 2,
-
     "environment": {
-        "weather": 10,
-        "time": [11, 0],
-        "interior": 4
+        "interiorId": 4
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -1382.5000, -660.0000, 1055.7100 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 468
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 468
         },
         {
             "position": [ -1382.5000, -663.0000, 1055.7100 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 468
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 468
         },
         {
             "position": [ -1382.5000, -666.0000, 1055.7100 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 468
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 468
         },
         {
             "position": [ -1382.5000, -669.0000, 1055.7100 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 468
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 468
         }
     ],
 
     "settings": {
-        "allow_leave_vehicle": true,
-        "unlimited_nos": true
+        "allowLeaveVehicle": true,
+        "unlimitedNos": true
     },
 
     "checkpoints": [

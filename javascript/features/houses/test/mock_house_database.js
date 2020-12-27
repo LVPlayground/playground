@@ -65,7 +65,13 @@ class MockHouseDatabase {
             vehicles: [
                 {
                     id: 1337,
-                    modelId: 520,
+                    modelId: 411,  // Infernus
+
+                    primaryColor: null,
+                    secondaryColor: null,
+                    paintjob: null,
+                    components: [ 1008 /* 5x Nitro */ ],
+
                     parkingLotId: 60
                 }
             ]
@@ -139,6 +145,8 @@ class MockHouseDatabase {
     async updateHouseStreamUrl(location, streamUrl) {}
 
     async updateHouseWelcomeMessage(location, welcomeMessage) {}
+
+    async updateVehicle(vehicle, vehicleInfo) {}
 
     async removeLocation(location) {}
 

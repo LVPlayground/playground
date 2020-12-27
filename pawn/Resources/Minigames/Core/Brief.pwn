@@ -123,7 +123,7 @@ CBrief__SignPlayerUp(playerid)
 
     new message[128];
     format(message, sizeof(message), "~r~~h~%s~w~ has signed up for ~y~Capture the Briefcase~w~ (~p~/brief~w~)", Player(playerid)->nicknameString());
-    NewsController->show(message);
+    AnnounceNewsMessage(message);
 
     return 1;
 }
@@ -167,7 +167,7 @@ CBrief__SignPlayerOut(playerid)
 
         SetPlayerVirtualWorld(playerid,0);
         SpawnPlayer(playerid);
-        ColorManager->releasePlayerMinigameColor(playerid);
+        ReleasePlayerGameColor(playerid);
     }
 
     GiveRegulatedMoney(playerid, MinigameParticipation);
@@ -202,7 +202,7 @@ CBrief__Checkpoint(playerid)
 
             SendClientMessage(playerid,COLOR_PINK,str);           
             format(str, sizeof(str), "~y~Capture the Briefcase~w~ has finished: ~r~~h~%s~w~ has deliverd the briefcase!", Player(playerid)->nicknameString());
-            NewsController->show(str);
+            AnnounceNewsMessage(str);
             CBrief__Cancel();
             return 1;
         }
@@ -241,7 +241,7 @@ CBrief__Checkpoint(playerid)
             ShowBoxForPlayer(playerid, "Deliver the brief to LV Airport - Marked red on your radar!");
 
             // Display this player as blue so they're recognizable.
-            ColorManager->setPlayerMinigameColor(playerid, COLOR_BLUE);
+            SetPlayerGameColor(playerid, COLOR_BLUE);
 
             if(!IsValidDynamicObject(BriefCase))
             {
@@ -322,7 +322,7 @@ CBrief__Death(playerid, killerid = Player::InvalidId)
     SetPlayerVirtualWorld(playerid,0);
 
     // Reset the player's color and time overrides since they're no longer participating.
-    ColorManager->releasePlayerMinigameColor(playerid);
+    ReleasePlayerGameColor(playerid);
     TimeController->releasePlayerOverrideTime(playerid);
 
     return 1;
@@ -372,7 +372,7 @@ CBrief__Cancel()
             DisablePlayerCheckpoint(i);
             SetPlayerVirtualWorld(i,0);
             // Release their minigame color and time override since they're no longer playing.
-            ColorManager->releasePlayerMinigameColor(i);
+            ReleasePlayerGameColor(i);
             TimeController->releasePlayerOverrideTime(i);
         } else {
             GiveRegulatedMoney(i, MinigameParticipation);
@@ -558,7 +558,7 @@ CBrief__Start()
             TimeController->setPlayerOverrideTime(i, 0, 0);
 
             // Give them a white color to indicate that they're part of the game.
-            ColorManager->setPlayerMinigameColor(i, Color::White);
+            SetPlayerGameColor(i, Color::White);
 
             CBrief__PositionPlayer(i);
             SendClientMessage(i,Color::White,"--------------------------------------");

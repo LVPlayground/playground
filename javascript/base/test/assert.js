@@ -5,6 +5,8 @@
 import { AssertionFailedError } from 'base/test/assertion_failed_error.js';
 import { MockPawnInvoke } from 'base/test/mock_pawn_invoke.js';
 
+import { equals } from 'base/equals.js';
+
 // This library provides a series of asserts that can be used for validating assumptions in unit
 // tests. Failing asserts will create clear and useful error messages.
 //
@@ -74,7 +76,7 @@ export class Assert {
 
   // Asserts that |actual| is deep equal to |expected|.
   deepEqual(actual, expected) {
-    if (angularEquals(actual, expected))
+    if (equals(actual, expected))
       return;
 
     // TODO(Russell): Improve this error message.
@@ -83,7 +85,7 @@ export class Assert {
 
   // Asserts that |actual| is not deep equal to |expected|.
   notDeepEqual(actual, expected) {
-    if (!angularEquals(actual, expected))
+    if (!equals(actual, expected))
       return;
 
     // TODO(Russell): Improve this error message.
@@ -414,7 +416,7 @@ export class Assert {
       if (signature !== null && call.signature != signature)
         continue;  // signature was provided, and differs
 
-      if (args !== null && !angularEquals(call.args, args))
+      if (args !== null && !equals(call.args, args))
         continue;  // arguments were provided, but differ
 
       if (++count >= times)
@@ -466,45 +468,3 @@ export class Assert {
                                    message);
   }
 };
-
-// equals() method taken from Angular:
-// https://github.com/angular/angular.js/blob/6c59e770084912d2345e7f83f983092a2d305ae3/src/Angular.js#L670
-function angularEquals(o1, o2) {
-  if (o1 === o2) return true;
-  if (o1 === null || o2 === null) return false;
-  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
-  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
-  if (t1 == t2) {
-    if (t1 == 'object') {
-      if (Array.isArray(o1)) {
-        if (!Array.isArray(o2)) return false;
-        if ((length = o1.length) == o2.length) {
-          for(key=0; key<length; key++) {
-            if (!angularEquals(o1[key], o2[key])) return false;
-          }
-          return true;
-        }
-      } else if (toString.apply(o1) == '[object Date]') {
-        return toString.apply(o2) == '[object Date]' && o1.getTime() == o2.getTime();
-      } else if (toString.apply(o1) == '[object RegExp]' && toString.apply(o2) == '[object RegExp]') {
-        return o1.toString() == o2.toString();
-      } else {
-        if (Array.isArray(o2)) return false;
-        keySet = {};
-        for(key in o1) {
-          if (key.charAt(0) === '$' || typeof o1[key] === 'function') continue;
-          if (!angularEquals(o1[key], o2[key])) return false;
-          keySet[key] = true;
-        }
-        for(key in o2) {
-          if (!keySet.hasOwnProperty(key) &&
-              key.charAt(0) !== '$' &&
-              o2[key] !== undefined &&
-              !(typeof o2[key] === 'function')) return false;
-        }
-        return true;
-      }
-    }
-  }
-  return false;
-}

@@ -2,12 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedEntities } from 'entities/scoped_entities.js';
 
 // Command: /rampcar [player]?
-class RampCarCommand extends Command {
+export default class RampCarCommand extends Command {
     constructor() {
         super();
 
@@ -19,10 +19,12 @@ class RampCarCommand extends Command {
 
     get name() { return 'rampcar'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Get yourself a shiney pink ramp car!`; }
 
     build(commandBuilder) {
         commandBuilder
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Give a ramp car to another player.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(RampCarCommand.prototype.onRampCarCommand.bind(this))
             .build(RampCarCommand.prototype.onRampCarCommand.bind(this));
@@ -79,5 +81,3 @@ class RampCarCommand extends Command {
         server.vehicleManager.removeObserver(this);
     }
 }
-
-export default RampCarCommand;

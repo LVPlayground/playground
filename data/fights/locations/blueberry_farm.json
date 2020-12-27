@@ -1,0 +1,23 @@
+{
+    "name": "Blueberry Farm",
+    "shortName": "Farm",
+
+    "spawnPositions": {
+        "areaZ": 5,
+        "area": {
+            "minimumX": -260,
+            "maximumX": -123,
+            "minimumY": -80,
+            "maximumY": 100
+        }
+    },
+
+    "environment": {
+        "boundaries": {
+            "minimumX": -263.3261,
+            "maximumX": -121.8499,
+            "minimumY": -91.6753,
+            "maximumY": 102.4352
+        }
+    }
+}

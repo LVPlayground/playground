@@ -20,9 +20,9 @@ lvp_Minigames(playerid, params[])
     }
 
 #if Feature::DisableFights == 0
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nDeathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Deathmatch\nRace\nRobbery\nBriefcase\nRivershell\nLYSE\nWWTW\nRWTW\nWaterfight", "Play!", "Cancel");
 #else
-    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Derby\nRobbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
+    ShowPlayerDialog(playerid, DIALOG_MINIGAMES, DIALOG_STYLE_LIST, "Choose your minigame!", "Robbery\nBriefcase\nRivershell\nLYSE", "Play!", "Cancel");
 #endif
 
     #pragma unused params
@@ -43,28 +43,21 @@ lvp_minigaming(playerid, params[]) {
 
         if (PlayerActivity(subjectId)->isJavaScriptActivity()) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (IsPlayerInMapZone(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s jump\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
-                GetPlayerMinigameName(subjectId));
-            continue;
-        }
-
-        if (CDerby__GetPlayerState(subjectId) >= DERBY_STATE_COUNTDOWN) {
-            format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s derby\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
 
         if (PlayerInfo[subjectId][PlayerStatus] >= STATUS_BATFIGHT && PlayerInfo[subjectId][PlayerStatus] <= STATUS_ISLANDDM) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
@@ -74,7 +67,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::White, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CHideGame__SeekerId() == subjectId ? colorBuffer[0] : colorBuffer[1],
                 CHideGame__SeekerId() == subjectId ? "Seeker" : "Hider");
@@ -86,7 +79,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CRobbery__GetPlayerTeam(subjectId) == ROBBERY_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],
                 CRobbery__GetPlayerTeam(subjectId) == ROBBERY_TEAMATTACK ? "Attackers" : "Defenders");
@@ -96,14 +89,14 @@ lvp_minigaming(playerid, params[]) {
 #if Feature::DisableFights == 0
         if (CFightClub__IsPlayerFighting(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s (/fight watch %d)\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId), PlayerMatch[subjectId]);
             continue;
         }
 
         if (waterFightIsPlayerPlaying(subjectId)) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
@@ -113,7 +106,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? colorBuffer[0] : colorBuffer[1],
                 rwGetPlayerTeam(subjectId) == RW_TEAM_RED ? "Red Team" : "Blue Team");
@@ -126,7 +119,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 CLyse__GetPlayerTeam(subjectId) == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
                 CLyse__GetPlayerTeam(subjectId) == TEAM_BLUE ? "Blue Team" : "Green Team");
@@ -135,7 +128,7 @@ lvp_minigaming(playerid, params[]) {
 
         if (isPlayerBrief[subjectId] && briefStatus == BRIEF_STATE_RUNNING) {
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t-", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId));
             continue;
         }
@@ -145,7 +138,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentGreen, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 p_Team[subjectId] == TEAM_BLUE ? colorBuffer[0] : colorBuffer[1],
                 p_Team[subjectId] == TEAM_BLUE ? "Team Blue" : "Team Green");
@@ -158,7 +151,7 @@ lvp_minigaming(playerid, params[]) {
             Color->toString(Color::MinigameTransparentBlue, colorBuffer[1], sizeof(colorBuffer[]));
 
             format(minigaming, sizeof(minigaming), "%s\n{%06x}%s {FFFFFF}(Id:%d)\t%s\t{%s}%s", minigaming,
-                ColorManager->playerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
+                GetPlayerColor(subjectId) >>> 8, Player(subjectId)->nicknameString(), subjectId,
                 GetPlayerMinigameName(subjectId),
                 WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? colorBuffer[0] : colorBuffer[1],
                 WWTW_PlayerData[subjectId][iPlayerTeam] == WWTW_TEAMATTACK ? "Attackers" : "Defenders");
@@ -307,128 +300,6 @@ lvp_stats(playerid, params[])
 
 // -------------------------------------------------------------------------------------------------
 
-// Reasons one can be slapped with. Will be chosen by random.
-new SLAP_REASONS[][] = {
-    "cock", "sheep", "trout", "dildo", "probe", "rocket launcher", "hand", "network technician",
-    "boob", "poop", "FiXeR", "baseball bat", "computer", "fucker", "fist", "tree", "stick", "spike",
-    "broken bottle", "claw", "asswipe", "used dildo", "used condom", "broken laptop", "dog",
-    "motherfucking snake", "Luce", "trout", "winniegun"
-};
-
-// Makes |playerId| slap the |targetPlayerId|. Their most recent slap time and the target's most
-// recent slapped-by records will be updated.
-ExecuteSlapCommand(playerId, targetPlayerId) {
-    for (new i = 0; i <= PlayerManager->highestPlayerId(); i++)
-        PlayerPlaySound(i, 1190 ,0, 0, 0);
-
-    new reason = random(sizeof(SLAP_REASONS));
-    new message[128];
-
-    format(message, sizeof(message), "* %s slaps %s around a bit with a large %s.",
-        Player(playerId)->nicknameString(), Player(targetPlayerId)->nicknameString(), SLAP_REASONS[reason]);
-
-    if (!PlayerSyncedData(playerId)->isolated())
-        SendClientMessageToAllEx(Color::SlapAnnouncement, message);
-    else
-        SendClientMessage(playerId, Color::SlapAnnouncement, message);
-
-    GameTextForPlayer(targetPlayerId, "~y~slapped", 5000, 5);
-
-    g_LastSlapTime[playerId] = Time->currentTime();
-    g_LastSlappedBy[targetPlayerId] = playerId;
-}
-
-// Command: /slap [player]
-// Author: Jay, Russell
-lvp_slap(playerId, params[]) {
-    if(!params[0]) {
-        SendClientMessage(playerId, Color::Information, "Usage: /slap [player]");
-        return 1;
-    }
-
-    param_shift(szParameter);
-
-    new targetPlayerId = SelectPlayer(szParameter);
-    if (!Player(targetPlayerId)->isConnected() || IsPlayerNPC(targetPlayerId)) {
-        SendClientMessage(playerId, Color::Warning, "Error: That player is not connected to the server!");
-        return 1;
-    }
-
-    if (targetPlayerId == playerId) {
-        SendClientMessage(playerId, Color::Warning, "Error: You cannot slap yourself, silly!");
-        return 1;
-    }
-
-    new const bool: isLuce = Account(playerId)->userId() == 31797 ||
-                             UndercoverAdministrator(playerId)->getOriginalUserId() == 31797;
-
-    new timeSinceLastSlap = Time->currentTime() - g_LastSlapTime[playerId];
-    if (timeSinceLastSlap < 10 /* seconds */ && !isLuce) {
-        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 10 seconds.");
-        return 1;
-    }
-
-    new const price = GetEconomyValue(SlapCommand);
-
-    if (GetPlayerMoney(playerId) < price /* dollars */) {
-        new message[128];
-        format(message, sizeof(message), "Error: Slapping another player costs $%s.", formatPrice(price));
-        SendClientMessage(playerId, Color::Warning, message);
-        return 1;
-    }
-
-    if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
-        SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
-        return 1;
-    }
-
-    TakeRegulatedMoney(playerId, SlapCommand);
-
-    ExecuteSlapCommand(playerId, targetPlayerId);
-    return 1;
-}
-
-// Command: /slapb, /slapback
-// Author: Russell
-lvp_slapb(playerId, params[]) {
-    if (g_LastSlappedBy[playerId] == INVALID_PLAYER_ID) {
-        SendClientMessage(playerId, Color::Warning, "Error: Sorry, I forgot who slapped you last!");
-        return 1;
-    }
-
-    new timeSinceLastSlap = Time->currentTime() - g_LastSlapTime[playerId];
-    if (timeSinceLastSlap < 10 /* seconds */) {
-        SendClientMessage(playerId, Color::Warning, "Error: You can only slap once per 10 seconds.");
-        return 1;
-    }
-
-    new const price = GetEconomyValue(SlapCommand);
-
-    if (GetPlayerMoney(playerId) < price /* dollars */) {
-        new message[128];
-        format(message, sizeof(message), "Error: Slapping another player costs $%s.", formatPrice(price));
-        SendClientMessage(playerId, Color::Warning, message);
-        return 1;
-    }
-
-    if (IsCommunicationMuted() && !Player(playerId)->isAdministrator()) {
-        SendClientMessage(playerId, Color::Error, "Sorry, an administrator is making an announcement.");
-        return 1;
-    }
-
-    TakeRegulatedMoney(playerId, SlapCommand);
-
-    ExecuteSlapCommand(playerId, g_LastSlappedBy[playerId]);
-    return 1;
-
-    #pragma unused params
-}
-
-// Because our command aliasing system is so amazing.
-lvp_slapback(playerId, params[]) { return lvp_slapb(playerId, params); }
-
-// -------------------------------------------------------------------------------------------------
-
 // Command: /lyse
 // Level: Player
 // Params: -
@@ -437,16 +308,6 @@ lvp_slapback(playerId, params[]) { return lvp_slapb(playerId, params); }
 lvp_lyse(playerid, params[]) {
     return CLyse__OnCommand(playerid);
     #pragma unused params
-}
-
-// Command: /derby
-// Level: Player
-// Params: derbyid
-// Desc: Using the derby handler, this signs a player up for a derby.
-// Author: Jay
-lvp_Derby(playerid,params[])
-{
-    return CDerby__OnCommand(playerid, params);
 }
 
 // Command: /locate
@@ -612,7 +473,7 @@ lvp_locate(playerid,params[])
 // Author: Jay
 lvp_tune(playerid,params[])
 {
-    if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+    if (!CanPlayerTeleport(playerid)) {
         ShowBoxForPlayer(playerid, "You cannot use this command because you have recently been in a fight.");
         return 1;
     }
@@ -667,7 +528,7 @@ lvp_tune(playerid,params[])
             default: goto l_Tune;
         }
 
-        ReportPlayerTeleport(playerid, 0 /* timeLimited */);
+        ReportPlayerTeleport(playerid);
 
         ClearPlayerMenus(playerid);
         PlayerInfo[playerid][playerInCheckpoint] = 0;
@@ -771,7 +632,7 @@ lvp_interest(playerid,params[])
     new str[256];
     format(str,256,"~r~~h~%s~w~ has changed the interest rate to ~y~%d~w~ percent (~p~/interest~w~)",
         Player(playerid)->nicknameString(),iInterest);
-    NewsController->show(str);
+    AnnounceNewsMessage(str);
     bankRente = iInterest;
     ShowBoxForPlayer(playerid, "Interest rates updated!");
     return 1;
@@ -870,7 +731,7 @@ lvp_My( playerid, params[] )
 
     if(!strcmp(szParameter, "skin", true, 4))
     {
-        if (GetPlayerTeleportStatus(playerid, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+        if (!CanPlayerTeleport(playerid)) {
             SendClientMessage(playerid, Color::Red, "* You cannot use this command at the moment because you have recently been in a fight.");
             return 1;
         }
@@ -970,47 +831,6 @@ charHelp:
     if (!strcmp(szParameter, "spawnmoney", true, 10)) {
         SendClientMessage(playerid, Color::Error, "Sorry, this command is currently disabled.");
         return 1;
-    }
-
-    if(!strcmp(szParameter, "minigame", true, 8))
-    {
-        param_shift(tmp);
-
-        if(!strlen(tmp)) {
-            goto MinigameHelp;
-        }
-
-        if(!strcmp(tmp, "tec9", true, 4))
-        {
-            if(iPlayerSawnoffWeapon[playerid] == 1)
-            {
-                SendClientMessage(playerid, Color::Red, "You've already chosen the Tec9!");
-                return 1;
-            }
-
-            iPlayerSawnoffWeapon [playerid] = 1;
-            SendClientMessage(playerid, Color::Green, "You have chosen the Tec9 as spawn-weapon for the FightClub and the /sawnoff minigame.");
-            return 1;
-        }
-
-        if(!strcmp(tmp, "uzi", true, 3))
-        {
-            if(iPlayerSawnoffWeapon[playerid] == 2)
-            {
-                SendClientMessage(playerid, Color::Red, "You've already chosen the Uzi!");
-                return 1;
-            }
-
-            iPlayerSawnoffWeapon[playerid] = 2;
-            SendClientMessage(playerid, Color::Green, "You have chosen the Uzi as spawn-weapon for the FightClub and the /sawnoff minigame.");
-            return 1;
-        }
-
-MinigameHelp:
-        SendClientMessage(playerid, Color::White, "Usage: /my minigame [tec9/uzi]");
-        SendClientMessage(playerid, Color::White, "This is used to set your spawnweapon in the FightClub and the /sawnoff minigame.");
-        return 1;
-
     }
 
     if(!strcmp(szParameter, "saveloc", true, 7) && Player(playerid)->isAdministrator() == true)
@@ -1173,66 +993,12 @@ MinigameHelp:
         return 1;
     }
 
-    if(!strcmp(szParameter, "hide", true, 4 ) && Player(playerid)->isAdministrator() == true)
-    {
-        param_shift( szParams2 );
-
-        if( !strlen( szParams2 ) )
-            goto HideHelp;
-
-        if( strcmp( szParams2, "on", true, 2 ) == 0 )
-        {
-            if( PlayerInfo[playerid][playerIsHidden] == 1) 
-            {
-                SendClientMessage(playerid, Color::Error, "* You are already hidden!");
-                return 1;
-            }
-
-            PlayerInfo[playerid][playerIsHidden] = 1;
-            ColorManager->setPlayerMarkerHidden(playerid, true);
-
-            new nickname[32], notification[128];
-            GetPlayerName(playerid, nickname, sizeof(nickname));
-
-            format(notification, sizeof(notification), "%s (Id:%d) has made themself invisible.", nickname, playerid);
-            Admin(playerid, notification);
-
-            SendClientMessage(playerid, Color::Success, "* You are now hidden!");
-            return 1;
-        }
-
-        if( strcmp( szParams2, "off", true, 3 ) == 0 )
-        {
-            if( PlayerInfo[playerid][playerIsHidden] == 0) 
-            {
-                SendClientMessage(playerid, Color::Error, "* You are already visible!");
-                return 1;
-            }
-
-            PlayerInfo[playerid][playerIsHidden] = 0;
-            ColorManager->setPlayerMarkerHidden(playerid, false);
-
-            new nickname[32], notification[128];
-            GetPlayerName(playerid, nickname, sizeof(nickname));
-
-            format(notification, sizeof(notification), "%s (Id:%d) has made themself visible.", nickname, playerid);
-            Admin(playerid, notification);
-
-            SendClientMessage(playerid, Color::Success, "* You are now visible again!");
-            return 1;
-        }
-
-HideHelp:
-        SendClientMessage( playerid, Color::White, "Usage: /my hide [on/off]");
-        return 1;
-    }
-
 MyHelp:
-    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/minigame/playerinfo/properties/ramp/skin/spawnmoney/stats]");
+    SendClientMessage(playerid, Color::White, "Usage: /my [deathmessage/playerinfo/properties/ramp/skin/spawnweapons/spawnmoney/stats]");
 
     if (Player(playerid)->isAdministrator() || UndercoverAdministrator(playerid)->isUndercoverAdministrator()) {
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[allchat/armour/color/health/hide/(goto/save)loc/maptp]");
-        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/spawnweapons/weapon/weather/teleport/time]");
+        SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[messagelevel/resetspawnweapons/weapon/weather/teleport/time]");
     } else if (Player(playerid)->isAdministrator())
         SendClientMessage(playerid, Color::White, "Usage: /my {DDDDDD}[color/resetspawnweapons/teleport/weather/time]");
     else if (Player(playerid)->isVip())

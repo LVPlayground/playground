@@ -503,38 +503,5 @@ public OnPlayerNameChange(playerId) {
     Player(playerId)->updateNickname();
 }
 
-forward LVP_IsPlayerAdmin(playerId);
-forward LVP_BanPlayer(playerId, reason[]);
-
-/**
- * Publicly exposed API for checking the admin access level of a player.
- *
- * @param playerId Id of the player to check the admin access level for.
- * @param boolean Is the player an admin?
- */
-public LVP_IsPlayerAdmin(playerId) {
-    if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-        return 0;
-
-    return _: Player(playerId)->isAdministrator();
-}
-
-/**
- * Publicly exposed API for banning a player, useful for filterscripts.
- *
- * @param playerId Id of the player who is to be banned.
- */
-public LVP_BanPlayer(playerId, reason[]) {
-    if (Player(playerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true
-        || Player(playerId)->isAdministrator() == true)
-        return 0;
-
-    Player(playerId)->ban(reason);
-    return 1;
-}
-
-forward OnPlayerLevelChange(playerid, newlevel, temporary);
-public OnPlayerLevelChange(playerid, newlevel, temporary) {}
-
 // Include the test-suite for the Player class.
 #include "Entities/Players/Player.tests.pwn"

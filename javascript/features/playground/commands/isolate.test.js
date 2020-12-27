@@ -2,24 +2,21 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
-
-describe('Isolate', (it, beforeEach, afterEach) => {
-    let commands = null;
+describe('Isolate', (it, beforeEach) => {
     let gunther = null;
     let russell = null;
 
     beforeEach(async() => {
-        commands = new MockPlaygroundCommands();
-        await commands.loadCommands();
+        const feature = server.featureManager.loadFeature('playground');
+        await feature.commands_.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
 
         russell = server.playerManager.getById(1 /* Russell */);
         russell.level = Player.LEVEL_MANAGEMENT;
-    });
 
-    afterEach(() => commands.dispose());
+        await russell.identify();
+    });
 
     it('should be able to isolate players', async assert => {
         gunther.virtualWorld = 10;

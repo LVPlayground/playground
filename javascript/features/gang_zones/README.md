@@ -23,8 +23,6 @@ in the following mechanism, which gangs can directly influence:
      a gang area. This means that gangs can occupy multiple areas, for example one in each city,
      as long as all enough members participate in this.
 
-  1. ...
-
 The gang zone feature will continue to evaluate these requirements while the server is running,
 so players joining a gang and building a house in the gang area(s) will have an immediate effect.
 

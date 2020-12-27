@@ -1,16 +1,14 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import EconomyCalculator from 'features/economy/economy_calculator.js';
-
-describe('EconomyCalculator', (it, beforeEach, afterEach) => {
+describe('EconomyCalculator', (it, beforeEach) => {
     let calculator = null;
 
-    beforeEach(() => calculator = new EconomyCalculator());
-    afterEach(() => {
-        if (calculator)
-            calculator.dispose();
+    beforeEach(() => {
+        const feature = server.featureManager.loadFeature('economy');
+
+        calculator = feature.economyCalculator_;
     });
 
     it('should have a variance that updates once per hour', async(assert) => {
@@ -35,6 +33,7 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
 
         // Updating the variance should stop when the calculator has been disposed of.
         calculator.dispose();
+        calculator.dispose = () => 1;
 
         await server.clock.advance(60 * 60 * 1000 /* updateFrequency */);
 
@@ -136,54 +135,6 @@ describe('EconomyCalculator', (it, beforeEach, afterEach) => {
         assert.closeTo(calculateFeaturePrice(4, 2, 0), 0.95 * 19505983.51, 1);
         assert.closeTo(calculateFeaturePrice(4, 2, 50), 19505983.51, 1);
         assert.closeTo(calculateFeaturePrice(4, 2, 100), 1.05 * 19505983.51, 1);
-    });
-
-    it('should be able to price vehicles for houses appropriately', assert => {
-        const minimum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[0];
-        const maximum = EconomyCalculator.PRICE_RANGE_HOUSE_VEHICLES[1];
-        const delta = maximum - minimum;
-
-        const residentialPercentage = 0.4875;
-        const vehiclePercentage = 0.5;
-        const variancePercentage = 0.0125;
-
-        // Returns the vehicle price that has been determined for the three input values.
-        const calculateVehiclePrice = (residentialValue, vehicleValue, varianceValue) => {
-            calculator.setVarianceValueForTests(varianceValue);
-            return calculator.calculateHouseVehiclePrice(residentialValue, vehicleValue);
-        };
-
-        const errorMargin = delta * 0.01;
-
-        // The minimum and maximum prices should be adhered to.
-        assert.equal(calculateVehiclePrice(0, 0, 0), minimum);
-        assert.equal(calculateVehiclePrice(4, 100, 100), maximum);
-
-        // The residential percentage should matter for the indicated percentage.
-        assert.closeTo(calculateVehiclePrice(4, 0, 0) - calculateVehiclePrice(0, 0, 0),
-                       delta * residentialPercentage, errorMargin);
-        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(0, 100, 100),
-                       delta * residentialPercentage, errorMargin);
-
-        // The vehicle percentage should matter for the indicated percentage.
-        assert.closeTo(calculateVehiclePrice(0, 100, 0) - calculateVehiclePrice(0, 0, 0),
-                       delta * vehiclePercentage, errorMargin);
-        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(4, 0, 100),
-                       delta * vehiclePercentage, errorMargin);
-
-        // The variance percentage should matter for the indicated percentage.
-        assert.closeTo(calculateVehiclePrice(0, 0, 100) - calculateVehiclePrice(0, 0, 0),
-                       delta * variancePercentage, errorMargin);
-        assert.closeTo(calculateVehiclePrice(4, 100, 100) - calculateVehiclePrice(4, 100, 0),
-                       delta * variancePercentage, errorMargin);
-
-        // It should throw when any of the input values are out of range.
-        assert.throws(() => calculateVehiclePrice(-1, 0, 0));
-        assert.throws(() => calculateVehiclePrice(0, -1, 0));
-        assert.throws(() => calculateVehiclePrice(0, 0, -1));
-        assert.throws(() => calculateVehiclePrice(200, 0, 0));
-        assert.throws(() => calculateVehiclePrice(0, 200, 0));
-        assert.throws(() => calculateVehiclePrice(0, 0, 200));
     });
 
     it ('calculates the correct prize for a killtime', assert => {

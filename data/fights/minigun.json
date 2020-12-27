@@ -1,0 +1,16 @@
+{
+    "name": "Minigun Madness",
+    "command": "minigun",
+    "goal": "Take out your enemies with a minigun before they spot you.",
+
+    "settings": {
+        "deathmatch/map_markers": "Disabled",
+        "deathmatch/skin": 100,
+        "deathmatch/spawn_armour": true,
+        "deathmatch/spawn_weapons": [
+            { "weapon": 38, "ammo": 10000 }
+        ],
+        "fights/location": "Acter Nuclear Power Plant",
+        "fights/pickups": false
+    }
+}

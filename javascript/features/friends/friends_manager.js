@@ -2,13 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import FriendsDatabase from 'features/friends/friends_database.js';
+import { FriendsDatabase } from 'features/friends/friends_database.js';
+import { MockFriendsDatabase } from 'features/friends/mock_friends_database.js';
 
 // Manager for the friends feature responsible for the mid-level logic of the feature, including
 // making sure that a player's friends are loaded when they log in to the server.
-class FriendsManager {
+export class FriendsManager {
+    // Constant to represent that a friend is currently online.
+    static kCurrentlyOnline = Number.MAX_SAFE_INTEGER;
+
     constructor() {
-        this.database_ = new FriendsDatabase();
+        this.database_ = server.isTest() ? new MockFriendsDatabase()
+                                         : new FriendsDatabase();
 
         this.friends_ = new Map();
         this.lastActive_ = {};
@@ -81,7 +86,7 @@ class FriendsManager {
 
         // Function for determining if |friend| is currently online.
         const isOnline = friend =>
-            this.lastActive_[friend.userId] == FriendsManager.CURRENTLY_ONLINE;
+            this.lastActive_[friend.userId] == FriendsManager.kCurrentlyOnline;
 
         return {
             online: friends.filter(friend => isOnline(friend)).map(friend => friend.name),
@@ -148,7 +153,7 @@ class FriendsManager {
 
     // Called when a player logs in to their account. Will start loading their friends.
     onPlayerLogin(player) {
-        this.lastActive_[player.account.userId] = FriendsManager.CURRENTLY_ONLINE;
+        this.lastActive_[player.account.userId] = FriendsManager.kCurrentlyOnline;
         this.userIds_.set(player, player.account.userId);
 
         this.loadPromises_.set(player, this.database_.loadFriends(player).then(friends => {
@@ -173,8 +178,3 @@ class FriendsManager {
         server.playerManager.removeObserver(this);
     }
 }
-
-// Value for indicating that a player is currently online on Las Venturas Playground.
-FriendsManager.CURRENTLY_ONLINE = Number.MAX_SAFE_INTEGER;
-
-export default FriendsManager;

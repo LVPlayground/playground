@@ -70,6 +70,26 @@ describe('GameRegistration', (it, beforeEach) => {
         assert.throws(() => registration.removePlayer(gunther));
     });
 
+    it('should start the game immediately when it is a continuous game', assert => {
+        class BubbleGame extends Game {}
+
+        const description = new GameDescription(BubbleGame, {
+            name: 'Bubble',
+            goal: 'Start the game when there are enough players',
+            continuous: true,
+            minimumPlayers: 1,
+            maximumPlayers: 8,
+        });
+
+        const registration =
+            new GameRegistration(description, new Map(), GameRegistration.kTypePublic, 1, manager);
+
+        assert.isFalse(registration.hasFinished());
+
+        registration.registerPlayer(gunther, kContribution);  // first player
+        assert.isTrue(registration.hasFinished());
+    });
+
     it('should start the game when the maximum number of players have signed up', assert => {
         class BubbleGame extends Game {}
 

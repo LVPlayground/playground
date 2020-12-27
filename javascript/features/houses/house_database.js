@@ -92,7 +92,11 @@ const LOAD_VEHICLES_QUERY = `
         houses_settings.house_location_id,
         houses_vehicles.house_vehicle_id,
         houses_vehicles.house_parking_lot_id,
-        houses_vehicles.model_id
+        houses_vehicles.model_id,
+        houses_vehicles.primary_color,
+        houses_vehicles.secondary_color,
+        houses_vehicles.paintjob,
+        houses_vehicles.components
     FROM
         houses_vehicles
     LEFT JOIN
@@ -151,9 +155,23 @@ const CREATE_HOUSE_VISITOR_LOG = `
 const CREATE_VEHICLE_QUERY = `
     INSERT INTO
         houses_vehicles
-        (house_parking_lot_id, house_id, model_id, vehicle_created)
+        (house_parking_lot_id, house_id, model_id, primary_color, secondary_color, paintjob,
+         components, vehicle_created)
     VALUES
-        (?, ?, ?, NOW())`;
+        (?, ?, ?, ?, ?, ?, ?, NOW())`;
+
+// Query for updating a vehicle in the database.
+const UPDATE_VEHICLE_QUERY = `
+    UPDATE
+        houses_vehicles
+    SET
+        houses_vehicles.model_id = ?,
+        houses_vehicles.primary_color = ?,
+        houses_vehicles.secondary_color = ?,
+        houses_vehicles.paintjob = ?,
+        houses_vehicles.components = ?
+    WHERE
+        houses_vehicles.house_vehicle_id = ?`;
 
 // Query for reading the visitor logs for a given house.
 const READ_VISITOR_LOGS_QUERY = `
@@ -403,9 +421,20 @@ class HouseDatabase {
                     return;
                 }
 
+                let components = [];
+                if (row.components.length) {
+                    for (const component of row.components.split(','))
+                        components.push(parseInt(component));
+                }
+
                 houses.get(locationId).vehicles.push({
                     id: row.house_vehicle_id,
                     modelId: row.model_id,
+
+                    primaryColor: row.primary_color,
+                    secondaryColor: row.secondary_color,
+                    paintjob: row.paintjob,
+                    components: components,
 
                     parkingLotId: row.house_parking_lot_id
                 });
@@ -480,8 +509,12 @@ class HouseDatabase {
     // Creates a vehicle with |vehicleInfo| in the |parkingLot| associated with the house at
     // |location|. The |vehicleInfo| must be an object having {modelId}.
     async createVehicle(location, parkingLot, vehicleInfo) {
+        const components = vehicleInfo.components.length ? vehicleInfo.components.join(',')
+                                                         : '';
+
         const data = await server.database.query(
-            CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, vehicleInfo.modelId);
+            CREATE_VEHICLE_QUERY, parkingLot.id, location.settings.id, vehicleInfo.modelId,
+            vehicleInfo.primaryColor, vehicleInfo.secondaryColor, vehicleInfo.paintjob, components);
 
         return data.insertId;
     }
@@ -535,6 +568,16 @@ class HouseDatabase {
     async updateHouseStreamUrl(location, streamUrl) {
         await server.database.query(
             UPDATE_STREAM_URL_SETTING_QUERY, streamUrl, location.settings.id);
+    }
+
+    // Updates the |vehicle| in the database with the given |vehicleInfo|.
+    async updateVehicle(vehicle, vehicleInfo) {
+        const components = vehicleInfo.components.length ? vehicleInfo.components.join(',')
+                                                         : '';
+
+        await server.database.query(
+            UPDATE_VEHICLE_QUERY, vehicleInfo.modelId, vehicleInfo.primaryColor,
+            vehicleInfo.secondaryColor, vehicleInfo.paintjob, components, vehicle.id);
     }
 
     // Removes the |location| from the database.

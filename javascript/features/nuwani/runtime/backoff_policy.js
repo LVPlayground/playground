@@ -21,14 +21,19 @@ const kPolicyStateIdle = 2;
 // problems, by waiting for an exponentially longer amount of time.
 export class BackoffPolicy {
     failureCount_ = 0;
+    initial_ = kInitialDelayMs;
     state_ = kPolicyStateInitial;
 
     // Returns the delay for the |attempt|th attempt.
-    static CalculateDelayForAttempt(attempt) {
+    static CalculateDelayForAttempt(attempt, initial = kInitialDelayMs) {
         return Math.floor(
-            kInitialDelayMs * Math.pow(kMultiplyFactor, Math.min(attempt, kMaximumFailureCount)));
+            initial * Math.pow(kMultiplyFactor, Math.min(attempt, kMaximumFailureCount)));
     }
     
+    constructor(initial = kInitialDelayMs) {
+        this.initial_ = initial;
+    }
+
     // Returns the time until the next request can be started, in milliseconds. The policy must not
     // be in RequestinProgress state, as the previous request attempt must first be acknowledged. 
     getTimeToNextRequestMs() {
@@ -36,7 +41,7 @@ export class BackoffPolicy {
             throw new Error('Unable to progress policy state: request already in progress.');
 
         this.state_ = kPolicyStateRequestInProgress;
-        return BackoffPolicy.CalculateDelayForAttempt(this.failureCount_);
+        return BackoffPolicy.CalculateDelayForAttempt(this.failureCount_, this.initial_);
     }
 
     // Marks the in-progress request as having succeeded. The failure count will be reset, which

@@ -83,5 +83,3 @@ SetInvolvedInJavaScriptGame(playerid, bool: involved) {
     g_involvedInJavaScriptGame[playerid] = involved;
 }
 
-// Required by JavaScript, do not remove.
-public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {}

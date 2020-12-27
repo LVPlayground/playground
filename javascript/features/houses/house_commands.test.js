@@ -4,12 +4,13 @@
 
 import createTestEnvironment from 'features/houses/test/test_environment.js';
 
-import AbuseConstants from 'features/abuse/abuse_constants.js';
 import HouseExtension from 'features/houses/house_extension.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import InteriorList from 'features/houses/utils/interior_list.js';
 import ParkingLotCreator from 'features/houses/utils/parking_lot_creator.js';
 import { PlayerSetting } from 'entities/player_setting.js';
+
+import { messages } from 'features/houses/houses.messages.js';
 
 describe('HouseCommands', (it, beforeEach) => {
     let commands = null;
@@ -45,9 +46,9 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.isTrue(await gunther.issueCommand('/house create'));
 
         assert.equal(gunther.messages.length, 1);
-        assert.isTrue(
-            gunther.messages[0].includes(
-                Message.format(Message.HOUSE_ANNOUNCE_CREATED, gunther.name, gunther.id)));
+        assert.includes(
+            gunther.messages[0],
+            messages.houses_admin_created(null, { player: gunther }));
 
         assert.equal(manager.locationCount, locationCount + 1);
     });
@@ -118,7 +119,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages[0], Message.HOUSE_MODIFY_NONE_NEAR);
     });
 
-    it('should display an identity beam when modifying a nearby house', async(assert) => {
+    it('should display an identity beam when modifying a nearby house', async (assert) => {
         const gunther = server.playerManager.getById(0 /* Gunther */);
         const objectCount = server.objectManager.count;
 
@@ -126,7 +127,9 @@ describe('HouseCommands', (it, beforeEach) => {
         gunther.level = Player.LEVEL_ADMINISTRATOR;
         gunther.position = new Vector(200, 240, 300);  // 10 units from the nearest location
 
-        assert.isTrue(gunther.issueCommand('/house modify'));
+        const commandPromise = gunther.issueCommand('/house modify');
+
+        await Promise.resolve();
         await manager.findClosestLocation(gunther);
 
         assert.equal(gunther.messages.length, 0);
@@ -508,8 +511,7 @@ describe('HouseCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);
         assert.equal(
             gunther.messages[0],
-            Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED,
-                           AbuseConstants.REASON_FIRED_WEAPON));
+            Message.format(Message.HOUSE_GOTO_TELEPORT_BLOCKED, `you've recently issued damage`));
     });
 
     it('should enable administrators to list houses owned by another player', async(assert) => {
@@ -522,7 +524,7 @@ describe('HouseCommands', (it, beforeEach) => {
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
 
-        // (1) Try to get the houses owned by |gunther| before he has logged in.
+        // (1) Try to get the houses owned by |gunther| before they has logged in.
         assert.isTrue(await russell.issueCommand('/house goto ' + gunther.id));
         assert.equal(russell.messages.length, 1);
         assert.equal(russell.messages[0], Message.HOUSE_GOTO_NONE_FOUND);
@@ -530,7 +532,7 @@ describe('HouseCommands', (it, beforeEach) => {
         await gunther.identify({ userId: 42 });
         russell.clearMessages();
 
-        // (2) Try to get the houses owned by |gunther| now that he has logged in.
+        // (2) Try to get the houses owned by |gunther| now that they has logged in.
         gunther.respondToDialog({ listitem: 0 /* first owned house */ });
 
         assert.isTrue(await gunther.issueCommand('/house goto ' + gunther.id));
@@ -548,8 +550,8 @@ describe('HouseCommands', (it, beforeEach) => {
         const houses = manager.getHousesForUser(42 /* Gunther */);
         assert.equal(houses.length, 1);
 
-        // Select Gunther from the list of house owners (he's not logged in), then teleport to the
-        // first house listed in the subsequent dialog.
+        // Select Gunther from the list of house owners (they're not logged in), then teleport to
+        // the first house listed in the subsequent dialog.
         russell.respondToDialog({ listitem: 0 /* Gunther's houses */ }).then(
             () => russell.respondToDialog({ listitem: 0 /* first owned house */ }));
 
@@ -633,89 +635,6 @@ describe('HouseCommands', (it, beforeEach) => {
 
         assert.isTrue(await gunther.issueCommand('/house settings'));
         assert.equal(location.settings.access, HouseSettings.ACCESS_EVERYBODY);
-    });
-
-    it('should give players a warning when their house has no parking lots', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: 42 });
-        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
-
-        // Wait some ticks to make sure that the permission check has finished.
-        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
-            await Promise.resolve();
-
-        const location = manager.getCurrentHouseForPlayer(gunther);
-        assert.isNotNull(location);
-
-        assert.isAbove(location.parkingLotCount, 0);
-
-        for (const parkingLot of location.parkingLots)
-            await manager.removeLocationParkingLot(location, parkingLot);
-
-        assert.equal(location.parkingLotCount, 0);
-
-        gunther.respondToDialog({ listitem: 1 /* Manage my vehicles */}).then(
-            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.equal(gunther.lastDialog, Message.HOUSE_SETTINGS_NO_PARKING_LOTS);
-    });
-
-    it('should enable players to purchase vehicles for their house', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: 42 });
-        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
-
-        // Wait some ticks to make sure that the permission check has finished.
-        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
-            await Promise.resolve();
-
-        const location = manager.getCurrentHouseForPlayer(gunther);
-        assert.isNotNull(location);
-
-        const parkingLots = Array.from(location.parkingLots);
-        assert.equal(parkingLots.length, 2);
-
-        const parkingLot = parkingLots[0];
-        assert.isTrue(location.settings.vehicles.has(parkingLot));
-
-        gunther.respondToDialog({ listitem: 1 /* Manage my vehicles */}).then(
-            () => gunther.respondToDialog({ listitem: 0 /* First vehicle in the list */ })).then(
-            () => gunther.respondToDialog({ response: 1 /* Yes, remove the vehicle */ })).then(
-            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.isFalse(location.settings.vehicles.has(parkingLot));
-    });
-
-    it('should enable players to sell one of their vehicles', async(assert) => {
-        const gunther = server.playerManager.getById(0 /* Gunther */);
-        await gunther.identify({ userId: 42 });
-        gunther.position = new Vector(500, 500, 500);  // on the nearest occupied portal
-
-        // Wait some ticks to make sure that the permission check has finished.
-        while (!manager.getCurrentHouseForPlayer(gunther) && maxticks --> 0)
-            await Promise.resolve();
-
-        const location = manager.getCurrentHouseForPlayer(gunther);
-        assert.isNotNull(location);
-
-        const parkingLots = Array.from(location.parkingLots);
-        assert.equal(parkingLots.length, 2);
-
-        const parkingLot = parkingLots[1];
-        assert.isFalse(location.settings.vehicles.has(parkingLot));
-
-        gunther.respondToDialog({ listitem: 1 /* Manage my vehicles */}).then(
-            () => gunther.respondToDialog({ listitem: 1 /* Second vehicle in the list */ })).then(
-            () => gunther.respondToDialog({ listitem: 8 /* Purchase an Infernus */ })).then(
-            () => gunther.respondToDialog({ response: 0 /* Yes, I get it */ }));
-
-        assert.isTrue(await gunther.issueCommand('/house settings'));
-        assert.isTrue(location.settings.vehicles.has(parkingLot));
-
-        const vehicle = location.settings.vehicles.get(parkingLot);
-        assert.equal(vehicle.modelId, 411 /* Infernus */);
     });
 
     it('should enable house extensions to add options to /house modify', async(assert) => {

@@ -1,0 +1,74 @@
+{
+    "name": "Acter Nuclear Power Plant",
+    "shortName": "Nuclear",
+
+    "spawnPositions": {
+        "individual": [
+            { "position": [ 2647.7834, 2697.5884, 19.3222 ], "facingAngle": 353.1684 },
+            { "position": [ 2654.5427, 2720.3474, 19.3222 ], "facingAngle": 303.5359 },
+            { "position": [ 2653.2063, 2738.2432, 19.3222 ], "facingAngle": 342.1389 },
+            { "position": [ 2641.1350, 2703.2019, 25.8222 ], "facingAngle": 191.6982 },
+            { "position": [ 2599.1304, 2700.7249, 25.8222 ], "facingAngle":  76.3487 },
+            { "position": [ 2606.1384, 2721.5237, 25.8222 ], "facingAngle": 261.2564 },
+            { "position": [ 2597.3745, 2748.0884, 23.8222 ], "facingAngle": 273.2050 },
+            { "position": [ 2595.0657, 2776.6729, 23.8222 ], "facingAngle": 254.3630 },
+            { "position": [ 2601.3640, 2777.8101, 23.8222 ], "facingAngle": 253.4439 },
+            { "position": [ 2584.3940, 2825.1748, 27.8203 ], "facingAngle": 244.5475 },
+            { "position": [ 2631.8110, 2834.2593, 40.3281 ], "facingAngle": 213.2975 },
+            { "position": [ 2498.3167, 2782.3357, 10.8203 ], "facingAngle": 251.7015 },
+            { "position": [ 2646.1997, 2817.7070, 36.3222 ], "facingAngle": 182.0474 },
+            { "position": [ 2685.8875, 2816.6575, 36.3222 ], "facingAngle": 129.9525 },
+            { "position": [ 2691.1233, 2787.7883, 59.0212 ], "facingAngle": 208.0777 },
+            { "position": [ 2717.8071, 2771.3464, 74.8281 ], "facingAngle":  72.3429 }
+        ],
+        "teams": [
+            [
+                { "position": [ 2623.7727, 2708.2039, 25.8222 ], "facingAngle": 309.6365 },
+                { "position": [ 2620.7075, 2706.0330, 25.8222 ], "facingAngle": 247.3060 },
+                { "position": [ 2631.6265, 2834.3367, 94.0156 ], "facingAngle": 139.5652 },
+                { "position": [ 2671.8210, 2724.4375, 10.8203 ], "facingAngle": 185.6023 },
+                { "position": [ 2669.8542, 2722.6831, 10.8203 ], "facingAngle": 130.4551 },
+                { "position": [ 2618.7600, 2648.2317, 35.6304 ], "facingAngle": 10.1575 },
+                { "position": [ 2610.9548, 2709.2053, 25.8222 ], "facingAngle": 86.5645 },
+                { "position": [ 2613.7239, 2707.4929, 25.8222 ], "facingAngle": 207.8256 }
+            ],
+            [
+                { "position": [ 2657.0874, 2823.6887, 36.3222 ], "facingAngle": 10.9780 },
+                { "position": [ 2664.3591, 2823.9067, 36.3222 ], "facingAngle": 265.4796 },
+                { "position": [ 2632.6243, 2834.8550, 64.3359 ], "facingAngle": 13.8449 },
+                { "position": [ 2597.4783, 2778.1523, 23.8222 ], "facingAngle": 352.7790 },
+                { "position": [ 2602.1462, 2778.7312, 23.8222 ], "facingAngle": 288.4001 },
+                { "position": [ 2691.0293, 2782.4404, 59.0212 ], "facingAngle": 137.9986 },
+                { "position": [ 2659.7205, 2824.9797, 36.3222 ], "facingAngle": 293.3665 },
+                { "position": [ 2662.3035, 2824.0537, 36.3222 ], "facingAngle": 293.3665 }
+            ]
+        ]
+    },
+
+    "environment": {
+        "boundaries": {
+            "minimumX": 2485.0,
+            "maximumX": 2760.0,
+            "minimumY": 2656.0,
+            "maximumY": 2866.0
+        }
+    },
+
+    "pickups": [
+        {
+            "modelId": 1240,
+            "type": 2,
+            "position": [ 2618.2512, 2721.4011, 36.5386 ]
+        },
+        {
+            "modelId": 1242,
+            "type": 2,
+            "position": [ 2660.1450, 2802.3440, 32.3222 ]
+        },
+        {
+            "modelId": 1240,
+            "type": 2,
+            "position": [ 2652.8020, 2777.2944, 19.3222 ]
+        }
+    ]
+}

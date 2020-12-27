@@ -4,6 +4,8 @@
 
 forward OnHideIdentifyMessageForPlayer(playerId);
 
+native TogglePlayerLagCompensationMode(playerid, mode);
+
 /**
  * After their first connection to the server, the first thing visible to players is the class
  * selection screen. This basically provides the first impression players get from Las Venturas
@@ -55,6 +57,13 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
     // Have we seen the first spawn of this player?
     new bool: m_hasSeenFirstSpawn;
 
+    // The lag compensation mode active for this player.
+    new m_lagCompensationMode;
+
+    // Number of class selections to force our way through because the player's lag compensation
+    // mode has changed. That's a bit of a nasty side effect of the feature.
+    new m_lagCompensationIgnoreCounter;
+
     // ---------------------------------------------------------------------------------------------
 
     // Whether the player should have their position restored on spawn.
@@ -90,6 +99,8 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         m_isInFixedClassSelection = false;
         m_beforeInitialClassSelection = true;
         m_hasSeenFirstSpawn = false;
+        m_lagCompensationMode = 2;
+        m_lagCompensationIgnoreCounter = 0;
         m_restoreOnSpawn = false;
         m_spawnInterior = -1;
     }
@@ -158,6 +169,27 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
             }
         }
 
+        new bool: forceSpawn = false;
+        if (PlayerSyncedData(playerId)->lagCompensationMode() != m_lagCompensationMode) {
+            m_lagCompensationMode = PlayerSyncedData(playerId)->lagCompensationMode();
+            m_lagCompensationIgnoreCounter = 1;
+
+            forceSpawn = true;
+        } else if (m_lagCompensationIgnoreCounter > 0) {
+            m_lagCompensationIgnoreCounter -= 1;
+
+            forceSpawn = true;
+        }
+
+        // Force-spawn our way through the lag compensation mode change.
+        if (forceSpawn) {
+            if (m_skinId != SpawnManager::InvalidSkinId)
+                SetSpawnInfo(playerId, 0, m_skinId, 1346.17, 2807.06, 10.82, 320.0, 0, 0, 0, 0, 0, 0);
+
+            SpawnPlayer(playerId);
+            return true;
+        }
+
         // They might have pressed F4, or went to class selection using another way.
         this->setUpGameEnvironmentForClassSelection();
         if (!Player(playerId)->isInClassSelection())
@@ -222,7 +254,7 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         // -----------------------------------------------------------------------------------------
         // Has JavaScript requested authority over this player's spawns?
 
-        if (IsInvolvedInJavaScriptGame(playerId))
+        if (IsInvolvedInJavaScriptGame(playerId) || PlayerSyncedData(playerId)->hasMinigameName())
             return true;
 
         // -----------------------------------------------------------------------------------------
@@ -310,6 +342,14 @@ class SpawnManager <playerId (MAX_PLAYERS)> {
         // player spectating functions to achieve this, as it'll give us a smooth transition.
         TogglePlayerSpectating(playerId, true);
         TogglePlayerSpectating(playerId, false);
+    }
+
+    /**
+     * Updates the lag compensation mode for the player to |mode|.
+     */
+    public setLagCompensationMode(mode) {
+        TogglePlayerLagCompensationMode(playerId, mode);
+        SpawnPlayer(playerId);
     }
 
     /**
@@ -435,7 +475,7 @@ public OnPlayerRequestSpawn(playerid) {
  * @param playerid Id of the player who is spawning.
  * @return integer False if the player should be returned to class selection after the next spawn.
  */
-public OnPlayerSpawn(playerid) {
+LVPPlayerSpawn(playerid) {
     if (Player(playerid)->isConnected() == false)
         return 0;
 

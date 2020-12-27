@@ -61,6 +61,10 @@ export default class DeathFeed extends Feature {
     // the Pawn part of Las Venturas Playground, as the circumstances of the death may have to be
     // resolved prior to being presented to players.
     onPlayerDeath(event) {
+        const player = server.playerManager.getById(event.playerid);
+        if (!player)
+            return;  // bail out if the |killerid| has since disconnected.
+
         this.recentDeaths_.unshift({
             killee: event.playerid,
             killer: event.killerid,
@@ -71,7 +75,6 @@ export default class DeathFeed extends Feature {
 
         // TODO: This needs to live in a better place.
         {
-            const player = server.playerManager.getById(event.playerid);
             if (player && player.isSelectingObject())
                 player.cancelEdit();
         }

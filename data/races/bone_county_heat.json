@@ -2,42 +2,30 @@
     "name": "Bone County Heat",
     "id": 41,
 
-    "laps": 1,
-
     "environment": {
-        "weather": 1,
-        "time": [14, 0],
-        "interior": 0
+        "weather": "Heatwave"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ 539.9938, 2731.2473, 64.6338 ],
-            "rotation": 262.5949,
-            "vehicle": {
-                "model": 411
-            }
+            "facingAngle": 262.5949,
+            "vehicleModelId": 411
         },
         {
             "position": [ 540.5953, 2726.6709, 64.4866 ],
-            "rotation": 265.7600,
-            "vehicle": {
-                "model": 411
-            }
+            "facingAngle": 265.7600,
+            "vehicleModelId": 411
         },
         {
             "position": [ 539.5485, 2722.3401, 64.5624 ],
-            "rotation": 264.0497,
-            "vehicle": {
-                "model": 411
-            }
+            "facingAngle": 264.0497,
+            "vehicleModelId": 411
         },
         {
             "position": [ 538.6741, 2717.2954, 64.6434 ],
-            "rotation": 262.8386,
-            "vehicle": {
-                "model": 411
-            }
+            "facingAngle": 262.8386,
+            "vehicleModelId": 411
         }
     ],
 

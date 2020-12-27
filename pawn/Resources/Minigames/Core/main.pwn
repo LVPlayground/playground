@@ -19,7 +19,6 @@
 #include Resources/Minigames/Deliver/Deliver.pwn
 
 #include Resources/Minigames/Core/Brief.pwn
-#include Resources/Minigames/Core/Derby.pwn
 #include Resources/Minigames/Core/Robbery.pwn
 
 #if Feature::DisableFights == 0
@@ -67,9 +66,6 @@ MinigameType: GetPlayerMinigameType(playerId) {
 
     if (CLyse__GetPlayerState(playerId) >= LYSE_STATE_SIGNUP)
         return LocalYocalSportsEditionMinigame;
-
-    if (CDerby__GetPlayerState(playerId) >= DERBY_STATE_SIGNUP)
-        return DerbyMinigame;
 
     if (CHideGame__GetPlayerState(playerId) >= HS_STATE_SIGNING_UP)
         return HideAndSeekMinigame;
@@ -132,11 +128,6 @@ GetPlayerMinigameName(playerId) {
         goto l_Success;
     }
 #endif
-
-    if (CDerby__GetPlayerState(playerId) >= DERBY_STATE_SIGNUP) {
-        format(notice, sizeof(notice), "%s", CDerby__GetName(CDerby__GetPlayerDerby(playerId)));
-        goto l_Success;
-    }
 
     if (CLyse__GetPlayerState(playerId) >= LYSE_STATE_SIGNUP) {
         notice = "Local Yocal Sports Edition";
@@ -207,9 +198,6 @@ IsPlayerInMinigame(playerId) {
     if (CHideGame__GetPlayerState(playerId) == 2)
         return 1;
 
-    if (CDerby__GetPlayerState(playerId) > 2)
-        return 1;
-
     if (isPlayerBrief[playerId] && briefStatus == 2)
         return 1;
 
@@ -237,9 +225,6 @@ IsPlayerMinigameFree(playerId) {
         return 0;
 
     if (isPlayerBrief[playerId])
-        return 0;
-
-    if (CDerby__GetPlayerState(playerId) >= 2)
         return 0;
 
     if (CLyse__GetPlayerState(playerId) >= 1)

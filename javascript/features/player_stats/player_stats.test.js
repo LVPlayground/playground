@@ -226,6 +226,27 @@ describe('PlayerStats', (it, beforeEach) => {
         assert.equal(russell.stats.session.damageRatio, 2);
     });
 
+    it('is able to calculate and update player online times', async (assert) => {
+        assert.equal(russell.stats.enduring.onlineTime, 0);
+        assert.equal(russell.stats.session.onlineTime, 0);
+
+        await server.clock.advance(60000);
+
+        assert.closeTo(russell.stats.enduring.onlineTime, 60, 2);
+        assert.closeTo(russell.stats.session.onlineTime, 60, 2);
+
+        russell.stats.enduring.onlineTime = 1000;
+        russell.stats.session.onlineTime = 1000;
+
+        assert.equal(russell.stats.enduring.onlineTime, 1000);
+        assert.equal(russell.stats.session.onlineTime, 1000);
+
+        await server.clock.advance(60000);
+
+        assert.closeTo(russell.stats.enduring.onlineTime, 1060, 2);
+        assert.closeTo(russell.stats.session.onlineTime, 1060, 2);
+    });
+
     it('is able to create snapshots and differentiate them with current statistics', assert => {
         const properties = new Map();
         let index = 0;
@@ -244,7 +265,7 @@ describe('PlayerStats', (it, beforeEach) => {
 
         const snapshot = gunther.stats.snapshot();
 
-        // (3) Modify |gunther|'s statistics because he's really ace at these things.
+        // (3) Modify |gunther|'s statistics because they're really ace at these things.
         for (const [ index, property ] of properties)
             gunther.stats.session[property] += Math.pow(2, index);
 

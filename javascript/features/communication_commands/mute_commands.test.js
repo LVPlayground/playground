@@ -26,11 +26,11 @@ describe('MuteCommands', (it, beforeEach) => {
     });
     
     it('shows usage information when using the commands', async (assert) => {
-        assert.isTrue(await russell.issueCommand('/mute'));
+        assert.isFalse(await russell.issueCommand('/mute'));
         assert.equal(russell.messages.length, 1);
         assert.includes(russell.messages[0], '/mute [player] [duration=3]');
 
-        assert.isTrue(await russell.issueCommand('/unmute'));
+        assert.isFalse(await russell.issueCommand('/unmute'));
         assert.equal(russell.messages.length, 2);
         assert.includes(russell.messages[1], '/unmute [player]');
     });
@@ -165,5 +165,26 @@ describe('MuteCommands', (it, beforeEach) => {
 
         await server.clock.advance(10 * 1000);
         await monitorPromise;
+    });
+
+    it('is able to mute and unmute the IRC channel', async (assert) => {
+        const nuwani = server.featureManager.loadFeature('nuwani');
+
+        assert.isTrue(await russell.issueCommand('/muteirc'));
+        assert.equal(nuwani.messagesForTesting.length, 0);
+
+        assert.isTrue(await russell.issueCommand('/muteirc on'));
+        assert.equal(nuwani.messagesForTesting.length, 2);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'mute-echo',
+            params: [],
+        });
+
+        assert.isTrue(await russell.issueCommand('/muteirc off'));
+        assert.equal(nuwani.messagesForTesting.length, 4);
+        assert.deepEqual(nuwani.messagesForTesting[2], {
+            tag: 'unmute-echo',
+            params: [],
+        })
     });
 });

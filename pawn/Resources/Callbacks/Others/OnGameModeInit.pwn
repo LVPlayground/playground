@@ -14,6 +14,11 @@
 // Keep track of whether the main() method has finished executing.
 new bool: g_mainFinishedExecuting = false;
 
+// Time (in milliseconds) at which the server started.
+new g_serverStartTime;
+
+GetServerUptimeMs() { return GetTickCount() - g_serverStartTime; }
+
 public OnGameModeInit() {
     // Block until the main() method has finished executing completely. Race conditions can occur in
     // which certain information or classes are not yet initialized when we don't do this. Pawn
@@ -23,8 +28,12 @@ public OnGameModeInit() {
         return 1;
     }
 
+    g_serverStartTime = GetTickCount();
+
     // Part of Driver.
     SetTimer("UpdateVehicleTrailerStatus", 1000, 1);
+    InitializeDriftTextDraws();
+    InitializeAreas();
 
     // Initalize the Las Venturas Playground handlers - Note that the Gang base
     // handler is loaded at the end of the callback due to a textdraw issue.
@@ -48,7 +57,6 @@ public OnGameModeInit() {
     CRobbery__Initialize();         // Robbery
     CShell__CheckStatus();          // Rivershell
 
-    CDerby__Init();                 // Derby handler
 #if Feature::DisableFights == 0
     CWWTW__Initialize();            // Walkies Weapons Team War
 #endif

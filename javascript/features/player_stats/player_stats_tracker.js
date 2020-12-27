@@ -40,8 +40,10 @@ export class PlayerStatsTracker extends PlayerEventObserver {
         player.stats.enduring.damageTaken += amount;
         player.stats.session.damageTaken += amount;
 
-        issuer.stats.enduring.damageGiven += amount;
-        issuer.stats.session.damageGiven += amount;
+        if (issuer) {
+            issuer.stats.enduring.damageGiven += amount;
+            issuer.stats.session.damageGiven += amount;
+        }
     }
 
     // Called when a player has issued a shot.
@@ -56,8 +58,14 @@ export class PlayerStatsTracker extends PlayerEventObserver {
                 victim.stats.session.shotsTaken++;
             }
         } else if (hitType === /* vehicle */ 2) {
-            player.stats.enduring.shotsHit++;
-            player.stats.session.shotsHit++;
+            const vehicle = server.vehicleManager.getById(hitId);
+            if (vehicle && vehicle.isOccupied()) {
+                player.stats.enduring.shotsHit++;
+                player.stats.session.shotsHit++;
+            } else {
+                player.stats.enduring.shotsMissed++;
+                player.stats.session.shotsMissed++;
+            }
         } else {
             player.stats.enduring.shotsMissed++;
             player.stats.session.shotsMissed++;

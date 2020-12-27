@@ -160,6 +160,23 @@ describe('ScopedEntities', it => {
         assert.isTrue(pickup.isConnected());
     });
 
+
+    // ---------------------------------------------------------------------------------------------
+
+    it('should be able to create and dispose of scoped text draws', assert => {
+        const entities = new ScopedEntities();
+
+        const textDraw = entities.createTextDraw({ position: [ 120, 240 ], text: 'Hi' });
+        assert.isNotNull(textDraw);
+        assert.isTrue(textDraw.isConnected());
+
+        assert.isTrue(entities.hasTextDraw(textDraw));
+
+        entities.dispose();
+
+        assert.isFalse(textDraw.isConnected());
+    });
+
     // ---------------------------------------------------------------------------------------------
 
     it('should be able to create and dispose of scoped text labels', assert => {

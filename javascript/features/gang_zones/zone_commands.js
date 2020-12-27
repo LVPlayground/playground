@@ -12,7 +12,7 @@ import { Vector } from 'base/vector.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 
 // Implements the commands associated with gang zones, which enable gangs to modify their settings,
 // purchase decorations and special effects.
@@ -20,34 +20,24 @@ export class ZoneCommands {
     announce_ = null;
     gangs_ = null;
     manager_ = null;
-    playground_ = null;
 
     entities_ = null;
 
-    constructor(manager, announce, gangs, playground) {
+    constructor(manager, announce, gangs) {
         this.announce_ = announce;
         this.gangs_ = gangs;
         this.manager_ = manager;
 
         this.entities_ = new ScopedEntities();
 
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(this, () => this.registerTrackedCommands());
-
-        this.registerTrackedCommands();
-
         // /zone
         server.commandManager.buildCommand('zone')
-            .restrict(player => this.playground_().canAccessCommand(player, 'zone'))
+            .description('Manage the details of your gang zone.')
             .sub('reload')
+                .description('Reload the gang object definition files.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(ZoneCommands.prototype.onZoneReloadCommand.bind(this))
             .build(ZoneCommands.prototype.onZoneCommand.bind(this));
-    }
-
-    // Registers the tracked commands with the Playground feature, so that
-    registerTrackedCommands() {
-        this.playground_().registerCommand('zone', Player.LEVEL_MANAGEMENT);
     }
 
     // Gets the ZoneDecorations instance canonically owned by the manager.
@@ -167,7 +157,7 @@ export class ZoneCommands {
             entities: this.entities_,
             object, zone,
         });
-        
+
         object.dispose();
 
         if (!result)
@@ -221,7 +211,7 @@ export class ZoneCommands {
         // selection timed out. This is a rather buggy feature in SA-MP.
         if (!selectionResult)
             return;
-        
+
         const { decorationId, object } = selectionResult;
 
         const originalPosition = object.position;
@@ -274,7 +264,7 @@ export class ZoneCommands {
         // selection timed out. This is a rather buggy feature in SA-MP.
         if (!result)
             return;
-        
+
         const { decorationId, object } = result;
 
         // Get the name of the |object|, to share more sensible messages throughout the server.
@@ -288,7 +278,7 @@ export class ZoneCommands {
 
         if (!confirmation)
             return;  // the |player| changed their mind
-        
+
         await this.decorations.removeObject(zone, decorationId);
 
         // Announce the purchase to other people within the gang.
@@ -318,8 +308,5 @@ export class ZoneCommands {
         this.entities_ = null;
 
         server.commandManager.removeCommand('zone');
-
-        this.playground_().unregisterCommand('zone');
-        this.playground_.removeReloadObserver(this);
     }
 }

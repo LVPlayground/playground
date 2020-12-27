@@ -22,7 +22,7 @@ export class Menu {
         if (pageSize < 1 || pageSize > Menu.MAX_ROW_COUNT)
             throw new Error('Menu pages must have between 1 and ' + Menu.MAX_ROW_COUNT + ' rows.');
 
-        this.title_ = title;
+        this.title_ = String(title);
         this.columns_ = columns;
         this.items_ = [];
 

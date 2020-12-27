@@ -79,8 +79,6 @@ class NonPlayerCharacter <npcId (MaximumNonPlayerCharacterCount)> {
      * @return integer False if the NPC should be returned to class selection after the next spawn.
      */
     public bool: onNonPlayerCharacterSpawn() {
-        ColorManager->setPlayerOverrideColor(m_playerId, Color::NonPlayerCharacterColor);
-
         return Annotation::ExpandSwitch<OnNpcSpawn>(m_featureId, m_featureReference, m_playerId) != 0;
     }
 

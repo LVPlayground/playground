@@ -111,6 +111,7 @@ enum PasswordRequestType {
 #include "Features/Account/EnterPasswordDialog.pwn"
 #include "Features/Account/ForcedGuestDialog.pwn"
 #include "Features/Account/MultipleSessionDialog.pwn"
+#include "Features/Account/RequireSampcacDialog.pwn"
 
 #include "Features/Account/Bans/BanManager.pwn"
 #include "Features/Account/Bans/BanCommands.pwn"

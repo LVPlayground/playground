@@ -99,8 +99,10 @@ export class SelectObjectFlow {
         }
 
         // Dispose of all of the beams that were added for the flow.
-        for (const beam of beams)
-            beam.dispose();
+        for (const beam of beams) {
+            if (beam.isConnected())
+                beam.dispose();
+        }
 
         return decorationId ? { decorationId, object }
                             : null;

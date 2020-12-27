@@ -6,7 +6,7 @@ import { ActorManager } from 'entities/actor_manager.js';
 import { AreaManager } from 'entities/area_manager.js';
 import { CheckpointManager } from 'components/checkpoints/checkpoint_manager.js';
 import { Clock } from 'base/clock.js';
-import { CommandManager } from 'components/command_manager/command_manager.js';
+import { CommandManager } from 'components/commands/command_manager.js';
 import { Database } from 'components/database/database.js';
 import { DeferredEventManager } from 'components/events/deferred_event_manager.js';
 import { DialogManager } from 'components/dialogs/dialog_manager.js';
@@ -17,7 +17,8 @@ import { Npc } from 'entities/npc.js';
 import { ObjectManager } from 'entities/object_manager.js';
 import { PickupManager } from 'entities/pickup_manager.js';
 import { PlayerManager } from 'entities/player_manager.js';
-import { TextDrawManager } from 'components/text_draw/text_draw_manager.js';
+import { TextDrawManager as DeprecatedTextDrawManager } from 'components/text_draw/text_draw_manager.js';
+import { TextDrawManager } from 'entities/text_draw_manager.js';
 import { TextLabelManager } from 'entities/text_label_manager.js';
 import { VehicleManager } from 'entities/vehicle_manager.js';
 import { VirtualWorldManager } from 'entities/virtual_world_manager.js';
@@ -38,7 +39,7 @@ export class Server {
         this.checkpointManager_ = new CheckpointManager(CheckpointManager.kNormalCheckpoints);
         this.dialogManager_ = new DialogManager();
         this.raceCheckpointManager_ = new CheckpointManager(CheckpointManager.kRaceCheckpoints);
-        this.textDrawManager_ = new TextDrawManager();
+        this.deprecatedTextDrawManager_ = new DeprecatedTextDrawManager();
 
         this.actorManager_ = new ActorManager();
         this.areaManager_ = new AreaManager();
@@ -46,6 +47,7 @@ export class Server {
         this.objectManager_ = new ObjectManager();
         this.pickupManager_ = new PickupManager();
         this.playerManager_ = new PlayerManager();
+        this.textDrawManager_ = new TextDrawManager();
         this.textLabelManager_ = new TextLabelManager();
         this.vehicleManager_ = new VehicleManager();
         this.virtualWorldManager_ = new VirtualWorldManager();
@@ -65,7 +67,7 @@ export class Server {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Gets the global command manager that owns all commands available to players.
+    // Gets the command manager which is responsible for routing player-issued commands.
     get commandManager() { return this.commandManager_; }
 
     // Gets the deferred event manager, which dispatches deferred events.
@@ -86,7 +88,7 @@ export class Server {
     get raceCheckpointManager() { return this.raceCheckpointManager_; }
 
     // Gets the manager that's responsible for text draws.
-    get textDrawManager() { return this.textDrawManager_; }
+    get deprecatedTextDrawManager() { return this.deprecatedTextDrawManager_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -110,6 +112,9 @@ export class Server {
 
     // Gets the global player manager that knows the details and whereabouts of all in-game players.
     get playerManager() { return this.playerManager_; }
+
+    // Gets the manager that's responsible for text draws.
+    get textDrawManager() { return this.textDrawManager_; }
 
     // Gets the global text label manager, that allows creation of text labels.
     get textLabelManager() { return this.textLabelManager_; }
@@ -136,13 +141,14 @@ export class Server {
         this.checkpointManager_.dispose();
         this.dialogManager_.dispose();
         this.raceCheckpointManager_.dispose();
-        this.textDrawManager_.dispose();
+        this.deprecatedTextDrawManager_.dispose();
 
         await this.npcManager_.dispose();
 
         this.virtualWorldManager_.dispose();
         this.vehicleManager_.dispose();
         this.textLabelManager_.dispose();
+        this.textDrawManager_.dispose();
         this.playerManager_.dispose();
         this.pickupManager_.dispose();
         this.objectManager_.dispose();

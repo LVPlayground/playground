@@ -33,8 +33,9 @@ export default class HouseVehicleController {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Creates the |houseVehicle| associated with the |location|.
-    createVehicle(location, houseVehicle) {
+    // Creates the |houseVehicle| associated with the |location|. The |immediate| flag may be used
+    // to force creation of the vehicle on the server, which will make it available instantly.
+    createVehicle(location, houseVehicle, immediate = false) {
         if (!this.locationVehicles_.has(location))
             this.locationVehicles_.set(location, new Set());
 
@@ -48,15 +49,43 @@ export default class HouseVehicleController {
             // Give the house's vehicle a number plate named after the owner when known.
             numberPlate: location.settings?.ownerName ?? null,
 
+            // Pass through the optional settings for the vehicle, only set when available.
+            primaryColor: houseVehicle.primaryColor,
+            secondaryColor: houseVehicle.secondaryColor,
+            paintjob: houseVehicle.paintjob,
+            components: houseVehicle.components,
+
             // House vehicles are considered persistent vehicles, so set a `respawnDelay`.
             respawnDelay: this.settings_().getValue('vehicles/respawn_persistent_delay_sec'),
         });
 
-        const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo);
+        const streamableVehicle = this.streamer_().createVehicle(streamableVehicleInfo, immediate);
 
         this.locationVehicles_.get(location).add(houseVehicle);
         this.streamableVehicles_.set(houseVehicle, streamableVehicle);
+
+        return streamableVehicle;
     }
+
+    // Finds the location and parking lot associated with the |vehicle|, if any. When found, the
+    // result will be returned as an object structured like { location, houseVehicle }.
+    findLocationForVehicle(vehicle) {
+        for (const [ location, houseVehicles ] of this.locationVehicles_) {
+            for (const houseVehicle of houseVehicles) {
+                const streamableVehicle = this.streamableVehicles_.get(houseVehicle);
+                if (!streamableVehicle || !streamableVehicle.live)
+                    continue;  // the |streamableVehicle| has not been created yet
+
+                if (streamableVehicle.live === vehicle)
+                    return { location, houseVehicle };
+            }
+        }
+
+        return null;
+    }
+
+    // Returns the streamable vehicle for the given |houseVehicle|.
+    getStreamableVehicle(houseVehicle) { return this.streamableVehicles_.get(houseVehicle); }
 
     // Removes the |houseVehicle| that used to be associated with the |location|.
     removeVehicle(location, houseVehicle) {

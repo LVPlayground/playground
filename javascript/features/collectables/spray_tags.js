@@ -100,8 +100,6 @@ export class SprayTags extends CollectableBase {
             const tag = this.entities.createObject({
                 modelId, position, rotation,
 
-                interiorId: 0,  // main world
-                virtualWorld: 0,  // main world
                 playerId: player.id,
             });
 
@@ -177,8 +175,6 @@ export class SprayTags extends CollectableBase {
                 modelId: kSprayTagTaggedModelId,
                 position, rotation,
 
-                interiorId: 0,  // main world
-                virtualWorld: 0,  // main world
                 playerId: player.id,
             });
 

@@ -2,24 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
-
-describe('AutoHello', (it, beforeEach, afterEach) => {
-    let commands = null;
+describe('AutoHello', (it, beforeEach) => {
     let gunther = null;
 
     beforeEach(async() => {
-        commands = new MockPlaygroundCommands();
-        await commands.loadCommands();
+        const feature = server.featureManager.loadFeature('playground');
+        await feature.commands_.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
         await gunther.identify();
-
-        // Enable |gunther| to use the command by adding an exception.
-        commands.access.addException('autohello', gunther);
     });
-
-    afterEach(() => commands.dispose());
 
     it('should function like a toggle on the greeter feature', async(assert) => {
         assert.isTrue(await gunther.issueCommand('/autohello'));

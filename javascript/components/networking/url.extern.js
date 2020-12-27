@@ -71,7 +71,8 @@ export const urlParse = (function() {
 
         if (arg === 'tld?') { return _t(); }
 
-        url = url || window.location.toString();
+        if (!url)
+            throw new Error('The URL argument is required');
 
         if ( ! arg) { return url; }
 

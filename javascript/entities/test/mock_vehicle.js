@@ -18,6 +18,7 @@ export class MockVehicle extends Vehicle {
     #health_ = 1000;
     #velocity_ = new Vector(0, 0, 0);
 
+    #engine_ = true;
     #respawnCounter_ = 0;
 
     // Overridden to avoid creating an actual vehicle on the server.
@@ -32,10 +33,12 @@ export class MockVehicle extends Vehicle {
     }
 
     // Overrides to avoid interacting with a vehicle on the server.
+    addComponentInternal(componentId) {}
     attachTrailerInternal(trailer) {}
     changeVehicleColorInternal(primaryColor, secondaryColor) {}
     changeVehicleNumberPlateInternal(numberPlate) {}
     changeVehiclePaintjobInternal(paintjob) {}
+    removeComponentInternal(componentId) {}
     setInteriorInternal(interior) {}
     setVirtualWorldInternal(virtualWorld) {}
     destroyVehicleInternal() {}
@@ -70,10 +73,9 @@ export class MockVehicle extends Vehicle {
 
     repair() { this.#health_ = 1000; }
 
-    addComponent(componentId) {}
+    toggleEngine(engineRunning) { this.#engine_ = !!engineRunning; }
 
-    toggleEngine(engineRunning) {}
-
+    get engineForTesting() { return this.#engine_; }
     get respawnCountForTesting() { return this.#respawnCounter_; }
 
     // ---------------------------------------------------------------------------------------------

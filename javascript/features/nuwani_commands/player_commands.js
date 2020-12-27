@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Implementation of a series of commands that allow interaction with the state of in-game players,
 // change their status, find them, and so on.
@@ -14,12 +14,14 @@ export class PlayerCommands {
 
         // !getid [nickname]
         this.commandManager_.buildCommand('getid')
-            .parameters([{ name: 'nickname', type: CommandBuilder.PLAYER_PARAMETER }])
+            .description(`Display the player Id for a given nickname.`)
+            .parameters([{ name: 'nickname', type: CommandBuilder.kTypePlayer }])
             .build(PlayerCommands.prototype.onGetPlayerCommand.bind(this));
 
         // !getname [id]
         this.commandManager_.buildCommand('getname')
-            .parameters([{ name: 'id', type: CommandBuilder.PLAYER_PARAMETER }])
+            .description(`Display the nickname for a given player Id.`)
+            .parameters([{ name: 'id', type: CommandBuilder.kTypePlayer }])
             .build(PlayerCommands.prototype.onGetPlayerCommand.bind(this));
     }
 

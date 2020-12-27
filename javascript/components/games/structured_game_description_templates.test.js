@@ -78,24 +78,32 @@ describe('StructuredGameDescriptionTemplates', it => {
         const defaultDescription = new StructuredGameDescription('Game', {}, [ kGameEnvironment ]);
 
         assert.strictEqual(defaultDescription.environment.boundaries, null);
+        assert.strictEqual(defaultDescription.environment.gravity, 'Normal');
         assert.strictEqual(defaultDescription.environment.interiorId, 0);
-        assert.deepEqual(defaultDescription.environment.time, [ 12, 0 ]);
-        assert.strictEqual(defaultDescription.environment.weather, 10);
+        assert.strictEqual(defaultDescription.environment.time, 'Afternoon');
+        assert.strictEqual(defaultDescription.environment.weather, 'Sunny');
 
         const valuedDescription = new StructuredGameDescription('Game', {
             environment: {
-                boundaries: [ 0, 100, 50, 150 ],
+                boundaries: {
+                    minimumX: 0,
+                    maximumX: 50,
+                    minimumY: 100,
+                    maximumY: 150,
+                },
+                gravity: 'High',
                 interiorId: 7,
-                time: [ 18, 35 ],
-                weather: 12
+                time: 'Night',
+                weather: 'Sandstorm',
             }
         }, [ kGameEnvironment ]);
 
         assert.instanceOf(valuedDescription.environment.boundaries, Rect);
         assert.deepEqual(valuedDescription.environment.boundaries, new Rect(0, 100, 50, 150));
+        assert.strictEqual(valuedDescription.environment.gravity, 'High');
         assert.strictEqual(valuedDescription.environment.interiorId, 7);
-        assert.deepEqual(valuedDescription.environment.time, [ 18, 35 ]);
-        assert.strictEqual(valuedDescription.environment.weather, 12);
+        assert.strictEqual(valuedDescription.environment.time, 'Night');
+        assert.strictEqual(valuedDescription.environment.weather, 'Sandstorm');
     });
 
     it('is able to deal with object definitions for a game', assert => {

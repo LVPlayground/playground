@@ -6,15 +6,17 @@ import { CalculationStrategy } from 'features/reaction_tests/strategies/calculat
 import { Feature } from 'components/feature_manager/feature.js';
 import { RandomStrategy } from 'features/reaction_tests/strategies/random_strategy.js';
 import { RememberStrategy } from 'features/reaction_tests/strategies/remember_strategy.js';
+import { UnscrambleStrategy } from 'features/reaction_tests/strategies/unscramble_strategy.js';
+
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
 
 import * as achievements from 'features/collectables/achievements.js';
-
-import { format } from 'base/string_formatter.js';
 
 // Las Venturas Playground supports a variety of different reaction tests. They're shown in chat at
 // certain intervals, and require players to repeat characters, do basic calculations or remember
 // and repeat words or phrases. It's all powered by this feature.
 export default class ReactionTests extends Feature {
+    announce_ = null;
     collectables_ = null;
     communication_ = null;
     nuwani_ = null;
@@ -31,6 +33,9 @@ export default class ReactionTests extends Feature {
 
     constructor() {
         super();
+
+        // Messages will be shared with all players through the Announce feature.
+        this.announce_ = this.defineDependency('announce');
 
         // Depending on Collectables, because reaction tests can award achievements.
         this.collectables_ = this.defineDependency('collectables');
@@ -65,6 +70,7 @@ export default class ReactionTests extends Feature {
             CalculationStrategy,
             RandomStrategy,
             RememberStrategy,
+            UnscrambleStrategy,
         ];
 
         // Immediately schedule the first reaction test to start.
@@ -95,6 +101,9 @@ export default class ReactionTests extends Feature {
     // Picks a reaction test strategy. In essense this picks a random reaction tests which meets the
     // requirements to be ran at the current time, which is player-based.
     createReactionTestStrategy() {
+        if (this.communication_().isCommunicationMuted())
+            return null;  // all communication is muted, skip this test
+
         let candidateStrategies = [];
         let onlinePlayerCount = 0;
 
@@ -111,17 +120,14 @@ export default class ReactionTests extends Feature {
 
         if (!candidateStrategies.length)
             return null;  // none of the strategies wishes to be ran at this time
-        
+
         const index = Math.floor(Math.random() * candidateStrategies.length);
         return new candidateStrategies[index](this.settings_);
     }
 
     // Announces the given |message| with the |params| to all players eligible to participate.
-    announceToPlayers(message, ...params) {
-        const assembledMessage = format(message, ...params);
-
-        for (const player of server.playerManager)
-            player.sendMessage(assembledMessage);
+    broadcastToPlayers(message, ...params) {
+        this.announce_().broadcast('games/reaction-tests', message, ...params);
     }
 
     // Starts the next reaction test. First the token is verified to make sure it's still the latest
@@ -143,7 +149,7 @@ export default class ReactionTests extends Feature {
 
         // Actually start the test. This will make all the necessary announcements too.
         strategy.start(
-            ReactionTests.prototype.announceToPlayers.bind(this), this.nuwani_,
+            ReactionTests.prototype.broadcastToPlayers.bind(this), this.nuwani_,
             this.settings_().getValue('playground/reaction_test_prize'));
 
         this.activeTest_ = strategy;
@@ -167,28 +173,35 @@ export default class ReactionTests extends Feature {
         if (this.activeTestWinnerName_ && this.activeTestWinnerName_ === player.name) {
             // Do nothing, the player's just repeating themselves. Cocky!
         } else if (this.activeTestWinnerName_) {
-            const difference = Math.round((currentTime - this.activeTestWinnerTime_) / 10) / 100;
-            player.sendMessage(
-                Message.REACTION_TEST_TOO_LATE, this.activeTestWinnerName_, difference);
-
+            player.sendMessage(messages.reaction_tests_too_late, {
+                difference: (currentTime - this.activeTestWinnerTime_) / 1000,
+                winner: this.activeTestWinnerName_,
+            });
         } else {
             const previousWins = player.account.reactionTests;
             const differenceOffset = this.activeTest_.answerOffsetTimeMs;
-            const difference =
-                Math.round((currentTime - (this.activeTestStart_ + differenceOffset)) / 10) / 100;
+            const difference = (currentTime - this.activeTestStart_ - differenceOffset) / 1000;
 
+            // Let people watching through Nuwani know that the |player| has won.
             this.nuwani_().echo('reaction-result', player.name, player.id, difference);
-            if (previousWins <= 1) {
-                const message = previousWins === 0 ? Message.REACTION_TEST_ANNOUNCE_WINNER_FIRST
-                                                   : Message.REACTION_TEST_ANNOUNCE_WINNER_SECOND;
 
-                this.announceToPlayers(message, player.name, difference);
-            } else {
-                this.announceToPlayers(
-                    Message.REACTION_TEST_ANNOUNCE_WINNER, player.name, difference, previousWins);
-            }
+            let message = messages.reaction_tests_announce_winner;
+            if (previousWins === 0)
+                message = messages.reaction_tests_announce_winner_first;
+            else if (previousWins === 1)
+                message = messages.reaction_tests_announce_winner_second;
+
+            // Announce the winner, with their timing, to all in-game players.
+            this.broadcastToPlayers(message, {
+                player,
+                time: difference,
+                wins: previousWins,
+            });
 
             // Increment the number of wins in the player's statistics.
+            player.stats.enduring.reactionTests++;
+            player.stats.session.reactionTests++;
+
             player.account.reactionTests++;
 
             this.awardAchievementWhenApplicable(player, difference);
@@ -197,7 +210,7 @@ export default class ReactionTests extends Feature {
             this.finance_().givePlayerCash(player, prize);
 
             // Finally, let the |player| know about the prize they've won.
-            player.sendMessage(Message.REACTION_TEST_WON, prize);
+            player.sendMessage(messages.reaction_tests_won, { prize });
 
             this.activeTestWinnerName_ = player.name;
             this.activeTestWinnerTime_ = currentTime;
@@ -265,6 +278,20 @@ export default class ReactionTests extends Feature {
         
         if (this.activeTestWinnerTime_ !== null)
             return;  // someone answered the previous reaction test, another was scheduled
+
+        // Some tests might prefer Gunther to share the answer rather than timing them out silently,
+        // when the answer might be beneficial for players on the server.
+        if (this.activeTest_.answerThroughGunter) {
+            const gunther = server.playerManager.getByName('Gunther');
+            if (gunther) {
+                dispatchEvent('playertext', {
+                    playerid: gunther.id,
+                    text: this.activeTest_.answer,
+                });
+
+                return;
+            }
+        }
 
         this.activeTest_.stop();
         this.activeTest_ = null;

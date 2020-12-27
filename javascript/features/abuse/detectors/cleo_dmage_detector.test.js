@@ -17,7 +17,7 @@ describe('CleoDmageDetector', (it, beforeEach) => {
         russell = server.playerManager.getById(/* Russell= */ 1);
         settings = server.featureManager.loadFeature('settings');
 
-        // Make Russell an administrator so that he receives admin notices.
+        // Make Russell an administrator so that they receives admin notices.
         russell.level = Player.LEVEL_ADMINISTRATOR;
 
         // Load the |abuse| feature to make sure the detectors are running.
@@ -55,10 +55,8 @@ describe('CleoDmageDetector', (it, beforeEach) => {
             });
 
             assert.equal(russell.messages.length, existingMessageCount + 1);
-            assert.includes(
-                russell.messages[existingMessageCount],
-                Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
-                               'CLEO Dmage'));
+            assert.includes(russell.messages[existingMessageCount], 'has been suspected');
+            assert.includes(russell.messages[existingMessageCount], 'CLEO Dmage');
         }
     });
 
@@ -95,10 +93,8 @@ describe('CleoDmageDetector', (it, beforeEach) => {
                 });
 
                 assert.equal(russell.messages.length, existingMessageCount + 1);
-                assert.includes(
-                    russell.messages[existingMessageCount],
-                    Message.format(Message.ABUSE_ADMIN_SUSPECTED, gunther.name, gunther.id,
-                                   'CLEO Dmage'));
+                assert.includes(russell.messages[existingMessageCount], 'has been suspected');
+                assert.includes(russell.messages[existingMessageCount], 'CLEO Dmage');
             }
         }
     });

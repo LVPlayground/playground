@@ -4,6 +4,8 @@
 
 import { Strategy } from 'features/reaction_tests/strategy.js';
 
+import { messages } from 'features/reaction_tests/reaction_tests.messages.js';
+
 // This strategy works by creating a string of random characters which must be repeated by the
 // player in order to win. There is a little bit of variety in phrase length and character use.
 export class RandomStrategy extends Strategy {
@@ -40,7 +42,10 @@ export class RandomStrategy extends Strategy {
         }
 
         // Announce the test to all in-game participants.
-        announceFn(Message.REACTION_TEST_ANNOUNCE_REPEAT, this.answer_, prize);
+        announceFn(messages.reaction_tests_announce_repeat, {
+            sequence: this.answer_,
+            prize
+        });
 
         // Announce the test to everyone reading along through Nuwani.
         nuwani().echo('reaction-repeat', this.answer_, prize);
@@ -48,6 +53,6 @@ export class RandomStrategy extends Strategy {
 
     // Verifies whether the |message| is, or contains, the answer to this reaction test.
     verify(message) {
-        return message.toUpperCase() === this.answer_;
+        return message.toUpperCase().startsWith(this.answer_);
     }
 }

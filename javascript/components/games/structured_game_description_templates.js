@@ -21,39 +21,57 @@ function positionPropertyValidator(positionArray) {
         throw new Error('Positions must be indicated as [x, y, z] arrays.');
     
     const position = new Vector(positionArray[0], positionArray[1], positionArray[2]);
-    if (position.x < -4500 || position.x >= 4500)
-        throw new Error('The x-coordinate of positions must be within [-4500, 4500]');
-    if (position.y < -4500 || position.y >= 4500)
-        throw new Error('The y-coordinate of positions must be within [-4500, 4500]');
+    if (position.x < -5500 || position.x >= 5500)
+        throw new Error('The x-coordinate of positions must be within [-5500, 5500]');
+    if (position.y < -5500 || position.y >= 5500)
+        throw new Error('The y-coordinate of positions must be within [-5500, 5500]');
     if (position.z < -100 || position.z >= 1850)
         throw new Error('The z-coordinate of positions must be within [-100, 1850');
 
     return position;
 }
 
-// Validator function for importing the given |rectangleArray|, which must be in the order of
-// [ minX, minY, maxX, maxY ]. Will be returned as a new Rect instance.
-function positionRectanglePropertyValidator(rectangleArray) {
-    if (!rectangleArray.length)
-        return null;  // empty rectangle
+// Validator function for importing the given |rectangleObject|, which must contain all of the
+// minimum and maximum X/Y coordinates. Will be returned as a new Rect instance.
+function positionRectanglePropertyValidator(rectangleObject) {
+    const dimensions = {
+        minimumX: -4096,
+        maximumX: 4096,
+        minimumY: -4096,
+        maximumY: 4096,
+    };
 
-    if (rectangleArray.length !== 4)
-        throw new Error('Rectangles must be indicated as [minX, minY, maxX, maxY] arrays.');
-    
-    const names = [ 'minX', 'minY', 'maxX', 'maxY' ];
-    for (const [ index, name ] of Object.entries(names)) {
-        if (rectangleArray[index] >= -4500 && rectangleArray[index] < 4500)
-            continue;
-        
-        throw new Error(`The ${name} of a rectangle must be within [-4500, 4500].`);
+    let changed = false;
+    for (const property of Object.getOwnPropertyNames(dimensions)) {
+        if (!rectangleObject.hasOwnProperty(property))
+            throw new Error(`The boundary box must define a "${property}" property.`);
+
+        const value = rectangleObject[property];
+        if (typeof value !== 'number')
+            throw new Error(`The "${property}" property of a bounding box must be a number.`);
+
+        if (value < -4096 || value > 4096)
+            throw new Error(`The "${property}" of a bounding box must be within [-4096, 4096].`);
+
+        if (value !== dimensions[property])
+            changed = true;
+
+        dimensions[property] = value;
     }
 
-    if (rectangleArray[0] > rectangleArray[2])
-        throw new Error('The minX in a rectangle must be lower than the maxX.');
-    if (rectangleArray[1] > rectangleArray[3])
-        throw new Error('The minY of a rectangle must be lower than the maxY.');
+    if (dimensions.minimumX >= dimensions.maximumX)
+        throw new Error(`The minimum X in a boundary box must be lower than the maximum X.`);
 
-    return new Rect(rectangleArray[0], rectangleArray[1], rectangleArray[2], rectangleArray[3]);
+    if (dimensions.minimumY >= dimensions.maximumY)
+        throw new Error(`The minimum X in a boundary box must be lower than the maximum X.`);
+
+    // (a) If none of the |dimensions| have changed, then this game does not require boundaries.
+    if (!changed)
+        return null;
+
+    // (b) Otherwise, return a Rect instance to represent the area.
+    return new Rect(
+        dimensions.minimumX, dimensions.minimumY, dimensions.maximumX, dimensions.maximumY);
 }
 
 // Validator function for ensuring that the rotation is in range of [0, 360].
@@ -84,22 +102,6 @@ function spawnPositionValidator(spawnPositions) {
         throw new Error('At least a single spawn position must be defined.');
 }
 
-// Validator function to validate configured times.
-function timePropertyValidator(timeArray) {
-    if (!timeArray.length)
-        return [ 12, 0 ];  // noon
-    
-    if (timeArray.length !== 2)
-        throw new Error(`Times must be indicated as a [hour, minutes] array.`);
-    
-    if (timeArray[0] < 0 || timeArray[0] > 23)
-        throw new Error(`The hour of a time array must be in range of [0, 23].`);
-    if (timeArray[1] < 0 || timeArray[0] > 59)
-        throw new Error(`The minutes of a time array must be in range of [0, 59].`);
-    
-    return timeArray;
-}
-
 // Validator for vehicle model Ids. Will translate "0" to NULL as well.
 function vehicleModelIdValidator(vehicleModelId) {
     if (!vehicleModelId)
@@ -125,10 +127,29 @@ export const kPositionProperty = {
 // Structured property definition for representing a portion of the map, as a rectangle in the order
 // of [ minX, minY, maxX, maxY ]. Will be represented as a Rect instance.
 export const kPositionRectangleProperty = {
-    type: StructuredGameDescription.kTypeArray,
-    elementType: {
-        type: StructuredGameDescription.kTypeNumber,
-    },
+    type: StructuredGameDescription.kTypeObject,
+    structure: [
+        {
+            name: 'minimumX',
+            type: StructuredGameDescription.kTypeNumber,
+            defaultValue: -4096,
+        },
+        {
+            name: 'maximumX',
+            type: StructuredGameDescription.kTypeNumber,
+            defaultValue: 4096,
+        },
+        {
+            name: 'minimumY',
+            type: StructuredGameDescription.kTypeNumber,
+            defaultValue: -4096,
+        },
+        {
+            name: 'maximumY',
+            type: StructuredGameDescription.kTypeNumber,
+            defaultValue: 4096,
+        }
+    ],
 
     validator: positionRectanglePropertyValidator,
 };
@@ -152,7 +173,28 @@ export const kRotationVectorProperty = {
 
 // -------------------------------------------------------------------------------------------------
 
-// Structured way of expressing a game's environment settings.
+// Structured way of expressing a checkpoint that's part of a game.
+export const kGameCheckpoints = {
+    name: 'checkpoints',
+    type: StructuredGameDescription.kTypeArray,
+    elementType: {
+        type: StructuredGameDescription.kTypeObject,
+        structure: [
+            {
+                name: 'position',
+                ...kPositionProperty,
+            },
+            {
+                name: 'size',
+                type: StructuredGameDescription.kTypeNumber,
+                defaultValue: 20,
+            },
+        ]
+    }
+};
+
+// Structured way of expressing a game's environment settings. This maps to the environment settings
+// that are available for games, in //features/games/environment_settings.js.
 export const kGameEnvironment = {
     name: 'environment',
     type: StructuredGameDescription.kTypeObject,
@@ -162,23 +204,27 @@ export const kGameEnvironment = {
             ...kPositionRectangleProperty,
         },
         {
+            name: 'gravity',
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Low', 'Normal', 'High' ],
+            defaultValue: 'Normal',
+        },
+        {
             name: 'interiorId',
             type: StructuredGameDescription.kTypeNumber,
             defaultValue: 0,  // main world
         },
         {
             name: 'time',
-            type: StructuredGameDescription.kTypeArray,
-            elementType: {
-                type: StructuredGameDescription.kTypeNumber,
-            },
-
-            validator: timePropertyValidator,
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Morning', 'Afternoon', 'Evening', 'Night' ],
+            defaultValue: 'Afternoon',
         },
         {
             name: 'weather',
-            type: StructuredGameDescription.kTypeNumber,
-            defaultValue: 10,  // SUNNY_VEGAS
+            type: StructuredGameDescription.kTypeEnumeration,
+            options: [ 'Cloudy', 'Foggy', 'Heatwave', 'Rainy', 'Sandstorm', 'Sunny' ],
+            defaultValue: 'Sunny',
         }
     ],
 };

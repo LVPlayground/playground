@@ -65,7 +65,9 @@ class PeterVehicleFeature {
         if (vehicleId != m_peterVehicleId)
             return;
 
-        if (Account(playerId)->userId() == 59504 /* Peter */)
+        new const userId = Account(playerId)->userId();
+
+        if (userId == 59504 /* Peter */ || userId == 20041 /* [BA]Darkfire */)
             SetVehicleParamsForPlayer(vehicleId, playerId, 0 /* hide objective */, 0 /* unlocked */);
         else
             SetVehicleParamsForPlayer(vehicleId, playerId, 0 /* hide objective */, 1 /* locked */);

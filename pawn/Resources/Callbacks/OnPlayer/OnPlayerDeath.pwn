@@ -94,18 +94,6 @@ LegacyPlayerDeath(playerid, killerid, reason) {
     ClearPlayerMenus(playerid);
     iPlayerSesDeaths[playerid]++;
 
-#if Feature::DisableFights == 0
-    // An admin might use /kill in a fight, in which case we don't reset the killerid.
-    if (preventKillLamers[playerid] && CFightClub__IsPlayerFighting(playerid))
-        preventKillLamers[playerid] = 0;
-#endif
-
-    // SA:MP bug where killerid is still defined after /kill.
-    if (preventKillLamers[playerid]) {
-        killerid = Player::InvalidId;
-        preventKillLamers[playerid] = 0;
-    }
-
     // Disallow self-nading to suicide when the player has been hit in the last 15 seconds.
     if (killerid == Player::InvalidId && reason == WEAPON_NONE && (Time->currentTime() - DamageManager(playerid)->getLastHitTime()) < 15)
         LegacySetValidKillerVariables(playerid, DamageManager(playerid)->getLastHitId(), WEAPON_EXPLOSION);
@@ -131,13 +119,9 @@ LegacyPlayerDeath(playerid, killerid, reason) {
         ResetWorldBounds(playerid);
     }
 
-    // A hidden RCON admin killing players will be shown as a regular /kill.
-    if (killerid != Player::InvalidId && IsPlayerAdmin(killerid) && PlayerInfo[killerid][playerIsHidden])
-        killerid = Player::InvalidId;
-
     // ---- VALID KILLER CASES ---------------------------------------------------------------------
 
-    if (killerid != Player::InvalidId && Player(killerid)->isConnected() == true && !hiddenKill[playerid]) {
+    if (killerid != Player::InvalidId && Player(killerid)->isConnected() == true) {
         iPlayerSesKills[killerid]++;
 
         // Handle wanted levels.
@@ -150,10 +134,14 @@ LegacyPlayerDeath(playerid, killerid, reason) {
 
     // ---- KILLBOARD & IRC DEATH MESSAGE PROCESS --------------------------------------------------
 
-    if (hiddenKill[playerid])
+    if (hiddenKill[playerid] && killerid == INVALID_PLAYER_ID)
         hiddenKill[playerid] = 0;
     else
         CallLocalFunction("OnPlayerResolvedDeath", "iii", playerid, killerid, reason);  // SendDeathMessage through JavaScript.
+
+    // Send the death message right now, as JavaScript won't be able to do it anymore.
+    if (g_isDisconnecting[playerid])
+        SendDeathMessage(killerid, playerid, reason);
 
     new message[256];
     if (killerid == Player::InvalidId) {

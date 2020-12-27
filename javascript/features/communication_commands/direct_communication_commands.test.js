@@ -158,11 +158,23 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
         assert.equal(gunther.messages.length, 1);  // unchanged
     });
 
-    it('should be able to send secret private messages', async (assert) => {
-        const playground = server.featureManager.loadFeature('playground');
+    it('cannot send to muted targets unless sender is an admin', async (assert) => {
+        // Set up by Russell muting themselves
+        assert.isTrue(await russell.issueCommand('/mute Russell 5'));
 
-        // Grant everyone access to the /spm command to enable this test.
-        playground.access.setCommandLevel('spm', Player.LEVEL_PLAYER);
+        // (1) It should not be possible for Gunther to PM Russell who's muted
+        assert.isTrue(await gunther.issueCommand('/pm Russell Hello world'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_PM_TARGET_MUTED, russell.name, russell.id,
+                           '5 minutes'));
+    });
+
+    it('should be able to send secret private messages', async (assert) => {
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        await gunther.identify();
 
         // (1) It's not possible to send a secret PM to oneself.
         assert.isTrue(await gunther.issueCommand('/spm Gunther Hey man!'));
@@ -201,5 +213,47 @@ describe('DirectCommunicationCommands', (it, beforeEach) => {
 
         // The behaviour of `/r` is tested in the tests covering the other commands that could lead
         // to responses, e.g. `/pm` and `/spm`.
+    });
+
+    it('should be able to send messages to #LVP.Crew and #LVP.Management', async (assert) => {
+        const nuwani = server.featureManager.loadFeature('nuwani');
+
+        gunther.level = Player.LEVEL_MANAGEMENT;
+
+        // (1) Ability to send messages to #LVP.Crew.
+        assert.isTrue(await gunther.issueCommand('/crew hey men!'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            Message.format(Message.COMMUNICATION_CREW_MESSAGE, '#LVP.Crew', 'hey men!'));
+
+        assert.equal(nuwani.messagesForTesting.length, 1);
+        assert.deepEqual(nuwani.messagesForTesting[0], {
+            tag: 'chat-irc',
+            params: [
+                '#LVP.Crew',
+                gunther.name,
+                gunther.id,
+                'hey men!',
+            ]
+        });
+
+        // (2) Ability to send messages to #LVP.Management.
+        assert.isTrue(await gunther.issueCommand('/man hai men'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            Message.format(Message.COMMUNICATION_CREW_MESSAGE, '#LVP.Management', 'hai men'));
+
+        assert.equal(nuwani.messagesForTesting.length, 2);
+        assert.deepEqual(nuwani.messagesForTesting[1], {
+            tag: 'chat-irc',
+            params: [
+                '#LVP.Management',
+                gunther.name,
+                gunther.id,
+                'hai men',
+            ]
+        });
     });
 });

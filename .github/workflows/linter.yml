@@ -1,0 +1,35 @@
+###########################
+# https://help.github.com/en/articles/workflow-syntax-for-github-actions
+#
+# Uses the GitHub Super Linter:
+# https://github.com/github/super-linter
+###########################
+
+name: Code Linter
+
+# Only consider changes that are uploaded on branches or as pull requests
+on:
+    push:
+        branches-ignore:
+            - 'master'
+
+# Set up the job
+jobs:
+    build:
+        name: Code Linter
+        runs-on: ubuntu-latest
+
+        steps:
+            # Check out the repository
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            
+            # Run the Super Linter script
+            - name: Lint code
+              uses: docker://github/super-linter:v2.2.0
+              env:
+                  VALIDATE_ALL_CODEBASE: false
+                  VALIDATE_JAVASCRIPT_ES: true
+                  VALIDATE_JAVASCRIPT_STANDARD: false
+                  VALIDATE_MD: true
+                  VALIDATE_JSON: true

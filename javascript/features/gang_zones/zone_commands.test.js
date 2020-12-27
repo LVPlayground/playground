@@ -26,7 +26,6 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         const feature = server.featureManager.loadFeature('gang_zones');
         const houses = server.featureManager.loadFeature('houses');
-        const playground = server.featureManager.loadFeature('playground');
 
         await MockZoneDatabase.populateTestHouses(houses);
 
@@ -42,9 +41,6 @@ describe('ZoneCommands', (it, beforeEach) => {
 
         gangs.manager_.gangPlayers_.set(russell, gang);
         gangs.manager_.gangs_.set(MockZoneDatabase.BA, gang);
-
-        // Change the |zone| command's access requirements so that everyone can use it.
-        playground.access.setCommandLevel('zone', Player.LEVEL_PLAYER);
     });
 
     // List index of the menu option to purchase new decorations.

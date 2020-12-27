@@ -1,66 +1,76 @@
-// Copyright 2016 Las Venturas Playground. All rights reserved.
+// Copyright 2020 Las Venturas Playground. All rights reserved.
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { MessageBox } from 'components/dialogs/message_box.js';
-import PlaygroundAccessTracker from 'features/playground/playground_access_tracker.js';
 import { Question } from 'components/dialogs/question.js';
 import { Setting } from 'entities/setting.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
+import { format } from 'base/format.js';
 import { isSafeInteger, toSafeInteger } from 'base/string_util.js';
-
-// Directory in which the CPU profiles will be stored.
-const ProfileDirectory = 'profiles';
-
-// Utility function to capitalize the first letter of a |string|.
-function capitalizeFirstLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
+import { messages } from 'features/playground/playground.messages.js';
+import { timeDifferenceToString } from 'base/time.js';
 
 // A series of general commands that don't fit in any particular
-class PlaygroundCommands {
-    constructor(access, announce, communication, nuwani, settings) {
+export class PlaygroundCommands {
+    activeTrace_ = false;
+    announce_ = null;
+    commands_ = null;
+    communication_ = null;
+    nuwani_ = null;
+    permissionDelegate_ = null;
+    settings_ = null;
+
+    constructor(announce, communication, nuwani, permissionDelegate, settings) {
         this.announce_ = announce;
         this.communication_ = communication;
         this.nuwani_ = nuwani;
+        this.permissionDelegate_ = permissionDelegate;
         this.settings_ = settings;
 
-        this.access_ = access;
         this.commands_ = new Map();
 
-        this.profiling_ = false;
-
-        // Functor that will actually activate a CPU profile. Has to be overridden by tests in order
-        // to avoid starting a CPU profile by accident.
-        this.captureProfileFn_ = (milliseconds, filename) =>
-            captureProfile(milliseconds, filename);
-
         // -----------------------------------------------------------------------------------------
+
+        // The `/tempfix [player]` command enables the rights of a particular player to be fixed if
+        // they have been granted temporary administrator rights.
+        server.commandManager.buildCommand('tempfix')
+            .description('Grants temporary rights to a particular player.')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
+            .build(PlaygroundCommands.prototype.onTempFixCommand.bind(this));
 
         // The `/lvp` command offers administrators and higher a number of functions to manage the
         // server, the available commands and availability of a number of smaller features.
         server.commandManager.buildCommand('lvp')
+            .description('Manages Las Venturas Playground.')
+            .restrict(Player.LEVEL_ADMINISTRATOR)
             .sub('access')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .description('Access controls for all our JavaScript commands.')
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(PlaygroundCommands.prototype.onPlaygroundAccessCommand.bind(this))
-            .sub('profile')
-                .restrict(Player.LEVEL_MANAGEMENT)
-                .parameters([ { name: 'milliseconds', type: CommandBuilder.NUMBER_PARAMETER } ])
-                .build(PlaygroundCommands.prototype.onPlaygroundProfileCommand.bind(this))
             .sub('reload')
+                .description('Live reload one of the JavaScript features.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .sub('messages')
+                    .description('Live reload the message formatting files.')
                     .build(PlaygroundCommands.prototype.onPlaygroundReloadMessagesCommand.bind(this))
-                .parameters([ { name: 'feature', type: CommandBuilder.WORD_PARAMETER } ])
+                .parameters([ { name: 'feature', type: CommandBuilder.kTypeText } ])
                 .build(PlaygroundCommands.prototype.onPlaygroundReloadCommand.bind(this))
             .sub('settings')
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .description(`Amend some of the server's settings.`)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(PlaygroundCommands.prototype.onPlaygroundSettingsCommand.bind(this))
+            .sub('trace')
+                .description(`Capture a detailed trace of the server's processing.`)
+                .restrict(Player.LEVEL_MANAGEMENT)
+                .parameters([ { name: 'seconds', type: CommandBuilder.kTypeNumber } ])
+                .build(PlaygroundCommands.prototype.onPlayergroundTraceCommand.bind(this))
             .build(PlaygroundCommands.prototype.onPlaygroundCommand.bind(this));
     }
 
@@ -77,6 +87,7 @@ class PlaygroundCommands {
             'features/playground/commands/indicators.js',
             'features/playground/commands/jetpack.js',
             'features/playground/commands/kickflip.js',
+            'features/playground/commands/lagcompmode.js',
             'features/playground/commands/player_settings.js',
             'features/playground/commands/isolate.js',
             'features/playground/commands/rampcar.js',
@@ -91,268 +102,431 @@ class PlaygroundCommands {
 
             const command = new CommandImplementation(this.announce_, this.nuwani_);
 
-            // Register the command with the access manager, and then pass on the server-global
-            // command manager to its build() method so that it can be properly exposed.
-            this.access_.registerCommand(command.name, command.defaultPlayerLevel);
-
             command.build(
                 server.commandManager.buildCommand(command.name)
-                    .restrict(PlaygroundAccessTracker.prototype.canAccessCommand.bind(this.access_,
-                                                                                      command.name)));
+                    .description(command.description)
+                    .restrict(command.defaultPlayerLevel));
 
             // Store the |command| in the |commands_| dictionary.
             this.commands_.set(command.name, command);
         }
     }
 
-    // Gets the access tracker for the commands managed by this class.
-    get access() { return this.access_; }
+    // ---------------------------------------------------------------------------------------------
 
-    // Enables administrators and management to change access requirements to the commands that are
-    // part of this module with a dialog-based interface.
-    async onPlaygroundAccessCommand(player) {
-        let commands = [];
-
-        for (const [command, commandLevel] of this.access_.commands) {
-            if (player.level < commandLevel)
-                continue;
-
-            commands.push(command);
-        }
-
-        // Sort the |commands| in alphabetical order, since there is no guarantee that the Access
-        // Tracker maintains the commands in such order.
-        commands.sort();
-
-        const menu = new Menu('Command access settings', [
-            'Command',
-            'Level',
-            'Exceptions'
-        ]);
-
-        commands.forEach(commandName => {
-            const commandLevel = this.access_.getCommandLevel(commandName);
-            const commandExceptions = this.access_.getExceptionCount(commandName);
-            const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
-
-            const levelPrefix = commandLevel !== defaultLevel ? '{FFFF00}' : '';
-            const level = playerLevelToString(commandLevel, true /* plural */);
-
-            const exceptions = commandExceptions != 0
-                ? '{FFFF00}' + commandExceptions + ' exception' + (commandExceptions == 1 ? '': 's')
-                : '-';
-
-            menu.addItem('/' + commandName, levelPrefix + capitalizeFirstLetter(level), exceptions,
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
-        });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Displays a command menu for |commandName| to the |player|. It contains options to change the
-    // required level, as well as options to grant and revoke exceptions for the command.
-    async displayCommandMenu(commandName, player) {
-        const menu = new Menu('/' + commandName + ' access settings');
-
-        const exceptions = this.access_.getExceptions(commandName);
-        exceptions.sort((lhs, rhs) =>
-            lhs.name.localeCompare(rhs.name));
-
-        menu.addItem('Change required level',
-                     PlaygroundCommands.prototype.displayCommandLevelMenu.bind(this, commandName));
-
-        menu.addItem('Grant exception',
-                     PlaygroundCommands.prototype.grantCommandException.bind(this, commandName));
-
-        if (exceptions.length) {
-            menu.addItem('------------------------',
-                         PlaygroundCommands.prototype.displayCommandMenu.bind(this, commandName));
-
-            exceptions.forEach(subject => {
-                menu.addItem(
-                    'Revoke for ' + subject.name + ' (Id: ' + subject.id + ')',
-                    PlaygroundCommands.prototype.revokeCommandException.bind(this, commandName,
-                                                                             subject));
-            });
-        }
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Displays a menu that allows |player| to change the required level of |commandName| to any
-    // level that's equal or below their own level, to avoid "losing" a command.
-    async displayCommandLevelMenu(commandName, player) {
-        const currentLevel = this.access_.getCommandLevel(commandName);
-        const defaultLevel = this.access_.getDefaultCommandLevel(commandName);
-
-        const menu = new Menu('/' + commandName + ' required level');
-
-        [
-            Player.LEVEL_PLAYER,
-            Player.LEVEL_ADMINISTRATOR,
-            Player.LEVEL_MANAGEMENT
-        ].forEach(level => {
-            if (level > player.level)
-                return;
-
-            const levelPrefix = currentLevel === level ? '{ADFF2F}' : '';
-            const levelSuffix = defaultLevel === level ? ' (default)' : '';
-
-            const levelName = playerLevelToString(level, true /* plural */);
-
-            menu.addItem(levelPrefix + capitalizeFirstLetter(levelName) + levelSuffix, async() => {
-                if (currentLevel === level) {
-                    return await MessageBox.display(player, {
-                        title: 'No need to update the level',
-                        message: 'This command is already available to ' + levelName + '.'
-                    });
-                }
-
-                this.access_.setCommandLevel(commandName, level);
-                this.announce_().announceToAdministrators(
-                    Message.LVP_ANNOUNCE_CMD_LEVEL, player.name, player.id, commandName, levelName)
-
-                // Make an announcement to players if the command was either granted to them, or
-                // taken away from them. We like to cause anarchy by upset mobs.
-                if (level == Player.LEVEL_PLAYER) {
-                    this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_AVAILABLE, player.name, commandName);
-                } else if (currentLevel == Player.LEVEL_PLAYER) {
-                    this.announce_().announceToPlayers(
-                        Message.LVP_ANNOUNCE_CMD_REVOKED, player.name, commandName);
-                }
-
-                return await MessageBox.display(player, {
-                    title: 'The level has been updated!',
-                    message: '/' + commandName + ' is now available to ' + levelName + '.'
-                });
-            });
-        });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Grants an exception for a not yet determined player to use the |commandName|.
-    async grantCommandException(commandName, player) {
-        const answer = await Question.ask(player, {
-            question: 'Select a player',
-            message: 'Which player should be allowed to use /' + commandName + '?',
-            leftButton: 'Grant'
-        });
-
-        if (!answer)
-            return;  // the |player| cancelled the dialog.
-
-        const subject = server.playerManager.find({ nameOrId: answer, returnPlayer: true });
-        if (!subject) {
-            const retry = await MessageBox.display(player, {
-                title: 'Unable to identify the target player',
-                message: 'Either no or too many players were found for "' + answer + '".',
-                leftButton: 'Cancel',
-                rightButton: 'Retry'
-            });
-
-            if (!retry)
-                return;
-
-            return await grantCommandException(commandName, player);
-        }
-
-        if (!subject.account.isRegistered()) {
-            return await MessageBox.display(player, {
-                title: 'Unable to grant an exception',
-                message: 'Exceptions can only be granted to registered players. Consider asking ' +
-                         subject.name + ' to register?'
-            });
-        }
-
-        if (subject === player) {
-            return await MessageBox.display(player, {
-                title: 'Unable to grant an exception',
-                message: 'There is no point in granting exceptions to yourself, sorry.'
-            });
-        }
-
-        this.access_.addException(commandName, subject, player /* sourcePlayer */);
-        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_CMD_EXCEPTION, player.name, player.id, subject.name,
-                commandName);
-        }
-
-        return await MessageBox.display(player, {
-            title: 'The exception has been granted!',
-            message: '/' + commandName + ' is now available to ' + subject.name + '.'
-        });
-    }
-
-    // Revokes the exception for |subject| to use the |commandName|.
-    async revokeCommandException(commandName, subject, player) {
-        this.access_.removeException(commandName, subject, player /* sourcePlayer */);
-
-        if (this.access_.getCommandLevel(commandName) != Player.LEVEL_MANAGEMENT) {
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_CMD_REMOVED_EXCEPTION, player.name, player.id, subject.name,
-                commandName);
-        }
-
-        return await MessageBox.display(player, {
-            title: 'The exception has been revoked!',
-            message: '/' + commandName + ' is no longer available to ' + subject.name + '.'
-        });
-    }
-
-    // Enables Management members to capture a CPU profile of the gamemode for a given number of
-    // |profileDurationMs|. The filename of the profile will be automatically decided.
-    onPlaygroundProfileCommand(player, profileDurationMs) {
-        const MinimumDurationMs = 100;
-        const MaximumDurationMs = 180000;
-
-        if (profileDurationMs < MinimumDurationMs || profileDurationMs > MaximumDurationMs) {
-            player.sendMessage(
-                Message.LVP_PROFILE_INVALID_RANGE, MinimumDurationMs, MaximumDurationMs);
+    // Used when the |player| would like to fix the temporary rights of |target|. This is a work-
+    // around until the account system moves to JavaScript properly.
+    onTempFixCommand(player, target) {
+        if (target.isAdministrator()) {
+            player.sendMessage(`{DC143C}Error{FFFFFF}: ${target.name} already is an administrator.`)
             return;
         }
 
-        if (this.profiling_) {
-            player.sendMessage(Message.LVP_PROFILE_ONGOING);
-            return;
-        }
+        target.level = Player.LEVEL_ADMINISTRATOR;
+        target.levelIsTemporary = true;
 
-        function zeroPad(value) {
-            return ('0' + value).substr(-2);
-        }
-
-        const date = new Date();
-
-        // Compile the filename for the trace based on the current time on the server.
-        const filename =
-            'profile_' + date.getFullYear() + '-' + zeroPad(date.getMonth() + 1) + '-' +
-            zeroPad(date.getDate()) + '_' + zeroPad(date.getHours()) + '-' +
-            zeroPad(date.getMinutes()) + '-' + zeroPad(date.getSeconds()) + '.log';
-
-        // Start an asynchronous function that will report the profile as having finished.
-        (async() => {
-            await wait(profileDurationMs);
-
-            this.announce_().announceToAdministrators(
-                Message.LVP_ANNOUNCE_PROFILE_FINISHED, player.name, filename);
-
-            if (player.isConnected())
-                player.sendMessage(Message.LVP_PROFILE_FINISHED, filename);
-
-            this.profiling_ = false;
-        })();
-
-        // Capture the profile through a functor that can be overridden for testing purposes.
-        this.captureProfileFn_(profileDurationMs, ProfileDirectory + '/' + filename);
-        this.profiling_ = true;
+        player.sendMessage(`{33AA33}Success{FFFFFF}: ${target.name} their rights have been fixed.`);
 
         this.announce_().announceToAdministrators(
-            Message.LVP_ANNOUNCE_PROFILE_START, player.name, player.id, profileDurationMs);
-
-        player.sendMessage(Message.LVP_PROFILE_STARTED, profileDurationMs);
+            `%s (Id:%d) has fixed temporary rights for %s (Id:%d)`, player.name, player.id,
+            target.name, target.id);
     }
+
+    // Provides administrators with thorough access controls for all of Las Venturas Playground's
+    // commands. The |player| will be able and control commands accessible to them.
+    async onPlaygroundAccessCommand(player) {
+        return this.displayCommandListDialog(
+            player, /* baseCommand= */ null, [ ...server.commandManager.commands ]);
+    }
+
+    // Displays an access control dialog to the |player| for the |commands| which describes the list
+    // of commands to display in this mode. May recursively call itself for complex commands.
+    async displayCommandListDialog(player, baseCommand, commands) {
+        // (1) Create the dialog that's to be shown. This dialog will only be used for the command
+        // listing when there's at least a single sub-command to show.
+        const dialog = new Menu('Access management', [
+            'Command',
+            'Level',
+            'Description',
+            'Exceptions',
+
+        ], { pageSize: 25 });
+
+        // (1) Create a mapping with all the current levels for the commands in |commands|
+        const commandRestriction = new Map();
+
+        for (const command of commands) {
+            commandRestriction.set(
+                command, this.permissionDelegate_.getCommandLevel(command).restrictLevel);
+        }
+
+        // (2) Sort the |commands| in alphabetical order, in-place, based on what's been given.
+        commands.sort((lhs, rhs) => {
+            const lhsLevel = commandRestriction.get(lhs);
+            const rhsLevel = commandRestriction.get(rhs);
+
+            if (lhsLevel !== rhsLevel)
+                return lhsLevel > rhsLevel ? -1 : 1;
+
+            return lhs.command.localeCompare(rhs.command);
+        });
+
+        // (a) If |baseCommand| is given, include it in the |commands| as the first entry.
+        if (baseCommand)
+            commands.unshift(baseCommand);
+
+        // (3) Add each of the |commands| to the |dialog|, together with information on the level
+        // it's been tied to, and whether there are exceptions for this command.
+        for (const command of commands) {
+            if (!this.permissionDelegate_.canExecuteCommand(player, null, command, false))
+                continue;  // the |player| does not have access to this command
+
+            let color = '';
+            let level = null;
+            let exceptions = '{9E9E9E}-';
+            let suffix = '';
+
+            // (a) Display a helpful suffix to tell folks which menu will be shown after selection.
+            if (command !== baseCommand && command.hasSubCommands())
+                suffix = '{9E9E9E}...';
+
+            // (b) Figure out the label to use for the command's level restriction.
+            const { restrictLevel, originalLevel, restrictTemporary, originalTemporary } =
+                this.permissionDelegate_.getCommandLevel(command);
+
+            if (restrictLevel !== originalLevel || restrictTemporary !== originalTemporary)
+                color = '{F44336}';
+
+            switch (restrictLevel) {
+                case Player.LEVEL_PLAYER:
+                    level = 'Players';
+                    break;
+
+                case Player.LEVEL_ADMINISTRATOR:
+                    level = '{FFFF00}Administrators';
+                    if (restrictTemporary)
+                        level += ' {F44336}*';
+
+                    break;
+
+                case Player.LEVEL_MANAGEMENT:
+                    level = '{4CAF50}Management';
+                    break;
+            }
+
+            // (c) Create a label for the number of exceptions that exist for this command.
+            const exceptionCount = this.permissionDelegate_.getExceptions(command).length;
+            if (exceptionCount === 1)
+                exceptions = '{F44336}1 exception';
+            else if (exceptionCount >= 2)
+                exceptions = `{F44336}${exceptionCount} exceptions`;
+
+            // (d) Create a listener function which activates when this command has been selected by
+            // the player. Either call this function again, or move on to command configuration.
+            const listener = () => {
+                if (command !== baseCommand && command.hasSubCommands()) {
+                    return this.displayCommandListDialog(
+                        player, command, [ ...command.subs.values() ]);
+                } else {
+                    return this.displayCommandDialog(player, command);
+                }
+            };
+
+            // (d) Add the |command| and all formatted information to the |dialog|.
+            dialog.addItem(
+                color + command.command + suffix, level, command.description, exceptions, listener);
+        }
+
+        // (3) Present the dialog to the |player|.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog with the settings available for the |player| specific to the given
+    // |command|, for instance to add and remove exceptions, and change the default level.
+    async displayCommandDialog(player, command) {
+        const { restrictLevel, originalLevel, restrictTemporary, originalTemporary } =
+            this.permissionDelegate_.getCommandLevel(command);
+
+        if (originalLevel > player.level) {
+            return await alert(player, {
+                title: 'Access management',
+                message: `Sorry, this command is normally restricted to a level above yours,\n` +
+                         `so you're not able to amend its access rights.`
+            });
+        }
+
+        let levelPrefix = originalLevel !== restrictLevel ? '{F44336}' : '';
+        let levelSuffix = originalLevel !== restrictLevel ? '{FFFFFF}' : '';
+        let level = 'Player';
+
+        switch (restrictLevel) {
+            case Player.LEVEL_ADMINISTRATOR:
+                level = 'Administrators';
+                break;
+            case Player.LEVEL_MANAGEMENT:
+                level = 'Management';
+                break;
+        }
+
+        const dialog = new Menu(command.command);
+
+        // (1) Add a dialog that allows the |player| to change the level it's available to.
+        dialog.addItem(`Change required level (${levelPrefix}${level}${levelSuffix})`, async () => {
+            return await this.displayCommandLevelDialog(player, command);
+        });
+
+        // (2) For command restricted to administrators, it's possible to decide whether it should
+        // be limited from temporary administrators as well. This can be overridden as appropriate.
+        if (restrictLevel === Player.LEVEL_ADMINISTRATOR && player.isManagement()) {
+            const tempPrefix = originalTemporary !== restrictTemporary ? '{F44336}' : '';
+            const tempSuffix = originalTemporary !== restrictTemporary ? '{FFFFFF}' : '';
+            const temp = restrictTemporary ? 'restricted' : 'not restricted';
+
+            dialog.addItem(
+                `Restrict from temporary administrators (${tempPrefix}${temp}${tempSuffix})`,
+                async () => await this.displayCommandTemporaryDialog(player, command));
+        }
+
+        // (3) Add a dialog that allows the |player| to issue a new exception.
+        dialog.addItem('Add a usage exception', async () => {
+            return await this.displayCommandExceptionDialog(player, command);
+        });
+
+        // (4) If any exceptions have been granted, list those here for modification as well.
+        const exceptions = this.permissionDelegate_.getExceptions(command);
+        if (exceptions.length > 0) {
+            dialog.addItem('----------');
+
+            // (a) Sort the |exceptions| by player name, in ascending order.
+            exceptions.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
+
+            // (b) Add each of the |exceptions to the created |dialog|.
+            for (const exceptedPlayer of exceptions) {
+                dialog.addItem(`Remove exception for ${exceptedPlayer.name}`, async () => {
+                    return await this.removeCommandException(player, command, exceptedPlayer);
+                });
+            }
+        }
+
+        // (4) Display the created |dialog| to the |player|.
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog to the |player| that allows them to change the required player level for
+    // folks to be able to access the given |command|.
+    async displayCommandLevelDialog(player, command) {
+        const dialog = new Menu(command.command);
+        const levels = new Map([
+            [ Player.LEVEL_MANAGEMENT, 'Management' ],
+            [ Player.LEVEL_ADMINISTRATOR, 'Administrators' ],
+            [ Player.LEVEL_PLAYER, 'Players' ],
+        ]);
+
+        const { restrictLevel, originalLevel } = this.permissionDelegate_.getCommandLevel(command);
+
+        // Function to change the level of |command| to the given |level|. Will be announced to all
+        // in-game administrators as well, and to players when granting/removing their abilities.
+        const changeCommandLevel = async (level) => {
+            if (restrictLevel === level)
+                return;  // the level isn't being changed
+
+            // (1) Update the |command|'s level to the given |level| internally.
+            this.permissionDelegate_.setCommandLevel(command, level);
+
+            // (2) If the |command| was available to players, but is not anymore, tell them.
+            // Conversely, if it's now available and previously wasn't, tell them too.
+            if (restrictLevel === Player.LEVEL_PLAYER) {
+                this.announce_().broadcast(
+                    'miscellaneous/commands', messages.playground_announce_command_revoked,
+                    {
+                        command: command.command,
+                        player,
+                    });
+            } else if (level === Player.LEVEL_PLAYER) {
+                this.announce_().broadcast(
+                    'miscellaneous/commands', messages.playground_announce_command_granted,
+                    {
+                        command: command.command,
+                        player,
+                    });
+            }
+
+            // (3) Tell all in-game administrators about the change in level having been made.
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_ADMIN_NOTICE, player.name, player.id, command.command,
+                levels.get(level));
+
+            // (4) Tell the |player| that their change has propagated.
+            return await alert(player, {
+                title: command.command,
+                message: `The command's access rights have been updated.`
+            });
+        };
+
+        // (1) Add all available levels to the given |dialog|.
+        for (const [ level, levelText ] of levels) {
+            if (level > player.level)
+                continue;  // the |player| cannot revoke commands from their own access
+
+            let suffix = '';
+
+            if (originalLevel === level)
+                suffix = ' {9E9E9E}(original)';
+            else if (restrictLevel === level)
+                suffix = ' {F44336}(current)';
+
+            dialog.addItem(levelText + suffix, changeCommandLevel.bind(this, level));
+        }
+
+        // (2) Display the |dialog| to the given |player|.
+        return dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog to the |player| which allows them to either restrict or unrestrict it from
+    // usage by temporary administrators. This is an ability now available to Management.
+    async displayCommandTemporaryDialog(player, command) {
+        const dialog = new Menu(command.command);
+        const options = [
+            [ true,   'Restricted to permanent administrators' ],
+            [ false,  'Available to all administrators' ],
+        ];
+
+        const { restrictLevel, restrictTemporary, originalTemporary } =
+            this.permissionDelegate_.getCommandLevel(command);
+
+        // (1) Add each of the |options| to the |dialog|, and clarify the available options.
+        for (const [ value, label ] of options) {
+            let suffix = '';
+
+            if (originalTemporary === value)
+                suffix = ' {9E9E9E}(original)';
+            else if (restrictTemporary === value)
+                suffix = ' {F44336}(current)';
+
+            dialog.addItem(label + suffix, async () => {
+                // (1) Update the |command|'s level to the current level with the given temporary
+                // administrator restrictions internally.
+                this.permissionDelegate_.setCommandLevel(command, restrictLevel, value);
+
+                // (2) Tell all in-game administrators about the change in level having been made.
+                this.announce_().announceToAdministrators(
+                    value ? Message.LVP_ACCESS_ADMIN_TEMP_RESTRICTED
+                          : Message.LVP_ACCESS_ADMIN_TEMP_UNRESTRICTED,
+                    player.name, player.id, command.command);
+
+                // (3) Tell the |player| that their change has propagated.
+                return await alert(player, {
+                    title: command.command,
+                    message: `The command's restrictions have been updated.`
+                });
+            });
+        }
+
+        // (2) Display the |dialog| to the given |player|.
+        return dialog.displayForPlayer(player);
+    }
+
+    // Displays a dialog to the |player| which allows them to add a new exception to the given
+    // |command|. Exceptions can only be issued to registered players.
+    async displayCommandExceptionDialog(player, command) {
+        const target = await Question.ask(player, {
+            question: command.command,
+            message: 'Which player do you want to give access to this command?',
+            constraints: {
+                validation: input => !!server.playerManager.find({ nameOrId: input }),
+                explanation: `Sorry, I don't know which player you mean by that. Try again?`,
+                abort: `Sorry, you need to tell me which player to add the exception for.`
+            }
+        });
+
+        if (!target)
+            return;  // the |player| aborted
+
+        const targetPlayer = server.playerManager.find({ nameOrId: target });
+        if (!targetPlayer)
+            return;  // validation succeeded, but now fails.. race condition?
+
+        // (1) If the |targetPlayer| is not registered, we cannot add an exception for them.
+        if (!targetPlayer.account.isIdentified()) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, exceptions can only be added for registered players.`
+            });
+        }
+
+        // (2) If the |targetPlayer| is the current |player|, tell them to stop being silly.
+        if (targetPlayer === player) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, you're being silly so computer says no.`
+            });
+        }
+
+        // (3) If the |targetPlayer| already has access, let's not bother adding an exception.
+        if (this.permissionDelegate_.canExecuteCommand(targetPlayer, null, command, false)) {
+            return await alert(player, {
+                title: command.command,
+                message: `Sorry, ${targetPlayer.name} can already execute the command and thus\n` +
+                         `does not need an exception. Are you trying to be sneaky? :D`
+            });
+        }
+
+        // (3) Add the exception for the |targetPlayer| with the given |command|.
+        this.permissionDelegate_.addException(targetPlayer, command);
+
+        // (4) Tell the |targetPlayer| about the exception that has been added.
+        targetPlayer.sendMessage(
+            Message.LVP_ACCESS_EXCEPTION_ADDED_FYI, player.name, player.id, command.command);
+
+        // (5) Tell in-game administrators about the exception having been added, except when the
+        // original |command| requirement is Management-only, in which case it's silent.
+        if (command.restrictLevel !== Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_EXCEPTION_ADDED_ADMIN, player.name, player.id, targetPlayer.name,
+                targetPlayer.id, command.command);
+        }
+
+        // (6) Tell the |player| that the exception has been added.
+        return await alert(player, {
+            title: command.command,
+            message: `An exception has been added for ${targetPlayer.name}`
+        });
+    }
+
+    // Handles the flow where the |player| wants to remove an exception issued for |exceptedPlayer|
+    // to use the given |command|. This will have to be confirmed by the |player|.
+    async removeCommandException(player, command, exceptedPlayer) {
+        const confirmation = await confirm(player, {
+            title: command.command,
+            message: `Are you sure that you want to remove the exception granted\n` +
+                     `to ${exceptedPlayer.name}? They will be informed about this.`
+        });
+
+        if (!confirmation)
+            return;  // the |player| changed their mind
+
+        // (1) Revoke the permission for the |exceptedPlayer|.
+        this.permissionDelegate_.removeException(exceptedPlayer, command);
+
+        // (2) Let the |exceptedPlayer| know about having lost the exception.
+        exceptedPlayer.sendMessage(
+            Message.LVP_ACCESS_EXCEPTION_REMOVED_FYI, player.name, player.id, command.command);
+
+        // (3) Let administrators know about the |exceptedPlayer| having lost the exception.
+        if (command.restrictLevel !== Player.LEVEL_MANAGEMENT) {
+            this.announce_().announceToAdministrators(
+                Message.LVP_ACCESS_EXCEPTION_REMOVED_ADMIN, player.name, player.id, command.command,
+                exceptedPlayer.name, exceptedPlayer.id);
+        }
+
+        // (4) Let |player| know that the exception has been removed.
+        return await alert(player, {
+            title: command.command,
+            message: `An exception has been removed for ${exceptedPlayer.name}`
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Facilitates reloading the server's message format file, which allows changing text and output
     // dynamically whenever a needs arises. Might be required when live reloading features to add
@@ -380,13 +554,21 @@ class PlaygroundCommands {
             return;
         }
 
+        // Get the instance of our Announce dependency.
+        const announce = this.announce_();
+
         await server.featureManager.liveReload(feature);
 
-        this.announce_().announceToAdministrators(
+        // WARNING: The dispose() function of this instance may now have been called, so we cannot
+        // rely on this class' state anymore. For all intents and purposes, assume it's gone.
+
+        announce.announceToAdministrators(
             Message.LVP_ANNOUNCE_FEATURE_RELOADED, player.name, player.id, feature);
 
         player.sendMessage(Message.LVP_RELOAD_RELOADED, feature);
     }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Displays a series of menus to administrators and Management members that want to inspect, or
     // make changes to, how certain features on the server work. The availability of options depends
@@ -422,7 +604,7 @@ class PlaygroundCommands {
             for (const setting of this.settings_().getSettings()) {
                 if (!settingCategories.has(setting.category))
                     settingCategories.set(setting.category, new Set());
-    
+
                 settingCategories.get(setting.category).add(setting);
             }
 
@@ -432,7 +614,7 @@ class PlaygroundCommands {
                 const settings = `${categorySettings.size} settings`;
                 const listener =
                     PlaygroundCommands.prototype.handleSettingCategory.bind(this, player, category);
-                
+
                 categories.set(label, { settings, listener });
             }
         }
@@ -468,14 +650,14 @@ class PlaygroundCommands {
 
             if (!wordToBlock)
                 return;  // the |player| abandoned the flow
-            
+
             const lowerCaseWordToBlock = wordToBlock.trim().toLowerCase();
 
             // Verify that the |lowerCaseWordToBlock| has not already been blocked on the server.
             for (const existingWord of words) {
                 if (existingWord.word !== lowerCaseWordToBlock)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Blocked words',
                     message: `The word "${lowerCaseWordToBlock}" has already been blocked.`
@@ -486,7 +668,7 @@ class PlaygroundCommands {
             for (const existingSubstitution of substitutions) {
                 if (existingSubstitution.before !== lowerCaseWordToBlock)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Blocked words',
                     message: `The word "${lowerCaseWordToBlock}" already exists as a substitution.`
@@ -499,7 +681,7 @@ class PlaygroundCommands {
             // Inform administrators of the newly blocked word.
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_WORD_BLOCKED, player.name, player.id, lowerCaseWordToBlock);
-            
+
             // Confirm the action to the |player|.
             return alert(player, {
                 title: 'Blocked words',
@@ -526,7 +708,7 @@ class PlaygroundCommands {
                 // Inform administrators of the re-allowed word.
                 this.announce_().announceToAdministrators(
                     Message.LVP_ANNOUNCE_WORD_UNBLOCKED, player.name, player.id, word);
-                
+
                 // Confirm the action to the |player|.
                 return alert(player, {
                     title: 'Blocked words',
@@ -572,7 +754,7 @@ class PlaygroundCommands {
 
         for (const recipient of server.playerManager)
             recipient.sendMessage(announcement);
-        
+
         // (3 Let the |player| know what they've just done.
         return alert(player, {
             title: 'Communication',
@@ -613,7 +795,7 @@ class PlaygroundCommands {
 
             if (!after)
                 return;  // the |player| abandoned the flow
-                
+
             const lowerCaseBefore = before.trim().toLowerCase();
             const lowerCaseAfter = after.trim().toLowerCase();
 
@@ -621,7 +803,7 @@ class PlaygroundCommands {
             for (const existingSubstitution of substitutions) {
                 if (existingSubstitution.before !== lowerCaseBefore)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Substitutions',
                     message: `The word "${lowerCaseBefore}" is already being substituted.`
@@ -632,7 +814,7 @@ class PlaygroundCommands {
             for (const existingWord of words) {
                 if (existingWord.word !== lowerCaseBefore)
                     continue;
-                
+
                 return alert(player, {
                     title: 'Substitutions',
                     message: `The word "${lowerCaseBefore}" already exists as a blocked word.`
@@ -646,7 +828,7 @@ class PlaygroundCommands {
             this.announce_().announceToAdministrators(
                 Message.LVP_ANNOUNCE_SUBSTITUTION_ADDED, player.name, player.id, lowerCaseBefore,
                 lowerCaseAfter);
-            
+
             // Confirm the action to the |player|.
             return alert(player, {
                 title: 'Substitutions',
@@ -850,6 +1032,8 @@ class PlaygroundCommands {
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     // Announces the updated value for the |setting|, as made by |player|, to administrators.
     announceSettingChangeToAdministrators(player, setting) {
         switch (setting.type) {
@@ -876,6 +1060,60 @@ class PlaygroundCommands {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+
+    // Captures a trace of the server's activities for the given number of |seconds|. The name of
+    // the trace will be automatically generated based on the current time and date.
+    async onPlayergroundTraceCommand(player, seconds) {
+        if (!seconds || seconds < 10 || seconds > 1800) {
+            player.sendMessage(Message.LVP_TRACE_USAGE);
+            return;
+        }
+
+        if (this.activeTrace_) {
+            player.sendMessage(Message.LVP_TRACE_IN_PROGRESS);
+            return;
+        }
+
+        // (1) Mark that a trace is in progress, effectively locking this command.
+        this.activeTrace_ = true;
+
+        const duration = timeDifferenceToString(seconds);
+
+        // (2) Announce the trace to administrators, in case lag is experienced.
+        this.announce_().announceToAdministrators(
+            Message.LVP_TRACE_ADMIN_STARTED, player.name, player.id, duration);
+
+        // (3) Start the actual trace, and acknowledge this action to the |player|.
+        player.sendMessage(Message.LVP_TRACE_STARTED, duration);
+
+        startTrace();
+
+        // (4) Wait for the trace to be completed. Mind that the |player| might disconnect in this
+        // time, particularly for longer-running traces of 10 minutes or more.
+        await wait(seconds * 1000);
+
+        // (5) Capture the trace to the generated |filename|. This could lock up the server for a
+        // second or so, particularly if the trace ran for a longer period of time.
+        const date = new Date();
+        const filename = format(
+            'trace-%s-%02d-%02d-%02d-%02d-%02d.json', date.getFullYear(), date.getMonth() + 1,
+            date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+
+        stopTrace(filename);
+
+        // (6) Tell administrators about the trace having succeeded.
+        this.announce_().announceToAdministrators(Message.LVP_TRACE_ADMIN_FINISHED, filename);
+
+        // (7) If the |player| is still connected, let them know about the successful trace too.
+        if (player.isConnected())
+            player.sendMessage(Message.LVP_TRACE_FINISHED, filename);
+
+        this.activeTrace_ = false;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Displays some generic information for those typing `/lvp`. Administrators and higher will see
     // a list of sub-commands that they're allowed to execute.
     onPlaygroundCommand(player) {
@@ -885,7 +1123,7 @@ class PlaygroundCommands {
             options.push('access', 'settings');
 
         if (player.isManagement())
-            options.push('profile', 'reload');
+            options.push('profile', 'reload', 'trace');
 
         player.sendMessage(Message.LVP_PLAYGROUND_HEADER);
         if (!options.length)
@@ -894,8 +1132,11 @@ class PlaygroundCommands {
         player.sendMessage(Message.COMMAND_USAGE, '/lvp [' + options.sort().join('/') + ']');
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     dispose() {
         server.commandManager.removeCommand('lvp');
+        server.commandManager.removeCommand('tempfix');
 
         this.commands_.forEach((command, name) => {
             server.commandManager.removeCommand(name);
@@ -903,7 +1144,10 @@ class PlaygroundCommands {
         });
 
         this.commands_.clear();
+
+        this.announce_ = null;
+        this.communication_ = null;
+        this.nuwani_ = null;
+        this.settings_ = null;
     }
 }
-
-export default PlaygroundCommands;

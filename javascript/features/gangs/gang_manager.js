@@ -5,8 +5,9 @@
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
 import { GangFinance } from 'features/gangs/gang_finance.js';
-
 import MockGangDatabase from 'features/gangs/test/mock_gang_database.js';
+
+import { format } from 'base/format.js';
 
 // The gang manager is responsible for managing all current information associated with gangs
 // whose players are logged in to Las Venturas Playground. It also mediates between the commands,
@@ -70,8 +71,8 @@ class GangManager {
     // confirmed through other means. Optionally the |args| will be applied when the |message| is an
     // instance of the Message class that requires formatting.
     announceToGang(gang, excludePlayer, message, ...args) {
-        if (message instanceof Message)
-            message = Message.format(message, ...args);
+        if (args.length)
+            message = format(message, ...args);
 
         const formattedMessage = Message.format(Message.GANG_ANNOUNCE_INTERNAL, message);
 
@@ -138,6 +139,7 @@ class GangManager {
             members.forEach(member => {
                 const memberInfo = {
                     nickname: member.username,
+                    color: member.color,
                     player: gangPlayers[member.userId] || null,
                     role: member.role,
                     userId: member.userId,

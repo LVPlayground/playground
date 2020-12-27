@@ -9,17 +9,20 @@ export class Setting {
         this.category_ = category;
         this.name_ = name;
 
-        if (!Array.isArray(type)) {
-            this.type_ = type;
-            this.options_ = undefined;
-        } else {
+        if (Array.isArray(type)) {
             this.type_ = Setting.TYPE_ENUM;
             this.options_ = type;
+        } else if (typeof type === 'object') {
+            this.type_ = Setting.TYPE_CUSTOM;
+            this.handler_ = type;
+        } else {
+            this.type_ = type;
+            this.options_ = undefined;
         }
 
         this.defaultValue_ = value;
 
-        if (this.type_ == Setting.TYPE_ENUM && !this.options_.includes(this.defaultValue_))
+        if (this.type_ === Setting.TYPE_ENUM && !this.options_.includes(this.defaultValue_))
             throw new Error(`The ${value} must be included in the valid option enumeration.`);
 
         this.value_ = value;
@@ -42,6 +45,9 @@ export class Setting {
     // Gets the valid options for an enumeration setting.
     get options() { return this.options_; }
 
+    // Gets the handler instance that is able to handle this setting.
+    get handler() { return this.handler_; }
+
     // Gets the default value of the setting.
     get defaultValue() { return this.defaultValue_; }
 
@@ -59,3 +65,4 @@ Setting.TYPE_BOOLEAN = 0;
 Setting.TYPE_NUMBER = 1;
 Setting.TYPE_STRING = 2;
 Setting.TYPE_ENUM = 3;
+Setting.TYPE_CUSTOM = 4;

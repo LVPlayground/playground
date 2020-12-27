@@ -2,20 +2,21 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { CommandContext } from 'features/nuwani/commands/command_context.js';
-import { CommandDelegate } from 'features/nuwani/commands/command_delegate.js';
+import { CommandExecutor } from 'components/commands/command_executor.js';
+import { NuwaniContextDelegate } from 'features/nuwani/commands/nuwani_context_delegate.js';
+import { NuwaniPermissionDelegate } from 'features/nuwani/commands/nuwani_permission_delegate.js';
 import { RuntimeObserver } from 'features/nuwani/runtime/runtime.js';
 
-// The CommandManager for Nuwani. The use of this class closely mimics the in-game CommandManager
-// available in //components/command_manager/command_manager.js, which means that IRC commands must
-// be created using a builder with predefined parameters.
+// The CommandManager for Nuwani. The use of this class closely mimics the in-game command manager,
+// which means that IRC commands must be created using a builder with predefined parameters.
 export class CommandManager extends RuntimeObserver {
     runtime_ = null;
     configuration_ = null;
 
     commands_ = null;
-    delegate_ = null;
+    executor_ = null;
 
     // Gets the number of commands that have been registered so far.
     get size() { return this.commands_.size; }
@@ -33,7 +34,8 @@ export class CommandManager extends RuntimeObserver {
         this.configuration_ = configuration;
 
         this.commands_ = new Map();
-        this.delegate_ = new CommandDelegate(configuration.commandPrefix);
+        this.executor_ = new CommandExecutor(
+            new NuwaniContextDelegate(), new NuwaniPermissionDelegate());
     }
 
     // Registers |command| as a new command, which will invoke |listener| when used.
@@ -48,12 +50,19 @@ export class CommandManager extends RuntimeObserver {
     // called on the returned builder in order for the command to become registered.
     //
     // Read the online documentation for more information on command builders:
-    // https://github.com/LVPlayground/playground/tree/master/javascript/components/command_manager
+    // https://github.com/LVPlayground/playground/tree/master/javascript/components/commands
     buildCommand(command) {
-        if (this.commands_.has(command))
-            throw new Error('The command "' + command + '" has already been registered.');
+        return new CommandBuilder({
+            listener: description => {
+                if (this.commands_.has(command))
+                    throw new Error('The command "' + command + '" has already been registered.');
 
-        return new CommandBuilder(CommandBuilder.COMMAND, this, this.delegate_, command);
+                this.commands_.set(command, description);
+            },
+
+            name: command,
+            prefix: this.configuration_.commandPrefix,
+        });
     }
 
     // Removes the |command| from the list of commands known and handled by this manager.
@@ -87,8 +96,8 @@ export class CommandManager extends RuntimeObserver {
         if (!this.commands_.has(command))
             return;  // unknown command
 
-        await this.commands_.get(command)(
-            CommandContext.createForMessage(bot, message, this.configuration_), args);
+        const context = CommandContext.createForMessage(bot, message, this.configuration_);
+        await this.executor_.executeCommand(context, this.commands_.get(command), args);
     }
 
     // ---------------------------------------------------------------------------------------------

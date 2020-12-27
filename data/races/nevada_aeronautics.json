@@ -2,49 +2,32 @@
     "name": "Nevada Aeronautics",
     "id": 10,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
-        "weather": 10,
-        "time": [19, 0],
-        "interior": 0
+        "time": "Evening"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -40.0000, 2482.0000, 20.7756 ],
-            "rotation": 270,
-            "vehicle": {
-                "model": 553
-            }
+            "facingAngle": 270,
+            "vehicleModelId": 553
         },
         {
             "position": [ -40.0000, 2520.0000, 20.8245 ],
-            "rotation": 270,
-            "vehicle": {
-                "model": 553
-            }
+            "facingAngle": 270,
+            "vehicleModelId": 553
         },
         {
             "position": [ -76.0000, 2482.0000, 20.0034 ],
-            "rotation": 270,
-            "vehicle": {
-                "model": 553
-            }
+            "facingAngle": 270,
+            "vehicleModelId": 553
         },
         {
             "position": [ -76.0000, 2520.0000, 20.0209 ],
-            "rotation": 270,
-            "vehicle": {
-                "model": 553
-            }
+            "facingAngle": 270,
+            "vehicleModelId": 553
         }
     ],
-
-    "settings": {
-        "use_airplane_checkpoints": true
-    },
 
     "checkpoints": [
         { "position": [ 170.1583, 2503.0449, 17.8560 ], "size": 15 },

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { format as stringFormat } from 'base/string_formatter.js';
+import { format as stringFormat } from 'base/format.js';
 
 // The JSON file in which the message format for all IRC messages has been stored.
 const kMessagesFile = 'data/irc_messages.json';
@@ -24,11 +24,11 @@ export class MessageFormatter {
         if (server.isTest() && !forceProdForTesting) {
             this.loadMessages({
                 test: 'Hello %s, I have %$ for %d days!',
-                test_int: '%d',
+                test_int: '%.2f',
                 test_float: '%f',
                 test_string: '%s',
                 test_dsz: '%d %s %s',
-                test_ffd: '%d %d %d',
+                test_ffd: '%.2f %.2f %d',
                 test_color_invalid: '<color:51>',
                 test_color: '<color:3>1 <color:15>yo <color>test',
                 test_empty: 'Regular string',
@@ -42,7 +42,7 @@ export class MessageFormatter {
                 test_target_param: '<target:{0}>Hello',
                 test_target_param2: '<target:{1}>%s',
                 test_command_notice: '<command:NOTICE>Hello',
-                text_command_target_notice: '<command:NOTICE><target:{0}>%s{1}',
+                text_command_target_notice: '<command:NOTICE><target:{0}>%{1}s',
             });
         } else {
             this.loadMessages(JSON.parse(readFile(kMessagesFile)));
@@ -138,8 +138,8 @@ export class MessageFormatter {
 
         // Allow for the type of IRC command to be changed as well.
         format = format.replace(/<command:(.+?)>/g, (_, unverifiedCommand) => {
-            if (unverifiedCommand !== 'NOTICE')
-                throw new Error('Only NOTICE commands are enabled for now.');
+            if (!['NOTICE', 'MODE'].includes(unverifiedCommand))
+                throw new Error('Only NOTICE and MODE commands are enabled for now.');
             
             command = unverifiedCommand;
             return '';

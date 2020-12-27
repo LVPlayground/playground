@@ -14,13 +14,25 @@ export class PlayerAccountSupplement extends Supplement {
     hasRequestedUpdate_ = false;
 
     userId_ = null;
+
+    announcementOverrides_ = new Map();
     bankAccountBalance_ = 0;
     cashBalance_ = 0;
     reactionTests_ = 0;
+    skinDecorations_ = [];
     mutedUntil_ = null;
 
     // Gets the permanent user Id that has been assigned to this user. Read-only.
     get userId() { return this.userId_; }
+
+    // Returns the announcement override for the given |category|, or undefined when none exists.
+    getAnnouncementOverride(category) { return this.announcementOverrides_.get(category); }
+
+    // Sets the announcement override for the given |category| to |enable|, a boolean.
+    setAnnouncementOverride(category, enable) { this.announcementOverrides_.set(category, enable); }
+
+    // Releases the announcement override the player has for the given |category|.
+    releaseAnnouncementOverride(category) { this.announcementOverrides_.delete(category); }
 
     // Gets or sets the balance this user has on their bank account. Writes will be processed as
     // high priority, because 
@@ -45,6 +57,10 @@ export class PlayerAccountSupplement extends Supplement {
     get mutedUntil() { return this.mutedUntil_; }
     set mutedUntil(value) { this.mutedUntil_ = value; }
 
+    // Gets or sets the array of skin decorations this player should have.
+    get skinDecorations() { return this.skinDecorations_; }
+    set skinDecorations(value) { this.skinDecorations_ = value; }
+
     // Returns whether the player is registered with Las Venturas Playground.
     isRegistered() { return this.isRegistered_; }
 
@@ -61,13 +77,36 @@ export class PlayerAccountSupplement extends Supplement {
         this.bankAccountBalance_ = databaseRow.money_bank;
         this.cashBalance_ = databaseRow.money_cash;
         this.reactionTests_ = databaseRow.stats_reaction;
+        this.skinDecorations_ = [];
         this.mutedUntil_ = null;
+
+        // |skin_decorations| are stored as a comma-divided list of model Ids.
+        if (databaseRow.skin_decorations && databaseRow.skin_decorations.length > 0)
+            this.skinDecorations_ = databaseRow.skin_decorations.split(',').map(id => parseInt(id));
+
+        // Restore the announcement overrides, if these are stored in the |player|'s account.
+        if (databaseRow.announcement_overrides && databaseRow.announcement_overrides.length > 0) {
+            try {
+                const overrides = JSON.parse(databaseRow.announcement_overrides);
+                for (const [ category, enabled ] of Object.entries(overrides))
+                    this.setAnnouncementOverride(category, !!enabled);
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
 
         // |muted| is stored as the number of remaining seconds on their punishment.
         if (databaseRow.muted > 0)
             this.mutedUntil_ = server.clock.monotonicallyIncreasingTime() + 1000 * databaseRow.muted
 
+        // Color information will be stored on the player's colour state, when configured.
+        if (databaseRow.custom_color !== 0)
+            player.colors.customColor = Color.fromNumberRGBA(databaseRow.custom_color);
+
         // Statistics that will be stored by the PlayerStatsSupplement instead.
+        player.stats.enduring.reactionTests = databaseRow.stats_reaction;
+        player.stats.enduring.onlineTime = databaseRow.online_time;
         player.stats.enduring.deathCount = databaseRow.death_count;
         player.stats.enduring.killCount = databaseRow.kill_count;
         player.stats.enduring.damageGiven = databaseRow.stats_damage_given;
@@ -75,7 +114,7 @@ export class PlayerAccountSupplement extends Supplement {
         player.stats.enduring.shotsHit = databaseRow.stats_shots_hit;
         player.stats.enduring.shotsMissed = databaseRow.stats_shots_missed;
         player.stats.enduring.shotsTaken = databaseRow.stats_shots_taken;
-        
+
         this.isRegistered_ = true;
         this.isIdentified_ = true;
     }
@@ -85,19 +124,29 @@ export class PlayerAccountSupplement extends Supplement {
     prepareForDatabase(player) {
         const currentTime = server.clock.monotonicallyIncreasingTime();
 
+        // Serialize the announcement overrides, which are stored in a JavaScript Map.
+        const announcementOverrides = {};
+
+        for (const [ identifier, enabled ] of this.announcementOverrides_)
+            announcementOverrides[identifier] = !!enabled;
+
         this.hasRequestedUpdate_ = false;
         return {
             user_id: this.userId_,
+            custom_color: player.colors.customColor?.toNumberRGBA() ?? 0,
+            // TODO: include |online_time|
             kill_count: player.stats.enduring.killCount,
             death_count: player.stats.enduring.deathCount,
             money_bank: this.bankAccountBalance_,
             money_cash: this.cashBalance_,
+            skin_decorations: this.skinDecorations_.join(','),
             stats_reaction: this.reactionTests_,
             stats_damage_given: player.stats.enduring.damageGiven,
             stats_damage_taken: player.stats.enduring.damageTaken,
             stats_shots_hit: player.stats.enduring.shotsHit,
             stats_shots_missed: player.stats.enduring.shotsMissed,
             stats_shots_taken: player.stats.enduring.shotsTaken,
+            announcement_overrides: JSON.stringify(announcementOverrides),
             muted: Math.max(Math.floor(((this.mutedUntil_ || currentTime) - currentTime) / 1000), 0),
         };
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Encapsulates a series of commands to do with the ability to ignore other players.
 export class IgnoreCommands {
@@ -16,19 +16,23 @@ export class IgnoreCommands {
 
         // /ignore [player]
         server.commandManager.buildCommand('ignore')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .description('Ignore another player in all in-game communication.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(IgnoreCommands.prototype.onIgnoreCommand.bind(this));
 
         // /ignored [player]?
         server.commandManager.buildCommand('ignored')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .description('Display which players you have ignored.')
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Display which players they have ignored.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this))
             .build(IgnoreCommands.prototype.onIgnoredCommand.bind(this));
-        
+
         // /unignore [player]
         server.commandManager.buildCommand('unignore')
-            .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+            .description('See all messages sent by another player again.')
+            .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
             .build(IgnoreCommands.prototype.onUnignoreCommand.bind(this));
     }
 
@@ -67,7 +71,7 @@ export class IgnoreCommands {
                 this.visibilityManager.removePlayerFromIgnoreList(player, ignoredPlayer);
                 continue;
             }
-            
+
             ignoredPlayers.push(`${ignoredPlayer.name} (Id:${ignoredPlayer.id})`);
         }
 

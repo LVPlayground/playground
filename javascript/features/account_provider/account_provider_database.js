@@ -6,16 +6,20 @@
 const ACCOUNT_LOAD_QUERY = `
     SELECT
         users_mutable.user_id,
+        users_mutable.online_time,
+        users_mutable.custom_color,
         users_mutable.kill_count,
         users_mutable.death_count,
         users_mutable.money_bank,
         users_mutable.money_cash,
+        users_mutable.skin_decorations,
         users_mutable.stats_reaction,
         users_mutable.stats_damage_given,
         users_mutable.stats_damage_taken,
         users_mutable.stats_shots_hit,
         users_mutable.stats_shots_missed,
         users_mutable.stats_shots_taken,
+        users_mutable.announcements_overrides,
         users_mutable.muted
     FROM
         users_mutable
@@ -28,16 +32,19 @@ const ACCOUNT_SAVE_QUERY = `
     UPDATE
         users_mutable
     SET
+        users_mutable.custom_color = ?,
         users_mutable.kill_count = ?,
         users_mutable.death_count = ?,
         users_mutable.money_bank = ?,
         users_mutable.money_cash = ?,
+        users_mutable.skin_decorations = ?,
         users_mutable.stats_reaction = ?,
         users_mutable.stats_damage_given = ?,
         users_mutable.stats_damage_taken = ?,
         users_mutable.stats_shots_hit = ?,
         users_mutable.stats_shots_missed = ?,
         users_mutable.stats_shots_taken = ?,
+        users_mutable.announcements_overrides = ?,
         users_mutable.muted = ?
     WHERE
         users_mutable.user_id = ?`;
@@ -57,11 +64,13 @@ export class AccountProviderDatabase {
     // the `loadAccountData()` method. Generally composited by the AccountData structure.
     async saveAccountData(accountData) {
         await server.database.query(
-            ACCOUNT_SAVE_QUERY, accountData.kill_count, accountData.death_count,
-            accountData.money_bank, accountData.money_cash, accountData.stats_reaction,
-            accountData.stats_damage_given, accountData.stats_damage_taken,
+            ACCOUNT_SAVE_QUERY, accountData.custom_color, accountData.kill_count,
+            accountData.death_count, accountData.money_bank, accountData.money_cash,
+            accountData.skin_decorations, accountData.stats_reaction,
+            accountData.stats_damage_given,accountData.stats_damage_taken,
             accountData.stats_shots_hit, accountData.stats_shots_missed,
-            accountData.stats_shots_taken, accountData.muted, accountData.user_id);
+            accountData.stats_shots_taken, accountData.announcement_overrides,
+            accountData.muted, accountData.user_id);
 
         return true;
     }

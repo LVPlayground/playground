@@ -53,7 +53,6 @@ new __iCMDIDX;
 #define DIALOG_FIGHTCLUB_DUEL_ROUNDS        4017
 #define DIALOG_FIGHTCLUB_DUEL_INVITE        4018
 #define DIALOG_FIGHTCLUB_WATCH              4019
-#define DIALOG_DERBY_MAIN                   4033
 #define DIALOG_TELES_MAIN                   4036
 #define DIALOG_TAXI_LOCATIONS               4038
 #define DIALOG_MINIGAME_DM                  4039

@@ -2,17 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 
 // Command: /kickflip [player]
-class KickFlipCommand extends Command {
+export default class KickFlipCommand extends Command {
     get name() { return 'kickflip'; }
     get defaultPlayerLevel() { return Player.LEVEL_MANAGEMENT; }
+    get description() { return `Kick. Then flip. In a vehicle.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([{ name: 'target', type: CommandBuilder.PLAYER_PARAMETER }])
+            .parameters([{ name: 'target', type: CommandBuilder.kTypePlayer }])
             .build(KickFlipCommand.prototype.onKickFlipCommand.bind(this));
     }
 
@@ -30,5 +31,3 @@ class KickFlipCommand extends Command {
         player.sendMessage(Message.COMMAND_SUCCESS, target.name + ' has been kickflip\'d.');
     }
 }
-
-export default KickFlipCommand;

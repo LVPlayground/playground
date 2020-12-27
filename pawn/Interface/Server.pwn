@@ -6,7 +6,19 @@
 native gpci(playerid, serial[], len);
 native IsValidVehicle(vehicleid);
 
+// Provided by the SAMPCAC plugin.
+#if Feature::EnableSAMPCAC == 1
+public const CAC_INCLUDE_MAJOR = 0;
+public const CAC_INCLUDE_MINOR = 10;
+public const CAC_INCLUDE_PATCH = 0;
+
+native CAC_GetStatus(player_id);
+
+#pragma unused CAC_INCLUDE_MAJOR, CAC_INCLUDE_MINOR, CAC_INCLUDE_PATCH
+#endif
+
 // Provided by the PlaygroundJS plugin.
+native AnnounceNewsMessage(const message[]);
 native IsPlayerEligibleForBenefit(playerid, benefit);
 native IsPlayerMinimized(playerId);
 native SetIsRegistered(playerid, bool: isRegistered);
@@ -27,14 +39,13 @@ native ResetPlayerMoneyJS(playerid);
 native GetAccountBalanceJS(playerid, balance[]);
 native DepositToAccountJS(playerid, amount);
 
-// Provided by the Communication feature in JavaScript.
-native GetPlayerTeleportStatus(playerId, timeLimited);
-native ReportPlayerTeleport(playerId, timeLimited);
+native SetPlayerVisibility(playerid, visible);
+native SetPlayerGameColor(playerid, color);
+native ReleasePlayerGameColor(playerid);
 
-#define TELEPORT_STATUS_ALLOWED 0
-#define TELEPORT_STATUS_REJECTED_FIGHTING 1
-#define TELEPORT_STATUS_REJECTED_TIME_LIMIT 2
-#define TELEPORT_STATUS_REJECTED_OTHER 3
+// Provided by the Communication feature in JavaScript.
+native CanPlayerTeleport(playerId);
+native ReportPlayerTeleport(playerId);
 
 #define VEHICLE_KEYS_BOOST 1
 #define VEHICLE_KEYS_COLOUR 2
@@ -44,9 +55,11 @@ native ReportPlayerTeleport(playerId, timeLimited);
 #define VEHICLE_KEYS_NOS 32
 #define VEHICLE_KEYS_BLINKER_RIGHT 64
 #define VEHICLE_KEYS_BLINKER_LEFT 128
+#define VEHICLE_KEYS_GRAVITY 256
 
 native IsCommunicationMuted();
 native bool: SpawnPlayerInHouse(playerId);
+native SetPlayerGravity(playerid, Float:value);
 
 // -------------------------------------------------------------------------------------------------
 // We override the GivePlayerMoney native as it's used to record intentional changes in a player's

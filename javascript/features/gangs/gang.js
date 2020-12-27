@@ -2,12 +2,6 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-// Updates the |player|'s gang color to the given |color|, if any.
-function setPlayerGangColor(player, color) {
-    if (!server.isTest())
-        pawnInvoke('OnUpdatePlayerGangColor', 'ii', player.id, color ? color.toNumberRGBA() : 0);
-}
-
 // Encapsulates the information associated with a gang. Changes to data stored in this class should
 // only be made from the Gang Manager, since it may have to be propagated to multiple places.
 class Gang {
@@ -74,7 +68,7 @@ class Gang {
         this.members_.set(player, { role, useGangColor });
 
         if (this.color_ && this.usesGangColor(player))
-            setPlayerGangColor(player, this.color_);
+            player.colors.gangColor = this.color_;
 
         player.gangId = this.id_;
     }
@@ -104,8 +98,8 @@ class Gang {
         if (!this.color_)
             return;
 
-        setPlayerGangColor(player, useGangColor ? this.color_
-            : null);
+        player.colors.gangColor = useGangColor ? this.color_
+                                               : null;
     }
 
     // Returns whether the |player| will use the gang's skin.
@@ -128,7 +122,7 @@ class Gang {
         this.members_.delete(player);
 
         if (!player.isDisconnecting() && this.usesGangColor(player))
-            setPlayerGangColor(player, null);
+            player.colors.gangColor = null;
 
         player.gangId = null;
     }
@@ -144,7 +138,7 @@ class Gang {
             if (!this.usesGangColor(player))
                 continue;
 
-            setPlayerGangColor(player, color);
+            player.colors.gangColor = color;
         }
     }
 

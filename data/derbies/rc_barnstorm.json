@@ -3,7 +3,12 @@
     "id": 2,
 
     "environment": {
-        "boundaries": [ -200, -200, 200, 200 ]
+        "boundaries": {
+            "minimumX": -200,
+            "maximumX": 200,
+            "minimumY": -200,
+            "maximumY": 200
+        }
     },
 
     "spawnPositions": [

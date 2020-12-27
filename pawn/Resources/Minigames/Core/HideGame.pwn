@@ -1056,7 +1056,7 @@ CHideGame__onJoinCommand( iPlayerID, params[] )
     Admin(iPlayerID, sAdminMsg);
 
     format(sAdminMsg, sizeof(sAdminMsg), "~r~~h~%s~w~ has signed up for ~y~Hide 'n Seek~w~ (~p~/has~w~)", Player(iPlayerID)->nicknameString());
-    NewsController->show(sAdminMsg);
+    AnnounceNewsMessage(sAdminMsg);
 
     #pragma unused params
     return 1;
@@ -1080,7 +1080,7 @@ CHideGame__onLeaveCommand( iPlayerID )
         {
             new notice[128];
             format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
             CHideGame__ResetVariables();
         }
     }
@@ -1158,7 +1158,7 @@ CHideGame__onPlayerDisconnect( iPlayerID )
         {
             new notice[128];
             format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-            NewsController->show(notice);
+            AnnounceNewsMessage(notice);
             CHideGame__ResetVariables();
         }
     }
@@ -1184,7 +1184,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
             if(CHideGame__GetPlayerState(hiderId) != HS_STATE_PLAYING)
                 continue;
 
-            ColorManager->releasePlayerMinigameColor(hiderId);
+            ReleasePlayerGameColor(hiderId);
 
             // Load their old position.
             CHideGame__LoadPos(hiderId);
@@ -1194,7 +1194,7 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         // Send them a message.
         new notice[128];
         format(notice, sizeof(notice), "~y~Hide and Seek~w~ has finished: ~r~~h~The Seeker~w~ left the minigame!");
-        NewsController->show(notice);
+        AnnounceNewsMessage(notice);
         CHideGame__ResetVariables();
     }
     else
@@ -1214,16 +1214,10 @@ CHideGame__ThrowOut( iPlayerID, iReason )
         }
 
         format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ update: ~r~~h~%s~w~ left the minigame (%s)!", Player(iPlayerID)->nicknameString(), sReason);
-        NewsController->show(sMessage);
+        AnnounceNewsMessage(sMessage);
 
-        ColorManager->releasePlayerMinigameColor(iPlayerID);
-
-        for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-            if (Player(forPlayerId)->isConnected() == false)
-                continue;
-
-            ShowPlayerNameTagForPlayer(forPlayerId, iPlayerID, 1);
-        }
+        ReleasePlayerGameColor(iPlayerID);
+        SetPlayerVisibility(iPlayerID, true);
 
         CHideGame__LoadPos( iPlayerID );
         CHideGame__ResetPlayerVariables( iPlayerID );
@@ -1247,25 +1241,20 @@ CHideGame__ThrowOut( iPlayerID, iReason )
 
             // We get the winner.
             iWinner = playerId;
-            ColorManager->releasePlayerMinigameColor(iWinner);
+            ReleasePlayerGameColor(iWinner);
 
-            for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false || Player(playerId)->isNonPlayerCharacter() == true)
-                    continue;
-
-                ShowPlayerNameTagForPlayer(forPlayerId, iWinner, 1);
-            }
+            SetPlayerVisibility(iWinner, true);
 
             CHideGame__LoadPos( iWinner );
             break;
         }
 
-        ColorManager->releasePlayerMinigameColor(iSeekerPlayer);
+        ReleasePlayerGameColor(iSeekerPlayer);
 
         CHideGame__LoadPos( iSeekerPlayer );
 
         format(sMessage, sizeof(sMessage), "~y~Hide and Seek~w~ has finished: ~r~~h~%s~w~ has won the minigame!", Player(iWinner)->nicknameString());
-        NewsController->show(sMessage);
+        AnnounceNewsMessage(sMessage);
 
         CHideGame__ResetVariables();
 
@@ -1463,12 +1452,7 @@ public CHideGame__Start()
             // Save their data.
             CHideGame__SavePos(playerId);
 
-            for (new forPlayerId = 0; forPlayerId <= PlayerManager->highestPlayerId(); ++forPlayerId) {
-                if (Player(forPlayerId)->isConnected() == false)
-                    continue;
-
-                ShowPlayerNameTagForPlayer(forPlayerId, playerId, 0);
-            }
+            SetPlayerVisibility(playerId, false);
 
             // Set the position.
             aHidePlayerState[playerId] = HS_STATE_PLAYING;
@@ -1476,7 +1460,7 @@ public CHideGame__Start()
             SetPlayerPos(playerId, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
             SendClientMessage(playerId, COLOR_LIGHTBLUE, "* You have 60 seconds to find yourself a hiding place! What are you waiting for? Go!");
 
-            ColorManager->setPlayerMinigameColor(playerId, 0xFFFFFF00);
+            SetPlayerGameColor(playerId, 0xFFFFFF00);
 
             SetPlayerVirtualWorld(playerId, HS_VIRTUAL_WORLD );
             if( aLocationInfo[ iMapRunning ] [ 1 ] != -1 )
@@ -1495,7 +1479,7 @@ public CHideGame__Start()
         SetPlayerInterior( iSeekerPlayer, aLocationInfo[ iMapRunning ][ 2 ] );
         SetPlayerPos( iSeekerPlayer, aLocationCoordinates[ iMapRunning ] [ 0 ], aLocationCoordinates[ iMapRunning ] [ 1 ], aLocationCoordinates[ iMapRunning ] [ 2 ] );
 
-        ColorManager->setPlayerMinigameColor(iSeekerPlayer, Color::Red);
+        SetPlayerGameColor(iSeekerPlayer, Color::Red);
 
         SetPlayerVirtualWorld( iSeekerPlayer, HS_VIRTUAL_WORLD );
 

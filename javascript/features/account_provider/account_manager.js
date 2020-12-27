@@ -56,7 +56,7 @@ export class AccountManager {
 
     // Called when a player has identified to their account. Starts to load their account data and
     // make it available to other parts of the server. Invoked as a Pawn event.
-    onPlayerLoginEvent(event) { 
+    onPlayerLoginEvent(event) {
         const player = server.playerManager.getById(event.playerid);
         const userId = event.userid;
 

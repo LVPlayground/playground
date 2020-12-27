@@ -3,11 +3,12 @@
 // be found in the LICENSE file.
 
 import { Achievements } from 'features/collectables/achievements.js';
+import { Banner } from 'components/interface/banner.js';
 import { CollectableDatabase } from 'features/collectables/collectable_database.js';
-import { CollectableNotification } from 'features/collectables/collectable_notification.js';
 import { MockCollectableDatabase } from 'features/collectables/test/mock_collectable_database.js';
 import { RedBarrels } from 'features/collectables/red_barrels.js';
 import { SprayTags } from 'features/collectables/spray_tags.js';
+import { Treasures } from 'features/collectables/treasures.js';
 
 // Identifier of the setting that controls collectable map icon visibility.
 const kVisibilitySetting = 'playground/collectable_map_icons_display';
@@ -22,7 +23,7 @@ export class CollectableManager {
     delegates_ = null;
     notifications_ = new WeakMap();
 
-    constructor(collectables, nuwani, settings) {
+    constructor(collectables, finance, nuwani, settings) {
         this.collectables_ = collectables;
         this.settings_ = settings;
         this.settings_.addReloadObserver(
@@ -40,6 +41,7 @@ export class CollectableManager {
             [ CollectableDatabase.kRedBarrel, new RedBarrels(collectables, this) ],
             [ CollectableDatabase.kSprayTag, new SprayTags(collectables, this) ],
             [ CollectableDatabase.kAchievement, new Achievements(collectables, this, nuwani) ],
+            [ CollectableDatabase.kTreasures, new Treasures(collectables, finance, this, settings) ]
         ]);
         
         server.playerManager.addObserver(this, /* replayHistory= */ true);
@@ -119,9 +121,12 @@ export class CollectableManager {
             const displayTime =
                 this.settings_().getValue('playground/notification_display_time_sec');
 
-            await CollectableNotification.showForPlayer(
-                player, displayTime, notification.title, notification.message);
-            
+            await Banner.displayForPlayer(player, {
+                title: notification.title,
+                message: notification.message,
+                time: displayTime * 1000,
+            });
+
             await wait(displayTime * 1000 * 0.1);  // 10% of display time between notifications
             
             queue.shift();

@@ -2,8 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { ColorPicker } from 'components/dialogs/color_picker.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Dialog } from 'components/dialogs/dialog.js';
 import Gang from 'features/gangs/gang.js';
 import GangDatabase from 'features/gangs/gang_database.js';
@@ -15,8 +14,9 @@ import { QuestionSequence } from 'components/dialogs/question_sequence.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
 import { formatDate, fromNow } from 'base/time.js';
+import { messages } from 'features/gangs/gangs.messages.js';
 
 // Options for asking the player what the gang's full name should be.
 const NAME_QUESTION = {
@@ -73,10 +73,11 @@ const SKIN_QUESTION = {
 // Implements the commands available as part of the persistent gang feature. The primary ones are
 // /gang and /gangs, each of which has a number of sub-options available to them.
 class GangCommands {
-    constructor(manager, announce, finance, settings) {
+    constructor(manager, announce, finance, playerColors, settings) {
         this.manager_ = manager;
         this.announce_ = announce;
         this.finance_ = finance;
+        this.playerColors_ = playerColors;
         this.settings_ = settings;
 
         // Map of players to the gangs they have been invited by.
@@ -84,48 +85,64 @@ class GangCommands {
 
         // Command: /gang
         server.commandManager.buildCommand('gang')
+            .description(`Manages the gang you're part of.`)
             .sub('create')
+                .description('Create a new gang on the server.')
                 .build(GangCommands.prototype.onGangCreateCommand.bind(this))
             .sub('invite')
-                .parameters([{ name: 'player', type: CommandBuilder.PLAYER_PARAMETER }])
+                .description('Invite a player to your gang.')
+                .parameters([{ name: 'player', type: CommandBuilder.kTypePlayer }])
                 .build(GangCommands.prototype.onGangInviteCommand.bind(this))
             .sub('join')
+                .description('Accept an invitation to a gang.')
                 .build(GangCommands.prototype.onGangJoinCommand.bind(this))
             .sub('kick')
-                .parameters([{ name: 'member', type: CommandBuilder.WORD_PARAMETER }])
+                .description('Forcefully remove a player from your gang.')
+                .parameters([{ name: 'member', type: CommandBuilder.kTypeText }])
                 .build(GangCommands.prototype.onGangKickCommand.bind(this))
             .sub('leave')
+                .description(`Leave the gang that you're part of.`)
                 .build(GangCommands.prototype.onGangLeaveCommand.bind(this))
             .sub('members')
+                .description('Display the members who are part of your gang.')
                 .build(GangCommands.prototype.onGangMembersCommand.bind(this))
             .sub('settings')
+                .description(`Manage your gang's settings.`)
                 .build(GangCommands.prototype.onGangSettingsCommand.bind(this))
             .sub('transactions')
+                .description(`See your gang's financial transactions.`)
                 .build(GangCommands.prototype.onGangTransactionsCommand.bind(this))
             .build(GangCommands.prototype.onGangCommand.bind(this));
 
         // Command: /gangs
         server.commandManager.buildCommand('gangs')
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .description('Display the list of gangs on the server.')
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description(`See information about a particular player's gang.`)
                 .build(GangCommands.prototype.onGangsInfoCommand.bind(this))
             .build(GangCommands.prototype.onGangsCommand.bind(this));
-        
+
         // /gbalance
         server.commandManager.buildCommand('gbalance')
+            .description(`Display the balance of your gang's bank account.`)
             .build(GangCommands.prototype.onGangBalanceCommand.bind(this));
-        
+
         // /gbank [[amount] | all]
         server.commandManager.buildCommand('gbank')
+            .description(`Deposits money into your gang's bank account.`)
             .sub('all')
+                .description(`Deposits all money into your gang's bank account.`)
                 .build(GangCommands.prototype.onGangBankCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(GangCommands.prototype.onGangBankCommand.bind(this));
 
         // /gwithdraw [[amount] | all]
         server.commandManager.buildCommand('gwithdraw')
+            .description(`Withdraws money from your gang's bank account.`)
             .sub('all')
+                .description(`Withdraws all money from your gang's bank account.`)
                 .build(GangCommands.prototype.onGangWithdrawCommand.bind(this))
-            .parameters([{ name: 'amount', type: CommandBuilder.NUMBER_PARAMETER }])
+            .parameters([{ name: 'amount', type: CommandBuilder.kTypeNumber }])
             .build(GangCommands.prototype.onGangWithdrawCommand.bind(this));
     }
 
@@ -155,8 +172,10 @@ class GangCommands {
                 if (!result)
                     return;  // the player disconnected from the server
 
-                this.announce_().announceToPlayers(
-                    Message.GANG_ANNOUNCE_CREATED, player.name, name);
+                this.announce_().broadcast('gangs/created', messages.gangs_announce_created, {
+                    gang: name,
+                    player,
+                });
 
                 player.sendMessage(Message.GANG_DID_CREATE, result.name);
 
@@ -217,9 +236,11 @@ class GangCommands {
         this.manager_.announceToGang(gang, player, Message.GANG_INTERNAL_ANNOUNCE_INVITATION,
                                      player.name, invitee.name, invitee.id);
 
-        this.announce_().announceToAdministrators(
-            Message.GANG_ANNOUNCE_INVITATION, player.name, player.id, invitee.name, invitee.id,
-            gang.name);
+        this.announce_().broadcast('admin/gangs/invitation', messages.gangs_admin_invitation, {
+            gang: gang.name,
+            player,
+            target: invitee,
+        });
     }
 
     // Called when the player uses the `/gang join` command to accept an earlier invitation. They
@@ -247,8 +268,10 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_JOINED, player.name, player.id);
 
-        this.announce_().announceToPlayers(
-            Message.GANG_ANNOUNCE_JOINED, player.name, gang.name);
+        this.announce_().broadcast('gangs/mutations', messages.gangs_announce_joined, {
+            gang: gang.name,
+            player,
+        });
 
         this.invitations_.delete(player);
     }
@@ -330,8 +353,11 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name, nickname);
 
-        this.announce_().announceToAdministrators(
-            Message.GANG_ANNOUNCE_KICKED, player.name, player.id, nickname, gang.name);
+        this.announce_().broadcast('admin/gangs/kicked', messages.gangs_admin_kicked, {
+            gang: gang.name,
+            player,
+            target: nickname,
+        });
     }
 
     // Called when the player uses the `/gang leave` command. It will show a confirmation dialog
@@ -358,8 +384,10 @@ class GangCommands {
             this.manager_.announceToGang(
                 gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-            this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
-                player.name, gang.name);
+            this.announce_().broadcast('gangs/mutations', messages.gangs_announce_left, {
+                gang: gang.name,
+                player,
+            });
 
             return;
         }
@@ -390,8 +418,10 @@ class GangCommands {
         this.manager_.announceToGang(
             gang, player, Message.GANG_INTERNAL_ANNOUNCE_LEFT, player.name);
 
-        this.announce_().announceToPlayers(Message.GANG_ANNOUNCE_LEFT,
-            player.name, gang.name);
+        this.announce_().broadcast('gangs/mutations', messages.gangs_announce_left, {
+            gang: gang.name,
+            player,
+        });
     }
 
     // Called when the player uses the `/gang members` command. All members of their gang, whether
@@ -405,7 +435,7 @@ class GangCommands {
 
         // Retrieve the full memberlist of this gang, not those who are currently in-game.
         const members = await this.manager_.getFullMemberList(gang, false /* groupByRole */);
-        
+
         // Compile a set of online users, to reflect their last activity time more accurately than
         // relying on the database, which may not have updated yet.
         const ingame = new Set();
@@ -414,6 +444,12 @@ class GangCommands {
             if (otherPlayer.account.isIdentified())
                 ingame.add(otherPlayer.account.userId);
         }
+
+        const kPositionColor = new Map([
+            [ 'Leader', '{FFFF00}' ],
+            [ 'Manager', '{FF8000}' ],
+            [ 'Member', '' ],
+        ]);
 
         // Display a dialog with all the relevant information about the member(s).
         const dialog = new Menu('Gang members', [
@@ -425,16 +461,23 @@ class GangCommands {
 
         for (const member of members) {
             const position = GangDatabase.toRoleString(member.role);
+            const positionColor = kPositionColor.get(position);
+            const color = member.color !== null ? `{${member.color.toHexRGB()}}` : '';
             const nickname = member.nickname;
 
             if (ingame.has(member.userId))
                 member.lastSeen = new Date();
 
-            let lastSeen = '{CCCCCC}never';
-            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime()))
+            let lastSeen = 'never';
+            let lastSeenColor = '{9E9E9E}';
+
+            if (member.lastSeen && !Number.isNaN(member.lastSeen.getTime())) {
                 lastSeen = fromNow({ date: member.lastSeen });
-            
-            dialog.addItem(position, nickname, lastSeen);
+                if (!lastSeen.includes('month') && !lastSeen.includes('year'))
+                    lastSeenColor = '';
+            }
+
+            dialog.addItem(positionColor + position, color + nickname, lastSeenColor + lastSeen);
         }
 
         await dialog.displayForPlayer(player);
@@ -470,7 +513,7 @@ class GangCommands {
             });
 
             menu.addItem('Member color', '-', async() => {
-                const color = await ColorPicker.show(player);
+                const color = await this.playerColors_().displayColorPickerForPlayer(player);
                 if (!color)
                     return;  // the leader decided to not update the gang's color
 
@@ -482,9 +525,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_COLOR, player.name,
                     colorName);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_COLOR, player.name, player.id, gang.name,
-                    colorName);
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_color, {
+                    color: colorName,
+                    gang: gang.name,
+                    player,
+                });
 
                 const formattedMessage =
                     Message.format(Message.GANG_SETTINGS_NEW_COLOR, colorName);
@@ -499,9 +544,9 @@ class GangCommands {
                 // TODO: We'll probably want to move this to a class selection class in the future.
                 const availableSkins = JSON.parse(readFile('data/player_classes.json'));
 
-                let question = SKIN_QUESTION;                
+                let question = SKIN_QUESTION;
                 question.constraints.validation = new RegExp(`^(${availableSkins.join('|')})$`);
-                
+
                 const answer = await Question.ask(player, question);
                 if (!answer)
                     return;  // the leader decided to not update the gang's skin
@@ -513,12 +558,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_SKIN, player.name,
                     skinId);
 
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.GANG_ANNOUNCE_NEW_SKIN, 
-                    PlayerSetting.ANNOUNCEMENT.GANGS, 
-                    PlayerSetting.SUBCOMMAND.GANGS_CHANGED_SKIN,
-                    player.name, player.id, gang.name,
-                    skinId);
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_skin, {
+                    gang: gang.name,
+                    player,
+                    skin: skinId,
+                });
 
                 const formattedMessage =
                     Message.format(Message.GANG_SETTINGS_NEW_SKIN, skinId);
@@ -600,9 +644,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_NAME, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_NAME, player.name, player.id, formerName,
-                    answer);
+                this.announce_().broadcast('admin/gangs/name', messages.gangs_admin_name, {
+                    gang: formerName,
+                    name: answer,
+                    player,
+                });
 
                 await alert(player, {
                     title: 'The name has been updated',
@@ -627,9 +673,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_TAG, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_TAG, player.name, player.id, gang.name,
-                    answer);
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_tag, {
+                    gang: gang.name,
+                    player,
+                    tag: answer,
+                });
 
                 await alert(player, {
                     title: 'The tag has been updated',
@@ -648,9 +696,11 @@ class GangCommands {
                     gang, null, Message.GANG_INTERNAL_ANNOUNCE_NEW_GOAL, player.name,
                     answer);
 
-                this.announce_().announceToAdministrators(
-                    Message.GANG_ANNOUNCE_NEW_GOAL, player.name, player.id, gang.name,
-                    answer);
+                this.announce_().broadcast('admin/gangs/settings', messages.gangs_admin_goal, {
+                    gang: gang.name,
+                    goal: answer,
+                    player,
+                });
 
                 await alert(player, {
                     title: 'The goal has been updated',
@@ -717,7 +767,7 @@ class GangCommands {
         const usesGangSkin = gang.usesGangSkin(player);
         const gangSkinPreferenceUsage = usesGangSkin ? 'Gang skin'
                                                      : 'Personal skin';
-        
+
         // All members have the ability to change their skin preference. This enables gangs,
         // for example BA, to use the clown skin.
         menu.addItem('My skin', gangSkinPreferenceUsage, async() => {
@@ -822,9 +872,11 @@ class GangCommands {
                 gang, null, Message.GANG_INTERNAL_ANNOUNCE_KICKED, player.name,
                 member.nickname);
 
-            this.announce_().announceToAdministrators(
-                Message.GANG_ANNOUNCE_KICKED, player.name, player.id, member.nickname,
-                gang.name);
+            this.announce_().broadcast('admin/gangs/kicked', messages.gangs_admin_kicked, {
+                gang: gang.name,
+                player,
+                target: member.nickname,
+            });
 
             if (member.player && member.player.isConnected())
                 member.player.sendMessage(Message.GANG_KICKED, player.name, gang.name);
@@ -874,7 +926,7 @@ class GangCommands {
             const amount = transaction.amount > 0
                 ? format('{43A047}%$', transaction.amount)
                 : format('{F4511E}-%$', Math.abs(transaction.amount));
-            
+
             dialog.addItem(date, username, amount, transaction.reason);
         }
 
@@ -977,6 +1029,11 @@ class GangCommands {
             return;
         }
 
+        if (amount <= 0) {
+            player.sendMessage(Message.GBANK_NO_EMPTY_TRANSACTIONS);
+            return;
+        }
+
         const balance = await this.manager_.finance.getAccountBalance(gang.id);
         const availableBalance = GangFinance.kMaximumBankAmount - balance;
 
@@ -991,7 +1048,7 @@ class GangCommands {
 
         // Take the |amount| of money away from the player personally.
         this.finance_().takePlayerCash(player, amount);
-        
+
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
             gang, player, Message.GBANK_ANNOUNCE_DEPOSIT, player.name, player.id, amount);
@@ -1034,6 +1091,11 @@ class GangCommands {
             return;
         }
 
+        if (amount <= 0) {
+            player.sendMessage(Message.GBANK_NO_EMPTY_TRANSACTIONS);
+            return;
+        }
+
         // Actually give |player| the money they've withdrawn.
         if (!this.finance_().givePlayerCash(player, amount)) {
             player.sendMessage(
@@ -1045,7 +1107,7 @@ class GangCommands {
         // be attributed and shown in the account's financial records.
         await this.manager_.finance.withdrawFromAccount(
             gang.id, player.account.userId, amount, 'Personal withdrawal');
-        
+
         // Tell everyone in the gang who happens to be about about this mutation.
         this.manager_.announceToGang(
             gang, player, Message.GBANK_ANNOUNCE_WITHDRAWAL, player.name, player.id, amount);

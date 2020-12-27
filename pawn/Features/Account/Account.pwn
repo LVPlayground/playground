@@ -59,9 +59,9 @@ class Account <playerId (MAX_PLAYERS)> {
      * @param registered Is the user a registered player on Las Venturas Playground?
      * @param userId Id of the user as they are registered in the database.
      * @param skinId Optional default skin as has been chosen by the registered user.
-     * @param enableAutomaticIdentification Should this user be identified automatically?
+     * @param requireSampcac Whether SAMPCAC is required for this player account.
      */
-    public onRegisteredRequestComplete(bool: registered, userId, skinId, bool: enableAutomaticIdentification = false) {
+    public onRegisteredRequestComplete(bool: registered, userId, skinId, bool: requireSampcac) {
         BanManager->verifyPlayerAllowedToPlay(playerId, userId);
 
         // Let JavaScript know about the player being registered or not.
@@ -72,17 +72,21 @@ class Account <playerId (MAX_PLAYERS)> {
 
         Player(playerId)->setIsRegistered(true);
         Player(playerId)->setIsLoggedIn(false);
+
         m_loginAttemptCount = 0;
         m_userId = userId;
 
         SpawnManager(playerId)->setSkinId(skinId);
         Annotation::ExpandList<OnPlayerAccountAvailable>(playerId);
 
-        // Proceed to loading their data immediately if automatic identification is enabled.
-        if (enableAutomaticIdentification == true) {
-            this->identifyPlayerForUserId(userId);
+#if Feature::EnableSAMPCAC == 1
+        // If use of SAMPCAC is required for this player, but they haven't enabled it, show them a
+        // dialog with this notice and prohibit them from continuing to play on the server.
+        if (requireSampcac && !CAC_GetStatus(playerId)) {
+            RequireSampcacDialog(playerId)->show();
             return;
         }
+#endif
 
         // Otherwise create a login dialog asking them to enter their password.
         this->displayPasswordDialog();
@@ -255,7 +259,8 @@ class Account <playerId (MAX_PLAYERS)> {
         format(notice, sizeof(notice), "%s (Id:%d) has logged in as %s (%s) using /modlogin.",
             Player(playerId)->nicknameString(), playerId, originalUsername,
             (level == ManagementLevel ? "manager" : "administrator"));
-        Admin(playerId, notice);
+
+        Admin(playerId, notice, /* excludeTemp= */ true);
 
         EchoMessage("notice-crew", "z", notice);
 

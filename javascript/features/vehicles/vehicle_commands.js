@@ -2,12 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { VehicleModel } from 'entities/vehicle_model.js';
 
-import * as benefits from 'features/collectables/collectable_benefits.js';
+import * as benefits from 'features/collectables/benefits.js';
 import { toSafeInteger } from 'base/string_util.js';
+import { Message } from 'base/message.js';
 
 // The maximum distance from the player to the vehicle closest to them, in units.
 const kMaximumVehicleDistance = 10;
@@ -20,79 +21,96 @@ const MaximumVehiclesInArea = 90;
 // Mapping of vehicle commands to model Ids that should be created for quick access.
 const kQuickVehicleCommands = {
     // kBenefitBasicSprayQuickVehicleAccess, the easy tier
-    pre: { modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Premier
-    sul: { modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },  // Sultan
+    pre: { name: 'Premier', modelId: 426, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },
+    sul: { name: 'Sultan', modelId: 560, benefit: benefits.kBenefitBasicSprayQuickVehicleAccess },
 
     // kBenefitBasicBarrelQuickVehicleAccess, the alternative easy tier
-    ele: { modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Elegy
-    tur: { modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },  // Turismo
+    ele: { name: 'Elegy', modelId: 562, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },
+    tur: { name: 'Turismo', modelId: 451, benefit: benefits.kBenefitBasicBarrelQuickVehicleAccess },
 
     // kBenefitFullQuickVehicleAccess, the higher level tier
-    inf: { modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },  // Infernus
-    nrg: { modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },  // NRG-500
+    inf: { name: 'Infernus', modelId: 411, benefit: benefits.kBenefitFullQuickVehicleAccess },
+    nrg: { name: 'NRG-500', modelId: 522, benefit: benefits.kBenefitFullQuickVehicleAccess },
 };
 
 // Responsible for providing the commands associated with vehicles. Both players and administrators
 // can create vehicles. Administrators can save, modify and delete vehicles as well.
 class VehicleCommands {
-    constructor(manager, abuse, announce, collectables, playground, streamer) {
+    constructor(manager, announce, collectables, limits, playground, streamer) {
         this.manager_ = manager;
+        this.delegates_ = new Set();
 
-        this.abuse_ = abuse;
         this.announce_ = announce;
         this.collectables_ = collectables;
+        this.limits_ = limits;
         this.streamer_ = streamer;
 
         this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, VehicleCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands(playground());
 
         // Command: /seize
         server.commandManager.buildCommand('seize')
+            .description(`Seizes control of the vehicle you're in.`)
             .build(VehicleCommands.prototype.onSeizeCommand.bind(this));
 
         // Quick vehicle commands.
-        for (const command of Object.keys(kQuickVehicleCommands)) {
+        for (const [ command, info ] of Object.entries(kQuickVehicleCommands)) {
             server.commandManager.buildCommand(command)
+                .description(`Spawn yourself a ${info.name}.`)
                 .build(VehicleCommands.prototype.onQuickVehicleCommand.bind(this, command));
         }
 
         // Command: /v [vehicle]?
-        //          /v [enter/help/reset]
-        //          /v [player]? [delete/health/respawn/save]
+        //          /v [enter/help/reset/save]
+        //          /v [player]? [delete/health/respawn]
         server.commandManager.buildCommand('v')
-            .restrict(player => this.playground_().canAccessCommand(player, 'v'))
+            .description('Interact with the vehicles on the server.')
             .sub('enter')
+                .description('Forcefully enter the closest vehicle.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
-                .parameters([ { name: 'seat', type: CommandBuilder.NUMBER_PARAMETER,
-                                optional: true } ])
+                .parameters([ { name: 'seat', type: CommandBuilder.kTypeNumber, optional: true } ])
                 .build(VehicleCommands.prototype.onVehicleEnterCommand.bind(this))
             .sub('help')
+                .description('Information on what this command allows you to do.')
                 .build(VehicleCommands.prototype.onVehicleHelpCommand.bind(this))
             .sub('reset')
+                .description('Hard resets the entire vehicle layout.')
                 .restrict(Player.LEVEL_MANAGEMENT)
                 .build(VehicleCommands.prototype.onVehicleResetCommand.bind(this))
-            .sub(CommandBuilder.PLAYER_PARAMETER, player => player)
+            .sub('spawn')
+                .description('Command that enables you to spawn arbitrary vehicles.')
+                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
+            .sub(CommandBuilder.kTypePlayer, 'target', /* optional= */ true)
+                .description('Interact with a particular vehicle on the server.')
                 .sub('delete')
-                    .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+                    .description('Delete a vehicle from the server.')
                     .build(VehicleCommands.prototype.onVehicleDeleteCommand.bind(this))
                 .sub('health')
+                    .description(`Amend a vehicle's health. (0-1000)`)
                     .restrict(Player.LEVEL_ADMINISTRATOR)
-                    .parameters([ { name: 'health', type: CommandBuilder.NUMBER_PARAMETER,
+                    .parameters([ { name: 'health', type: CommandBuilder.kTypeNumber,
                                     optional: true } ])
                     .build(VehicleCommands.prototype.onVehicleHealthCommand.bind(this))
                 .sub('respawn')
+                    .description('Respawn a vehicle.')
                     .restrict(Player.LEVEL_ADMINISTRATOR)
                     .build(VehicleCommands.prototype.onVehicleRespawnCommand.bind(this))
                 .sub('save')
-                    .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+                    .description('Save a vehicle to the database.')
                     .build(VehicleCommands.prototype.onVehicleSaveCommand.bind(this))
-                .build(/* deliberate fall-through */)
-            .sub(CommandBuilder.WORD_PARAMETER)
+                .parameters([{ name: 'model', type: CommandBuilder.kTypeText, optional: true }])
                 .build(VehicleCommands.prototype.onVehicleCommand.bind(this))
+            .parameters([{ name: 'model', type: CommandBuilder.kTypeText, optional: true }])
             .build(VehicleCommands.prototype.onVehicleCommand.bind(this));
+    }
+
+    // Either adds or removes the given |delegate| from the set of vehicle command delegates.
+    addCommandDelegate(delegate) { this.delegates_.add(delegate); }
+    removeCommandDelegate(delegate) { this.delegates_.delete(delegate); }
+
+    // Returns whether the given |player| is allowed to spawn arbitrary vehicles.
+    canSpawnArbitraryVehicles(player) {
+        return this.playground_().canAccessCommand(player, '/v spawn');
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -124,7 +142,7 @@ class VehicleCommands {
             const otherVehicleId = pawnInvoke('GetPlayerVehicleID', 'i', otherPlayer.id);
             if (otherVehicleId !== vehicleId)
                 continue;
-            
+
             const otherSeatId = pawnInvoke('GetPlayerVehicleSeat', 'i', otherPlayer.id);
             if (otherSeatId === 0) {
                 player.sendMessage(Message.VEHICLE_SEIZE_DRIVER, otherPlayer.name);
@@ -155,43 +173,46 @@ class VehicleCommands {
         const { modelId, benefit } = kQuickVehicleCommands[command];
 
         const allowed =
-            this.playground_().canAccessCommand(player, 'v') ||
-            this.collectables_().isPlayerEligibleForBenefit(player, benefit);
+            this.collectables_().isPlayerEligibleForBenefit(player, benefit) ||
+            this.canSpawnArbitraryVehicles(player);
 
         if (!allowed) {
             player.sendMessage(Message.VEHICLE_QUICK_COLLECTABLES);
             return;
         }
 
-        await this.onVehicleCommand(player, String(modelId));
+        await this.internalSpawnVehicle(player, String(modelId));
     }
 
     // ---------------------------------------------------------------------------------------------
 
     // Called when a player executes `/v` or `/v [vehicle]`, which can be either a vehicle Id or
     // part of a vehicle's name. The vehicle will be created for them.
-    async onVehicleCommand(player, modelIdentifier) {
-        if (!modelIdentifier) {
+    async onVehicleCommand(player, modelIdentifier, modelIdentifier2) {
+        modelIdentifier = modelIdentifier2 ?? modelIdentifier;
+
+        if (!player.isAdministrator() || typeof modelIdentifier !== 'string') {
             // TODO: Implement a fancy vehicle selection dialog.
             //     https://github.com/LVPlayground/playground/issues/330
             //     https://github.com/LVPlayground/playground/issues/273
             return this.onVehicleHelpCommand(player);
         }
 
+        return this.internalSpawnVehicle(player, modelIdentifier);
+    }
+
+    // Called when the |player| is able to spawn a vehicle with the given |modelIdentifier|. All
+    // the necessary checks will be done on this code path, other than permission checks.
+    async internalSpawnVehicle(player, modelIdentifier) {
         if (player.vehicle) {
             player.sendMessage(Message.VEHICLE_QUICK_ALREADY_DRIVING);
             return;
         }
 
-        if (player.interiorId != 0 /* outside */ || player.virtualWorld != 0 /* main world */) {
-            player.sendMessage(Message.VEHICLE_QUICK_MAIN_WORLD);
+        const decision = this.limits_().canSpawnVehicle(player);
+        if (!decision.isApproved()) {
+            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED, decision);
             return;
-        }
-
-        const spawnStatus = this.abuse_().canSpawnVehicle(player);
-        if (!spawnStatus.allowed) {
-            player.sendMessage(Message.VEHICLE_SPAWN_REJECTED, spawnStatus.reason);
-            return false;
         }
 
         let vehicleModel = null;
@@ -228,6 +249,11 @@ class VehicleCommands {
             return;
         }
 
+        if ([ 537, 538 ].includes(vehicleModel.id)) {
+            player.sendMessage(Message.VEHICLE_SPAWN_NOT_ALLOWED_TRAIN);
+            return;
+        }
+
         const streamableVehicle = this.manager_.createVehicle(player, vehicleModel.id);
         if (!streamableVehicle) {
             player.sendMessage(Message.VEHICLE_SPAWN_NOT_ALLOWED);
@@ -238,7 +264,7 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_SPAWN_CREATED, vehicleModel.name);
 
         // Report that the |player| has spawned a vehicle. This rate-limits their usage too.
-        this.abuse_().reportSpawnedVehicle(player);
+        this.limits_().reportSpawnVehicle(player);
 
         // If the |vehicle| is live, teleport the |player| to the driver seat after a minor delay.
         if (streamableVehicle.live)
@@ -248,7 +274,35 @@ class VehicleCommands {
     // Called when the |player| executes `/v delete` or `/v [player] delete`, which means they wish
     // to delete the vehicle the target is currently driving.
     async onVehicleDeleteCommand(player, subject) {
-        const vehicle = subject.vehicle;
+        let target = player;
+        if (player.isAdministrator() && subject)
+            target = subject;
+
+        const vehicle = target.vehicle;
+
+        // Bail out if the |player| is not currently in a vehicle - there's nothing to delete.. This
+        // is a bit silly and a huge waste of server processing cycles. Ugh!
+        if (!vehicle) {
+            if (player === target)
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            else
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
+
+            return;
+        }
+
+        // Check if any of the delegates is able to handle the deletion. If they can, bail out.
+        for (const delegate of this.delegates_) {
+            if (await delegate.onVehicleDeleteCommand(player, target, vehicle))
+                return;
+        }
+
+        // If the |player| is not an administrator, bail out at this point. They most likely have
+        // misunderstood the command, so a reminder is helpful.
+        if (!player.isAdministrator() || player.isTemporaryAdministrator()) {
+            player.sendMessage(Message.VEHICLE_DELETE_HELP);
+            return;
+        }
 
         // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
@@ -297,13 +351,13 @@ class VehicleCommands {
             const distance = vehicle.position.distanceTo(position);
             if (distance > kMaximumVehicleDistance)
                 continue;  // the |vehicle| is too far away
-            
+
             if (closestVehicleDistance < distance)
                 continue;  // a closer vehicle has already been found
-            
+
             if (vehicle.interiorId != interiorId || vehicle.virtualWorld != virtualWorld)
                 continue;  // the |vehicle| is not in the same world as the |player|
-            
+
             closestVehicleDistance = distance;
             closestVehicle = vehicle;
         }
@@ -355,19 +409,29 @@ class VehicleCommands {
     // Called when the |player| executes `/v help`. Displays more information about the command, as
     // well as the available sub-commands to the |player|.
     onVehicleHelpCommand(player) {
-        player.sendMessage(Message.VEHICLE_HELP_SPAWN);
+        const globalOptions = [];
+        const vehicleOptions = [];
 
-        if (!player.isAdministrator())
-            return;
+        if (player.isAdministrator()) {
+            globalOptions.push('enter', 'help', 'reset');
+            vehicleOptions.push('health', 'respawn');
 
-        const globalOptions = ['enter', 'help', 'reset'];
-        const vehicleOptions = ['health', 'respawn'];
+            if (!player.isTemporaryAdministrator())
+                vehicleOptions.push('delete', 'save');
+            else
+                globalOptions.push('delete', 'save')
+        } else {
+            globalOptions.push('delete', 'save');
+        }
 
-        if (!player.isTemporaryAdministrator())
-            vehicleOptions.push('delete', 'save');
+        if (this.canSpawnArbitraryVehicles(player))
+            player.sendMessage(Message.VEHICLE_HELP_SPAWN);
 
-        player.sendMessage(Message.VEHICLE_HELP_GLOBAL, globalOptions.sort().join('/'));
-        player.sendMessage(Message.VEHICLE_HELP_VEHICLE, vehicleOptions.sort().join('/'));
+        if (globalOptions.length)
+            player.sendMessage(Message.VEHICLE_HELP_GLOBAL, globalOptions.sort().join('/'));
+
+        if (vehicleOptions.length)
+            player.sendMessage(Message.VEHICLE_HELP_VEHICLE, vehicleOptions.sort().join('/'));
     }
 
     // Called when the |player| requests the vehicle layout to be reset.
@@ -384,10 +448,8 @@ class VehicleCommands {
     // wish to reset the vehicle's position to its original spot.
     onVehicleRespawnCommand(player, subject) {
         const vehicle = subject.vehicle;
-
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
-        if (!this.manager_.isManagedVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+        if (!vehicle) {
+            player.sendMessage(Message.VEHICLE_RESPAWN_NOT_IN_VEHICLE, subject.name);
             return;
         }
 
@@ -396,14 +458,70 @@ class VehicleCommands {
         player.sendMessage(Message.VEHICLE_RESPAWNED, vehicle.model.name);
     }
 
-    // Called when the |player| executes `/v save` or `/v [player] save`, which means they wish to
-    // save the vehicle in the database to make it a persistent vehicle.
+    // Called when the |player| executes `/v save`, which means they wish to save the vehicle in the
+    // database to make it a persistent vehicle. Delegates will also be considered before making
+    // this decision, as players might want to save e.g. their house vehicle.
     async onVehicleSaveCommand(player, subject) {
-        const vehicle = subject.vehicle;
+        let target = player;
+        if (player.isAdministrator() && subject)
+            target = subject;
 
-        // Bail out if the |subject| is not driving a vehicle, or it's not managed by this system.
+        const vehicle = target.vehicle;
+
+        // Bail out if the |player| is not currently in a vehicle - there's nothing to save. They
+        // can see general usage guidelines after having entered one.
+        if (!vehicle) {
+            if (player === target)
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING_SELF);
+            else
+                player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
+
+            return;
+        }
+
+        const options = [];
+
+        // Check whether one of the registered delegates is able to handle the vehicle's save. They
+        // return a sequence of options, which could be displayed in a dialog.
+        for (const delegate of this.delegates_)
+            options.push(...await delegate.getVehicleSaveCommandOptions(player, target, vehicle));
+
+        // If the |player| is an administrator and has the ability to save vehicles, add that to the
+        // given |options| as well. This does allow them to save vehicles of other players.
+        if (player.isAdministrator() && !player.isTemporaryAdministrator()) {
+            options.push({
+                label: `Save to the vehicle layout`,
+                listener: VehicleCommands.prototype.onVehiclePermanentlySaveCommand.bind(this),
+            });
+        }
+
+        // There are three options here: (1) no options, show a help message, (2) one option, fast
+        // path and immediately call the listener, or (3) multiple options, show a dialog.
+        if (options.length === 1) return await options[0].listener(player, target, vehicle);
+
+        if (!options.length) {
+            player.sendMessage(Message.VEHICLE_SAVE_HELP);
+            return;
+        }
+
+        // (1) Sort the |options| based in ascending order based on the label text.
+        options.sort((lhs, rhs) => lhs.label.localeCompare(rhs.label));
+
+        // (2) Compile a dialog with each of the |options|, and have the user pick one instead.
+        const dialog = new Menu('Vehicle options');
+
+        for (const { label, listener } of options)
+            dialog.addItem(label, listener.bind(null, player, target, vehicle));
+
+        return await dialog.displayForPlayer(player);
+    }
+
+    // Called when the |player|'s |vehicle| has to be permanently saved to the database. This option
+    // is only available to permanent administrators, and will persist between sessions.
+    async onVehiclePermanentlySaveCommand(player, target, vehicle) {
+        // Bail out if the |player| is not driving a vehicle, or it's not managed by this system.
         if (!this.manager_.isManagedVehicle(vehicle)) {
-            player.sendMessage(Message.VEHICLE_NOT_DRIVING, subject.name);
+            player.sendMessage(Message.VEHICLE_NOT_DRIVING, target.name);
             return;
         }
 
@@ -432,26 +550,11 @@ class VehicleCommands {
 
     // ---------------------------------------------------------------------------------------------
 
-    // Registers the privileged commands with the `/lvp access` feature.
-    registerTrackedCommands(playground) {
-        playground.registerCommand('v', Player.LEVEL_ADMINISTRATOR);
-    }
-
-    // Drops registrations for the privileged commands.
-    unregisterTrackedCommands(playground) {
-        playground.unregisterCommand('v');
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
     dispose() {
-        this.unregisterTrackedCommands(this.playground_());
-
         for (const command of Object.keys(kQuickVehicleCommands))
             server.commandManager.removeCommand(command);
 
         server.commandManager.removeCommand('v');
-
         server.commandManager.removeCommand('seize');
     }
 }

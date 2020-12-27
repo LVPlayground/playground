@@ -1,0 +1,12 @@
+{
+    "name": "Police Boat",
+    "id": 5,
+
+    "spawnPositions": [
+        { "position": [ -1486.7183, 617.3679, -0.3315 ], "facingAngle": 312.5613, "vehicleModelId": 430 },
+        { "position": [ -1469.1826, 783.8342, -0.1445 ], "facingAngle": 279.2388, "vehicleModelId": 430 },
+        { "position": [ -1361.6873, 784.1740, -0.2586 ], "facingAngle": 150.9152, "vehicleModelId": 430 },
+        { "position": [ -1362.7871, 651.7639, -0.6585 ], "facingAngle": 182.6288, "vehicleModelId": 430 },
+        { "position": [ -1376.5602, 587.2054, -0.3422 ], "facingAngle": 116.0857, "vehicleModelId": 430 }
+    ]
+}

@@ -4,6 +4,8 @@
 
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+import { canVehicleModelHaveComponent } from 'entities/vehicle_components.js';
+
 // The vehicle manager is in control of all vehicles that have been created by the JavaScript code
 // of Las Venturas Playground. It deliberately does not provide access to the Pawn vehicles.
 export class VehicleManager {
@@ -38,6 +40,7 @@ export class VehicleManager {
 
     // Gets the number of vehicles currently created on the server.
     get count() { return this.vehicles_.size; }
+    get size() { return this.vehicles_.size; }
 
     // Returns an iterator that can be used to iterate over the created vehicles.
     [Symbol.iterator]() { return this.vehicles_.values(); }
@@ -76,14 +79,14 @@ export class VehicleManager {
     // Creates a new vehicle with the given options. The vehicle's model Id and position are
     // required, all other options can optionally be provided.
     createVehicle({ modelId, position, rotation = 0, primaryColor = -1, secondaryColor = -1,
-                    siren = false, paintjob = null, numberPlate = null, respawnDelay = 180,
-                    interiorId = 0, virtualWorld = 0 } = {}) {
+                    siren = false, paintjob = null, numberPlate = null, components = [],
+                    respawnDelay = 180, interiorId = 0, virtualWorld = 0 } = {}) {
                     
         const vehicle = new this.vehicleConstructor_(this);
 
         vehicle.initialize({
             modelId, position, rotation, primaryColor, secondaryColor, siren, paintjob, numberPlate,
-            respawnDelay, interiorId, virtualWorld
+            components, respawnDelay, interiorId, virtualWorld
         });
 
         this.vehicles_.set(vehicle.id, vehicle);
@@ -98,8 +101,8 @@ export class VehicleManager {
         if (!vehicle)
             return;  // the vehicle isn't owned by the JavaScript code
 
-        if (vehicle.trailer)
-            this.detachTrailer(vehicle);
+        // Resets vehicle properties when it respawns, such as colours, paint jobs and components.
+        vehicle.initializeOnSpawn();
 
         this.notifyObservers('onVehicleSpawn', vehicle);
     }
@@ -116,16 +119,38 @@ export class VehicleManager {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when a vehicle is being modified by a particular player. This event is cancelable, and
+    // should be canceled when an illegal modification is being made. This is a tactic that players
+    // with malicious intent often use for crashing others.
     onVehicleMod(event) {
         const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;
-
         const vehicle = this.vehicles_.get(event.vehicleid);
-        if (!vehicle)
-            return;
 
-        this.notifyObservers('onVehicleMod', player, vehicle, event.componentid);
+        // If either the |player| or the |vehicle| is invalid, bail out and prevent the default
+        // processing from happening. We don't have enough information to blame a cheater.
+        if (!player || !vehicle) {
+            console.log(`[exception] Vehicle modification found with invalid player/vehicle.`);
+
+            event.preventDefault();
+            return;
+        }
+
+        const componentId = event.componentid;
+
+        // If the |vehicle| is not allowed to have the |componentId|, we cancel the event, notify
+        // observers of an illegal vehicle modification, and bail out.
+        if (!canVehicleModelHaveComponent(vehicle.modelId, componentId)) {
+            this.notifyObservers('onVehicleIllegalModification', player, vehicle, componentId);
+
+            event.preventDefault();
+            return;
+        }
+
+        // Register the |componentId| with the |vehicle|. It will be slotted automatically.
+        vehicle.addComponent(componentId, /* isSync= */ true);
+
+        // Notify observers of the modification to this vehicle.
+        this.notifyObservers('onVehicleMod', player, vehicle, componentId);
     }
 
     onVehiclePaintjob(event) {
@@ -136,7 +161,9 @@ export class VehicleManager {
         const vehicle = this.vehicles_.get(event.vehicleid);
         if (!vehicle)
             return;
-        
+
+        vehicle.setPaintjobInternal(event.paintjobid);
+
         this.notifyObservers('onVehiclePaintjob', player, vehicle, event.paintjobid);
     }
 
@@ -148,6 +175,8 @@ export class VehicleManager {
         const vehicle = this.vehicles_.get(event.vehicleid);
         if (!vehicle)
             return;
+
+        vehicle.setColorsInternal(event.color1, event.color2);
 
         this.notifyObservers('onVehicleRespray', player, vehicle, event.color1, event.color2);
     }

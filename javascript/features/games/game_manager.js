@@ -18,6 +18,7 @@ const kGameVirtualWorldRange = [ 115, 199 ];
 export class GameManager {
     finance_ = null;
     nuwani_ = null;
+    spectate_ = null;
 
     callbacks_ = null;
 
@@ -35,21 +36,23 @@ export class GameManager {
     // Circular buffer that's able to sequentially issue the virtual worlds assigned to games.
     worlds_ = null;
 
-    constructor(finance, nuwani) {
+    constructor(finance, nuwani, spectate) {
         this.finance_ = finance;
         this.nuwani_ = nuwani;
+        this.spectate_ = spectate;
 
         this.callbacks_ = new ScopedCallbacks();
         this.callbacks_.addEventListener(
             'playerresolveddeath', GameManager.prototype.onPlayerDeath.bind(this));
-        this.callbacks_.addEventListener(
-            'playerspawn', GameManager.prototype.onPlayerSpawn.bind(this));
 
         this.registrationIds_ = new CircularReadOnlyBuffer(...range(1, 99));
         this.worlds_ = new CircularReadOnlyBuffer(...range(...kGameVirtualWorldRange));
 
         server.playerManager.addObserver(this);
     }
+
+    // Gets access to the active runtimes, for testing purposes only.
+    get activeRuntimesForTesting() { return this.runtimes_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -98,7 +101,7 @@ export class GameManager {
         // Create the |runtime| and add it to the active runtime set.
         const runtime =
             new GameRuntime(this, description, registration.settings, this.finance_, this.nuwani_,
-                            this.worlds_.next());
+                            this.spectate_, this.worlds_.next());
 
         this.runtimes_.add(runtime);
 
@@ -114,6 +117,18 @@ export class GameManager {
     }
 
     // ---------------------------------------------------------------------------------------------
+
+    // Returns an array with the active game runtimes for the given |description|.
+    getActiveGameRuntimes(description) {
+        let runtimesForGame = [];
+
+        for (const runtime of this.runtimes_) {
+            if (runtime.description === description)
+                runtimesForGame.push(runtime);
+        }
+
+        return runtimesForGame;
+    }
 
     // Immediately stops all games that are either accepting sign-ups or in-progress because the
     // game described by |description| will no longer be available.
@@ -140,11 +155,7 @@ export class GameManager {
 
     // Called when a player spawn in the world. If they're part of an engaged game, the event will
     // be owned by the game and it's expected to do something with it.
-    onPlayerSpawn(event) {
-        const player = server.playerManager.getById(event.playerid);
-        if (!player)
-            return;  // the |player| couldn't be found, this is an invalid death
-        
+    onPlayerSpawn(player) {
         const activity = this.activity_.get(player);
         if (!activity || activity.getActivityState() != GameActivity.kStateEngaged)
             return;  // the |player| isn't in a game, or the game hasn't started yet

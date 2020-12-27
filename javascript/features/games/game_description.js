@@ -2,10 +2,12 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { EnvironmentSettings } from 'features/games/environment_settings.js';
 import { Setting } from 'entities/setting.js';
 import { Vector } from 'base/vector.js';
 
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
+import { formatTime } from 'base/time.js';
 
 // The default number of maximum players who can participate in a game.
 export const kDefaultMaximumPlayers = 4;
@@ -34,11 +36,16 @@ function hasGameInPrototype(gameConstructor) {
 // sign-up, what their available options are, how the game will be represented and which events the
 // Game implementation of the game will receive. Immutable once created.
 export class GameDescription {
+    // Setting identifiers that will be added to the system by default.
+    static kDefaultSettings = [ 'game/environment' ];
+
     // Types of scores that a game can indicate.
     static kScoreNumber = 0;
     static kScoreTime = 1;
 
     gameConstructor_ = null;
+    options_ = null;
+    userData_ = null;
 
     name_ = null;
     goal_ = null;
@@ -47,20 +54,30 @@ export class GameDescription {
     countdownCamera_ = null;
     countdownView_ = null;
 
-    command_ = null;
+    commandFn_ = null;
+    continuous_ = false;
+    environment_ = null;
     maximumPlayers_ = kDefaultMaximumPlayers;
     minimumPlayers_ = kDefaultMinimumPlayers;
+    preferCustom_ = false;
     price_ = kDefaultPrice;
     scoreType_ = GameDescription.kScoreNumber;
     tick_ = kDefaultTickIntervalMs;
 
     settings_ = new Map();
+    settingsFrozen_ = new Set();
     settingsValidator_ = null;
 
     // ---------------------------------------------------------------------------------------------
 
     // Gets the constructor which can be used to instantiate the game.
     get gameConstructor() { return this.gameConstructor_; }
+
+    // Gets the unprocessed options that were used for initializing this game.
+    get options() { return this.options_; }
+
+    // Gets the user data passed when the game was registered with this feature.
+    get userData() { return this.userData_; }
 
     // ---------------------------------------------------------------------------------------------
     // Required configuration
@@ -95,6 +112,9 @@ export class GameDescription {
     // Gets a map of the settings that can be configured for this game.
     get settings() { return this.settings_; }
 
+    // Returns whether the given |setting| is frozen and cannot be modified by the player.
+    isSettingFrozen(setting) { return this.settingsFrozen_.has(setting); }
+
     // Gets the function, if any, which should be used to validate a custom setting.
     get settingsValidator() { return this.settingsValidator_; }
 
@@ -103,7 +123,14 @@ export class GameDescription {
     // ---------------------------------------------------------------------------------------------
 
     // Gets the name of the command which can be used to start the game. Optional, thus may be NULL.
-    get command() { return this.command_; }
+    get command() { return this.commandFn_(new Map()) ?? null; }
+
+    // Gets the function through which the command name can be generated. May only be provided when
+    // |command| is not given, and will be used as a substitute for ID-based games.
+    get commandFn() { return this.commandFn_; }
+
+    // Gets whether this is a continuous game, rather than one that requires sign-up.
+    get continuous() { return this.continuous_; }
 
     // Gets the maximum number of players who can participate in this game.
     get maximumPlayers() { return this.maximumPlayers_; }
@@ -111,8 +138,14 @@ export class GameDescription {
     // Gets the minimum number of players who need to be online to participate in this game.
     get minimumPlayers() { return this.minimumPlayers_; }
 
+    // Gets whether this game prefers customised sign-up experiences.
+    get preferCustom() { return this.preferCustom_; }
+
     // Gets the price for which someone can participate in this minigame.
     get price() { return this.price_; }
+
+    // Returns whether this minigame is free to play, which some continuous games might want to be.
+    isFree() { return this.price_ === 0; }
 
     // Gets the tick rate at which the game will receive lifetime events.
     get tick() { return this.tick_; }
@@ -132,9 +165,9 @@ export class GameDescription {
                 else if (score < 60)
                     return format('in %d seconds', score);
                 else if (score < 3600)
-                    return 'in ' + format('%t', score).replace(/^0/, '') + ' minutes';
+                    return 'in ' + formatTime(score).replace(/^0/, '') + ' minutes';
                 else if (score < 24 * 3600)
-                    return 'in ' + format('%t', score).substring(0, 5).replace(/^0/, '') + ' hours';
+                    return 'in ' + formatTime(score).substring(0, 5).replace(/^0/, '') + ' hours';
                 else
                     return 'in a silly amount of time';
         }
@@ -144,11 +177,13 @@ export class GameDescription {
 
     // ---------------------------------------------------------------------------------------------
 
-    constructor(gameConstructor, options) {
+    constructor(gameConstructor, options, userData) {
         if (!hasGameInPrototype(gameConstructor))
             throw new Error('Each game must override the `Game` base class in this feature.');
 
         this.gameConstructor_ = gameConstructor;
+        this.options_ = options;
+        this.userData_ = userData;
         
         // -----------------------------------------------------------------------------------------
         // Section: required options
@@ -188,6 +223,18 @@ export class GameDescription {
                     throw new Error(`[${this.name}] The setting validator must be a function.`);
                 
                 this.settingsValidator_ = options.settingsValidator;
+            }
+        }
+
+        if (options.hasOwnProperty('settingsFrozen')) {
+            if (!Array.isArray(options.settingsFrozen))
+                throw new Error(`[${this.name}] The game's frozen settings must be an array.`);
+
+            for (const identifier of options.settingsFrozen) {
+                if (typeof identifier !== 'string')
+                    throw new Error(`[${this.name}] Each frozen setting must be a string.`);
+
+                this.settingsFrozen_.add(identifier);
             }
         }
 
@@ -233,6 +280,50 @@ export class GameDescription {
         }
 
         // -----------------------------------------------------------------------------------------
+        // Section: optional environment configuration
+        // -----------------------------------------------------------------------------------------
+
+        // Default environment configuration, can be overridden by the configuration.
+        const environment = {
+            time: 'Afternoon',
+            weather: 'Sunny',
+            gravity: 'Normal',
+        };
+
+        if (options.hasOwnProperty('environment')) {
+            if (typeof options.environment !== 'object')
+                throw new Error(`[${this.name}] The game's environment must be an object.`);
+
+            if (options.environment.hasOwnProperty('time')) {
+                if (!EnvironmentSettings.kTimeOptions.includes(options.environment.time))
+                    throw new Error(`[${this.name}] Invalid value for the environment's time`);
+                
+                environment.time = options.environment.time;
+            }
+
+            if (options.environment.hasOwnProperty('weather')) {
+                if (!EnvironmentSettings.kWeatherOptions.includes(options.environment.weather))
+                    throw new Error(`[${this.name}] Invalid value for the environment's weather`);
+                
+                environment.weather = options.environment.weather;
+            }
+
+            if (options.environment.hasOwnProperty('gravity')) {
+                if (!EnvironmentSettings.kGravityOptions.includes(options.environment.gravity))
+                    throw new Error(`[${this.name}] Invalid value for the environment's gravity`);
+                
+                environment.gravity = options.environment.gravity;
+            }
+        }
+
+        // Add the environment information to the game's settings. This avoids duplication because
+        // the environment settings are configurable by players as well.
+        this.settings_.set(
+            'game/environment',
+            new Setting('game', 'environment', new EnvironmentSettings(), environment,
+                        'Environment'));
+
+        // -----------------------------------------------------------------------------------------
         // Section: optional options
         // -----------------------------------------------------------------------------------------
 
@@ -241,6 +332,25 @@ export class GameDescription {
                 throw new Error(`[${this.name}] The game's command must be given as a string.`);
             
             this.command_ = options.command;
+        }
+
+        if (options.hasOwnProperty('commandFn')) {
+            if (options.hasOwnProperty('command'))
+                throw new Error(`[${this.name}] command and commandFn are mutually exclusive.`);
+
+            if (typeof options.commandFn !== 'function')
+                throw new Error(`[${this.name}] The game's command function must be.. a function.`);
+
+            this.commandFn_ = options.commandFn;
+        } else {
+            this.commandFn_ = () => this.command_;
+        }
+
+        if (options.hasOwnProperty('continuous')) {
+            if (typeof options.continuous !== 'boolean')
+                throw new Error(`[${this.name}] The game's continuous flag must be a boolean.`);
+            
+            this.continuous_ = options.continuous;
         }
 
         if (options.hasOwnProperty('maximumPlayers')) {
@@ -259,6 +369,13 @@ export class GameDescription {
             }
             
             this.minimumPlayers_ = options.minimumPlayers;
+        }
+
+        if (options.hasOwnProperty('preferCustom')) {
+            if (typeof options.preferCustom !== 'boolean')
+                throw new Error(`[${this.name}] The game's preferCustom flag must be a boolean.`);
+
+            this.preferCustom_ = options.preferCustom;
         }
 
         if (options.hasOwnProperty('price')) {
@@ -288,5 +405,12 @@ export class GameDescription {
             
             this.tick_ = options.tick;
         }
+
+        // -----------------------------------------------------------------------------------------
+        // Section: combinational validation
+        // -----------------------------------------------------------------------------------------
+
+        if (this.continuous_ && this.minimumPlayers_ >= 2)
+            throw new Error(`[${this.name}] Continuous games must accept single participants.`);
     }
 }

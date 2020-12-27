@@ -9,15 +9,17 @@ import HouseInterior from 'features/houses/house_interior.js';
 import HouseLocation from 'features/houses/house_location.js';
 import HouseParkingLot from 'features/houses/house_parking_lot.js';
 import HouseSettings from 'features/houses/house_settings.js';
-import HouseVehicle from 'features/houses/house_vehicle.js';
+import { HouseVehicle } from 'features/houses/house_vehicle.js';
 import HouseVehicleController from 'features/houses/house_vehicle_controller.js';
 import MockHouseDatabase from 'features/houses/test/mock_house_database.js';
 import { ObjectGroup } from 'entities/object_group.js';
 
+import { messages } from 'features/houses/houses.messages.js';
+
 // The house manager orchestrates all details associated with housing, manages data and responds to
 // player connection and disconnection events.
 class HouseManager {
-    constructor(abuse, announce, economy, friends, gangs, location, settings, streamer) {
+    constructor(announce, economy, friends, gangs, location, settings, streamer) {
         this.database_ = server.isTest() ? new MockHouseDatabase()
                                          : new HouseDatabase();
 
@@ -35,7 +37,7 @@ class HouseManager {
 
         // Responsible for all entrances and exits associated with the locations.
         this.entranceController_ =
-            new HouseEntranceController(this, abuse, economy, friends, gangs, location);
+            new HouseEntranceController(this, economy, friends, gangs, location);
 
         // Responsible for all vehicles associated with the houses.
         this.vehicleController_ = new HouseVehicleController(settings, streamer);
@@ -60,6 +62,9 @@ class HouseManager {
 
     // Gets a promise that is to be resolved when the feature is ready.
     get ready() { return this.dataLoadedPromise_; }
+
+    // Gets the vehicle controller that manages house-associated vehicles.
+    get vehicleController() { return this.vehicleController_; }
 
     // ---------------------------------------------------------------------------------------------
 
@@ -216,35 +221,132 @@ class HouseManager {
         this.invokeExtensions('onHouseCreated', location);
     }
 
-    // Creates a new vehicle in the |parkingLot| associated with the |location|. The |vehicleInfo|
-    // must be an object having {modelId}.
-    async createVehicle(location, parkingLot, vehicleInfo) {
+    // ---------------------------------------------------------------------------------------------
+
+    // Serializes the given |vehicle| for the |parkingLot| owned by |location|. If there is an
+    // existing vehicle, it will be removed prior to saving the new one. Occupancy will be migrated.
+    // The |vehicle| may ne NULL, which means that it should be removed altogether.
+    async storeVehicle(location, parkingLot, vehicle) {
         if (!this.locations_.has(location))
             throw new Error('The given |location| does not exist in this HouseManager.');
 
         if (!location.hasParkingLot(parkingLot))
             throw new Error('The given |parkingLot| does not belong to the |location|.');
+        
+        const houseVehicle = location.settings.vehicles.get(parkingLot);
+        
+        // Three options: (1) The |houseVehicle| has to be removed, (2) the |houseVehicle| has to
+        // be updated, or (3) a new HouseVehicle has to be created.
+        if (houseVehicle && !vehicle)
+            await this.deleteVehicle(location, parkingLot, houseVehicle);
+        else if (houseVehicle && vehicle)
+            await this.updateVehicle(location, parkingLot, houseVehicle, vehicle);
+        else if (!houseVehicle && vehicle)
+            await this.createVehicle(location, parkingLot, vehicle);
+    }
 
-        if (location.settings.vehicles.has(parkingLot))
-            throw new Error('The given |parkingLot| is already occupied by a vehicle.');
-
+    // Called when the |vehicle| should be created in the |parkingLot| belonging to the given
+    // |location|. It will be fully serialized before being stored.
+    async createVehicle(location, parkingLot, vehicle) {
+        const vehicleInfo = this.serializeVehicle(vehicle);
         const vehicleId = await this.database_.createVehicle(location, parkingLot, vehicleInfo);
-        const vehicleData = {
-            id: vehicleId
-        };
 
-        // Copy over all |vehicleInfo| properties to the new |vehicleData| copy.
-        Object.keys(vehicleInfo).forEach(key => vehicleData[key] = vehicleInfo[key]);
+        // Store the |vehicleId| on the |vehicleInfo|, so that it can be stored in the instance.
+        vehicleInfo.id = vehicleId;
 
-        // Create the actual vehicle based on the information.
-        const vehicle = new HouseVehicle(vehicleData, parkingLot);
+        const houseVehicle = new HouseVehicle(vehicleInfo, parkingLot);
 
         // Associate the |vehicle| with the vehicles created by the |location|'s house.
-        location.settings.vehicles.set(parkingLot, vehicle);
+        location.settings.vehicles.set(parkingLot, houseVehicle);
 
         // Create the vehicle with the VehicleController.
-        this.vehicleController_.createVehicle(location, vehicle);
+        this.vehicleController_.createVehicle(location, houseVehicle);
     }
+
+    // Called when the |houseVehicle| should be updated based on given |vehicle|.
+    async updateVehicle(location, parkingLot, houseVehicle, vehicle) {
+        const streamableVehicle = this.vehicleController_.getStreamableVehicle(houseVehicle);
+
+        let occupants = new Map();
+        let position = null;
+
+        // (1) If the |streamableVehicle| exists and is live, it has to be removed. Store all the
+        // occupants in the |occupants| map in case we want to put them back in the vehicle.
+        if (streamableVehicle && streamableVehicle.live) {
+            position = streamableVehicle.live.position;
+
+            for (const player of streamableVehicle.live.getOccupants()) {
+                occupants.set(player, player.vehicleSeat);
+
+                // Teleport the player out of the vehicle. This will prevent them from showing up as
+                // hidden later on: https://wiki.sa-mp.com/wiki/PutPlayerInVehicle.
+                player.position = vehicle.position.translate({ z: 2 });
+            }
+
+            // Clear the list of occupants if the stored vehicle's model Id will change.
+            if (streamableVehicle.modelId !== vehicle.modelId)
+                occupants.clear();
+
+            // Remove the |houseVehicle| from the vehicle controller altogether.
+            this.vehicleController_.removeVehicle(location, houseVehicle);
+        }
+
+        const vehicleInfo = this.serializeVehicle(vehicle);
+
+        // (2) Update the vehicle's information in the database. This will make sure that the
+        // changes applied to the vehicle will persist between playing sessions.
+        await this.database_.updateVehicle(houseVehicle, vehicleInfo);
+
+        // (3) Apply the updated vehicle information to the |houseVehicle|.
+        houseVehicle.applyVehicleInfo(vehicleInfo);
+
+        // (4) Re-create the vehicle with the VehicleController, which will make it appear in the
+        // world again. If there were |occupants|, we make sure they're put back in too.
+        const updatedStreamableVehicle = this.vehicleController_.createVehicle(
+            location, houseVehicle, /* immediate= */ true);
+
+        if (!occupants.size || !updatedStreamableVehicle.live)
+            return;  // no occupants, bail out
+
+        wait(100).then(() => {
+            if (!updatedStreamableVehicle.live)
+                return;  // the vehicle has been removed since
+
+            updatedStreamableVehicle.live.position = position;
+
+            for (const [ player, seat ] of occupants) {
+                if (player.isConnected())
+                    player.enterVehicle(updatedStreamableVehicle.live, seat);
+            }
+        });
+    }
+
+    // Called when the |houseVehicle| should be removed from the given |location|.
+    async deleteVehicle(location, parkingLot, houseVehicle) {
+        await this.database_.removeVehicle(houseVehicle);
+
+        // Remove the vehicle from the vehicle controller.
+        this.vehicleController_.removeVehicle(location, houseVehicle);
+
+        // Remove the vehicle from the house's svehicle settings.
+        location.settings.vehicles.delete(parkingLot);
+    }
+
+    // Serializes the given |vehicle| in an object that's usable for the house vehicle system. If
+    // you change the syntax here, you must change it in the HouseDatabase as well.
+    serializeVehicle(vehicle) {
+        return {
+            modelId: vehicle.modelId,
+
+            primaryColor: vehicle.primaryColor,
+            secondaryColor: vehicle.secondaryColor,
+            paintjob: vehicle.paintjob,
+
+            components: vehicle.getComponents(),
+        };
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // Updates the |setting| of the |location| to |value|. The actual application of the setting
     // update is unique to the setting that is being changed. The following settings are available:
@@ -274,9 +376,14 @@ class HouseManager {
                 await this.database_.updateHouseAccess(location, value);
 
                 const readableAccess = HouseSettings.getReadableAccess(value);
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_ACCESS_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, readableAccess);
-                
+
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_access, {
+                    access: readableAccess,
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
+
                 location.settings.access = value;
                 break;
 
@@ -287,8 +394,12 @@ class HouseManager {
                 await this.database_.updateHouseMarkerColor(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'color', value);
 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_MARKER_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_marker, {
+                    house: location.settings.id,
+                    marker: value,
+                    name: location.settings.name,
+                    player,
+                });
 
                 location.settings.markerColor = value;
                 break;
@@ -300,8 +411,11 @@ class HouseManager {
                 await this.database_.updateHouseName(location, value);
                 await this.entranceController_.updateLocationSetting(location, 'label', value);
                 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_RENAMED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_rename, {
+                    house: location.settings.id,
+                    name: value,
+                    player,
+                });
 
                 location.settings.name = value;
                 break;
@@ -315,13 +429,17 @@ class HouseManager {
                 // Remove the spawn setting from all existing houses owned by the player.
                 this.getHousesForUser(location.settings.ownerId).forEach(ownedLocation =>
                     ownedLocation.settings.setSpawn(false));
-                
-                if(value){
-                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_CHANGED, 
-                        player.name, player.id, location.settings.name, location.settings.id);    
-                } else {
-                    this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SPAWN_REMOVED, 
-                        player.name, player.id, location.settings.name, location.settings.id);                    
+
+                // Announce the spawning change to administrators
+                {
+                    const message = value ? messages.houses_admin_spawn_set
+                                          : messages.houses_admin_spawn_unset;
+
+                    this.announce_().broadcast('admin/houses/spawning', message, {
+                        house: location.settings.id,
+                        name: location.settings.name,
+                        player,
+                    });
                 }
 
                 location.settings.setSpawn(value);
@@ -333,8 +451,11 @@ class HouseManager {
 
                 await this.database_.updateHouseStreamUrl(location, value);
                 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_AUDIO_STREAM_CHANGED, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_audio, {
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
 
                 location.settings.streamUrl = value;
                 break;
@@ -345,8 +466,11 @@ class HouseManager {
 
                 await this.database_.updateHouseWelcomeMessage(location, value);
 
-                this.announce_().announceToAdministrators(Message.HOUSE_ANNOUNCE_SET_WELCOME_MESSAGE, 
-                    player.name, player.id, location.settings.name, location.settings.id, value);
+                this.announce_().broadcast('admin/houses/settings', messages.houses_admin_welcome, {
+                    house: location.settings.id,
+                    name: location.settings.name,
+                    player,
+                });
                 
                 location.settings.welcomeMessage = value;
                 break;
@@ -520,27 +644,6 @@ class HouseManager {
 
         this.entranceController_.updateLocation(location);
         this.vehicleController_.removeVehiclesForLocation(location);
-    }
-
-    // Removes the |vehicle| stored in the |parkingLot| associated with |location|.
-    async removeVehicle(location, parkingLot, vehicle) {
-        if (!this.locations_.has(location))
-            throw new Error('The given |location| does not exist in this HouseManager.');
-
-        if (!location.hasParkingLot(parkingLot))
-            throw new Error('The given |parkingLot| does not belong to the |location|.');
-
-        if (location.settings.vehicles.get(parkingLot) !== vehicle)
-            throw new Error('The given |parkingLot| is not occupied by the |vehicle|.');
-
-        // Remove the vehicle from the database.
-        await this.database_.removeVehicle(vehicle);
-
-        // Remove the vehicle from the vehicle controller.
-        this.vehicleController_.removeVehicle(location, vehicle);
-
-        // Remove the vehicle from the house's svehicle settings.
-        location.settings.vehicles.delete(parkingLot);
     }
 
     // ---------------------------------------------------------------------------------------------

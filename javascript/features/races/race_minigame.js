@@ -6,7 +6,6 @@ import Countdown from 'features/races/ui/countdown.js';
 import DestroyedVehicleMessage from 'features/races/ui/destroyed_vehicle_message.js';
 import FinishedMessage from 'features/races/ui/finished_message.js';
 import LeaveVehicleMessage from 'features/races/ui/leave_vehicle_message.js';
-import Minigame from 'features/minigames/minigame.js';
 import RaceExpiredMessage from 'features/races/ui/race_expired_message.js';
 import RacePlayerData from 'features/races/race_player_data.js';
 
@@ -15,6 +14,8 @@ const InfiniteNitroInterval = 20000;
 
 // Frequency at which a race's update ticker will be updating. In milliseconds.
 const UpdateTickerInterval = 147;
+
+class Minigame {}
 
 // This class represents an on-going race minigame. The race defines the maximum number of players,
 // and the lifetime of the minigame will be controlled by the minigame manager.
@@ -209,8 +210,10 @@ class RaceMinigame extends Minigame {
         this.updateTicker();
 
         // Unfreeze all players and allow them to begin racing.
-        for (const player of this.activePlayers)
-            player.vehicle.toggleEngine(true);
+        for (const player of this.activePlayers) {
+            if (player.vehicle)
+                player.vehicle.toggleEngine(true);
+        }
 
         this.startTime_ = highResolutionTime();
 

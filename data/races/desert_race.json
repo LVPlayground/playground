@@ -2,48 +2,35 @@
     "name": "Desert Race",
     "id": 5,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
-        "weather": 8,
-        "time": [13, 0],
-        "interior": 0
+        "weather": "Rainy"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -1418.5000, 1932.0000, 51.2134 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 573
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 573
         },
         {
             "position": [ -1418.5000, 1936.0000, 51.0515 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 573
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 573
         },
         {
             "position": [ -1418.5000, 1940.0000, 50.9114 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 573
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 573
         },
         {
             "position": [ -1418.5000, 1944.0000, 50.7464 ],
-            "rotation": 90.0,
-            "vehicle": {
-                "model": 573
-            }
+            "facingAngle": 90.0,
+            "vehicleModelId": 573
         }
     ],
 
     "settings": {
-        "unlimited_nos": true
+        "unlimitedNos": true
     },
 
     "checkpoints": [

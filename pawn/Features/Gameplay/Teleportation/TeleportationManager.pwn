@@ -22,9 +22,6 @@ class TeleportationManager {
     // For every player, we save the timestamp of teleportation.
     new m_playerTeleportTime[MAX_PLAYERS];
 
-    // If a crew member wants to teleport to someone with teleportation disabled, we show a warning.
-    new m_crewTeleportWarning[MAX_PLAYERS];
-
     /**
      * If everything's set, we teleport one player to another. Non-crew members have to pay a certain
      * price, but only if they don't own a special property. Player, subject and crew are informed
@@ -64,7 +61,7 @@ class TeleportationManager {
             }
         }
 
-        ReportPlayerTeleport(playerId, 0 /* timeLimited */);
+        ReportPlayerTeleport(playerId);
 
         new const bool: isIsolated = PlayerSyncedData(playerId)->isolated();
 
@@ -149,10 +146,10 @@ class TeleportationManager {
     public bool: isTeleportAvailable(playerId, subjectId, TeleportationType: teleportType) {
         new delay = teleportType == DefaultTeleport ? DefaultTeleportDelay : CarTeleportDelay, message[128];
 
-        // Carteleporting to the cruise is allowed once per minute, except for crew members.
-        if (subjectId == CruiseController->getCruiseLeaderId()
-            && Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay
-            && Player(playerId)->isAdministrator() == false) {
+        // Carteleporting to the cruise is allowed once per minute, except for secret teleports.
+        if (subjectId == CruiseController->getCruiseLeaderId() &&
+                Time->currentTime() - m_playerTeleportTime[playerId] < CarTeleportToCruiseDelay &&
+                teleportType != SecretTeleport) {
             format(message, sizeof(message), "You may only %s to the cruise once per minute.",
                 (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
                 CarTeleportToCruiseDelay / 60);
@@ -163,7 +160,8 @@ class TeleportationManager {
 
         // Both teleport and carteleport is limited in use to avoid abuse, except for crew members.
         if (subjectId != CruiseController->getCruiseLeaderId() &&
-            Time->currentTime() - m_playerTeleportTime[playerId] < delay && Player(playerId)->isAdministrator() == false) {
+                Time->currentTime() - m_playerTeleportTime[playerId] < delay &&
+                teleportType != SecretTeleport) {
             format(message, sizeof(message), "You may only %s once every %d minutes.",
             (teleportType == DefaultTeleport ? "teleport" : "carteleport"),
             (teleportType == DefaultTeleport ? DefaultTeleportDelay / 60 : CarTeleportDelay / 60));
@@ -178,7 +176,7 @@ class TeleportationManager {
             return false;
         }
 
-        if (Player(subjectId)->isNonPlayerCharacter() == true && teleportType != SecretTeleport) {
+        if (Player(subjectId)->isNonPlayerCharacter()) {
             SendClientMessage(playerId, Color::Error, "You can't teleport to NPCs.");
             return false;
         }
@@ -193,7 +191,7 @@ class TeleportationManager {
         // a player anywhere at any moment. That's why we allow them to teleport even when the player
         // is in a minigame or something.
         if (teleportType != SecretTeleport) {
-            if (GetPlayerTeleportStatus(playerId, 0 /* timeLimited */) != TELEPORT_STATUS_ALLOWED) {
+            if (!CanPlayerTeleport(playerId)) {
                 SendClientMessage(playerId, Color::Error, "Because of recent fighting activities, you aren't able to teleport.");
                 return false;
             }
@@ -256,26 +254,12 @@ class TeleportationManager {
             }
         }
 
-        // If a subject has teleportation disabled, only crew members are able to teleport. But before
-        // that happens, we show them a warning to reconsider this. They have to re-enter the command
-        // to actually teleport, to avoid cases of crew members abusing their rights.
-        if (PlayerSettings(subjectId)->isTeleportationDisabled() == true && teleportType != SecretTeleport &&
-            subjectId != CruiseController->getCruiseLeaderId()) {
-            if (Player(playerId)->isAdministrator() == false) {
-                SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
-                return false;
-            }
-
-            if (Player(playerId)->isAdministrator() == true && m_crewTeleportWarning[playerId] == 0) {
-                m_crewTeleportWarning[playerId] = 2;
-                SendClientMessage(playerId, Color::Error,
-                    "This player has disabled teleporting. Enter this command again to force teleportation.");
-                return false;
-            }
-
-            // The warning has been showed before and the command has been re-entered. Let's go!
-            if (Player(playerId)->isAdministrator() == true && m_crewTeleportWarning[playerId] != 0)
-                return true;
+        // If a subject has teleportation disabled, only crew members are able to teleport when using
+        // the /stp command rather than the regular teleportation command.
+        if (PlayerSettings(subjectId)->isTeleportationDisabled() && teleportType != SecretTeleport
+                && subjectId != CruiseController->getCruiseLeaderId()) {
+            SendClientMessage(playerId, Color::Error, "This player has disallowed others from teleporting to them using /my teleport off");
+            return false;
         }
 
         // Owners of the property with the FreeTeleportFeature are allowed to (car)teleport for free.
@@ -288,7 +272,7 @@ class TeleportationManager {
         new const price = GetEconomyValue(teleportType == DefaultTeleport ? TeleportWithoutVehicle
                                                                           : TeleportWithVehicle);
 
-        if (!Player(playerId)->isAdministrator() && GetPlayerMoney(playerId) < price && playerId != ownerId
+        if (teleportType != SecretTeleport && GetPlayerMoney(playerId) < price && playerId != ownerId
             && subjectId != CruiseController->getCruiseLeaderId()) {
             FinancialUtilities->formatPrice(price, teleportPrice, sizeof(teleportPrice));
             format(message, sizeof(message),
@@ -310,23 +294,6 @@ class TeleportationManager {
     @list(OnPlayerConnect)
     public onPlayerConnect(playerId) {
         m_playerTeleportTime[playerId] = 0;
-        m_crewTeleportWarning[playerId] = 0;
-
-        return 1;
-    }
-
-    /**
-     * Per minute tick we process member variables concerning crew teleport warnings.
-     */
-    @list(MinuteTimer)
-    public onMinuteTimerTick() {
-        for (new playerId = 0; playerId <= PlayerManager->highestPlayerId(); ++playerId) {
-            if (Player(playerId)->isConnected() == false || Player(playerId)->isAdministrator() == false)
-                continue;
-
-            if (m_crewTeleportWarning[playerId] >= 1)
-                m_crewTeleportWarning[playerId] --;
-        }
 
         return 1;
     }

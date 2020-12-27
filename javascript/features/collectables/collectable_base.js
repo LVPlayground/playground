@@ -54,6 +54,10 @@ export class CollectableBase {
     // Returns a reference to a mutable Map<id, data> with all the collectables for this type.
     getCollectables() { return this.collectableItems_; }
 
+    // Returns a reference to a mutable Map<id, data> with all the collectables for this type, that
+    // should be considered for hints through the command system.
+    getCollectablesForHints(player) { return this.collectableItems_; }
+
     // Returns a particular collectable by its id, or NULL when it doesn't exist.
     getCollectable(id) { return this.collectableItems_.get(id) ?? null; }
 

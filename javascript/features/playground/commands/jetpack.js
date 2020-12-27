@@ -2,21 +2,23 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
 // Command: /jetpack [player] ["remove"]
-class JetpackCommand extends Command {
+export default class JetpackCommand extends Command {
     get name() { return 'jetpack'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Get a jetpack to fly around in.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description('Give or remove a jetpack to another player.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .parameters([
-                    { name: 'remove', type: CommandBuilder.WORD_PARAMETER, optional: true }
+                    { name: 'remove', type: CommandBuilder.kTypeText, optional: true }
                 ])
                 .build(JetpackCommand.prototype.onJetpackCommand.bind(this))
             .build(JetpackCommand.prototype.onJetpackCommand.bind(this));
@@ -26,7 +28,7 @@ class JetpackCommand extends Command {
         const subject = targetPlayer || player;
 
         // Do not allow jetpacks to be spawned in virtual worlds.
-        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isAdministrator()) {
+        if (!VirtualWorld.isMainWorld(subject.virtualWorld) && !player.isManagement()) {
             player.sendMessage(Message.LVP_JETPACK_NOT_AVAILABLE_VW);
             return;
         }
@@ -64,5 +66,3 @@ class JetpackCommand extends Command {
         player.sendMessage(Message.LVP_JETPACK_GRANTED_SELF);
     }
 }
-
-export default JetpackCommand;

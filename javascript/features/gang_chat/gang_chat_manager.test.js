@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import GangChatManager from 'features/gang_chat/gang_chat_manager.js';
+import { GangChatManager } from 'features/gang_chat/gang_chat_manager.js';
 import GangTester from 'features/gangs/test/gang_tester.js';
 
 describe('GangChatManager', (it, beforeEach, afterEach) => {
@@ -14,13 +14,14 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
         // The communication feature has to be pre-loaded.
         server.featureManager.loadFeature('communication');
 
+        const announce = server.featureManager.loadFeature('announce');
         const communication =
             server.featureManager.createDependencyWrapperForFeature('communication');
 
         gangs = server.featureManager.loadFeature('gangs');
         nuwani = server.featureManager.loadFeature('nuwani');
 
-        manager = new GangChatManager(() => gangs, communication, () => nuwani);
+        manager = new GangChatManager(() => announce, () => gangs, communication, () => nuwani);
     });
 
     afterEach(() => manager.dispose());
@@ -122,29 +123,6 @@ describe('GangChatManager', (it, beforeEach, afterEach) => {
                 'hello',
             ],
         });
-    });
-
-    it('should skip administrators if their message level is lower than two', async(assert) => {
-        const player = server.playerManager.getById(0 /* Gunther */);
-        const russell = server.playerManager.getById(1 /* Russell */);
-
-        await player.identify();
-
-        const gang = await GangTester.createGang(player);
-
-        russell.level = Player.LEVEL_ADMINISTRATOR;
-        russell.messageLevel = 0 /* do not see gang chat */;
-
-        const expectedMessage =
-            Message.format(Message.GANG_CHAT, gang.tag, player.id, player.name, 'hello');
-
-        assert.isFalse(gang.hasPlayer(russell));
-        await player.issueMessage('!  hello  ');
-
-        assert.equal(player.messages.length, 1);
-        assert.equal(player.messages[0], expectedMessage);
-
-        assert.equal(russell.messages.length, 0);
     });
 
     it('should make an announcement when somebody buys Seti @ Home', async(assert) => {

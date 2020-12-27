@@ -2,48 +2,36 @@
     "name": "Dangerous Mountain Tumbles",
     "id": 3,
 
-    "time_limit": 500,
-    "laps": 1,
-
     "environment": {
-        "weather": 19,
-        "time": [19, 0],
-        "interior": 0
+        "weather": "Sandstorm",
+        "time": "Evening"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -2314.5796, -1688.9640, 482.1374 ],
-            "rotation": 228.25,
-            "vehicle": {
-                "model": 495
-            }
+            "facingAngle": 228.25,
+            "vehicleModelId": 495
         },
         {
             "position": [ -2311.5325, -1685.5397, 482.3105 ],
-            "rotation": 228.25,
-            "vehicle": {
-                "model": 495
-            }
+            "facingAngle": 228.25,
+            "vehicleModelId": 495
         },
         {
             "position": [ -2321.0486, -1683.1886, 482.5830 ],
-            "rotation": 228.25,
-            "vehicle": {
-                "model": 495
-            }
+            "facingAngle": 228.25,
+            "vehicleModelId": 495
         },
         {
             "position": [ -2318.0005, -1679.7029, 482.7208 ],
-            "rotation": 228.25,
-            "vehicle": {
-                "model": 495
-            }
+            "facingAngle": 228.25,
+            "vehicleModelId": 495
         }
     ],
 
     "settings": {
-        "unlimited_nos": true
+        "unlimitedNos": true
     },
 
     "checkpoints": [

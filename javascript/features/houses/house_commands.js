@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Dialog } from 'components/dialogs/dialog.js';
 import HouseSettings from 'features/houses/house_settings.js';
 import IdentityBeam from 'features/houses/utils/identity_beam.js';
@@ -15,61 +15,68 @@ import ParkingLotRemover from 'features/houses/utils/parking_lot_remover.js';
 import { PlayerSetting } from 'entities/player_setting.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
+import { alert } from 'components/dialogs/alert.js';
+import { messages } from 'features/houses/houses.messages.js';
+
 // Maximum number of milliseconds during which the identity beam should be displayed.
 const IdentityBeamDisplayTimeMs = 60000;
 
 // This class provides the `/house` command available to administrators to manage parts of the
 // Houses feature on Las Venturas Playground. Most interaction occurs through dialogs.
 class HouseCommands {
-    constructor(manager, abuse, announce, economy, finance, location, playground) {
+    constructor(manager, announce, economy, finance, limits, location) {
         this.manager_ = manager;
 
-        this.abuse_ = abuse;
         this.announce_ = announce;
         this.economy_ = economy;
         this.finance_ = finance;
+        this.limits_ = limits;
         this.location_ = location;
-
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, HouseCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands(playground());
 
         this.parkingLotCreator_ = new ParkingLotCreator();
         this.parkingLotRemover_ = new ParkingLotRemover();
 
         // Command: /house [buy/cancel/create/enter/goto/interior/modify/remove/save/settings]
         server.commandManager.buildCommand('house')
-            .restrict(player => this.playground_().canAccessCommand(player, 'house'))
+            .description('Manage your house(s) on the server.')
             .sub('buy')
+                .description('Purchase a new house.')
                 .build(HouseCommands.prototype.onHouseBuyCommand.bind(this))
             .sub('cancel')
+                .description('Cancel purchase of a house.')
                 .build(HouseCommands.prototype.onHouseCancelCommand.bind(this))
             .sub('create')
+                .description('Create a new house location.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseCreateCommand.bind(this))
             .sub('enter')
+                .description('Forcefully enter a house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(HouseCommands.prototype.onHouseEnterCommand.bind(this))
             .sub('goto')
-                .parameters([{ name: 'filter', type: CommandBuilder.WORD_PARAMETER, optional: true }])
+                .description('Teleport to one of your houses.')
+                .parameters([{ name: 'filter', type: CommandBuilder.kTypeText, optional: true }])
                 .build(HouseCommands.prototype.onHouseGotoCommand.bind(this))
             .sub('interior')
+                .description('Teleport to a particular house interior.')
                 .restrict(Player.LEVEL_MANAGEMENT)
-                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'id', type: CommandBuilder.kTypeNumber }])
                 .build(HouseCommands.prototype.onHouseInteriorCommand.bind(this))
             .sub('modify')
+                .description('Modify settings for the house location.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseModifyCommand.bind(this))
             .sub('remove')
+                .description('Remove the house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
-                .parameters([{ name: 'id', type: CommandBuilder.NUMBER_PARAMETER }])
+                .parameters([{ name: 'id', type: CommandBuilder.kTypeNumber }])
                 .build(HouseCommands.prototype.onHouseRemoveCommand.bind(this))
             .sub('save')
+                .description('Save a parking lot for the current house.')
                 .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(HouseCommands.prototype.onHouseSaveCommand.bind(this))
             .sub('settings')
+                .description('Change the settings for this house.')
                 .build(HouseCommands.prototype.onHouseSettingsCommand.bind(this))
             .build(HouseCommands.prototype.onHouseCommand.bind(this));
     }
@@ -133,10 +140,11 @@ class HouseCommands {
         // Actually claim the house within the HouseManager, which writes it to the database.
         await this.manager_.createHouse(player, location, interior.id);
 
-        this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_PURCHASED, 
-            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_BUY, 
-            player.name, player.id, interior.price, location.id);
+        this.announce_().broadcast('admin/houses/ownership', messages.houses_admin_purchased, {
+            location: location.id,
+            player,
+            price: interior.price,
+        });
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -161,6 +169,13 @@ class HouseCommands {
     // the house will be on offer to players.
     async onHouseCreateCommand(player) {
         const position = player.position;
+
+        // SA-MP pickups are limited to [-4096, 4096] due to the compression being applied when
+        // packing their coordinates. This, sadly, places quite a restriction on where they can be.
+        if (position.x < -4096 || position.x > 4096 || position.y < -4096 || position.y > 4096) {
+            player.sendMessage(Message.HOUSE_CREATE_OUT_OF_BOUNDS);
+            return;
+        }
 
         // Certain areas are considered to be of high strategic value, and only allow for limited
         // residential activity. Houses should be maintained by players elsewhere.
@@ -196,10 +211,9 @@ class HouseCommands {
         await this.manager_.createLocation(player, { facingAngle, interiorId, position });
 
         // Announce creation of the location to other administrators.
-        this.announce_().announceToAdministratorsWithFilter(
-            Message.HOUSE_ANNOUNCE_CREATED, 
-            PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_CREATED,
-            player.name, player.id);
+        this.announce_().broadcast('admin/houses/locations', messages.houses_admin_created, {
+            player
+        });
 
         // Display a confirmation dialog to the player to inform them of their action.
         await MessageBox.display(player, {
@@ -304,17 +318,17 @@ class HouseCommands {
         const houses = new Set();
         let nickname = null;
 
-        const teleportStatus = this.abuse_().canTeleport(player, { enforceTimeLimit: true });
+        const teleportStatus = this.limits_().canTeleport(player);
 
         // Bail out if the |player| is not currently allowed to teleport.
-        if (!teleportStatus.allowed) {
-            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, teleportStatus.reason);
+        if (!teleportStatus.isApproved()) {
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, teleportStatus);
             return;
         }
 
         // Bail out if the user is in an interior, or in a different virtual world.
         if (player.interiorId != 0 || player.virtualWorld != 0) {
-            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, 'not outside');
+            player.sendMessage(Message.HOUSE_GOTO_TELEPORT_BLOCKED, `you're not outside`);
             return;
         }
 
@@ -343,13 +357,16 @@ class HouseCommands {
             menu.addItem(location.settings.name, player => {
                 this.manager_.forceEnterHouse(player, location);
 
-                this.abuse_().reportTimeThrottledTeleport(player);
+                this.limits_().reportTeleportation(player);
 
-                // Announce creation of the location to other administrators.
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_TELEPORTED, 
-                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_TELEPORTED, 
-                    player.name, player.id, location.settings.name, location.settings.ownerName);
+                // Announce the teleportation action to administrators.
+                this.announce_().broadcast(
+                    'admin/houses/teleportation', messages.houses_admin_goto,
+                    {
+                        name: location.settings.name,
+                        owner: location.settings.ownerName,
+                        player,
+                    });
             });
         }
 
@@ -472,10 +489,13 @@ class HouseCommands {
                 await this.manager_.removeHouse(closestLocation);
 
                 // Announce eviction of the previous owner to other administrators.
-                this.announce_().announceToAdministratorsWithFilter(
-                    Message.HOUSE_ANNOUNCE_EVICTED, 
-                    PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_EVICTED,
-                    player.name, player.id, ownerName, closestLocation.id);
+                this.announce_().broadcast(
+                    'admin/houses/ownership', messages.houses_admin_evicted,
+                    {
+                        location: closestLocation.id,
+                        owner: ownerName,
+                        player,
+                    });
 
                 // Display a confirmation dialog to the player to inform them of their action.
                 await MessageBox.display(player, {
@@ -497,10 +517,10 @@ class HouseCommands {
             await this.manager_.removeLocation(closestLocation);
 
             // Announce creation of the location to other administrators.
-            this.announce_().announceToAdministratorsWithFilter(
-                Message.HOUSE_ANNOUNCE_DELETED, 
-                PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_DELETED, 
-                player.name, player.id, closestLocation.id);
+            this.announce_().broadcast('admin/houses/locations', messages.houses_admin_deleted, {
+                location: closestLocation.id,
+                player
+            });
 
             // Display a confirmation dialog to the player to inform them of their action.
             await MessageBox.display(player, {
@@ -588,7 +608,11 @@ class HouseCommands {
         });
 
         menu.addItem('Manage your vehicles', vehicleValue, async(player) => {
-            await this.onHouseSettingsVehicles(player, location);
+            await alert(player, {
+                title: 'Manage your vehicles',
+                message: 'You are now able to use "/v save" while driving any vehicle to save\n' +
+                         'it to a parking lot, or "/v delete" in one of your vehicles to delete it.'
+            });
         });
 
         // Give house extensions the ability to provide their additional functionality.
@@ -610,9 +634,12 @@ class HouseCommands {
             if (!confirmation.response)
                 return;
 
-            this.announce_().announceToAdministratorsWithFilter(
-                Message.HOUSE_ANNOUNCE_SOLD, PlayerSetting.ANNOUNCEMENT.HOUSES, PlayerSetting.SUBCOMMAND.HOUSES_SELL,
-                player.name, player.id, location.settings.name, location.settings.id, offer);
+            this.announce_().broadcast('admin/houses/ownership', messages.houses_admin_sold, {
+                location: location.id,
+                name: location.settings.name,
+                player,
+                price: offer,
+            });
 
             await this.manager_.removeHouse(location);
 
@@ -627,99 +654,6 @@ class HouseCommands {
                              : Message.HOUSE_SETTINGS_SELL_CONFIRMED_ADMIN), offer)
             });
         });
-
-        await menu.displayForPlayer(player);
-    }
-
-    // Called when a player enters the Vehicle section of the `/house settings` command. Allows them
-    // to modify the vehicles that are associated with their house.
-    async onHouseSettingsVehicles(player, location) {
-        if (!location.parkingLotCount) {
-            return await MessageBox.display(player, {
-                title: 'Unable to modify your vehicles!',
-                message: Message.HOUSE_SETTINGS_NO_PARKING_LOTS,
-                leftButton: 'Yes',
-                rightButton: 'No'
-            });
-        }
-
-        let index = 0;
-
-        const menu = new Menu('Which parking lot to modify?', ['Parking lot', 'Current vehicle']);
-
-        // TODO: Enable players to select any vehicle through a vehicle selector.
-        // https://github.com/LVPlayground/playground/issues/273
-        const allowedVehicles = new Map([
-            [481, 'BMX'],
-            [589, 'Club'],
-            [480, 'Comet'],
-            [562, 'Elegy'],
-            [587, 'Euros'],
-            [521, 'FCR-900'],
-            [400, 'Landstalker'],
-            [522, 'NRG-500'],
-            [411, 'Infernus'],
-            [451, 'Turismo']
-        ]);
-
-        // Create the initial dialog, displaying a list of their parking lots.
-        for (const parkingLot of location.parkingLots) {
-            const vehicle = location.settings.vehicles.get(parkingLot);
-            const vehicleLabel = vehicle ? '{FFFF00}' + allowedVehicles.get(vehicle.modelId)
-                                         : '-';
-
-            // Add a menu item for the vehicle that may or may not be in this parking lot.
-            menu.addItem('Parking lot #' + (++index), vehicleLabel, async(player) => {
-                if (vehicle /* isOccupied */) {
-                    const message = Message.format(Message.HOUSE_SETTINGS_VEHICLE_SELL,
-                                                   allowedVehicles.get(vehicle.modelId));
-
-                    const confirmation =
-                        await Dialog.displayMessage(player, 'Dispose of your vehicle?', message,
-                                                    'Yes' /* leftButton */, 'No' /* rightButton */);
-
-                    if (!confirmation.response)
-                        return;
-
-                    await this.manager_.removeVehicle(location, parkingLot, vehicle);
-
-                    // Display a confirmation dialog to the player to inform them of their action.
-                    return await MessageBox.display(player, {
-                        title: 'The vehicle has been disposed of!',
-                        message: Message.HOUSE_SETTINGS_VEHICLE_SOLD
-                    });
-                }
-
-                // Create the purchase menu that enables players to purchase a vehicle.
-                const purchaseMenu =
-                    new Menu('Which vehicle do you want to buy?', ['Vehicle', 'Price']);
-
-                for (const [modelId, modelName] of allowedVehicles) {
-                    const price = 0;
-
-                    // TODO: Actually charge money for the vehicles.
-                    purchaseMenu.addItem(modelName, Message.format('%$', price), async(player) => {
-                        await this.manager_.createVehicle(location, parkingLot, {
-                            modelId: modelId
-                        });
-
-                        const message =
-                            Message.format('You have successfully purchased a %s! The vehicle is ' +
-                                           'waiting for you outside.', modelName);
-
-                        // TODO: Inform administrators of the new vehicle.
-
-                        // Display a confirmation dialog to the player to inform them.
-                        await MessageBox.display(player, {
-                            title: 'The vehicle has been purchased!',
-                            message: message
-                        });
-                    });
-                }
-
-                await purchaseMenu.displayForPlayer(player);
-            });
-        }
 
         await menu.displayForPlayer(player);
     }
@@ -761,18 +695,10 @@ class HouseCommands {
         }
     }
 
-    // Registers the `/house` command as one tracked by the `/lvp access` list.
-    registerTrackedCommands(playground) {
-        playground.registerCommand('house', Player.LEVEL_PLAYER);
-    }
-
     // ---------------------------------------------------------------------------------------------
 
     dispose() {
         server.commandManager.removeCommand('house');
-
-        this.playground_().unregisterCommand('house');
-        this.playground_.removeReloadObserver(this);
 
         this.parkingLotCreator_.dispose();
         this.parkingLotCreator_ = null;

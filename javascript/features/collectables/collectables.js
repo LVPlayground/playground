@@ -7,18 +7,7 @@ import { CollectableDatabase } from 'features/collectables/collectable_database.
 import { CollectableManager } from 'features/collectables/collectable_manager.js';
 import { Feature } from 'components/feature_manager/feature.js';
 
-import * as achievements from 'features/collectables/achievements.js';
-import * as benefits from 'features/collectables/collectable_benefits.js';
-
-// Mapping of which benefits map to having to obtain which achievements.
-const kBenefitMapping = new Map([
-    [ benefits.kBenefitBasicSprayQuickVehicleAccess, achievements.kAchievementSprayTagBronze ],
-    [ benefits.kBenefitBasicBarrelQuickVehicleAccess, achievements.kAchievementRedBarrelBronze ],
-    [ benefits.kBenefitFullQuickVehicleAccess, achievements.kAchievementSprayTagPlatinum ],
-    [ benefits.kBenefitBombShop, achievements.kAchievementSprayTagSilver ],
-    [ benefits.kBenefitVehicleKeysColour, achievements.kAchievementRedBarrelSilver ],
-    [ benefits.kBenefitVehicleKeysJump, achievements.kAchievementRedBarrelPlatinum ],
-]);
+import { kBenefits } from 'features/collectables/benefits.js';
 
 // Implementation of the Red Barrels feature, which scatters a series of barrels throughout San
 // Andreas that players can "collect" by blowing them up.
@@ -29,6 +18,10 @@ export default class Collectables extends Feature {
     constructor() {
         super();
     
+        // Collectables provide achievements, which many other features interact with, thus this is
+        // considered a low-level feature.
+        this.markLowLevel();
+
         // Allows us to make announcements to administrators.
         const announce = this.defineDependency('announce');
 
@@ -43,7 +36,7 @@ export default class Collectables extends Feature {
 
         // The manager is responsible for keeping track which collectables have been collected by
         // which players, and enables creation of new "rounds" of collectables.
-        this.manager_ = new CollectableManager(this, nuwani, settings);
+        this.manager_ = new CollectableManager(this, finance, nuwani, settings);
 
         // The commands are the player's interfaces towards being able to control their collectables
         // and achievements, as well as seeing other player's statistics.
@@ -82,7 +75,9 @@ export default class Collectables extends Feature {
     // tied to a particular achievement that can be awarded to the |player|. This method is the
     // canonical place for such associations to live, used by both JavaScript and Pawn code.
     isPlayerEligibleForBenefit(player, benefit) {
-        const requiredAchievement = kBenefitMapping.get(benefit);
+        const mapping = kBenefits.get(benefit);
+        const requiredAchievement = mapping?.achievement;
+
         const achievements = this.manager_.getDelegate(CollectableDatabase.kAchievement);
 
         // Allow the |benefit| if the requirements are not known, otherwise it's unachievable.

@@ -2,12 +2,13 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { messages } from 'features/account/account.messages.js';
+
 describe('AccountCommands', (it, beforeEach) => {
     let commands = null;
     let database = null;
 
     let gunther = null;
-    let playground = null;
     let russell = null;
     let settings = null;
 
@@ -18,7 +19,6 @@ describe('AccountCommands', (it, beforeEach) => {
         database.setPasswordSalt('s4lt$');
 
         gunther = server.playerManager.getById(0 /* Gunther */);
-        playground = server.featureManager.loadFeature('playground');
         russell = server.playerManager.getById(1 /* Russell */);
         settings = server.featureManager.loadFeature('settings');
 
@@ -205,8 +205,8 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, 'Gunther', gunther.id,
-                           gunther.name));
+            messages.account_admin_nickname_changed(
+                null, { player: { id: 0, name: 'Gunther' }, nickname: 'NewNick' }));
     });
 
     it('should enable players to change their password', async (assert) => {
@@ -304,7 +304,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, 'Gunther', gunther.id));
+            messages.account_admin_password_changed(null, { player: gunther }));
     });
 
     it('should enable VIPs to see a list of their aliases', async (assert) => {
@@ -402,8 +402,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_ALIAS_CREATED, gunther.name, gunther.id,
-                           'NewNick'));
+            messages.account_admin_alias_created(null, { player: gunther, alias: 'NewNick' }));
 
         settings.setValue('account/vip_alias_limit_player', 2);
 
@@ -461,8 +460,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_ALIAS_DELETED, gunther.name, gunther.id,
-                           'WoodPecker'));
+            messages.account_admin_alias_deleted(null, { player: gunther, alias: 'WoodPecker' }));
     });
 
     it('should be able to show information about an account', async (assert) => {
@@ -507,7 +505,7 @@ describe('AccountCommands', (it, beforeEach) => {
             ],
             [
                 'Donations',
-                '1,235 euro',
+                '1,234 euro',
             ],
             [
                 '----------',
@@ -558,7 +556,7 @@ describe('AccountCommands', (it, beforeEach) => {
     });
 
     it('should change /register depending on whether beta features are enabled', async (assert) => {
-        settings.setValue('playground/enable_beta_features', false);
+        settings.setValue('server/beta_features', false);
 
         russell.respondToDialog({ response: 0 /* Dismiss */ });
 
@@ -567,7 +565,7 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 0);
 
         // Now enable beta features, which will change /register to actually create accounts.
-        settings.setValue('playground/enable_beta_features', true);
+        settings.setValue('server/beta_features', true);
 
         gunther.respondToDialog({ inputtext: '1234' /* insecure */ }).then(
             () => gunther.respondToDialog({ response: 1 /* Confirm */ })).then(
@@ -582,11 +580,11 @@ describe('AccountCommands', (it, beforeEach) => {
         assert.equal(russell.messages.length, 1);
         assert.includes(
             russell.messages[0],
-            Message.format(Message.ACCOUNT_ADMIN_CREATED, gunther.name, gunther.id));
+            messages.account_admin_registered(null, { player: gunther }));
     });
 
     it('should enable players on the beta server to change their account', async (assert) => {
-        settings.setValue('playground/enable_beta_features', true);
+        settings.setValue('server/beta_features', true);
 
         gunther.name = 'Ricky92';  // Gunther has special behaviour
 
@@ -668,8 +666,6 @@ describe('AccountCommands', (it, beforeEach) => {
     it('should be able to find player identifies when they are undercover', async (assert) => {
         await russell.identify();
 
-        playground.access.addException('whois', russell);
-
         gunther.setIpForTesting('37.48.87.211');
         gunther.setSerialForTesting(1337);  // no results
 
@@ -708,6 +704,46 @@ describe('AccountCommands', (it, beforeEach) => {
                 '4 days ago',
             ]
         ]);
+    });
+
+    it('should be able to find out who is nearby a particular player', async (assert) => {
+        await russell.identify();
+
+        gunther.setIpForTesting('37.48.87.211');
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/nearby Gunther'));
+        assert.equal(russell.lastDialogTitle, `Who's near Gunther?!`);
+
+        const result = russell.getLastDialogAsTable();
+        assert.equal(result.rows.length, 2);
+        assert.deepEqual(result.rows, [
+            [
+                'Russell {90A4AE}(12x)',
+                '{B2FF59}<10km',
+                '1 day ago',
+            ],
+            [
+                'NotRussell',
+                '{EEFF41}<50km',
+                '1 month ago',
+            ]
+        ]);
+    });
+
+    it('should be able to find out where a particular player is', async (assert) => {
+        await russell.identify();
+
+        gunther.setIpForTesting('37.48.87.211');
+
+        russell.respondToDialog({ response: 0 /* Dismiss */ });
+
+        assert.isTrue(await russell.issueCommand('/whereis Gunther'));
+        assert.equal(russell.lastDialogTitle, 'Where is Gunther?!');
+
+        assert.includes(russell.lastDialog, 'Proxy information');
+        assert.includes(russell.lastDialog, 'Location information');
     });
 
     it('is able to format duration', async (assert) => {

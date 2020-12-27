@@ -18,16 +18,6 @@ enum MinigameDropoutReason {
 };
 
 /**
- * Which feature should have it's color changed? The ColorPicker can be used in several occasions
- * around the gamemode, here we keep track of those.
- */
-enum ColorPickerResultTarget {
-    GangColor,
-    PlayerColor,
-    JavaScriptColor
-};
-
-/**
  * Reason why a player has left the server, to avoid having "2" (kicked) as a catch-all.
  */
 enum PlayerKickReason {

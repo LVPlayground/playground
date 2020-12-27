@@ -1,0 +1,12 @@
+{
+    "Hair": [
+        {
+            "name": "Funky black hair",
+            "modelId": 19077,
+            "bone": 2,
+            "offset": [ 0.09, -0.01, 0 ],
+            "rotation": [ 1.6, -3.1, -8.4 ],
+            "scale": [ 1.162, 1.281, 1.222 ]
+        }
+    ]
+}

@@ -4,6 +4,14 @@
 
 new g_message[256];
 
+forward OnPlayerLevelChange(playerid, newlevel, temporary);
+public OnPlayerLevelChange(playerid, newlevel, temporary) {}
+
+forward DoPlayerLevelChange(playerid, newlevel, temporary);
+public DoPlayerLevelChange(playerid, newlevel, temporary) {
+    CallLocalFunction("OnPlayerLevelChange", "iii", playerid, newlevel, temporary);
+}
+
 #if Feature::DisableFights == 0
 
 lvp_resetfc(playerId, params[]) {
@@ -78,11 +86,6 @@ lvp_chase(playerId, params[]) {
         return 1;
     }
 
-    if (ShipManager->isPlayerWalkingOnShip(subjectId)) {
-        SendClientMessage(playerId, Color::Error, "This player is currently on the ship.");
-        return 1;
-    }
-
     CChase__Start(subjectId);
 
     format(g_message, sizeof(g_message), "%s (Id:%d) has started the chase on %s (Id:%d).",
@@ -143,9 +146,6 @@ lvp_fetch(playerId, params[]) {
         SetVehicleVirtualWorld(GetPlayerVehicleID(subjectId), GetPlayerVirtualWorld(playerId));
         LinkVehicleToInterior(GetPlayerVehicleID(subjectId), GetPlayerInterior(playerId));
     } else {
-        if (ShipManager->isPlayerWalkingOnShip(playerId))
-            DamageManager(subjectId)->setFighting(Time->currentTime() - 11);
-
         SetPlayerPos(subjectId, position[0] + 3, position[1], position[2]);
     }
 
@@ -491,30 +491,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "freeze", true, 6)) {
-        TogglePlayerControllable(subjectId, 0);
-
-        SendClientMessage(playerId, Color::Success, "Player frozen.");
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has frozen %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if (!strcmp(playerParameter, "unfreeze", true, 8)) {
-        TogglePlayerControllable(subjectId, 1);
-
-        SendClientMessage(playerId, Color::Success, "Player unfrozen.");
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has unfrozen %s (Id:%d).",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "weapon", true, 6) && Player(playerId)->isAdministrator() == true) {
         new weaponId = Command->integerParameter(params, 2);
         if (WeaponUtilities->isWeaponValid(weaponId) == false) {
@@ -566,55 +542,6 @@ lvp_p(playerId, params[]) {
         return 1;
     }
 
-    if (!strcmp(playerParameter, "hide", true, 4) && Player(playerId)->isAdministrator() == true) {
-        if (Command->parameterCount(params) != 3)
-            goto HideHelp;
-
-        new hideParameter[4];
-        Command->stringParameter(params, 2, hideParameter, sizeof(hideParameter));
-
-        if (!strcmp(hideParameter, "on", true, 2)) {
-            if (PlayerInfo[subjectId][playerIsHidden] == 1) {
-                SendClientMessage(playerId, Color::Error, "This player is already hidden.");
-                return 1;
-            }
-
-            PlayerInfo[subjectId][playerIsHidden] = 1;
-            ColorManager->setPlayerMarkerHidden(subjectId, true);
-
-            SendClientMessage(playerId, Color::Success, "Player hidden.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has hidden %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        if (!strcmp(hideParameter, "off", true, 3)) {
-            if (PlayerInfo[subjectId][playerIsHidden] == 0) {
-                SendClientMessage(playerId, Color::Error, "This player is already visible.");
-                return 1;
-            }
-
-            PlayerInfo[subjectId][playerIsHidden] = 0;
-            ColorManager->setPlayerMarkerHidden(subjectId, false);
-
-            SendClientMessage(playerId, Color::Success, "Player unhidden.");
-
-            format(g_message, sizeof(g_message), "%s (Id:%d) has unhidden %s (Id:%d).",
-                Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-            Admin(playerId, g_message);
-
-            return 1;
-        }
-
-        HideHelp:
-        SendClientMessage(playerId, Color::Information, "Usage: /p [player] hide [on/off]");
-
-        return 1;
-    }
-
     if (!strcmp(playerParameter, "handofgod", true, 9)) {
         new Float: position[3];
         GetPlayerPos(subjectId, position[0], position[1], position[2]);
@@ -646,63 +573,6 @@ lvp_p(playerId, params[]) {
 
         format(g_message, sizeof(g_message), "%s (Id:%d) has reset the weapons of %s (Id:%d).",
             Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if (!strcmp(playerParameter, "health", true, 6) && Player(playerId)->isAdministrator() == true) {
-        new healthAmount = Command->integerParameter(params, 2), Float: health;
-        GetPlayerHealth(subjectId, health);
-
-        if (healthAmount < 0 || healthAmount > 100) {
-            format(g_message, sizeof(g_message), "The health of %s (Id:%d) is %.1f",
-                Player(subjectId)->nicknameString(), subjectId, health);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            SendClientMessage(playerId, Color::Information, "Usage: /p [player] health [amount] to set health.");
-
-            return 1;
-        }
-
-        SetPlayerHealth(subjectId, healthAmount);
-
-        format(g_message, sizeof(g_message), "The health of %s (Id:%d) is now %d.",
-            Player(subjectId)->nicknameString(), subjectId, healthAmount);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has set the health for %s (Id:%d) to %d.",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId,
-            healthAmount);
-        Admin(playerId, g_message);
-
-        return 1;
-    }
-
-    if ((!strcmp(playerParameter, "armor", true, 6) || !strcmp(playerParameter, "armour", true, 7)) 
-        && Player(playerId)->isAdministrator() == true) {
-        new armourAmount = Command->integerParameter(params, 2), Float: armour;
-        GetPlayerArmour(subjectId, armour);
-
-        if (armourAmount < 0 || armourAmount > 100) {
-            format(g_message, sizeof(g_message), "The armour of %s (Id:%d) is %.1f",
-                Player(subjectId)->nicknameString(), subjectId, armour);
-            SendClientMessage(playerId, Color::Success, g_message);
-
-            SendClientMessage(playerId, Color::Information, "Usage: /p [player] armour [amount] to set armour.");
-
-            return 1;
-        }
-
-        SetPlayerArmour(subjectId, armourAmount);
-
-        format(g_message, sizeof(g_message), "The armour of %s (Id:%d) is now %d.",
-            Player(subjectId)->nicknameString(), subjectId, armourAmount);
-        SendClientMessage(playerId, Color::Success, g_message);
-
-        format(g_message, sizeof(g_message), "%s (Id:%d) has set the armour for %s (Id:%d) to %d.",
-            Player(playerId)->nicknameString(), playerId, Player(subjectId)->nicknameString(), subjectId,
-            armourAmount);
         Admin(playerId, g_message);
 
         return 1;
@@ -815,9 +685,6 @@ GodHelp:
 
         tempLevel[subjectId] = 2;
         format(UserTemped[subjectId], sizeof(UserTemped[]), "%s", Player(playerId)->nicknameString());
-
-        ColorManager->storeExistingPlayerCustomColor(subjectId);
-        ColorManager->setPlayerCustomColor(subjectId, Color::AdministratorColor);
 
         SendClientMessage(subjectId, Color::Success, "You have been granted temporary rights.");
 

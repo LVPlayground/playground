@@ -2,25 +2,20 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import MockPlaygroundCommands from 'features/playground/test/mock_playground_commands.js';
 import { VirtualWorld } from 'entities/virtual_world.js';
 
-describe('JetpackCommand', (it, beforeEach, afterEach) => {
-    let commands = null;
+describe('JetpackCommand', (it, beforeEach) => {
     let gunther = null;
 
     beforeEach(async() => {
-        commands = new MockPlaygroundCommands();
-        await commands.loadCommands();
+        const feature = server.featureManager.loadFeature('playground');
+        await feature.commands_.loadCommands();
 
         gunther = server.playerManager.getById(0 /* Gunther */);
+        gunther.level = Player.LEVEL_ADMINISTRATOR;
+
         await gunther.identify();
-
-        // Enable |gunther| to use the command by adding an exception.
-        commands.access.addException('jetpack', gunther);
     });
-
-    afterEach(() => commands.dispose());
 
     it('should disable jetpacks for players who are not in the main world', async(assert) => {
         const virtualWorld = 1337;  // any non-main world virtual world will do
@@ -52,13 +47,13 @@ describe('JetpackCommand', (it, beforeEach, afterEach) => {
         assert.equal(russell.specialAction, Player.kSpecialActionJetpack);
     });
 
-    it('should enable administrators to remove administrators from players', assert => {
+    it('should enable administrators to remove administrators from players', async (assert) => {
         const russell = server.playerManager.getById(1 /* Russell */);
         russell.specialAction = Player.kSpecialActionJetpack;
 
         gunther.level = Player.LEVEL_ADMINISTRATOR;
 
-        assert.isTrue(gunther.issueCommand('/jetpack ' + russell.name + ' remove'));
+        assert.isTrue(await gunther.issueCommand('/jetpack ' + russell.name + ' remove'));
 
         assert.equal(gunther.messages.length, 2);
         assert.equal(gunther.messages[0], Message.format(Message.LVP_JETPACK_REMOVED_OTHER,

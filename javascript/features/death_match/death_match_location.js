@@ -76,9 +76,14 @@ export class DeathMatchLocation {
         this.weather_ = locationInfo.weather ?? 10;
         this.time_ = locationInfo.time ?? 12;
 
+        this.gravity_ = locationInfo.gravity;
+        this.hasTeams_ = locationInfo.has_teams ?? false;
+        this.noTeamDamage_ = locationInfo.no_team_damage ?? false;
+
         this.playerHealth_ = locationInfo.player_health ?? 100;
         this.playerArmour_ = locationInfo.player_armour ?? 0;
 
+        this.lagShot_ = locationInfo.lag_shot ?? false;
         this.weapons_ = new Set();
 
         locationInfo.weapons.forEach(weaponInfo => {
@@ -114,9 +119,14 @@ export class DeathMatchLocation {
     get weather() { return this.weather_; }
     get time() { return this.time_; }
 
+    get gravity() { return this.gravity_; }
+    get hasTeams() { return this.hasTeams_; }
+    get noTeamDamage() { return this.noTeamDamage_; }
+
     get playerHealth() { return this.playerHealth_; }
     get playerArmour() { return this.playerArmour_; }
 
+    get lagShot() { return this.lagShot_; }
     get weapons() { return this.weapons_.values(); }
 
     // Gets an iterator with the spawn positions to use. These also determine the maximum amount of

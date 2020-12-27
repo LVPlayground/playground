@@ -2,58 +2,46 @@
     "name": "Red County Grove",
     "id": 7,
 
-    "time_limit": 600,
-    "laps": 1,
-
     "environment": {
-        "weather": 20,
-        "time": [20, 0],
-        "interior": 0
+        "weather": "Foggy",
+        "time": "Evening"
     },
 
-    "spawn_positions": [
+    "spawnPositions": [
         {
             "position": [ -548.3867, -191.9115, 78.3978 ],
-            "rotation": 270.0302,
-            "vehicle": {
-                "model": 470
-            }
+            "facingAngle": 270.0302,
+            "vehicleModelId": 470
         },
         {
             "position": [ -547.8912, -187.0549, 78.3994 ],
-            "rotation": 268.8917,
-            "vehicle": {
-                "model": 470
-            }
+            "facingAngle": 268.8917,
+            "vehicleModelId": 470
         },
         {
             "position": [ -556.1069, -191.9115, 78.3978 ],
-            "rotation": 270.0285,
-            "vehicle": {
-                "model": 470
-            }
+            "facingAngle": 270.0285,
+            "vehicleModelId": 470
         },
         {
             "position": [ -555.0574, -187.0549, 78.3984 ],
-            "rotation": 268.8903,
-            "vehicle": {
-                "model": 470
-            }
+            "facingAngle": 268.8903,
+            "vehicleModelId": 470
         }
     ],
 
     "checkpoints": [
-        { "position": [ -454.1565, -185.5415, 76.9277 ], "size": 10 },
-        { "position": [ -363.1364, -48.6441, 39.5548 ], "size": 10 },
-        { "position": [ -297.0025, 101.5197, 7.3743 ], "size": 10 },
-        { "position": [ -319.2949, 179.8812, 6.1279 ], "size": 10 },
-        { "position": [ -668.1946, 151.8933, 27.1900 ], "size": 10 },
-        { "position": [ -610.5020, -76.2268, 63.2484 ], "size": 10 },
-        { "position": [ -489.6745, 28.4533, 46.7863 ], "size": 10 },
-        { "position": [ -701.7272, 224.4477, 2.5663 ], "size": 10 },
-        { "position": [ -770.3952, 19.8339, 33.3204 ], "size": 10 },
-        { "position": [ -671.7669, 6.0282, 66.5000 ], "size": 10 },
-        { "position": [ -828.1807, -165.5912, 65.3650 ], "size": 10 },
-        { "position": [ -545.5344, -188.9454, 78.4008 ], "size": 10 }
+        { "position": [ -454.1565, -185.5415, 76.9277 ] },
+        { "position": [ -363.1364, -48.6441, 39.5548 ] },
+        { "position": [ -297.0025, 101.5197, 7.3743 ] },
+        { "position": [ -319.2949, 179.8812, 6.1279 ] },
+        { "position": [ -668.1946, 151.8933, 27.1900 ] },
+        { "position": [ -610.5020, -76.2268, 63.2484 ] },
+        { "position": [ -489.6745, 28.4533, 46.7863 ] },
+        { "position": [ -701.7272, 224.4477, 2.5663 ] },
+        { "position": [ -770.3952, 19.8339, 33.3204 ] },
+        { "position": [ -671.7669, 6.0282, 66.5000 ] },
+        { "position": [ -828.1807, -165.5912, 65.3650 ] },
+        { "position": [ -545.5344, -188.9454, 78.4008 ] }
     ]
 }

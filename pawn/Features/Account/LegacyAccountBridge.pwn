@@ -67,9 +67,6 @@ class LegacyAccountBridge {
         if (strlen(deathMessage) > 0)
             DeathMessageManager->setPlayerDeathMessageText(playerId, deathMessage);
 
-        // mutable: sawnoff_weapon
-        iPlayerSawnoffWeapon[playerId] = DatabaseResult(resultId)->readInteger("sawnoff_weapon");
-
         // mutable: save_location
         new savedLocation[128], locationIndex = 0;
         DatabaseResult(resultId)->readString("save_location", savedLocation);
@@ -95,16 +92,6 @@ class LegacyAccountBridge {
      * @param querySize The maximum size of the array buffer.
      */
     public CreateQuery(playerId, query[], querySize) {
-        new customColor = 0;
-        if (Player(playerId)->isVip() == true) {
-            // We first need to release any previously set custom color. This operation will only
-            // do something if the player has temporary administrator rights.
-            ColorManager->restorePreviousPlayerCustomColor(playerId);
-
-            // Now return the color as it has been set by the player itself.
-            customColor = ColorManager->playerCustomColor(playerId);
-        }
-
         new onlineTime = (gameplayhours[playerId] * 3600 + gameplayminutes[playerId] * 60 + gameplayseconds[playerId]);
 
         // TODO: Remove the following fields.
@@ -117,9 +104,7 @@ class LegacyAccountBridge {
                 "skin_id = %d, " ...
 
                 "jailed = %d, " ...
-                "sawnoff_weapon = %d, " ...
                 "settings = %d, " ...
-                "custom_color = %d, " ...
                 "death_message = \"%s\", " ...
 
                 "save_location = \"%.2f %.2f %.2f %.2f %.2f\", " ...
@@ -151,9 +136,7 @@ class LegacyAccountBridge {
                 SpawnManager(playerId)->skinId(),
 
                 JailController->remainingJailTimeForPlayer(playerId),
-                iPlayerSawnoffWeapon[playerId],
                 PlayerSettings(playerId)->value(),
-                customColor,
                 DeathMessageManager->getPlayerDeathMessageText(playerId),
 
                 // Saved location

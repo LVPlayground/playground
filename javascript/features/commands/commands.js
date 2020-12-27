@@ -4,43 +4,56 @@
 
 import { Feature } from 'components/feature_manager/feature.js';
 import InfoDialogCommand from 'features/commands/info_dialog_command.js';
-import IrcChatCommands from 'features/commands/irc_chat_commands.js';
 import PositioningCommands from 'features/commands/positioning_commands.js';
 
 // Feature that provides a series of commands not immediately affiliated with a particular feature.
 // The Commands class provides the shared infrastructure, whereas groups of commands will be
 // implemented separately based on their own requirements.
-class Commands extends Feature {
+export default class Commands extends Feature {
     constructor() {
         super();
 
-        const commandManager = server.commandManager;
+        server.commandManager.buildCommand('credits')
+            .description('Tells you which amazing folks made LVP happen.')
+            .build(InfoDialogCommand.create('data/commands/credits.json'));
+        
+        server.commandManager.buildCommand('discord')
+            .description('Displays information on how to join our Discord server.')
+            .build(InfoDialogCommand.create('data/commands/discord.json'));
 
-        // Informational commands whose data will be loaded from a JSON file.
-        commandManager.registerCommand('help', InfoDialogCommand.create('data/commands/help.json'));
-        commandManager.registerCommand('irc', InfoDialogCommand.create('data/commands/irc.json'));
-        commandManager.registerCommand('rules', InfoDialogCommand.create('data/commands/rules.json'));
-        commandManager.registerCommand('vip', InfoDialogCommand.create('data/commands/vip.json'));
+        server.commandManager.buildCommand('guide')
+            .description('Displays a useful guide for temporary administrators.')
+            .build(InfoDialogCommand.create('data/commands/guide.json'));
+
+        server.commandManager.buildCommand('help')
+            .description('Displays information on how to get started on LVP.')
+            .build(InfoDialogCommand.create('data/commands/help.json'));
+
+        server.commandManager.buildCommand('irc')
+            .description('Displays information on how to join our IRC channels.')
+            .build(InfoDialogCommand.create('data/commands/irc.json'));
+
+        server.commandManager.buildCommand('rules')
+            .description('Displays Las Venturas Playground\'s rules.')
+            .build(InfoDialogCommand.create('data/commands/rules.json'));
+
+        server.commandManager.buildCommand('vip')
+            .description('Displays benefits available to VIP players.')
+            .build(InfoDialogCommand.create('data/commands/vip.json'));
 
         // Load the seperated positioning-related commands
         this.positioningCommands_ = new PositioningCommands();
-
-        // Needed to easily send a message to IRC
-        const nuwani = this.defineDependency('nuwani');
-
-        // Load the irc-chat commands to send a message to a channel
-        this.ircChatCommands_ = new IrcChatCommands(nuwani);
     }
 
     dispose() {
         this.positioningCommands_.dispose();
-        this.ircChatCommands_.dispose();
 
+        server.commandManager.removeCommand('credits');
+        server.commandManager.removeCommand('discord');
+        server.commandManager.removeCommand('guide');
         server.commandManager.removeCommand('help');
         server.commandManager.removeCommand('irc');
         server.commandManager.removeCommand('rules');
         server.commandManager.removeCommand('vip');
     }
 };
-
-export default Commands;

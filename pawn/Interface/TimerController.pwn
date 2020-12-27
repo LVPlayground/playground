@@ -117,6 +117,8 @@ class TimerController {
 
             Annotation::ExpandList<SecondTimerPerPlayer>(playerId);
         }
+
+        ProcessHighFrameratePlayers();
     }
 
     /**

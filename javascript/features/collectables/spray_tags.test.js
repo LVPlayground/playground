@@ -75,7 +75,7 @@ describe('SprayTags', (it, beforeEach) => {
 
         assert.isTrue(sprayTag.isConnected());
 
-        // (1) Position |gunther| ahead of the spray tag, but have him spray in the wrong direction.
+        // (1) Position |gunther| ahead of the spray tag, but have them spray in a wrong direction.
         gunther.position = sprayTag.position.translateTo2D(3, 90);
         gunther.rotation = 180;
 

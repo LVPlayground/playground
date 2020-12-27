@@ -23,6 +23,8 @@ class MockVehicleDatabase {
 
                 primaryColor: 6,
                 secondaryColor: 9,
+                numberPlate: null,
+                components: [],
             }),
         ];
     }

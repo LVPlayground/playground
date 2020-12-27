@@ -75,15 +75,42 @@ class Announcements {
      * @param playerId Id of the player who connected to the server.
      */
     public announcePlayerConnected(playerId) {
+        new bool: sampcac = false;
+
         // Announce this player's connection to other in-game players.
+#if Feature::EnableSAMPCAC == 1
+        if (CAC_GetStatus(playerId)) {
+            sampcac = true;
+
+            format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground {A5D6A7}(sampcac){CCCCCC}.",
+                Player(playerId)->nicknameString(), playerId);
+        } else {
+            new version[16];
+            GetPlayerVersion(playerId, version, sizeof(version));
+
+            format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",
+                Player(playerId)->nicknameString(), playerId);
+
+            // Inform the |playerId| of running an outdated version of SA-MP if they are.
+            if (strlen(version) >= 1 && strcmp(version, "0.3.7-R4", true, 8) != 0) {
+                SendClientMessage(
+                    playerId, Color::Error,
+                    "*** You are running an old version of SA-MP, consider updating to the latest version!");
+            }
+        }
+#else
         format(m_formatBuffer, sizeof(m_formatBuffer), "* %s (Id:%d) has joined {A9C4E4}Las Venturas Playground{CCCCCC}.",
             Player(playerId)->nicknameString(), playerId);
+#endif
 
         this->distributeAnnouncement(ConnectionMessageAnnouncement, Color::ConnectionMessage, m_formatBuffer);
 
         // Announce this player's connection to people watching from IRC.
         format(m_formatBuffer, sizeof(m_formatBuffer), "%d %s", playerId, Player(playerId)->nicknameString());
-        EchoMessage("join", "ds", m_formatBuffer);
+        if (sampcac)
+            EchoMessage("join-sampcac", "ds", m_formatBuffer);
+        else
+            EchoMessage("join", "ds", m_formatBuffer);
     }
 
     /**

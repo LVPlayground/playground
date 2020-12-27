@@ -2,6 +2,7 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
+import { Color } from 'base/color.js';
 import Gang from 'features/gangs/gang.js';
 
 // Query for loading a gang's information for a specific player.
@@ -79,9 +80,14 @@ const GANG_MEMBERS_QUERY = `
         users_gangs.user_id,
         users_gangs.user_role,
         users.username,
+        IF(users_gangs.user_use_gang_color = 1,
+            IFNULL(gangs.gang_color, users_mutable.custom_color),
+            users_mutable.custom_color) AS color,
         users_mutable.last_seen
     FROM
         users_gangs
+    LEFT JOIN
+        gangs ON gangs.gang_id = users_gangs.gang_id
     LEFT JOIN
         users ON users.user_id = users_gangs.user_id
     LEFT JOIN
@@ -101,6 +107,16 @@ const GANG_CREATE_QUERY = `
         (gang_tag, gang_name, gang_goal)
     VALUES
         (?, ?, ?)`;
+
+// Query to clear prior memberships when joining a new gang.
+const GANG_CLEAR_MEMBER_QUERY = `
+    UPDATE
+        users_gangs
+    SET
+        users_gangs.left_gang = NOW()
+    WHERE
+        users_gangs.user_id = ? AND
+        users_gangs.left_gang IS NULL`;
 
 // Query to add a member to a given gang in the database.
 const GANG_CREATE_MEMBER_QUERY = `
@@ -348,6 +364,7 @@ class GangDatabase {
 
         gangId = results.insertId;
 
+        await server.database.query(GANG_CLEAR_MEMBER_QUERY, player.account.userId);
         await server.database.query(
             GANG_CREATE_MEMBER_QUERY, player.account.userId, results.insertId, 'Leader');
 
@@ -376,6 +393,7 @@ class GangDatabase {
                 role: GangDatabase.toRoleValue(row.user_role),
                 userId: row.user_id,
                 username: row.username,
+                color: row.color !== 0 ? Color.fromNumberRGBA(row.color) : null,
                 lastSeen: new Date(row.last_seen),
             });
         });
@@ -389,6 +407,7 @@ class GangDatabase {
         const userId = player.account.userId;
         const gangId = gang.id;
 
+        await server.database.query(GANG_CLEAR_MEMBER_QUERY, userId);
         await server.database.query(GANG_CREATE_MEMBER_QUERY, userId, gangId, 'Member');
     }
 

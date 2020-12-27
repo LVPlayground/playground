@@ -20,6 +20,9 @@ export default class AccountProvider extends Feature {
         // This is a foundational feature.
         this.markFoundational();
 
+        // Depend on the PlayerColors feature, where colour information still be stored.
+        this.defineDependency('player_colors');
+
         // Depend on the PlayerStats feature, where certain statistics will be stored. It provides
         // a Supplement that we expect to be available.
         this.defineDependency('player_stats');

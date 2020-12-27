@@ -2,16 +2,18 @@
 // Use of this source code is governed by the MIT license, a copy of which can
 // be found in the LICENSE file.
 
-import Command from 'features/playground/command.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { Command } from 'features/playground/command.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { ScopedCallbacks } from 'base/scoped_callbacks.js';
 
+import { random } from 'base/random.js';
+
 // Range within a random virtual world will be chosen for the isolated player.
-const RANGE_MIN = 550000000;
-const RANGE_MAX = 560000000;
+const kMinimumVirtualWorld = 550000000;
+const kMaximumVirtualWorld = 560000000;
 
 // Command: /isolate [player]
-class IsolateCommand extends Command {
+export default class IsolateCommand extends Command {
     constructor(...args) {
         super(...args);
 
@@ -24,10 +26,11 @@ class IsolateCommand extends Command {
 
     get name() { return 'isolate'; }
     get defaultPlayerLevel() { return Player.LEVEL_ADMINISTRATOR; }
+    get description() { return `Isolates a particular player from the game.`; }
 
     build(commandBuilder) {
         commandBuilder
-            .parameters([ { name: 'target', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .parameters([ { name: 'target', type: CommandBuilder.kTypePlayer } ])
             .build(IsolateCommand.prototype.onIsolateCommand.bind(this));
     }
 
@@ -38,8 +41,7 @@ class IsolateCommand extends Command {
             return;
         }
 
-        this.isolatedWorld_.set(
-            target, Math.floor(Math.random() * (RANGE_MAX - RANGE_MIN)) + RANGE_MIN);
+        this.isolatedWorld_.set(target, random(kMinimumVirtualWorld, kMaximumVirtualWorld));
 
         // Isolating a player deliberately messes up their player state, so we don't allow a reset
         // back to being a regular player. Isolation is final until reconnection.
@@ -72,5 +74,3 @@ class IsolateCommand extends Command {
         this.callbacks_ = null;
     }
 }
-
-export default IsolateCommand;

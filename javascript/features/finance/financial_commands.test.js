@@ -4,6 +4,8 @@
 
 import { FinancialRegulator } from 'features/finance/financial_regulator.js';
 
+import { messages } from 'features/finance/finance.messages.js';
+
 describe('FinancialCommands', (it, beforeEach) => {
     let gunther = null;
     let lucy = null;
@@ -95,6 +97,69 @@ describe('FinancialCommands', (it, beforeEach) => {
             lucy.messages[1], Message.format(Message.BANK_STORED, 9000, 18000));
         
         assert.equal(await regulator.getAccountBalance(lucy), 18000);
+    });
+
+    it('should be possible to transfer money to other players', async (assert) => {
+        regulator.setPlayerCashAmount(gunther, 10000);
+        regulator.setPlayerCashAmount(lucy, 10000);
+
+        const russell = server.playerManager.getById(/* Russell= */ 1);
+        russell.setIsNonPlayerCharacterForTesting(true);
+
+        // (1) Gunther should be able to transfer $5,000 to Lucy.
+        assert.isTrue(await gunther.issueCommand('/givecash lucy 5000'));
+        assert.equal(gunther.messages.length, 1);
+        assert.equal(
+            gunther.messages[0],
+            messages.finance_give_cash_sent(null, { target: lucy, amount: 5000 }));
+
+        assert.equal(lucy.messages.length, 1);
+        assert.equal(
+            lucy.messages[0],
+            messages.finance_give_cash_received(null, { player: gunther, amount: 5000 }));
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 5000);
+        assert.equal(regulator.getPlayerCashAmount(lucy), 15000);
+
+        // (2) Gunther should not be able to transfer $10,000,000,000 to Lucy (too much).
+        assert.isTrue(await gunther.issueCommand('/givecash lucy 10000000000'));
+        assert.equal(gunther.messages.length, 2);
+        assert.equal(
+            gunther.messages[1],
+            messages.finance_give_cash_invalid_amount(null, {
+                maximum: FinancialRegulator.kMaximumCashAmount
+            }));
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 5000);
+        assert.equal(regulator.getPlayerCashAmount(lucy), 15000);
+
+        // (3) Gunther should not be able to transfer -$100 to Lucy (too little).
+        assert.isTrue(await gunther.issueCommand('/givecash lucy -100'));
+        assert.equal(gunther.messages.length, 3);
+        assert.equal(
+            gunther.messages[2],
+            messages.finance_give_cash_invalid_amount(null, {
+                maximum: FinancialRegulator.kMaximumCashAmount
+            }));
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 5000);
+        assert.equal(regulator.getPlayerCashAmount(lucy), 15000);
+
+        // (4) Gunther should not be able to transfer $10,000 to Lucy (not enough funds).
+        assert.isTrue(await gunther.issueCommand('/givecash lucy 10000'));
+        assert.equal(gunther.messages.length, 4);
+        assert.equal(
+            gunther.messages[3],
+            messages.finance_give_cash_insufficient_funds(null, { amount: 10000, cash: 5000 }));
+
+        assert.equal(regulator.getPlayerCashAmount(gunther), 5000);
+        assert.equal(regulator.getPlayerCashAmount(lucy), 15000);
+
+        // (5) Lucy should be able to donate $5,000 to charity.
+        assert.isTrue(await lucy.issueCommand('/givecash russell 5000'));
+        assert.equal(lucy.messages.length, 3);
+        assert.includes(lucy.messages[1], 'have nominated');
+        assert.includes(lucy.messages[2], '$5,000');
     });
 
     it('is able to withdraw money from a bank account', async (assert) => {

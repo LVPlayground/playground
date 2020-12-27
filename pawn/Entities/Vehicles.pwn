@@ -2,8 +2,6 @@
 // Use of this source code is governed by the GPLv2 license, a copy of which can
 // be found in the LICENSE file.
 
-#include "Entities/Vehicles/LegalModifications.pwn"
-
 #include "Entities/Vehicles/VehicleModel.pwn"
 #include "Entities/Vehicles/VehicleModelData.pwn"
 

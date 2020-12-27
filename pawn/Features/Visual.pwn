@@ -10,11 +10,6 @@
 // logged in to their account. We'd like to show them a message informing them of that fact.
 #include "Features/Visual/NeedToIdentifyForSpawnMessage.pwn"
 
-// The news message system displays various events that happen throughout the
-// server in a smart textdraw display at the bottom of the screen
-#include "Features/Visual/News/NewsController.pwn"
-#include "Features/Visual/News/NewsMessage.pwn"
-
 // The Visual Interface class curates the most basic interface elements of Las Venturas Playground,
 // i.e. any logos and effects which should be on the player's screen for longer periods of time.
 #include "Features/Visual/Interface.pwn"

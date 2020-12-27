@@ -13,8 +13,6 @@ new iServerChampion = Player::InvalidId;
 new iRecordName[MAX_PLAYER_NAME+1] = "LVP";
 new playerLastQuitInterior[MAX_PLAYERS];
 new iRconLoginAttempts[MAX_PLAYERS];
-new iPlayerSawnoffWeapon[MAX_PLAYERS];
-new iPlayerAnimation[MAX_PLAYERS];
 new iPlayerSesDeaths[MAX_PLAYERS];
 new iPlayerSesKills[MAX_PLAYERS];
 new iPlayerDied[MAX_PLAYERS];
@@ -79,6 +77,7 @@ new g_RivershellState;
 new g_RivershellPlayer[MAX_PLAYERS];
 new isPlayerBrief[MAX_PLAYERS];
 new briefStatus;
+new bool: g_isDisconnecting[MAX_PLAYERS] = { false, ... };
 
 enum ePlayerPosition {
     Float:fSavedPosX,

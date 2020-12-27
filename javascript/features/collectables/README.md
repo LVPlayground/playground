@@ -26,10 +26,12 @@ Arsonist          | Explode 40 Red Barrels         | Unlocks the _vehicle colour
 Incendiarist      | Explode 90 Red Barrels         |
 Jomeri's Syndrome | Explode all Red Barrels        | Unlocks the _vehicle jump_ key shortcut.
 Nimble Critter    | Win 10 reaction tests          |
-Quick Addict      | Win 100 reaction tests         |
+Quick Addict      | Win 100 reaction tests         | Unlocks the _vehicle nitro_ key shortcut.
 Electrolyte       | Win 1,000 reaction tests       |
 The Streak        | Win 10 reaction tests in a row |
 keybind.cs        | Win a reaction test in <2s     |
+Blackbeard        | Collect 10 Treasures           |
+Jack Sparrow      | Collect all Treasures          | Unlocks the _vehicle gravity_ key shortcut.
 
 Beginning another round of earning the achievements _will not_ reset the benefits. Once granted, you
 will keep them indefinitely.
@@ -62,6 +64,19 @@ spray can for at least two seconds. If so, we check if there are any nearby spra
 aiming at, and mark them as collected when successful.
 
 This game, also, was originally introduced by [Jay](https://forum.sa-mp.nl/user-180.html).
+
+## Series: Treasures
+Fifty books are located all over Red County, Flint County and Whetstone, each of which unlocks a
+hint that will help you find a treasure—a different hint for each player!
+
+There are fifty books, and fifty treasures to be found. They're implemented as objects surrounded by
+an area, because SA-MP does not support per-player pickups, which would lead to confusing issues.
+Upon entering the area, the collectable will count as having been collected.
+
+Hints work a little bit different for this series: until the player has collected all the books, no
+hints can be purchased for finding the actual treasures.
+
+This game was proposed by [Sophia_Naz](https://forum.sa-mp.nl/user-19713.html).
 
 ## Visualizing the collectables
 Management members have the ability to enable the `collectable_map_icons_display` setting in the

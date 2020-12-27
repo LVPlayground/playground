@@ -4,22 +4,46 @@
 
 // Represents a vehicle that's associated with a house. A vehicle is tied to a particular parking
 // lot and to a particular house.
-class HouseVehicle {
-    constructor(vehicle, parkingLot) {
-        this.id_ = vehicle.id;
-        this.modelId_ = vehicle.modelId;
+export class HouseVehicle {
+    // Id of this vehicle in the database.
+    id = null;
 
-        this.parkingLot_ = parkingLot;
+    // Id of the model that should be used to represent this vehicle.
+    modelId = null;
+
+    // Parking lot on which this vehicle should be parked.
+    parkingLot = null;
+
+    // Optional primary colour this vehicle should appear in.
+    primaryColor = null;
+
+    // Optional secondary colour this vehicle should appear in.
+    secondaryColor = null;
+
+    // Optional paintjob this vehicle should appear in.
+    paintjob = null;
+
+    // Array of components this vehicle should spawn with.
+    components = null;
+
+    constructor(vehicle, parkingLot) {
+        this.id = vehicle.id;
+        this.modelId = vehicle.modelId;
+
+        this.parkingLot = parkingLot;
+
+        this.primaryColor = vehicle.primaryColor ?? null;
+        this.secondaryColor = vehicle.secondaryColor ?? null;
+        this.paintjob = vehicle.paintjob ?? null;
+        this.components = vehicle.components ?? [];
     }
 
-    // Gets the Id of this vehicle in the database.
-    get id() { return this.id_; }
+    applyVehicleInfo(vehicleInfo) {
+        this.modelId = vehicleInfo.modelId;
 
-    // Gets the Id of the model that should be used to represent this vehicle.
-    get modelId() { return this.modelId_; }
-
-    // Gets the parking lot on which this vehicle should be parked.
-    get parkingLot() { return this.parkingLot_; }
+        this.primaryColor = vehicleInfo.primaryColor ?? null;
+        this.secondaryColor = vehicleInfo.secondaryColor ?? null;
+        this.paintjob = vehicleInfo.paintjob ?? null;
+        this.components = vehicleInfo.components ?? [];
+    }
 }
-
-export default HouseVehicle;

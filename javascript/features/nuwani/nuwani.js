@@ -21,6 +21,7 @@ export default class Nuwani extends Feature {
 
     commandManager_ = null;
     commands_ = null;
+    discord_ = null;
 
     // Gets the CommandManager with which IRC commands can be created.
     get commandManager() { return this.commandManager_; }

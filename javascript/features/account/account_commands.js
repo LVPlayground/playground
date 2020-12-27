@@ -3,24 +3,26 @@
 // be found in the LICENSE file.
 
 import { AccountDatabase } from 'features/account/account_database.js';
-import { CommandBuilder } from 'components/command_manager/command_builder.js';
+import { CommandBuilder } from 'components/commands/command_builder.js';
 import { Menu } from 'components/menu/menu.js';
 import { Question } from 'components/dialogs/question.js';
 
 import { alert } from 'components/dialogs/alert.js';
 import { confirm } from 'components/dialogs/confirm.js';
 import { formatDate, fromNow } from 'base/time.js';
-import { format } from 'base/string_formatter.js';
+import { format } from 'base/format.js';
+import { messages } from 'features/account/account.messages.js';
 import { random } from 'base/random.js';
+
+import * as signals from 'features/instrumentation/instrumentation_signals.js';
 
 // File in which the registration message has been stored.
 const kRegistrationFile = 'data/commands/register.json';
 
-// Provides access to in-game commands related to account management. Access to the individual
-// abilities is gated through the Playground feature, which manages command access.
+// Provides access to in-game commands related to account management.
 export class AccountCommands {
     announce_ = null;
-    playground_ = null;
+    instrumentation_ = null;
     settings_ = null;
 
     // Cache for the contents of the registration dialog, which are stored in //data.
@@ -29,41 +31,48 @@ export class AccountCommands {
     // The AccountDatabase instance which will execute operations.
     database_ = null;
 
-    constructor(announce, playground, settings, database) {
+    constructor(announce, instrumentation, settings, database) {
         this.announce_ = announce;
-        this.database_ = database;
+        this.instrumentation_ = instrumentation;
         this.settings_ = settings;
 
-        this.playground_ = playground;
-        this.playground_.addReloadObserver(
-            this, AccountCommands.prototype.registerTrackedCommands);
-
-        this.registerTrackedCommands();
+        this.database_ = database;
 
         // /account
         // /account [player]
         server.commandManager.buildCommand('account')
-            .restrict(player => this.playground_().canAccessCommand(player, 'account'))
-            .sub(CommandBuilder.PLAYER_PARAMETER)
+            .description(`Enables you to manage your LVP account.`)
+            .sub(CommandBuilder.kTypePlayer, 'target')
+                .description(`Enables administrators to manage anyone's account.`)
                 .restrict(Player.LEVEL_ADMINISTRATOR)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
-        
+
+        // /nearby [player]
+        server.commandManager.buildCommand('nearby')
+            .description(`Displays information about a player's neighbours.`)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
+            .build(AccountCommands.prototype.onNearbyCommand.bind(this));
+
         // /register
         server.commandManager.buildCommand('register')
+            .description(`Displays information on how to register on LVP.`)
             .build(AccountCommands.prototype.onRegisterCommand.bind(this));
-        
+
+        // /whereis [player]
+        server.commandManager.buildCommand('whereis')
+            .description(`Displays information about a player's whereabouts.`)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
+            .build(AccountCommands.prototype.onWhereisCommand.bind(this));
+
         // /whois [player]
         server.commandManager.buildCommand('whois')
-            .restrict(player => this.playground_().canAccessCommand(player, 'whois'))
-            .parameters([ { name: 'player', type: CommandBuilder.PLAYER_PARAMETER } ])
+            .description(`Displays information about a player's identity.`)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
+            .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(AccountCommands.prototype.onWhoisCommand.bind(this));
-    }
-
-    // Registers the commands with configurable access with the Playground feature.
-    registerTrackedCommands() {
-        this.playground_().registerCommand('account', Player.LEVEL_PLAYER);
-        this.playground_().registerCommand('whois', Player.LEVEL_MANAGEMENT);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -73,12 +82,12 @@ export class AccountCommands {
     //
     // Opens the account management flow for either the |player| or |targetPlayer|, when set. The
     // availability of options is dependent on server configuration, as well as the player's rights
-    // on the server in general. Certain options are limited to VIPs.
+    // on the server in general. Certain options are limited to VIPs like alias feature.
     async onAccountCommand(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
 
         if (!player.account.isRegistered()) {
-            currentPlayer.sendMessage(Message.ACCOUNT_NOT_REGISTERED, player.name);
+            currentPlayer.sendMessage(messages.account_not_registered, { player });
             return;
         }
 
@@ -92,17 +101,17 @@ export class AccountCommands {
             sessions: this.getSettingValue('session_visibility'),
 
             // Special case: Beta-server features for amending otherwise immutable settings.
-            beta: this.settings_().getValue('playground/enable_beta_features'),
+            beta: this.settings_().getValue('server/beta_features'),
         };
 
-        const dialog = new Menu('Account management');
+        const dialog = new Menu(messages.account_dialog_management);
 
         // Enables the |player| to change their nickname. This can only be done a limited number of
         // times in a specific time period. Changing their nickname will immediately apply. This
         // option may only be used when the |player| is the current player.
         if (features.changename && player === currentPlayer) {
             dialog.addItem(
-                'Change your nickname',
+                messages.account_label_change_nickname,
                 AccountCommands.prototype.changeNickname.bind(this, currentPlayer));
         }
 
@@ -111,7 +120,7 @@ export class AccountCommands {
         // when the |player| is the current player.
         if (features.changepass && player === currentPlayer) {
             dialog.addItem(
-                'Change your password',
+                messages.account_label_change_password,
                 AccountCommands.prototype.changePassword.bind(this, currentPlayer));
         }
 
@@ -119,14 +128,14 @@ export class AccountCommands {
         // names on top of their username, which they are able to control themselves.
         if (features.aliases) {
             dialog.addItem(
-                'Manage nickname aliases',
+                messages.account_label_manage_aliases,
                 AccountCommands.prototype.manageAliases.bind(this, currentPlayer, targetPlayer));
         }
 
         // Enables the |player| to see information about their account.
         if (features.information) {
             dialog.addItem(
-                'View account information',
+                messages.account_label_view_information,
                 AccountCommands.prototype.displayInfo.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -134,7 +143,7 @@ export class AccountCommands {
         // accessible to administrators and Management members.
         if (features.record) {
             dialog.addItem(
-                'View player record',
+                messages.account_label_view_record,
                 AccountCommands.prototype.displayRecord.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -142,7 +151,7 @@ export class AccountCommands {
         // information that can be shown about the session.
         if (features.sessions) {
             dialog.addItem(
-                'View recent sessions',
+                messages.account_label_view_sessions,
                 AccountCommands.prototype.displaySessions.bind(this, currentPlayer, targetPlayer));
         }
 
@@ -150,12 +159,12 @@ export class AccountCommands {
         // members. They can give themselves VIP rights, and change their own level.
         if (features.beta) {
             dialog.addItem(
-                '{90CAF9}[Beta] Manage your account',
+                messages.account_label_manage_account,
                 AccountCommands.prototype.displayManage.bind(this, currentPlayer, targetPlayer));
         }
 
         if (!dialog.hasItems()) {
-            currentPlayer.sendMessage(Message.ACCOUNT_NOT_AVAILABLE);
+            currentPlayer.sendMessage(messages.account_not_available);
             return;
         }
 
@@ -175,7 +184,7 @@ export class AccountCommands {
                 const days = Math.floor(Math.abs(Date.now() - item.date.getTime()) / (86400 * 1000));
                 if (days >= minimumDays)
                     break;
-                
+
                 return alert(player, {
                     title: 'Account management',
                     message: `You may change your nickname once per ${minimumDays} days. It's ` +
@@ -219,10 +228,16 @@ export class AccountCommands {
         // Now execute the command to actually change the nickname in the database.
         await this.database_.changeName(player.name, newNickname, /* allowAlias= */ true);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(
+            player, signals.kAccountNameChange, player.name, newNickname);
+
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_NICKNAME_CHANGED, player.name, player.id, newNickname);
+        this.announce_().announceToAdministrators(messages.account_admin_nickname_changed, {
+            nickname: newNickname,
+            player,
+        });
 
         // Update the nickname of |player|. This will sync to Pawn as well.
         player.name = newNickname;
@@ -237,7 +252,7 @@ export class AccountCommands {
     async isValidAvailableNickname(nickname) {
         if (!/^[0-9a-z\[\]\(\)\$@\._=]{1,24}$/i.test(nickname))
             return false;  // invalid nickname
-        
+
         // Verify that there are no other players in-game with this nickname.
         for (const player of server.playerManager) {
             if (player.name.toLowerCase() === nickname.toLowerCase())
@@ -303,6 +318,9 @@ export class AccountCommands {
         // Now execute the command to actually change the password in the database.
         await this.database_.changePassword(player.name, password);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountPasswordChange);
+
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
         if (this.settings_().getValue('account/password_admin_joke')) {
@@ -328,11 +346,14 @@ export class AccountCommands {
                     break;
             }
 
-            this.announce_().announceToAdministrators(
-                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED2, player.name, player.id, fakePassword);
+            this.announce_().announceToAdministrators(messages.account_admin_password_changed2, {
+                password: fakePassword,
+                player,
+            });
         } else {
-            this.announce_().announceToAdministrators(
-                Message.ACCOUNT_ADMIN_PASSWORD_CHANGED, player.name, player.id);
+            this.announce_().announceToAdministrators(messages.account_admin_password_changed, {
+                player
+            });
         }
 
         return alert(player, {
@@ -346,7 +367,7 @@ export class AccountCommands {
     async manageAliases(currentPlayer, targetPlayer) {
         const player = targetPlayer || currentPlayer;
         const aliases = await this.database_.getAliases(player.name);
-        
+
         const dialog = new Menu('Alias management', ['Alias', 'Last active']);
         if (player === currentPlayer) {
             dialog.addItem(
@@ -358,7 +379,7 @@ export class AccountCommands {
 
         if (!aliases || !aliases.aliases.length)
             return dialog.displayForPlayer(currentPlayer);
-        
+
         dialog.addItem('-----', '-----');
 
         for (const alias of aliases.aliases) {
@@ -402,7 +423,7 @@ export class AccountCommands {
             for (const alias of aliases.aliases) {
                 if (!alias.created)
                     continue;
-                
+
                 if (mostRecentCreation > alias.created.getTime())
                     continue;
 
@@ -441,10 +462,15 @@ export class AccountCommands {
 
         await this.database_.addAlias(player.name, newAlias, /* allowAlias= */ true);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasCreated, newAlias);
+
         // Announce the change to administrators, so that the change is known by at least a few more
         // people in case the player forgets their new password immediately after. It happens.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_ALIAS_CREATED, player.name, player.id, newAlias);
+        this.announce_().announceToAdministrators(messages.account_admin_alias_created, {
+            alias: newAlias,
+            player,
+        });
 
         return alert(player, {
             title: 'Alias management',
@@ -460,7 +486,7 @@ export class AccountCommands {
         // which means that aliases need a certain age before they can be deleted.
         const aliasAgeDays =
             Math.round(Math.abs(Date.now() - alias.created.getTime()) / (86400 * 1000));
-        
+
         if (aliasAgeDays < aliasFrequencyDays && !player.isAdministrator()) {
             return alert(player, {
                 title: 'Alias management',
@@ -474,7 +500,7 @@ export class AccountCommands {
         if (server.playerManager.getByName(alias.nickname) !== null) {
             return alert(player, {
                 title: 'Alias management',
-                message: `The alias ${newAlias} is currently in use, and cannot be deleted.`
+                message: `The alias ${alias.nickname} is currently in use, and cannot be deleted.`
             });
         }
 
@@ -486,12 +512,17 @@ export class AccountCommands {
 
         if (!confirmation)
             return;  // they changed their mind
-        
+
         // Actually delete the |alias|, and inform administrators of this change.
         await this.database_.removeAlias(player.name, alias.nickname, /* allowAlias= */ true);
 
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_ALIAS_DELETED, player.name, player.id, alias.nickname);
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountAliasDeleted, alias.nickname);
+
+        this.announce_().announceToAdministrators(messages.account_admin_alias_deleted, {
+            alias: alias.nickname,
+            player,
+        });
 
         return alert(player, {
             title: 'Alias management',
@@ -539,6 +570,9 @@ export class AccountCommands {
 
         display.addItem('Sessions', information.sessions);
 
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewInformation);
+
         await display.displayForPlayer(currentPlayer);
     }
 
@@ -570,6 +604,9 @@ export class AccountCommands {
 
             display.addItem(formatDate(entry.date), type, entry.issuedBy, entry.reason);
         }
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewRecord);
 
         await display.displayForPlayer(currentPlayer);
     }
@@ -603,6 +640,9 @@ export class AccountCommands {
 
             display.addItem(date, session.nickname, duration, session.ip);
         }
+
+        // Record this action in the database.
+        this.instrumentation_().recordSignal(player, signals.kAccountViewSessions);
 
         await display.displayForPlayer(currentPlayer);
     }
@@ -638,8 +678,10 @@ export class AccountCommands {
                     message: 'The level has been changed. They will now be force disconnected.'
                 });
 
-                this.announce_().announceToAdministrators(
-                    Message.ACCOUNT_ADMIN_LEVEL_CHANGED, player.name, player.id, targetLevel);
+                this.announce_().announceToAdministrators(messages.account_admin_level_changed, {
+                    level: targetLevel,
+                    player,
+                });
 
                 wait(1000).then(() => player.kick());
             };
@@ -648,10 +690,10 @@ export class AccountCommands {
 
             for (const level of ['Player', 'Administrator', 'Management'])
                 options.addItem(level, updateLevel.bind(null, level))
-            
+
             await options.displayForPlayer(currentPlayer);
         });
-    
+
         // Enables the |player| to give themselves VIP rights, or take them away. They will be
         // force disconnected after making changes, to make sure it propagates appropriately.
         display.addItem('VIP', summary.is_vip ? 'Yes' : 'No', async () => {
@@ -669,9 +711,10 @@ export class AccountCommands {
                     message: 'The VIP status has been changed. They will now be force disconnected.'
                 });
 
-                this.announce_().announceToAdministrators(
-                    Message.ACCOUNT_ADMIN_VIP_CHANGED, player.name, player.id,
-                    targetSetting ? 'enabled' : 'disabled');
+                this.announce_().announceToAdministrators(messages.account_admin_vip_changed, {
+                    enabled: targetSetting ? 'enabled' : 'disabled',
+                    player,
+                });
 
                 wait(1000).then(() => player.kick());
             };
@@ -680,7 +723,7 @@ export class AccountCommands {
 
             options.addItem('Regular player', updateVip.bind(null, false));
             options.addItem('VIP player', updateVip.bind(null, true));
-            
+
             await options.displayForPlayer(currentPlayer);
         });
 
@@ -689,11 +732,53 @@ export class AccountCommands {
 
     // ---------------------------------------------------------------------------------------------
 
+    // Called when the |player| wants to know which other players live nearby the given |target|.
+    // The results will be bucketed in groups of ~50km distances, to avoid this being too intrusive.
+    // Only registered players who were in-game in the past year will be considered for this.
+    async onNearbyCommand(player, target) {
+        const results = await this.database_.nearby(target.ip);
+        if (!results || !results.length) {
+            return await alert(player, {
+                title: `Who's near ${target.name}?!`,
+                message: `No results were found for ${target.name}. We only consider sessions in ` +
+                         `the past year, which might explain this.`
+            });
+        }
+
+        const dialog = new Menu(`Who's near ${target.name}?!`, [
+            'Nickname',
+            'Distance',
+            'Last seen',
+        ]);
+
+        for (const { username, sessions, lastSeen, distance } of results) {
+            let sessionLabel = '';
+            let distanceLabel = '{90A4AE}<150km';
+            let activityLabel = fromNow({ date: lastSeen });
+
+            if (sessions > 1)
+                sessionLabel = ` {90A4AE}(${format('%d', sessions)}x)`;
+
+            if (distance < 10)
+                distanceLabel = '{B2FF59}<10km';
+            else if (distance <= 50)
+                distanceLabel = '{EEFF41}<50km';
+            else if (distance <= 100)
+                distanceLabel = '{CFD8DC}<100km';
+
+            dialog.addItem(username + sessionLabel, distanceLabel, activityLabel);
+        }
+
+        await dialog.displayForPlayer(player);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     // Called when the |player| has typed the "/register" command. This will tell them where they
     // can sign up to create an account. When beta functionality is enabled, a brief registration
     // flow will be started immediately instead.
     async onRegisterCommand(player) {
-        if (!this.settings_().getValue('playground/enable_beta_features')) {
+        if (!this.settings_().getValue('server/beta_features')) {
             if (!this.registrationDialogCache_)
                 this.registrationDialogCache_ = JSON.parse(readFile(kRegistrationFile));
 
@@ -757,8 +842,7 @@ export class AccountCommands {
 
         // Tell other administrators about the new account, giving everyone some opportunity to know
         // what's going on. Not least of all the people watching through Nuwani.
-        this.announce_().announceToAdministrators(
-            Message.ACCOUNT_ADMIN_CREATED, player.name, player.id);
+        this.announce_().announceToAdministrators(messages.account_admin_registered, { player });
 
         await alert(player, {
             title: 'Register your account',
@@ -767,6 +851,50 @@ export class AccountCommands {
         });
 
         player.kick();
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Called when the |player| wishes to locate the |target| through the "/whereis" command. This
+    // isn't about their in-game location, but rather their physical location.
+    async onWhereisCommand(player, target) {
+        const results = await this.database_.whereIs(target.ip);
+        if (!results.proxy && !results.location) {
+            return await alert(player, {
+                title: `Where is ${target.name}?!`,
+                message: `I have no idea where ${target.name} is.. Sorry!`
+            });
+        }
+
+        const dialog = new Menu(`Where is ${target.name}?!`, [
+            'Field',
+            'Value',
+        ]);
+
+        // (1) When proxy information is known,
+        if (results.proxy) {
+            dialog.addItem('{FFEB3B}Proxy information', '{9E9E9E}-');
+            dialog.addItem('Proxy location', `${results.proxy.country} (${results.proxy.city})`);
+            dialog.addItem('Proxy provider', `${results.proxy.isp} (${results.proxy.domain})`);
+            dialog.addItem('Proxy network', `${results.proxy.networkName}`);
+            dialog.addItem('Intended usage', results.proxy.usage.join(', '));
+        }
+
+        // (2) When location information is known,
+        if (results.location) {
+            if (results.proxy)
+                dialog.addItem('----------', '----------');
+
+            dialog.addItem('{FFEB3B}Location information', '{9E9E9E}-');
+            dialog.addItem('Country', results.location.country);
+            dialog.addItem('Region', results.location.region);
+            dialog.addItem('City', results.location.city);
+
+            dialog.addItem('Timezone', results.location.timeZone);
+            // Current time estimation if we know DST?
+        }
+
+        await dialog.displayForPlayer(player);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -799,13 +927,13 @@ export class AccountCommands {
 
             if (result.hits > 1)
                 nickname += ` {90A4AE}(${format('%d', result.hits)}x)`;
-            
+
             let ip = '';
             if (result.ipDistance < 3)
                 ip += `{FFEE58}`;
             else if (result.ipDistance === 4)
                 ip += `{BEC7CC}`;
-            
+
             ip += result.ipMatch;
 
             let serial = '';
@@ -813,10 +941,10 @@ export class AccountCommands {
                 serial += `{FFEE58}match`;
             else
                 serial += `{BEC7CC}no match`;
-            
+
             if (result.serialCommon)
                 serial += ` {FF7043}(common)`;
-            
+
             const lastSeen = fromNow({ date: result.lastSeen });
 
             dialog.addItem(nickname, ip, serial, lastSeen);
@@ -864,17 +992,13 @@ export class AccountCommands {
         return strength >= 2;
     }
 
-
     dispose() {
-        this.playground_().unregisterCommand('whois');
-        this.playground_().unregisterCommand('account');
-
         this.announce_ = null;
         this.database_ = null;
-        this.playground_ = null;
         this.playerIdentifier_ = null;
 
         server.commandManager.removeCommand('whois');
+        server.commandManager.removeCommand('whereis');
         server.commandManager.removeCommand('register');
         server.commandManager.removeCommand('account');
     }

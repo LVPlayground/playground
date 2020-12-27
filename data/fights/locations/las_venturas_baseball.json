@@ -1,0 +1,23 @@
+{
+    "name": "Las Venturas Baseball",
+    "shortName": "Baseball",
+
+    "spawnPositions": {
+        "areaZ": 11.0234,
+        "area": {
+            "minimumX": 1305.75,
+            "maximumX": 1389.75,
+            "minimumY": 2107.5,
+            "maximumY": 2191.5
+        }
+    },
+
+    "environment": {
+        "boundaries": {
+            "minimumX": 1297.0610,
+            "maximumX": 1397.1653,
+            "minimumY": 2098.2563,
+            "maximumY": 2198.6494
+        }
+    }
+}

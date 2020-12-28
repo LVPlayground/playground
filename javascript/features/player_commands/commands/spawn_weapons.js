@@ -24,17 +24,22 @@ export class SpawnWeapons extends PlayerCommand {
 
     // Called when the command is executed by the |player| for the |target|, which may be another
     // player. The |weapon| and |multiplier| are guaranteed to be given.
-    execute(player, target, weapon, multiplier) {
-        const teleportStatus = this.limits().canTeleport(target);
-
+    execute(player, target, weapon, multiplier) {        
+        // Spawnweapons can only be set when on foot
+        if (target.state !== Player.kStateOnFoot) {
+            player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_NOT_ON_FOOT);
+            return;
+        }
+        
+        const canGetSpawnWeapons = this.limits().canGetSpawnWeapons(target);
         // Bail out if the |player| might abuse it.
-        if (!teleportStatus.isApproved()) {
+        if (!canGetSpawnWeapons.isApproved()) {
             if (player.id === target.id) {
-                player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT, teleportStatus);
+                player.sendMessage(Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT, canGetSpawnWeapons);
             } else {
                 player.sendMessage(
                     Message.PLAYER_COMMANDS_SPAWN_WEAPONS_TELEPORT_TARGET, target.name,
-                    teleportStatus);
+                    canGetSpawnWeapons);
             }
 
             return;

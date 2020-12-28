@@ -122,6 +122,16 @@ export default class Limits extends Feature {
         });
     }
 
+    // Decides whether the given |player| is allowed to set himself spawn waepons.
+    canGetSpawnWeapons(player) {
+        return this.decider_.decide(player, {
+            requirements: [
+                requirements.kNoDeathmatchRequirement,
+                requirements.kNoMinigameRequirement,
+            ]
+        });
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // Reports that the given |player| has spawned a vehicle.

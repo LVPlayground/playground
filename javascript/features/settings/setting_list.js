@@ -23,6 +23,7 @@ export const kSettingList = [
     new Setting('abuse', 'manual_sawnoff_damage', Setting.TYPE_BOOLEAN, false, 'Whether we want to manually calculate sawn-off damage.'),
     new Setting('abuse', 'maximum_connections_per_ip', Setting.TYPE_NUMBER, 3, 'Maximum number of connections allowed per IP address.'),
     new Setting('abuse', 'pawn_based_detectors', Setting.TYPE_BOOLEAN, true, 'Enable the Pawn-based abuse detectors?'),
+    new Setting('abuse', 'spawn_armour_duration', Setting.TYPE_NUMBER, 10, 'Duration of spawn armour for players'),
     new Setting('abuse', 'warning_report_limit', Setting.TYPE_NUMBER, 3, 'Number of types to report a specific abuse type for a player.'),
 
     /** Account related settings */

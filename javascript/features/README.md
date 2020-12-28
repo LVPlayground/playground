@@ -93,6 +93,7 @@ Feature                                          | Code Health | Description
 [Races](races/)                                  | ✔ 2020     | The `/race` command, and the ability to participate in any race.
 [Radio](radio/)                                  | ❓ 2020     | -
 [ReactionTests](reaction_tests/)                 | ✔ 2020     | Minigame where players repeat text or solve calculations in chat.
+[SpawnArmour](spawn_armour/)                     | ✔ 2020     | Allows players to spawn safely
 [Teleportation](teleportation/)                  | ❓ 2020     | -
 [Vehicles](vehicles/)                            | ✔ 2020     | Provides all vehicles on the server, and commands to interact with them.
 

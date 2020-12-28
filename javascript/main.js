@@ -83,7 +83,7 @@ testRunner.run('.*\.test\.js').then(time => {
 
         // Player-related features
         'account', 'animations', 'player_commands', 'player_favours', 'player_settings', 
-        'leaderboard', 'teleportation',
+        'leaderboard', 'spawn_armour', 'teleportation',
 
         // -----------------------------------------------------------------------------------------
         // Regular features: Communication

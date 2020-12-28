@@ -669,6 +669,9 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float: fX, Float: 
     if (PlayerSyncedData(playerid)->skipDamage())
         return 0;
 
+    if (PlayerSyncedData(playerid)->spawnArmour())
+        return 0;
+
 #endif
     return LegacyPlayerWeaponShot(playerid, weaponid, hittype, hitid, fX, fY, fZ);
 }

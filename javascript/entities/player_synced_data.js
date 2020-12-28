@@ -14,6 +14,7 @@ export class PlayerSyncedData {
         this.minigameName_ = '';
         this.preferredRadioChannel_ = '';
         this.skipDamage_ = false;
+        this.spawnArmour_ = false;
         this.vehicleKeys_ = 0;
     }
 
@@ -70,6 +71,15 @@ export class PlayerSyncedData {
         this.sync(PlayerSyncedData.SKIP_DAMAGE, value);
     }
 
+    get spawnArmour() { return this.spawnArmour_; }
+    set spawnArmour(value) {
+        if (typeof value !== 'boolean')
+            throw new Error('The `spawnArmour` property must be a boolean.');
+
+        this.spawnArmour_ = value;
+        this.sync(PlayerSyncedData.SPAWN_ARMOUR, value);
+    }
+
     // Gets or sets the vehicle keys, which control which vehicle shortcuts are available to the
     // player. These are features that can be unlocked through collectables.
     get vehicleKeys() { return this.vehicleKeys_; }
@@ -112,6 +122,7 @@ export class PlayerSyncedData {
 
             case PlayerSyncedData.ISOLATED:
             case PlayerSyncedData.SKIP_DAMAGE:
+            case PlayerSyncedData.SPAWN_ARMOUR:
                 pawnInvoke('OnPlayerSyncedDataChange', 'iiifs', this.playerId_, property,
                            value ? 1 : 0, 0.0 /* invalid float */, '' /* empty string */);
                 break;
@@ -157,4 +168,5 @@ PlayerSyncedData.LAG_COMPENSATION_MODE = 6;
 PlayerSyncedData.MINIGAME_NAME = 2;
 PlayerSyncedData.PREFERRED_RADIO_CHANNEL = 0;
 PlayerSyncedData.SKIP_DAMAGE = 5;
+PlayerSyncedData.SPAWN_ARMOUR = 7;
 PlayerSyncedData.VEHICLE_KEYS = 4;

@@ -5,7 +5,7 @@
 // Provided by PlaygroundJS for updating JavaScript data.
 native UpdatePlayerSyncedData(playerId, property, intValue, Float: floatValue, stringValue[]);
 
-// Next ID: 7
+// Next ID: 8
 enum PlayerSyncedDataProperty {
     COLLECTABLES = 3,
     ISOLATED = 1,
@@ -13,6 +13,7 @@ enum PlayerSyncedDataProperty {
     MINIGAME_NAME = 2,
     PREFERRED_RADIO_CHANNEL = 0,
     SKIP_DAMAGE = 5,
+    SPAWN_ARMOUR = 7,
     VEHICLE_KEYS = 4,
 };
 
@@ -29,6 +30,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
     new m_minigameName[32];
     new m_preferredRadioChannel[64];
     new bool: m_skipDamage;
+    new bool: m_spawnArmour;
     new m_vehicleKeys;
 
     public reset() {
@@ -38,6 +40,7 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
         m_minigameName[0] = 0;
         m_preferredRadioChannel[0] = 0;
         m_skipDamage = false;
+        m_spawnArmour = false;
         m_vehicleKeys = 0;
     }
 
@@ -101,6 +104,12 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
     // ---------------------------------------------------------------------------------------------
 
+    public inline bool: spawnArmour() {
+        return m_spawnArmour;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
     public sync(PlayerSyncedDataProperty: property) {
         switch (property) {
             // Integral properties.
@@ -137,6 +146,9 @@ class PlayerSyncedData <playerId (MAX_PLAYERS)> {
 
             case SKIP_DAMAGE:
                 m_skipDamage = !!intValue;
+                
+            case SPAWN_ARMOUR:
+                m_spawnArmour = !!intValue;
 
             case VEHICLE_KEYS: {
                 m_vehicleKeys = intValue;

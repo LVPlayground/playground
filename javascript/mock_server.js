@@ -70,6 +70,7 @@ import Radio from 'features/radio/radio.js';
 import ReactionTests from 'features/reaction_tests/reaction_tests.js';
 import Sampcac from 'features/sampcac/sampcac.js';
 import Settings from 'features/settings/settings.js';
+import SpawnArmour from 'features/spawn_armour/spawn_armour.js';
 import Spectate from 'features/spectate/spectate.js';
 import Streamer from 'features/streamer/streamer.js';
 import Teleportation from 'features/teleportation/teleportation.js';
@@ -146,6 +147,7 @@ class MockServer {
             reaction_tests: ReactionTests,
             sampcac: Sampcac,
             settings: Settings,
+            spawn_armour: SpawnArmour,
             spectate: Spectate,
             streamer: Streamer,
             teleportation: Teleportation,

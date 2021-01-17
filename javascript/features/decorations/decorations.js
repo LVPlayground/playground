@@ -11,6 +11,7 @@ const kDecorationDirectory = 'data/decorations/';
 // The list of decorations available on Las Venturas Playground. Don't forget to add the setting.
 export const kDecorations = new Set([
     { filename: 'christmas_decorations.json', setting: 'decorations/christmas_decorations' },
+    { filename: 'halloween_decorations.json', setting: 'decorations/halloween_decorations' },
     { filename: 'fantasy_island.json', setting: 'decorations/fantasy_island' },
     { filename: 'gunther.json', setting: 'decorations/gunther' },
     { filename: 'las_venturas_scrapyard.json', setting: 'decorations/las_venturas_scrapyard' },

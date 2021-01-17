@@ -45,6 +45,7 @@ export const kSettingList = [
     /** Decoration related settings */
     new Setting('decorations', 'christmas_decorations', Setting.TYPE_BOOLEAN, false, 'Should The Strip be in a Christmas-y mood?'),
     new Setting('decorations', 'fantasy_island', Setting.TYPE_BOOLEAN, false, 'Is this the time for some fantasy?'),
+    new Setting('decorations', 'halloween_decorations', Setting.TYPE_BOOLEAN, false, 'The strip will be scary.'),
     new Setting('decorations', 'gunther', Setting.TYPE_BOOLEAN, true, 'Should Gunther be guarding over the Pirate Ship?'),
     new Setting('decorations', 'las_venturas_scrapyard', Setting.TYPE_BOOLEAN, true, 'Should the scrapyard in Las Venturas be enabled?'),
     new Setting('decorations', 'las_venturas_taxi_rank', Setting.TYPE_BOOLEAN, true, 'Should the taxi rank at Las Venturas Airport be enabled?'),

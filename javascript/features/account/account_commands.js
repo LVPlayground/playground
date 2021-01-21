@@ -44,7 +44,7 @@ export class AccountCommands {
             .description(`Enables you to manage your LVP account.`)
             .sub(CommandBuilder.kTypePlayer, 'target')
                 .description(`Enables administrators to manage anyone's account.`)
-                .restrict(Player.LEVEL_ADMINISTRATOR)
+                .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
                 .build(AccountCommands.prototype.onAccountCommand.bind(this))
             .build(AccountCommands.prototype.onAccountCommand.bind(this));
 

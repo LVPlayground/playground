@@ -41,7 +41,7 @@ export class PlaygroundCommands {
         // they have been granted temporary administrator rights.
         server.commandManager.buildCommand('tempfix')
             .description('Grants temporary rights to a particular player.')
-            .restrict(Player.LEVEL_ADMINISTRATOR)
+            .restrict(Player.LEVEL_ADMINISTRATOR, /* restrictTemporary= */ true)
             .parameters([ { name: 'player', type: CommandBuilder.kTypePlayer } ])
             .build(PlaygroundCommands.prototype.onTempFixCommand.bind(this));
 

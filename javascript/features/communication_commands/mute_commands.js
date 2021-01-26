@@ -113,6 +113,12 @@ export class MuteCommands {
     onMuteCommand(player, targetPlayer, duration = 3) {
         const timeRemaining = this.muteManager.getPlayerRemainingMuteTime(targetPlayer);
 
+        // Send error when player try to mute our bot :-)
+        if (targetPlayer.isNonPlayerCharacter()) {
+            player.sendMessage(Message.MUTE_NPC);
+            return;
+         }
+
         const proposedTime = duration * 60;
         const proposedText = relativeTime({
             date1: new Date(),

@@ -42,6 +42,13 @@ export class IgnoreCommands {
     // received from them, although they may still see other evidence of them existing.
     onIgnoreCommand(player, subject) {
         const ignored = this.visibilityManager.getIgnoredPlayers(player);
+
+        // Send error when player try to ignore themselves :-)
+        if (player === subject) {
+            player.sendMessage(Message.IGNORE_SELF);
+            return;
+        }
+  
         if (ignored.includes(subject)) {
             player.sendMessage(Message.IGNORE_ADDED_REDUNDANT, subject.name);
             return;

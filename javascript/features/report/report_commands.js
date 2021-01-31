@@ -35,6 +35,12 @@ class ReportCommands {
                 reportedPlayer, server.clock.monotonicallyIncreasingTime());
         }
 
+        // Send error when player try to report our bot :-)
+        if (reportedPlayer.isNonPlayerCharacter()) {
+            player.sendMessage(Message.REPORT_ERROR_NPC);
+            return;
+         }
+
         this.announce_().announceReportToAdministrators(player, reportedPlayer, reason);
         this.nuwani_().echo(
             'report', player.name, player.id, reportedPlayer.name, reportedPlayer.id, reason);

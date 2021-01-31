@@ -74,6 +74,12 @@ export class CallCommands {
             return;
         }
 
+         // Prevent them to call NPCs
+         if (targetPlayer.isNonPlayerCharacter()) {
+            player.sendMessage(Message.COMMUNICATION_DIAL_NPC);
+            return;
+        }
+
         // Bail out if the |player| is already on the phone.
         if (currentRecipient) {
             player.sendMessage(Message.COMMUNICATION_DIAL_BUSY_SELF, currentRecipient.name);

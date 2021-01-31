@@ -75,6 +75,7 @@
   "COMMUNICATION_DIAL_EXPIRED": "{DC143C}[Phone]{FFFFFF} * %s did not pick up the phone.",
   "COMMUNICATION_DIAL_EXPIRED_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * You did not acknowledge the call from %s.",
   "COMMUNICATION_DIAL_HANGUP_UNKNOWN": "{DC143C}[Phone]{FFFFFF} * You aren't calling anyone at the moment.",
+  "COMMUNICATION_DIAL_NPC": "{DC143C}[Phone]{FFFFFF} * You cannot call NPCs over the phone, silly billy.",
   "COMMUNICATION_DIAL_REJECT_UNKNOWN": "{DC143C}[Phone]{FFFFFF} * There are no calls to reject right now.",
   "COMMUNICATION_DIAL_REJECTED": "{DC143C}[Phone]{FFFFFF} * You have rejected the phone call from %s.",
   "COMMUNICATION_DIAL_REJECTED_RECIPIENT": "{DC143C}[Phone]{FFFFFF} * %s has rejected your phone call.",
@@ -335,6 +336,7 @@
   "IGNORE_IGNORED": "{33AA33}Ignored players:{FFFFFF} %s",
   "IGNORE_REMOVED_PLAYER": "@success You'll start to receive messages from %s again.",
   "IGNORE_REMOVED_REDUNDANT": "@error You aren't ignoring %s right now.",
+  "IGNORE_SELF": "@error You can't ignore yourself, silly billy",
 
   "IRC_ADMIN_MESSAGE": "{FFFF00}* %s %s (IRC): %s",
   "IRC_ANNOUNCE_ADMIN": "%s (IRC) has made an announcement.",
@@ -426,6 +428,7 @@
   "MUTE_MUTED_TARGET_IRC": "{DC143C}*** You have been muted by %s (IRC) for %s.",
   "MUTE_MUTED_TARGET_UPDATE": "{DC143C}*** %s (Id:%d) has %s your mute to %s.",
   "MUTE_MUTED_TARGET_UPDATE_IRC": "{DC143C}*** %s (IRC) has %s your mute to %s.",
+  "MUTE_NPC": "@error You can't mute our beloved bots",
   "MUTE_SHOW_REPORT_ALREADY_MUTED": "@error %s (Id:%d) has already been muted.",
   "MUTE_SHOW_REPORT_BORDER": "--------------------------------",
   "MUTE_SHOW_REPORT_MESSAGE_1": "You have been muted by %s (Id:%d) for %s.",
@@ -518,8 +521,9 @@
   "RADIO_PREFERRED_DEFAULT": "You will be listening to the default radio channel again.",
   "RADIO_PREFERRED_DISABLED": "You have disabled the in-game radio.",
 
-  "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
   "REPORT_ALREADY_REPORTED": "@error We have already received a report about %s and are on it. Thank you!",
+  "REPORT_ERROR_NPC": "@error You can't report an NPC!",
+  "REPORT_MESSAGE": "{33AA33}Your report has been delivered to the crew{FFFFFF}: Player: %s (Id:%d) - Reason: %s",
 
   "SPAWN_ARMOUR_ACTIVATED": "@success You'll be protected by spawn armour for the next 10 seconds.",
   "SPAWN_ARMOUR_PLAYER_KILLED": "@error You can be punised for killing players that just spawned.",
